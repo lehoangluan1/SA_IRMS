@@ -2,55 +2,69 @@ digraph G {
   graph [
     rankdir=LR,
     newrank=true,
+    compound=true,
     bgcolor="white",
+    pad=0.34,
+    nodesep=0.56,
+    ranksep=1.02,
     splines=polyline,
-    nodesep=0.55,
-    ranksep=0.9,
-    pad=0.4,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="Module View - Core Fulfillment Path of IRMS"
+    label="UML Package Diagram - Core Fulfillment Path of IRMS"
   ];
 
   node [
-    shape=box,
-    style="rounded,filled",
-    fillcolor="#F8FAFC",
-    color="#334155",
+    shape=folder,
+    style="filled",
+    fillcolor="#FFFFFF",
+    color="#64748B",
+    penwidth=1.0,
     fontname="DejaVu Sans",
-    fontsize=11,
-    penwidth=1.2,
-    margin="0.08,0.05"
+    fontsize=9.7,
+    margin="0.14,0.08"
   ];
 
   edge [
+    style=dashed,
+    arrowhead=vee,
+    color="#64748B",
+    penwidth=0.9,
     fontname="DejaVu Sans",
-    fontsize=9,
-    color="#475569",
-    arrowsize=0.75
+    fontsize=8.1
   ];
 
-  subgraph cluster_context {
-    label="Reference and Context Modules";
+  subgraph cluster_model {
+    label="<<model>> Module View";
     color="#94A3B8";
+    penwidth=1.1;
     style="rounded";
-    reservation [label="Reservation & Table Session\nreservation, waitlist,\nseating, occupancy state"];
-    menu [label="Menu Reference\nmenu item, modifier,\navailability, pricing policy"];
+
+    subgraph cluster_context {
+      label="<<package>> Context Packages";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+
+      reservation_context [label="Reservation Context\nsession contract,\nreservation state,\nseating rules"];
+      menu_reference [label="Menu Reference\ncatalog,\nmodifier rules,\npricing policy"];
+    }
+
+    subgraph cluster_execution {
+      label="<<package>> Core Fulfillment Packages";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+
+      ordering_package [label="Ordering Package\napplication commands,\norder aggregate,\nitem snapshot"];
+      kitchen_package [label="Kitchen Package\nticket routing,\nstation queue,\npreparation state"];
+      billing_package [label="Billing Package\nbill creation,\nsettlement,\nreceipt and closure"];
+    }
   }
 
-  subgraph cluster_core {
-    label="Core Fulfillment Modules";
-    color="#94A3B8";
-    style="rounded";
-    ordering [label="Ordering Module\norder aggregate,\nitem snapshot, special note"];
-    kitchen [label="Kitchen Module\nticket, station queue,\npreparation and handoff"];
-    billing [label="Billing Module\nbill, split, payment,\nreceipt and closure"];
-  }
-
-  reservation -> ordering [label="table-session context"];
-  menu -> ordering [label="item, modifier and price basis"];
-  ordering -> kitchen [label="confirmed order snapshot"];
-  ordering -> billing [style=dashed, label="billable snapshot"];
-  kitchen -> billing [style=dashed, label="served facts"];
-  billing -> reservation [label="session close and table release"];
+  reservation_context -> ordering_package [label="table-session context"];
+  menu_reference -> ordering_package [label="item, modifier and price basis"];
+  ordering_package -> kitchen_package [label="confirmed order snapshot"];
+  ordering_package -> billing_package [label="billable snapshot"];
+  kitchen_package -> billing_package [label="served facts"];
+  billing_package -> reservation_context [label="session close and table release"];
 }

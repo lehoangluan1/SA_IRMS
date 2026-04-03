@@ -1,94 +1,124 @@
 digraph G {
-  rankdir=LR;
+  graph [
+    rankdir=LR,
+    compound=true,
+    newrank=true,
+    bgcolor="white",
+    pad=0.45,
+    nodesep=0.55,
+    ranksep=1.0,
+    splines=polyline,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="Deployment Diagram - Physical Deployment"
+  ];
 
-  graph [bgcolor="white", pad=0.35, nodesep=0.45, ranksep=0.7, splines=ortho, fontname="DejaVu Sans"];
-  node [fontname="DejaVu Sans", fontsize=11, color="#334155"];
-  edge [fontname="DejaVu Sans", fontsize=10, color="#475569", arrowsize=0.7];
+  node [fontname="DejaVu Sans", fontsize=10.8, color="#334155", penwidth=1.1, style="filled"];
+  edge [fontname="DejaVu Sans", fontsize=9.6, color="#64748B", penwidth=1.0, arrowsize=0.72];
 
-  node [shape=box3d, style="filled", fillcolor="#ECFEFF", fontname="DejaVu Sans", fontsize=11, color="#334155"];
-  subgraph cluster_internal {
-    label="Restaurant Internal Network"; labelloc=t; fontsize=14; style="rounded"; color="#94A3B8"; penwidth=1.2;
-    subgraph cluster_foh {
-      label="Front-of-House Devices"; color="#CBD5E1"; style="rounded";
-      "Host_Tablet" [label="«device»
-Host Tablet", fillcolor="#FEFCE8"];
-      "Server_Tablet" [label="«device»
-Server Tablet", fillcolor="#FEFCE8"];
-      "Cashier_Terminal" [label="«device»
-Cashier Terminal", fillcolor="#FEFCE8"];
-    }
-    subgraph cluster_boh {
-      label="Back-of-House Devices"; color="#CBD5E1"; style="rounded";
-      "Kitchen_Display_Station" [label="«device»
-Kitchen Display Station", fillcolor="#FEFCE8"];
-      "Manager_Console" [label="«device»
-Manager Console", fillcolor="#FEFCE8"];
-    }
-    subgraph cluster_app_server {
-      label="Application Tier"; color="#CBD5E1"; style="rounded";
-      "APP" [label="«device»
-IRMS Application Server"];
-      "APP_RUNTIME" [label="«executionEnvironment»
-IRMS Runtime", fillcolor="#F8FAFC"];
-      "ART_WEB" [label="«artifact»
-irms-web-api.war", shape=note, fillcolor="#F8FAFC"];
-      "ART_CORE" [label="«artifact»
-irms-core-services.jar", shape=note, fillcolor="#F8FAFC"];
-      "ART_ADAPTERS" [label="«artifact»
-irms-adapters.jar", shape=note, fillcolor="#F8FAFC"];
-      "APP" -> "APP_RUNTIME" [arrowhead=none];
-      "APP_RUNTIME" -> "ART_WEB" [arrowhead=none];
-      "APP_RUNTIME" -> "ART_CORE" [arrowhead=none];
-      "APP_RUNTIME" -> "ART_ADAPTERS" [arrowhead=none];
-    }
-    subgraph cluster_worker {
-      label="Asynchronous Processing Tier"; color="#CBD5E1"; style="rounded";
-      "WORKER" [label="«device»
-Background Worker Host"];
-      "WORKER_RUNTIME" [label="«executionEnvironment»
-Worker Runtime", fillcolor="#F8FAFC"];
-      "ART_NOTIFY" [label="«artifact»
-notification-worker.jar", shape=note, fillcolor="#F8FAFC"];
-      "ART_PRINT" [label="«artifact»
-print-worker.jar", shape=note, fillcolor="#F8FAFC"];
-      "ART_PROJ" [label="«artifact»
-projection-refresh-worker.jar", shape=note, fillcolor="#F8FAFC"];
-      "WORKER" -> "WORKER_RUNTIME" [arrowhead=none];
-      "WORKER_RUNTIME" -> "ART_NOTIFY" [arrowhead=none];
-      "WORKER_RUNTIME" -> "ART_PRINT" [arrowhead=none];
-      "WORKER_RUNTIME" -> "ART_PROJ" [arrowhead=none];
-    }
-    subgraph cluster_db {
-      label="Data Tier"; color="#CBD5E1"; style="rounded";
-      "DB_SERVER" [label="«device»
-Database Server"];
-      "DBMS" [label="«executionEnvironment»
-PostgreSQL", fillcolor="#F8FAFC"];
-      "SCHEMA" [label="«artifact»
-irms_operational_schema", shape=note, fillcolor="#F8FAFC"];
-      "DB_SERVER" -> "DBMS" [arrowhead=none];
-      "DBMS" -> "SCHEMA" [arrowhead=none];
-    }
-    "PRN" [label="«device»
-Receipt Printer Gateway"];
+  browser [shape=box3d, fillcolor="#FEFCE8", label="«device»
+Restaurant Client Device
+(browser / tablet / terminal)"];
+
+  subgraph cluster_edge {
+    label="Application Edge Node";
+    color="#CBD5E1";
+    style="rounded,filled";
+    fillcolor="#F8FAFC";
+    edgehost [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Edge Host"];
+    nginx [shape=box3d, fillcolor="#FFF7ED", color="#FDBA74", label="«executionEnvironment»
+Nginx Reverse Proxy"];
+    ui    [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Unified Web Client Assets"];
+    edgehost -> nginx [arrowhead=none, color="#94A3B8"];
+    nginx -> ui [arrowhead=none, color="#94A3B8"];
   }
+
+  subgraph cluster_appserver {
+    label="Backend Application Node";
+    color="#93C5FD";
+    style="rounded,filled";
+    fillcolor="#EFF6FF";
+    apphost [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Backend IRMS Application Server"];
+    apprt [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+Spring Boot IRMS Runtime"];
+    api   [shape=note, fillcolor="#FFFFFF", label="«artifact»
+IRMS Web/API Artifact"];
+    core  [shape=note, fillcolor="#FFFFFF", label="«artifact»
+IRMS Core Service Modules"];
+    adapt [shape=note, fillcolor="#FFFFFF", label="«artifact»
+IRMS Integration Adapters"];
+    apphost -> apprt [arrowhead=none, color="#94A3B8"];
+    apprt -> api [arrowhead=none, color="#94A3B8"];
+    apprt -> core [arrowhead=none, color="#94A3B8"];
+    apprt -> adapt [arrowhead=none, color="#94A3B8"];
+  }
+
+  subgraph cluster_worker {
+    label="Asynchronous Worker Node";
+    color="#C4B5FD";
+    style="rounded,filled";
+    fillcolor="#F5F3FF";
+    workerh [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Background Worker Host"];
+    workrt [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+Worker Runtime"];
+    jobs1  [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Notification Job Handler"];
+    jobs2  [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Receipt Print Handler"];
+    jobs3  [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Projection Refresh Handler"];
+    workerh -> workrt [arrowhead=none, color="#94A3B8"];
+    workrt -> jobs1 [arrowhead=none, color="#94A3B8"];
+    workrt -> jobs2 [arrowhead=none, color="#94A3B8"];
+    workrt -> jobs3 [arrowhead=none, color="#94A3B8"];
+  }
+
+  subgraph cluster_db {
+    label="Data Node";
+    color="#FCA5A5";
+    style="rounded,filled";
+    fillcolor="#FEF2F2";
+    dbhost [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Relational Database Server"];
+    pg [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+PostgreSQL"];
+    schema1 [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Operational Schema"];
+    schema2 [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Reporting Views"];
+    dbhost -> pg [arrowhead=none, color="#94A3B8"];
+    pg -> schema1 [arrowhead=none, color="#94A3B8"];
+    pg -> schema2 [arrowhead=none, color="#94A3B8"];
+  }
+
+  printer [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Receipt Printer Gateway"];
+
   subgraph cluster_external {
-    label="External Services"; color="#94A3B8"; style="rounded"; penwidth=1.2;
-    "PG" [label="«device»
+    label="External Service Providers";
+    color="#CBD5E1";
+    style="rounded,dashed";
+    pay [shape=box3d, fillcolor="#F8FAFC", label="«external»
 Payment Gateway Service"];
-    "NS" [label="«device»
+    ns  [shape=box3d, fillcolor="#F8FAFC", label="«external»
 Notification Service"];
   }
-  edge [arrowhead=open];
-  "Host_Tablet" -> "APP" [label="HTTPS"];
-  "Server_Tablet" -> "APP" [label="HTTPS"];
-  "Cashier_Terminal" -> "APP" [label="HTTPS"];
-  "Kitchen_Display_Station" -> "APP" [label="HTTPS / internal API"];
-  "Manager_Console" -> "APP" [label="HTTPS"];
-  "APP" -> "DB_SERVER" [label="JDBC / SQL"];
-  "APP" -> "WORKER" [label="job dispatch"];
-  "WORKER" -> "DB_SERVER" [label="projection / job state"];
-  "APP" -> "PRN" [label="print connector"];
-  "APP" -> "PG" [label="HTTPS"];
-  "WORKER" -> "NS" [label="HTTPS"];
+
+  browser -> edgehost [label="HTTPS"];
+  edgehost -> apphost [label="HTTP / JSON"];
+  apphost -> dbhost [label="JDBC / SQL"];
+  apphost -> workerh [style=dashed, label="job dispatch"];
+  workerh -> dbhost [label="projection / job state"];
+  apphost -> pay [label="HTTPS"];
+  workerh -> ns [label="HTTPS"];
+  workerh -> printer [label="print connector"];
+
+  edgehost -> apphost [weight=8];
+  apphost -> workerh [style=invis, weight=8];
+  workerh -> dbhost [style=invis, weight=8];
+  dbhost -> pay [style=invis, weight=8];
 }

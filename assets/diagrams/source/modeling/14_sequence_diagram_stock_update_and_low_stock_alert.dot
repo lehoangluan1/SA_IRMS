@@ -1,17 +1,189 @@
 digraph G {
-  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.55, ranksep=0.7, pad=0.35];
-  node [shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=11];
-  edge [color="#475569", arrowsize=0.7, fontname="DejaVu Sans", fontsize=10];
+  graph [
+    layout=neato,
+    splines=false,
+    outputorder=nodesfirst,
+    bgcolor="white",
+    pad=0.34,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="UML Sequence Diagram - Stock Update and Low-Stock Alert",
+    imagepath="C:/Users/LUAN/Downloads/SA_BTL/assets/images/misc"
+  ];
 
-  orderingService [label="Ordering Service"];
-  inventoryService [label="Inventory Service"];
-  lowStockRule [label="LowStockRule"];
-  notificationAdapter [label="Notification Adapter"];
-  managerUI [label="Manager UI"];
+  node [fontname="DejaVu Sans", fontsize=9.2, color="#475569", penwidth=1.0, pin=true];
+  edge [fontname="DejaVu Sans", fontsize=7.8, color="#475569", arrowsize=0.64, penwidth=0.95];
 
-  orderingService -> inventoryService [label="1. Phát sự kiện món đã phục vụ"];
-  inventoryService -> inventoryService [label="2. Tạo StockTransaction\nvà cập nhật tồn"];
-  inventoryService -> lowStockRule [label="3. Kiểm tra ngưỡng tồn"];
-  lowStockRule -> notificationAdapter [label="4. Sinh cảnh báo nếu vượt ngưỡng"];
-  notificationAdapter -> managerUI [label="5. Hiển thị cảnh báo mức tồn thấp"];
+  kitchen_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Kitchen Coordination Service", pos="0,920!"];
+  inventory_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Inventory Service", pos="260,920!"];
+  policy_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Stock Policy Service", pos="520,920!"];
+  notification_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Notification Service", pos="780,920!"];
+  manager_actor_h [shape=none, image="actor_stickman.png", label="Manager", labelloc=b, imagepos=tc, imagescale=true, pos="1040,920!"];
+  manager_ui_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Manager Console", pos="1280,920!"];
+  menu_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Menu Service", pos="1520,920!"];
+
+  kitchen_1 [shape=point, width=0.01, label="", pos="0,780!"];
+  kitchen_2 [shape=point, width=0.01, label="", pos="0,700!"];
+  kitchen_3 [shape=point, width=0.01, label="", pos="0,620!"];
+  kitchen_4 [shape=point, width=0.01, label="", pos="0,540!"];
+  kitchen_5 [shape=point, width=0.01, label="", pos="0,460!"];
+  kitchen_6 [shape=point, width=0.01, label="", pos="0,380!"];
+  kitchen_7 [shape=point, width=0.01, label="", pos="0,300!"];
+  kitchen_8 [shape=point, width=0.01, label="", pos="0,220!"];
+  kitchen_9 [shape=point, width=0.01, label="", pos="0,140!"];
+  kitchen_10 [shape=point, width=0.01, label="", pos="0,60!"];
+
+  inventory_1 [shape=point, width=0.01, label="", pos="260,780!"];
+  inventory_2 [shape=point, width=0.01, label="", pos="260,700!"];
+  inventory_3 [shape=point, width=0.01, label="", pos="260,620!"];
+  inventory_4 [shape=point, width=0.01, label="", pos="260,540!"];
+  inventory_5 [shape=point, width=0.01, label="", pos="260,460!"];
+  inventory_6 [shape=point, width=0.01, label="", pos="260,380!"];
+  inventory_7 [shape=point, width=0.01, label="", pos="260,300!"];
+  inventory_8 [shape=point, width=0.01, label="", pos="260,220!"];
+  inventory_9 [shape=point, width=0.01, label="", pos="260,140!"];
+  inventory_10 [shape=point, width=0.01, label="", pos="260,60!"];
+
+  policy_1 [shape=point, width=0.01, label="", pos="520,780!"];
+  policy_2 [shape=point, width=0.01, label="", pos="520,700!"];
+  policy_3 [shape=point, width=0.01, label="", pos="520,620!"];
+  policy_4 [shape=point, width=0.01, label="", pos="520,540!"];
+  policy_5 [shape=point, width=0.01, label="", pos="520,460!"];
+  policy_6 [shape=point, width=0.01, label="", pos="520,380!"];
+  policy_7 [shape=point, width=0.01, label="", pos="520,300!"];
+  policy_8 [shape=point, width=0.01, label="", pos="520,220!"];
+  policy_9 [shape=point, width=0.01, label="", pos="520,140!"];
+  policy_10 [shape=point, width=0.01, label="", pos="520,60!"];
+
+  notification_1 [shape=point, width=0.01, label="", pos="780,780!"];
+  notification_2 [shape=point, width=0.01, label="", pos="780,700!"];
+  notification_3 [shape=point, width=0.01, label="", pos="780,620!"];
+  notification_4 [shape=point, width=0.01, label="", pos="780,540!"];
+  notification_5 [shape=point, width=0.01, label="", pos="780,460!"];
+  notification_6 [shape=point, width=0.01, label="", pos="780,380!"];
+  notification_7 [shape=point, width=0.01, label="", pos="780,300!"];
+  notification_8 [shape=point, width=0.01, label="", pos="780,220!"];
+  notification_9 [shape=point, width=0.01, label="", pos="780,140!"];
+  notification_10 [shape=point, width=0.01, label="", pos="780,60!"];
+
+  manager_actor_1 [shape=point, width=0.01, label="", pos="1040,780!"];
+  manager_actor_2 [shape=point, width=0.01, label="", pos="1040,700!"];
+  manager_actor_3 [shape=point, width=0.01, label="", pos="1040,620!"];
+  manager_actor_4 [shape=point, width=0.01, label="", pos="1040,540!"];
+  manager_actor_5 [shape=point, width=0.01, label="", pos="1040,460!"];
+  manager_actor_6 [shape=point, width=0.01, label="", pos="1040,380!"];
+  manager_actor_7 [shape=point, width=0.01, label="", pos="1040,300!"];
+  manager_actor_8 [shape=point, width=0.01, label="", pos="1040,220!"];
+  manager_actor_9 [shape=point, width=0.01, label="", pos="1040,140!"];
+  manager_actor_10 [shape=point, width=0.01, label="", pos="1040,60!"];
+
+  manager_ui_1 [shape=point, width=0.01, label="", pos="1280,780!"];
+  manager_ui_2 [shape=point, width=0.01, label="", pos="1280,700!"];
+  manager_ui_3 [shape=point, width=0.01, label="", pos="1280,620!"];
+  manager_ui_4 [shape=point, width=0.01, label="", pos="1280,540!"];
+  manager_ui_5 [shape=point, width=0.01, label="", pos="1280,460!"];
+  manager_ui_6 [shape=point, width=0.01, label="", pos="1280,380!"];
+  manager_ui_7 [shape=point, width=0.01, label="", pos="1280,300!"];
+  manager_ui_8 [shape=point, width=0.01, label="", pos="1280,220!"];
+  manager_ui_9 [shape=point, width=0.01, label="", pos="1280,140!"];
+  manager_ui_10 [shape=point, width=0.01, label="", pos="1280,60!"];
+
+  menu_1 [shape=point, width=0.01, label="", pos="1520,780!"];
+  menu_2 [shape=point, width=0.01, label="", pos="1520,700!"];
+  menu_3 [shape=point, width=0.01, label="", pos="1520,620!"];
+  menu_4 [shape=point, width=0.01, label="", pos="1520,540!"];
+  menu_5 [shape=point, width=0.01, label="", pos="1520,460!"];
+  menu_6 [shape=point, width=0.01, label="", pos="1520,380!"];
+  menu_7 [shape=point, width=0.01, label="", pos="1520,300!"];
+  menu_8 [shape=point, width=0.01, label="", pos="1520,220!"];
+  menu_9 [shape=point, width=0.01, label="", pos="1520,140!"];
+  menu_10 [shape=point, width=0.01, label="", pos="1520,60!"];
+
+  kitchen_h -> kitchen_1 [style=dashed, arrowhead=none];
+  kitchen_1 -> kitchen_2 [style=dashed, arrowhead=none];
+  kitchen_2 -> kitchen_3 [style=dashed, arrowhead=none];
+  kitchen_3 -> kitchen_4 [style=dashed, arrowhead=none];
+  kitchen_4 -> kitchen_5 [style=dashed, arrowhead=none];
+  kitchen_5 -> kitchen_6 [style=dashed, arrowhead=none];
+  kitchen_6 -> kitchen_7 [style=dashed, arrowhead=none];
+  kitchen_7 -> kitchen_8 [style=dashed, arrowhead=none];
+  kitchen_8 -> kitchen_9 [style=dashed, arrowhead=none];
+  kitchen_9 -> kitchen_10 [style=dashed, arrowhead=none];
+
+  inventory_h -> inventory_1 [style=dashed, arrowhead=none];
+  inventory_1 -> inventory_2 [style=dashed, arrowhead=none];
+  inventory_2 -> inventory_3 [style=dashed, arrowhead=none];
+  inventory_3 -> inventory_4 [style=dashed, arrowhead=none];
+  inventory_4 -> inventory_5 [style=dashed, arrowhead=none];
+  inventory_5 -> inventory_6 [style=dashed, arrowhead=none];
+  inventory_6 -> inventory_7 [style=dashed, arrowhead=none];
+  inventory_7 -> inventory_8 [style=dashed, arrowhead=none];
+  inventory_8 -> inventory_9 [style=dashed, arrowhead=none];
+  inventory_9 -> inventory_10 [style=dashed, arrowhead=none];
+
+  policy_h -> policy_1 [style=dashed, arrowhead=none];
+  policy_1 -> policy_2 [style=dashed, arrowhead=none];
+  policy_2 -> policy_3 [style=dashed, arrowhead=none];
+  policy_3 -> policy_4 [style=dashed, arrowhead=none];
+  policy_4 -> policy_5 [style=dashed, arrowhead=none];
+  policy_5 -> policy_6 [style=dashed, arrowhead=none];
+  policy_6 -> policy_7 [style=dashed, arrowhead=none];
+  policy_7 -> policy_8 [style=dashed, arrowhead=none];
+  policy_8 -> policy_9 [style=dashed, arrowhead=none];
+  policy_9 -> policy_10 [style=dashed, arrowhead=none];
+
+  notification_h -> notification_1 [style=dashed, arrowhead=none];
+  notification_1 -> notification_2 [style=dashed, arrowhead=none];
+  notification_2 -> notification_3 [style=dashed, arrowhead=none];
+  notification_3 -> notification_4 [style=dashed, arrowhead=none];
+  notification_4 -> notification_5 [style=dashed, arrowhead=none];
+  notification_5 -> notification_6 [style=dashed, arrowhead=none];
+  notification_6 -> notification_7 [style=dashed, arrowhead=none];
+  notification_7 -> notification_8 [style=dashed, arrowhead=none];
+  notification_8 -> notification_9 [style=dashed, arrowhead=none];
+  notification_9 -> notification_10 [style=dashed, arrowhead=none];
+
+  manager_actor_h -> manager_actor_1 [style=dashed, arrowhead=none];
+  manager_actor_1 -> manager_actor_2 [style=dashed, arrowhead=none];
+  manager_actor_2 -> manager_actor_3 [style=dashed, arrowhead=none];
+  manager_actor_3 -> manager_actor_4 [style=dashed, arrowhead=none];
+  manager_actor_4 -> manager_actor_5 [style=dashed, arrowhead=none];
+  manager_actor_5 -> manager_actor_6 [style=dashed, arrowhead=none];
+  manager_actor_6 -> manager_actor_7 [style=dashed, arrowhead=none];
+  manager_actor_7 -> manager_actor_8 [style=dashed, arrowhead=none];
+  manager_actor_8 -> manager_actor_9 [style=dashed, arrowhead=none];
+  manager_actor_9 -> manager_actor_10 [style=dashed, arrowhead=none];
+
+  manager_ui_h -> manager_ui_1 [style=dashed, arrowhead=none];
+  manager_ui_1 -> manager_ui_2 [style=dashed, arrowhead=none];
+  manager_ui_2 -> manager_ui_3 [style=dashed, arrowhead=none];
+  manager_ui_3 -> manager_ui_4 [style=dashed, arrowhead=none];
+  manager_ui_4 -> manager_ui_5 [style=dashed, arrowhead=none];
+  manager_ui_5 -> manager_ui_6 [style=dashed, arrowhead=none];
+  manager_ui_6 -> manager_ui_7 [style=dashed, arrowhead=none];
+  manager_ui_7 -> manager_ui_8 [style=dashed, arrowhead=none];
+  manager_ui_8 -> manager_ui_9 [style=dashed, arrowhead=none];
+  manager_ui_9 -> manager_ui_10 [style=dashed, arrowhead=none];
+
+  menu_h -> menu_1 [style=dashed, arrowhead=none];
+  menu_1 -> menu_2 [style=dashed, arrowhead=none];
+  menu_2 -> menu_3 [style=dashed, arrowhead=none];
+  menu_3 -> menu_4 [style=dashed, arrowhead=none];
+  menu_4 -> menu_5 [style=dashed, arrowhead=none];
+  menu_5 -> menu_6 [style=dashed, arrowhead=none];
+  menu_6 -> menu_7 [style=dashed, arrowhead=none];
+  menu_7 -> menu_8 [style=dashed, arrowhead=none];
+  menu_8 -> menu_9 [style=dashed, arrowhead=none];
+  menu_9 -> menu_10 [style=dashed, arrowhead=none];
+
+  kitchen_1 -> inventory_1 [label="1. Publish served-item facts"];
+  inventory_2 -> policy_2 [label="2. Resolve recipe deduction plan"];
+  policy_3 -> inventory_3 [style=dashed, label="3. Return ingredient quantities"];
+  inventory_4 -> policy_4 [label="4. Recalculate threshold and availability"];
+  policy_5 -> notification_5 [label="5. Emit low-stock alert"];
+  notification_6 -> manager_actor_6 [label="6. Deliver low-stock alert"];
+  manager_actor_7 -> manager_ui_7 [label="7. Open alert details"];
+  manager_ui_8 -> inventory_8 [label="8. Load stock status and suggested action"];
+  inventory_9 -> manager_ui_9 [style=dashed, label="9. Return stock status and reorder plan"];
+  manager_ui_10 -> menu_10 [label="10. Apply menu restriction and reorder follow-up"];
 }

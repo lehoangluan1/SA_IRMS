@@ -1,94 +1,55 @@
-
 digraph G {
+  graph [
+    rankdir=LR,
+    newrank=true,
+    bgcolor="white",
+    pad=0.34,
+    nodesep=0.68,
+    ranksep=1.00,
+    splines=ortho,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="UML Deployment Diagram - Allocation View Overview of IRMS"
+  ];
 
-graph [bgcolor="#F3F4F6", pad="0.3", nodesep="0.45", ranksep="0.7", splines=ortho, fontname="Helvetica"];
-node [fontname="Helvetica", shape=box, style="rounded,filled", fillcolor="#F5F8FC", color="#5B6B8C", penwidth=1.2];
-edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+  node [fontname="DejaVu Sans", fontsize=9.3, color="#64748B", penwidth=1.0, style="filled", fillcolor="#FFFFFF"];
+  edge [fontname="DejaVu Sans", fontsize=8.2, color="#64748B", penwidth=0.9, arrowhead=vee];
 
-labelloc="t";
-label="Allocation View Overview - Mapping Modules to Runtime, Data and External Systems";
-rankdir=LR;
-nodesep=0.55;
-ranksep=0.85;
+  host [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nHost Tablet"];
+  server [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nServer Tablet"];
+  kitchen_display [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nKitchen Display"];
+  cashier [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nCashier Terminal"];
+  manager [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nManager Console"];
 
-subgraph cluster_logic {
-  label="Logical / Module View";
-  color="#9BB5FF"; style="rounded";
-  reserve [label="Table & Reservation"];
-  menu [label="Menu"];
-  order [label="Ordering"];
-  kitchen [label="Kitchen Coordination"];
-  billing [label="Billing & Settlement"];
-  inventory [label="Inventory"];
-  reporting [label="Reporting"];
-  iam [label="IAM"];
-  audit [label="Audit"];
-  notif [label="Notification"];
-}
+  api_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nAPI Server\n\n<<artifact>> Reservation Module\n<<artifact>> Menu Module\n<<artifact>> Ordering Module\n<<artifact>> Kitchen Module\n<<artifact>> Billing Module\n<<artifact>> Inventory Module\n<<artifact>> IAM Module\n<<artifact>> Audit API"];
+  worker_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nBackground Worker\n\n<<artifact>> Notification Worker\n<<artifact>> Projection Worker\n<<artifact>> Receipt Job Processor"];
+  query_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nReporting Query Node\n\n<<artifact>> Reporting Module"];
 
-subgraph cluster_runtime {
-  label="Runtime Allocation";
-  color="#9BB5FF"; style="rounded";
-  api [label="API Node\ncontrollers + app services", fillcolor="#E9F1FF"];
-  worker [label="Background Worker\nprojection, print, notify"];
-  query [label="Reporting Query Service"];
-}
+  operational_db [shape=cylinder, fillcolor="#F8FBFF", label="<<database>>\nOperational RDBMS\nreservations, orders,\nbills, stock, users, audit"];
+  read_model [shape=cylinder, fillcolor="#F8FBFF", label="<<database>>\nReporting Read Model"];
+  outbox [shape=cylinder, fillcolor="#F8FBFF", label="<<queue>>\nOutbox and Job Queue"];
 
-subgraph cluster_data {
-  label="Data Allocation";
-  color="#9BB5FF"; style="rounded";
-  trxdb [label="Operational RDBMS\norders, sessions, billing,\ninventory, IAM"];
-  views [label="Reporting Views / Read Model"];
-  outbox [label="Outbox / Job Queue"];
-}
+  payment_gateway [shape=box, style="rounded,filled", fillcolor="#F8FBFF", label="<<external system>>\nPayment Gateway"];
+  receipt_printer [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nReceipt Printer"];
+  notification_service [shape=box, style="rounded,filled", fillcolor="#F8FBFF", label="<<external system>>\nNotification Service"];
 
-subgraph cluster_edge {
-  label="Edge / Devices";
-  color="#9BB5FF"; style="rounded";
-  host [label="Host Tablet"];
-  server [label="Server Tablet"];
-  kitchenui [label="Kitchen Display"];
-  cashier [label="Cashier Terminal"];
-  mgr [label="Manager Console"];
-}
+  { rank=same; host; server; kitchen_display; cashier; manager; }
+  { rank=same; api_node; worker_node; query_node; }
+  { rank=same; operational_db; outbox; read_model; }
 
-subgraph cluster_ext {
-  label="External Systems";
-  color="#9BB5FF"; style="rounded";
-  pay [label="Payment Gateway"];
-  printer [label="Receipt Printer"];
-  nsvc [label="Notification Service"];
-}
+  host -> api_node [label="HTTPS"];
+  server -> api_node [label="HTTPS"];
+  kitchen_display -> api_node [label="HTTPS"];
+  cashier -> api_node [label="HTTPS"];
+  manager -> api_node [label="HTTPS"];
 
-host -> api;
-server -> api;
-kitchenui -> api;
-cashier -> api;
-mgr -> api;
+  api_node -> operational_db [label="transactional read and write"];
+  api_node -> outbox [label="publish jobs and events"];
+  worker_node -> outbox [label="consume jobs"];
+  worker_node -> read_model [label="refresh projections"];
+  query_node -> read_model [label="query reports"];
 
-reserve -> api;
-menu -> api;
-order -> api;
-kitchen -> api;
-billing -> api;
-inventory -> api;
-iam -> api;
-audit -> api;
-reporting -> query;
-notif -> worker;
-
-api -> trxdb [label="transactional reads/writes"];
-api -> outbox [style=dashed, label="publish jobs/events"];
-worker -> outbox [label="consume"];
-worker -> views [label="refresh projections"];
-query -> views [label="query"];
-worker -> printer [label="print jobs"];
-worker -> nsvc [label="notifications"];
-api -> pay [label="authorize/capture/refund"];
-billing -> pay [style=dashed, label="via adapter"];
-reporting -> views [style=dashed, label="reads"];
-audit -> trxdb [style=dashed, label="audit trail"];
-inventory -> trxdb [style=dashed, label="stock transactions"];
-order -> trxdb [style=dashed, label="orders + modifiers"];
-reserve -> trxdb [style=dashed, label="reservations + tables"];
+  api_node -> payment_gateway [label="authorize, capture, refund"];
+  worker_node -> receipt_printer [label="print job"];
+  worker_node -> notification_service [label="send message"];
 }

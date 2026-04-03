@@ -1,35 +1,93 @@
 ﻿% !TEX program = xelatex
 
 \documentclass[11pt,a4paper]{article}
+
+% --------------------------------------------------
+% Page layout
+% --------------------------------------------------
 \usepackage[margin=2.2cm,headheight=28pt]{geometry}
+
+% --------------------------------------------------
+% Fonts and language
+% --------------------------------------------------
 \usepackage{fontspec}
-\setmainfont{Latin Modern Roman}
-\setsansfont{Latin Modern Sans}
+\defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+
+% Safer than depending on Times New Roman / Arial existing on every machine
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Courier New}
+
 \usepackage{polyglossia}
 \setdefaultlanguage{vietnamese}
+
+% --------------------------------------------------
+% Typography
+% --------------------------------------------------
+\usepackage{microtype}
+\usepackage{csquotes}
+
+% Force quote style explicitly to avoid odd glyph rendering in some setups
+\DeclareQuoteStyle{vietnamese}
+  {\textquotedblleft}{\textquotedblright}
+  {\textquoteleft}{\textquoteright}
+\setquotestyle{vietnamese}
+% --------------------------------------------------
+% Colors and graphics
+% --------------------------------------------------
 \usepackage{xcolor}
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{pdflscape}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{needspace}
+
+% --------------------------------------------------
+% Tables and lists
+% --------------------------------------------------
 \usepackage{booktabs}
 \usepackage{longtable}
-\usepackage{rotating}
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{enumitem}
-\usepackage{hyperref}
-\usepackage{csquotes}
+
+% --------------------------------------------------
+% Boxes and formatting
+% --------------------------------------------------
 \usepackage[most]{tcolorbox}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
-\usepackage{pdflscape}
-\usepackage{float}
-\usepackage{caption}
 
+% --------------------------------------------------
+% Links
+% --------------------------------------------------
+\usepackage[
+  unicode=true,
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=blue
+]{hyperref}
+
+% --------------------------------------------------
+% Optional compatibility package
+% --------------------------------------------------
+% Only keep rotating if you really use sidewaysfigure/sidewaystable elsewhere
+\usepackage{rotating}
+
+% --------------------------------------------------
+% Colors
+% --------------------------------------------------
 \definecolor{TitleBlue}{HTML}{0B33B7}
 \definecolor{AccentBlue}{HTML}{1D4ED8}
 \definecolor{LightBlue}{HTML}{EEF4FF}
 \definecolor{BorderBlue}{HTML}{9BB5FF}
 \definecolor{SoftGray}{HTML}{F8FAFC}
 
+% --------------------------------------------------
+% Header branding
+% --------------------------------------------------
 \newcommand{\headerbrandlogo}{%
   \IfFileExists{bachkhoa_logo.png}{%
     \includegraphics[height=0.56cm]{bachkhoa_logo.png}%
@@ -40,15 +98,22 @@
 
 \newcommand{\headerbrandblock}{%
   \headerbrandlogo\hspace{0.55em}%
-  \parbox[b]{0.62\textwidth}{\fontsize{8.5}{9.5}\selectfont Trường Đại học Bách khoa, Đại học Quốc gia TP.HCM\\Khoa Khoa học và Kỹ thuật Máy tính}%
+  \parbox[b]{0.62\textwidth}{%
+    \fontsize{8.5}{9.5}\selectfont
+    Trường Đại học Bách khoa, Đại học Quốc gia TP.HCM\\
+    Khoa Khoa học và Kỹ thuật Máy tính%
+  }%
 }
 
 \hypersetup{
-  colorlinks=true,
   linkcolor=AccentBlue,
-  urlcolor=AccentBlue
+  urlcolor=AccentBlue,
+  citecolor=AccentBlue
 }
 
+% --------------------------------------------------
+% Header / footer
+% --------------------------------------------------
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{\headerbrandblock}
@@ -56,13 +121,35 @@
 \cfoot{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-\titleformat{\section}{\Large\bfseries\color{TitleBlue}}{\thesection}{0.7em}{}
-\titleformat{\subsection}{\large\bfseries\color{black}}{\thesubsection}{0.7em}{}
-\titleformat{\subsubsection}{\normalsize\bfseries\color{black}}{}{0em}{}
+% --------------------------------------------------
+% Section formatting
+% --------------------------------------------------
+\titleformat{\section}
+  {\Large\bfseries\color{TitleBlue}}
+  {\thesection}{0.7em}{}
 
+\titleformat{\subsection}
+  {\large\bfseries\color{black}}
+  {\thesubsection}{0.7em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{black}}
+  {\thesubsubsection}{0.7em}{}
+
+% Give a little vertical room before major headings
+\titlespacing*{\section}{0pt}{1.2\baselineskip}{0.6\baselineskip}
+\titlespacing*{\subsection}{0pt}{1.0\baselineskip}{0.45\baselineskip}
+\titlespacing*{\subsubsection}{0pt}{0.8\baselineskip}{0.35\baselineskip}
+
+% --------------------------------------------------
+% Lists
+% --------------------------------------------------
 \setlist[itemize]{topsep=2pt,itemsep=2pt}
 \setlist[enumerate]{topsep=2pt,itemsep=2pt}
 
+% --------------------------------------------------
+% Boxes
+% --------------------------------------------------
 \newtcolorbox{infobox}[1][]{
   enhanced,
   breakable,
@@ -104,34 +191,64 @@
   #1
 }
 
-\newcommand{\activitydiagramfigure}[3]{
-  \begin{figure}[H]
-  \centering
-  \IfFileExists{#1.pdf}{
-    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{#1.pdf}
-  }{
-    \IfFileExists{#1.png}{
-      \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{#1.png}
-    }{
-      \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{#1.(pdf/png)}.}}
-    }
-  }
-  \caption{#2}
-  \label{#3}
-  \end{figure}
+% --------------------------------------------------
+% Figures
+% --------------------------------------------------
+\newcommand{\activitygroup}[1]{%
+  \FloatBarrier
+  \Needspace{0.92\textheight}%
+  \subsubsection{#1}%
+  \nopagebreak[4]%
 }
 
-
+\newcommand{\activitydiagramfigure}[3]{%
+  \Needspace{0.86\textheight}%
+  \begin{center}
+    \IfFileExists{#1.pdf}{%
+      \includegraphics[width=\linewidth,height=0.76\textheight,keepaspectratio]{#1.pdf}%
+    }{%
+      \IfFileExists{#1.png}{%
+        \includegraphics[width=\linewidth,height=0.76\textheight,keepaspectratio]{#1.png}%
+      }{%
+        \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{#1.(pdf/png)}.}}%
+      }%
+    }%
+    \captionof{figure}{#2}%
+    \label{#3}%
+  \end{center}
+  \par\medskip
+}
+% --------------------------------------------------
 % Project structure helpers
-\graphicspath{{assets/diagrams/rendered/modeling/}{assets/diagrams/rendered/architecture/}{assets/diagrams/rendered/design/}{assets/diagrams/rendered/activity/}{assets/images/branding/}{assets/images/misc/}}
+% --------------------------------------------------
+\graphicspath{
+  {assets/diagrams/rendered/modeling/}
+  {assets/diagrams/rendered/architecture/}
+  {assets/diagrams/rendered/design/}
+  {assets/diagrams/rendered/activity/}
+  {assets/images/branding/}
+  {assets/images/misc/}
+}
+
 \makeatletter
-\def\input@path{{assets/diagrams/rendered/modeling/}{assets/diagrams/rendered/architecture/}{assets/diagrams/rendered/design/}{assets/diagrams/rendered/activity/}{assets/images/branding/}{assets/images/misc/}}
+\def\input@path{
+  {assets/diagrams/rendered/modeling/}
+  {assets/diagrams/rendered/architecture/}
+  {assets/diagrams/rendered/design/}
+  {assets/diagrams/rendered/activity/}
+  {assets/images/branding/}
+  {assets/images/misc/}
+}
 \makeatother
 
+% --------------------------------------------------
+% Document
+% --------------------------------------------------
 \begin{document}
 
 \begin{titlepage}
 \thispagestyle{empty}
+
 \begin{center}
 ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH \\
 TRƯỜNG ĐẠI HỌC BÁCH KHOA \\
@@ -140,24 +257,24 @@ KHOA KHOA HỌC VÀ KỸ THUẬT MÁY TÍNH
 
 \begin{figure}[h!]
 \begin{center}
-\IfFileExists{bachkhoa_logo.png}{
-  \includegraphics[width=4cm]{bachkhoa_logo.png}
-}{
-  \fbox{\parbox[c][4cm][c]{4cm}{\centering Logo\\Bach Khoa}}
+\IfFileExists{bachkhoa_logo.png}{%
+  \includegraphics[width=4cm]{bachkhoa_logo.png}%
+}{%
+  \fbox{\parbox[c][4cm][c]{4cm}{\centering Logo\\Bach Khoa}}%
 }
 \end{center}
 \end{figure}
 
 \begin{center}
 \begin{tabular}{c}
-\multicolumn{1}{c}{\textbf{{\LARGE Kiến trúc Phần mềm (CO3017)}}}\\
+\multicolumn{1}{c}{\textbf{\LARGE Kiến trúc Phần mềm (CO3017)}}\\
 ~~\\
 \\
 \hline
 \\
-\multicolumn{1}{c}{\textbf{{\Large BÁO CÁO BÀI TẬP LỚN}}}\\
+\multicolumn{1}{c}{\textbf{\Large BÁO CÁO BÀI TẬP LỚN}}\\
 \\
-\multicolumn{1}{c}{\parbox{0.88\textwidth}{\centering\textbf{{\Huge Intelligent Restaurant Management System (IRMS)}}}}\\[5pt]
+\multicolumn{1}{c}{\parbox{0.88\textwidth}{\centering\textbf{\Huge Intelligent Restaurant Management System (IRMS)}}}\\[5pt]
 \\
 \hline
 \end{tabular}
@@ -166,10 +283,10 @@ KHOA KHOA HỌC VÀ KỸ THUẬT MÁY TÍNH
 \vspace{1.5cm}
 
 \begin{center}
-{\Large\bf Giảng viên: Trần Trương Tuấn Phát}\\[10pt]
-{\Large\bf Lớp học phần: L01}\\[10pt]
-{\Large\bf Nhóm: 8}\\[10pt]
-{\Large\bf Khoa: Khoa học và Kỹ thuật Máy tính}
+{\Large\bfseries Giảng viên: Trần Trương Tuấn Phát}\\[10pt]
+{\Large\bfseries Lớp học phần: L01}\\[10pt]
+{\Large\bfseries Nhóm: 8}\\[10pt]
+{\Large\bfseries Khoa: Khoa học và Kỹ thuật Máy tính}
 \end{center}
 
 \vspace{1.2cm}

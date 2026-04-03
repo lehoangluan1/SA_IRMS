@@ -1,64 +1,117 @@
 digraph G {
-  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.4];
-  node [fontname="DejaVu Sans", fontsize=12];
-  edge [fontname="DejaVu Sans", fontsize=11, color="#475569", arrowsize=0.7];
-  subgraph cluster_1 {
-    label="Restaurant Internal Network";
-    color="#94A3B8";
+  graph [
+    rankdir=LR,
+    compound=true,
+    newrank=true,
+    bgcolor="white",
+    pad=0.42,
+    nodesep=0.48,
+    ranksep=0.9,
+    splines=line,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="Deployment Diagram - Physical Deployment Overview"
+  ];
+
+  node [fontname="DejaVu Sans", fontsize=11, color="#334155", penwidth=1.1, style="filled"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#64748B", penwidth=1.0, arrowsize=0.72];
+
+  subgraph cluster_clients {
+    label="Restaurant Endpoints";
+    color="#CBD5E1";
     style="rounded";
-    "DB" [label="Relational Database Server", shape=cylinder, style="filled", fillcolor="#F1F5F9", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "PRN" [label="Receipt Printer Gateway", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    subgraph cluster_2 {
-      label="Front-of-House Devices";
-      color="#94A3B8";
-      style="rounded";
-      "FOH" [label="Front-of-House Devices", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Host_Tablet" [label="Host Tablet", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Server_Tablet" [label="Server Tablet", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Cashier_Terminal" [label="Cashier Terminal", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    }
-    subgraph cluster_3 {
-      label="Back-of-House Devices";
-      color="#94A3B8";
-      style="rounded";
-      "BOH" [label="Back-of-House Devices", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Kitchen_Display_Station" [label="Kitchen Display Station", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Manager_Console" [label="Manager Console", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    }
-    subgraph cluster_4 {
-      label="Backend IRMS Application Server";
-      color="#94A3B8";
-      style="rounded";
-      "APP" [label="Backend IRMS Application Server", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Web_API_Layer" [label="Web/API Layer", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Application_Services" [label="Application Services", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Domain_Modules" [label="Domain Modules", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "In_Process_Event_Dispatcher" [label="In-Process Event Dispatcher", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Infrastructure_Adapters" [label="Infrastructure Adapters", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    }
-    subgraph cluster_5 {
-      label="Background Worker";
-      color="#94A3B8";
-      style="rounded";
-      "WORKER" [label="Background Worker", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Notification_Jobs" [label="Notification Jobs", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Print_Jobs" [label="Print Jobs", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-      "Projection_Refresh_Jobs" [label="Projection Refresh Jobs", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    }
+    host   [shape=box3d, fillcolor="#FEFCE8", label="«device»
+Host Tablet"];
+    server [shape=box3d, fillcolor="#FEFCE8", label="«device»
+Server Tablet"];
+    kitchen[label="«device»
+Kitchen Display Station", shape=box3d, fillcolor="#FEFCE8"];
+    cashier[label="«device»
+Cashier Terminal", shape=box3d, fillcolor="#FEFCE8"];
+    manager[label="«device»
+Manager Console", shape=box3d, fillcolor="#FEFCE8"];
   }
-  subgraph cluster_6 {
+
+  subgraph cluster_edge {
+    label="Application Edge";
+    color="#93C5FD";
+    style="rounded,filled";
+    fillcolor="#EFF6FF";
+    proxy [shape=box3d, fillcolor="#DBEAFE", color="#60A5FA", label="«device»
+Reverse Proxy / Web Server"];
+    nginx [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+Nginx"];
+    proxy -> nginx [arrowhead=none, color="#94A3B8"];
+  }
+
+  subgraph cluster_core {
+    label="Core Runtime";
+    color="#93C5FD";
+    style="rounded,filled";
+    fillcolor="#F8FAFC";
+
+    apphost [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Backend IRMS Application Server"];
+    apprt   [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+IRMS Runtime"];
+    workerh [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Background Worker Host"];
+    workrt  [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+Worker Runtime"];
+    printer [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Receipt Printer Gateway"];
+
+    apphost -> apprt [arrowhead=none, color="#94A3B8"];
+    workerh -> workrt [arrowhead=none, color="#94A3B8"];
+  }
+
+  subgraph cluster_data {
+    label="Data Tier";
+    color="#FCA5A5";
+    style="rounded,filled";
+    fillcolor="#FEF2F2";
+    dbhost [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Database Server"];
+    pg     [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+PostgreSQL"];
+    opdb   [shape=note, fillcolor="#FFF7ED", color="#FDBA74", label="«artifact»
+IRMS Operational Schema"];
+    readm  [shape=note, fillcolor="#FFF7ED", color="#FDBA74", label="«artifact»
+Reporting Views / Read Model"];
+    dbhost -> pg [arrowhead=none, color="#94A3B8"];
+    pg -> opdb [arrowhead=none, color="#94A3B8"];
+    pg -> readm [arrowhead=none, color="#94A3B8"];
+  }
+
+  subgraph cluster_external {
     label="External Services";
-    color="#94A3B8";
-    style="rounded";
-    "PG" [label="Payment Gateway", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "NS" [label="Notification Service", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    color="#CBD5E1";
+    style="rounded,dashed";
+    payment [shape=box3d, fillcolor="#F8FAFC", label="«external»
+Payment Gateway Service"];
+    notify  [shape=box3d, fillcolor="#F8FAFC", label="«external»
+Notification Service"];
   }
-  "FOH" -> "APP" [label="HTTPS"];
-  "BOH" -> "APP" [label="HTTPS / internal API"];
-  "APP" -> "DB" [label="JDBC / SQL"];
-  "APP" -> "WORKER" [label="internal job dispatch"];
-  "WORKER" -> "DB" [label="projection / job state"];
-  "APP" -> "PRN" [label="print connector"];
-  "APP" -> "PG" [label="HTTPS"];
-  "WORKER" -> "NS" [label="HTTPS"];
+
+  { rank=same; host; server; kitchen; cashier; manager; }
+  { rank=same; proxy; apphost; workerh; dbhost; payment; notify; }
+
+  host -> proxy    [label="HTTPS"];
+  server -> proxy  [label="HTTPS"];
+  kitchen -> proxy [label="HTTPS"];
+  cashier -> proxy [label="HTTPS"];
+  manager -> proxy [label="HTTPS"];
+
+  proxy   -> apphost [label="HTTP / JSON"];
+  apphost -> dbhost  [label="JDBC / SQL"];
+  apphost -> workerh [label="publish jobs", style=dashed];
+  workerh -> dbhost  [label="job state / projection refresh"];
+  apphost -> payment [label="HTTPS"];
+  workerh -> notify  [label="HTTPS"];
+  workerh -> printer [label="print connector"];
+
+  proxy -> apphost [weight=8];
+  apphost -> workerh [weight=8, style=invis];
+  workerh -> dbhost [weight=8, style=invis];
+  dbhost -> payment [weight=8, style=invis];
 }

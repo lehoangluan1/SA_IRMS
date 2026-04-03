@@ -1,80 +1,923 @@
 digraph G {
-  rankdir=LR;
+  graph [layout=neato, notranslate=true, overlap=false, splines=polyline, outputorder=edgesfirst, bgcolor="white", pad=0.35, nodesep=0.6, ranksep=1.0, fontname="DejaVu Sans", labelloc="t", label=""];
+  node [fontname="DejaVu Sans", fontsize=10, color="#475569", penwidth=1.1];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#64748B", penwidth=0.95, dir=none];
 
-  graph [bgcolor="white", pad=0.35, nodesep=0.45, ranksep=0.7, splines=ortho, fontname="DejaVu Sans"];
-  node [fontname="DejaVu Sans", fontsize=11, color="#334155"];
-  edge [fontname="DejaVu Sans", fontsize=10, color="#475569", arrowsize=0.7];
+  subgraph cluster_clients {
+    label="Client Applications";
+    color="#CBD5E1";
+    style="rounded";
+    hostui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Host UI", pos="80.50,600.00!", pin=true, width=1.0972, height=0.5000];
+    serverui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Server POS UI", pos="80.50,524.00!", pin=true, width=1.1111, height=0.5000];
+    kitchenui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Kitchen Display UI", pos="80.50,448.00!", pin=true, width=1.4306, height=0.5000];
+    cashierui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Cashier UI", pos="80.50,372.00!", pin=true, width=1.0972, height=0.5000];
+    managerui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Manager Portal", pos="80.50,296.00!", pin=true, width=1.2083, height=0.5000];
+  }
 
-  node [shape=component, style="filled", fillcolor="#F8FAFC", fontname="DejaVu Sans", fontsize=11, color="#334155"];
-  "HostUI" [label="Host UI"];
-  "ServerUI" [label="Server UI"];
-  "KitchenUI" [label="Kitchen UI"];
-  "CashierUI" [label="Cashier UI"];
-  "ManagerUI" [label="Manager UI"];
-  "AdminUI" [label="Admin UI"];
-  "API" [label="API / Controller Layer"];
-  "AUTH" [label="Authentication / Authorization Filter"];
-  "RAS" [label="ReservationApplicationService"];
-  "OAS" [label="OrderingApplicationService"];
-  "KAS" [label="KitchenApplicationService"];
-  "BAS" [label="BillingApplicationService"];
-  "IAS" [label="InventoryApplicationService"];
-  "RQS" [label="ReportingQueryService"];
-  "AAS" [label="AdminApplicationService"];
-  "RD" [label="Reservation Domain"];
-  "OD" [label="Ordering Domain"];
-  "KD" [label="Kitchen Domain"];
-  "BD" [label="Billing Domain"];
-  "ID" [label="Inventory Domain"];
-  "AD" [label="Audit Domain"];
-  "REPO" [label="Repository Layer"];
-  "TX" [label="Transaction Manager"];
-  "ED" [label="Event Dispatcher"];
-  "BJW" [label="Background Job Worker"];
-  "PGA" [label="Payment Gateway Adapter"];
-  "NA" [label="Notification Adapter"];
-  "RPA" [label="Receipt Printer Adapter"];
-  "DB" [label="«database»
-Relational Database", shape=cylinder, style="filled", fillcolor="#F1F5F9"];
+  subgraph cluster_edge {
+    label="Edge Boundary";
+    color="#CBD5E1";
+    style="rounded";
+    gateway [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+API Gateway", pos="244.50,448.00!", pin=true, width=1.0972, height=0.5000];
+    auth [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Authentication and
+Policy Filter", pos="409.50,448.00!", pin=true, width=1.4583, height=0.5694];
+  }
 
-  edge [arrowhead=open];
-  "HostUI" -> "API" [label="HTTPS / JSON"];
-  "ServerUI" -> "API" [label="HTTPS / JSON"];
-  "KitchenUI" -> "API" [label="HTTPS / JSON"];
-  "CashierUI" -> "API" [label="HTTPS / JSON"];
-  "ManagerUI" -> "API" [label="HTTPS / JSON"];
-  "AdminUI" -> "API" [label="HTTPS / JSON"];
-  "API" -> "AUTH";
-  "API" -> "RAS";
-  "API" -> "OAS";
-  "API" -> "KAS";
-  "API" -> "BAS";
-  "API" -> "IAS";
-  "API" -> "RQS";
-  "API" -> "AAS";
-  "RAS" -> "RD";
-  "OAS" -> "OD";
-  "KAS" -> "KD";
-  "BAS" -> "BD";
-  "IAS" -> "ID";
-  "AAS" -> "AD";
-  "RD" -> "REPO";
-  "OD" -> "REPO";
-  "KD" -> "REPO";
-  "BD" -> "REPO";
-  "ID" -> "REPO";
-  "AD" -> "REPO";
-  "REPO" -> "TX";
-  "TX" -> "DB";
-  edge [style=dashed, arrowhead=open];
-  "OAS" -> "ED" [label="publishes OrderConfirmed"];
-  "KAS" -> "ED" [label="publishes DishReady"];
-  "BAS" -> "ED" [label="publishes PaymentCompleted"];
-  "IAS" -> "ED" [label="publishes LowStockDetected"];
-  edge [style=solid, arrowhead=open];
-  "ED" -> "BJW";
-  "BJW" -> "NA" [label="notifications"];
-  "BJW" -> "RPA" [label="print jobs"];
-  "BAS" -> "PGA" [label="authorize / capture / refund"];
-  "RQS" -> "DB" [label="query views"];
+  subgraph cluster_backend {
+    label="Backend Runtime";
+    color="#93C5FD";
+    style="rounded";
+    reservation [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Reservation & Seating
+Service", pos="698.50,170.00!", pin=true, width=1.6806, height=0.5694];
+    ordering [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Ordering Service", pos="698.50,785.02!", pin=true, width=1.3056, height=0.5000];
+    kitchen [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Kitchen Coordination
+Service", pos="698.50,569.00!", pin=true, width=1.5972, height=0.5694];
+    billing [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Billing & Settlement
+Service", pos="698.50,667.00!", pin=true, width=1.5417, height=0.5694];
+    inventory [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Inventory Monitoring
+Service", pos="698.50,448.00!", pin=true, width=1.5972, height=0.5694];
+    reporting [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Reporting Query
+Service", pos="698.50,54.00!", pin=true, width=1.2778, height=0.5694];
+    iam [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+IAM / Authorization
+Service", pos="698.50,367.00!", pin=true, width=1.4722, height=0.5694];
+    audit [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Audit Service", pos="698.50,249.00!", pin=true, width=1.0972, height=0.5000];
+    dispatcher [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Event Dispatcher", pos="964.51,527.00!", pin=true, width=1.3333, height=0.5000];
+    worker [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Background Worker", pos="1265.47,451.00!", pin=true, width=1.4861, height=0.5000];
+    persistence [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Persistence Layer", pos="964.51,451.00!", pin=true, width=1.3750, height=0.5000];
+  }
+
+  subgraph cluster_external {
+    label="External Adapters";
+    color="#CBD5E1";
+    style="rounded";
+    payment [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Payment Gateway
+Adapter", pos="1539.50,788.98!", pin=true, width=1.4167, height=0.5694];
+    notification [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Notification Adapter", pos="1539.50,372.00!", pin=true, width=1.5278, height=0.5000];
+    printer [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+Receipt Printer
+Adapter", pos="1539.50,707.00!", pin=true, width=1.1806, height=0.5694];
+  }
+
+  subgraph cluster_data {
+    label="Data Stores";
+    color="#CBD5E1";
+    style="rounded";
+    opdb [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«database»
+Operational Database", pos="1539.50,530.00!", pin=true, width=1.6528, height=0.5000];
+    readmodel [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«database»
+Reporting Views", pos="1539.50,148.00!", pin=true, width=1.2778, height=0.5000];
+  }
+
+  // edge 1: hostui -> gateway
+  e1_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="120.33,585.75!", pin=true];
+  e1_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="258.00,473.01!", pin=true];
+  e1_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="134.33,585.75!", pin=true];
+  e1_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="272.00,473.01!", pin=true];
+  e1_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="139.33,585.75!", pin=true];
+  e1_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="172.67,585.75!", pin=true];
+  e1_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="258.00,585.75!", pin=true];
+  e1_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="258.00,585.75!", pin=true];
+  e1_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="258.00,585.75!", pin=true];
+  e1_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="258.00,473.01!", pin=true];
+  e1_src_port -> e1_req [color="#64748B", style="solid", dir=none];
+  e1_req -> e1_b1 [color="#64748B", style="solid", dir=none];
+  e1_b1 -> e1_b2 [color="#64748B", style="solid", dir=none];
+  e1_b2 -> e1_b3 [color="#64748B", style="solid", dir=none];
+  e1_b3 -> e1_b4 [color="#64748B", style="solid", dir=none];
+  e1_b4 -> e1_b5 [color="#64748B", style="solid", dir=none];
+  e1_b5 -> e1_prov [color="#64748B", style="solid", dir=none];
+  e1_prov -> e1_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 2: serverui -> gateway
+  e2_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="120.70,533.75!", pin=true];
+  e2_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="232.00,473.18!", pin=true];
+  e2_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="134.70,533.75!", pin=true];
+  e2_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="246.00,473.18!", pin=true];
+  e2_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="139.70,533.75!", pin=true];
+  e2_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="165.59,533.75!", pin=true];
+  e2_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="232.00,533.75!", pin=true];
+  e2_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="232.00,533.75!", pin=true];
+  e2_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="232.00,533.75!", pin=true];
+  e2_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="232.00,473.18!", pin=true];
+  e2_src_port -> e2_req [color="#64748B", style="solid", dir=none];
+  e2_req -> e2_b1 [color="#64748B", style="solid", dir=none];
+  e2_b1 -> e2_b2 [color="#64748B", style="solid", dir=none];
+  e2_b2 -> e2_b3 [color="#64748B", style="solid", dir=none];
+  e2_b3 -> e2_b4 [color="#64748B", style="solid", dir=none];
+  e2_b4 -> e2_b5 [color="#64748B", style="solid", dir=none];
+  e2_b5 -> e2_prov [color="#64748B", style="solid", dir=none];
+  e2_prov -> e2_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 3: kitchenui -> gateway
+  e3_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="132.39,448.00!", pin=true];
+  e3_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="197.91,448.00!", pin=true];
+  e3_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="118.39,448.00!", pin=true];
+  e3_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="211.91,448.00!", pin=true];
+  e3_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="113.39,448.00!", pin=true];
+  e3_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="132.39,448.00!", pin=true];
+  e3_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="197.91,448.00!", pin=true];
+  e3_src_port -> e3_req [color="#64748B", style="solid", dir=none];
+  e3_req -> e3_b1 [color="#64748B", style="solid", dir=none];
+  e3_b1 -> e3_b2 [color="#64748B", style="solid", dir=none];
+  e3_b2 -> e3_prov [color="#64748B", style="solid", dir=none];
+  e3_prov -> e3_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 4: cashierui -> gateway
+  e4_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="120.30,376.34!", pin=true];
+  e4_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="232.00,422.91!", pin=true];
+  e4_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="134.30,376.34!", pin=true];
+  e4_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="246.00,422.91!", pin=true];
+  e4_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="139.30,376.34!", pin=true];
+  e4_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="165.19,376.34!", pin=true];
+  e4_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="232.00,376.34!", pin=true];
+  e4_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="232.00,376.34!", pin=true];
+  e4_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="232.00,376.34!", pin=true];
+  e4_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="232.00,422.91!", pin=true];
+  e4_src_port -> e4_req [color="#64748B", style="solid", dir=none];
+  e4_req -> e4_b1 [color="#64748B", style="solid", dir=none];
+  e4_b1 -> e4_b2 [color="#64748B", style="solid", dir=none];
+  e4_b2 -> e4_b3 [color="#64748B", style="solid", dir=none];
+  e4_b3 -> e4_b4 [color="#64748B", style="solid", dir=none];
+  e4_b4 -> e4_b5 [color="#64748B", style="solid", dir=none];
+  e4_b5 -> e4_prov [color="#64748B", style="solid", dir=none];
+  e4_prov -> e4_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 5: managerui -> gateway
+  e5_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="124.38,296.00!", pin=true];
+  e5_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="258.00,422.96!", pin=true];
+  e5_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="138.38,296.00!", pin=true];
+  e5_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="272.00,422.96!", pin=true];
+  e5_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="143.38,296.00!", pin=true];
+  e5_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="176.94,296.00!", pin=true];
+  e5_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="258.00,296.00!", pin=true];
+  e5_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="258.00,296.00!", pin=true];
+  e5_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="258.00,296.00!", pin=true];
+  e5_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="258.00,422.96!", pin=true];
+  e5_src_port -> e5_req [color="#64748B", style="solid", dir=none];
+  e5_req -> e5_b1 [color="#64748B", style="solid", dir=none];
+  e5_b1 -> e5_b2 [color="#64748B", style="solid", dir=none];
+  e5_b2 -> e5_b3 [color="#64748B", style="solid", dir=none];
+  e5_b3 -> e5_b4 [color="#64748B", style="solid", dir=none];
+  e5_b4 -> e5_b5 [color="#64748B", style="solid", dir=none];
+  e5_b5 -> e5_prov [color="#64748B", style="solid", dir=none];
+  e5_prov -> e5_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 6: gateway -> auth
+  e6_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="284.02,448.00!", pin=true];
+  e6_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="349.88,448.00!", pin=true];
+  e6_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="270.02,448.00!", pin=true];
+  e6_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="363.88,448.00!", pin=true];
+  e6_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="265.02,448.00!", pin=true];
+  e6_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="284.02,448.00!", pin=true];
+  e6_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="349.88,448.00!", pin=true];
+  e6_src_port -> e6_req [color="#64748B", style="solid", dir=none];
+  e6_req -> e6_b1 [color="#64748B", style="solid", dir=none];
+  e6_b1 -> e6_b2 [color="#64748B", style="solid", dir=none];
+  e6_b2 -> e6_prov [color="#64748B", style="solid", dir=none];
+  e6_prov -> e6_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 7: auth -> reservation
+  e7_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="410.00,427.10!", pin=true];
+  e7_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="630.67,170.00!", pin=true];
+  e7_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="410.00,441.10!", pin=true];
+  e7_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="644.67,170.00!", pin=true];
+  e7_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="410.00,436.10!", pin=true];
+  e7_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="410.00,362.46!", pin=true];
+  e7_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="410.00,170.00!", pin=true];
+  e7_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="410.00,170.00!", pin=true];
+  e7_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="410.00,170.00!", pin=true];
+  e7_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="630.67,170.00!", pin=true];
+  e7_src_port -> e7_req [color="#64748B", style="solid", dir=none];
+  e7_req -> e7_b1 [color="#64748B", style="solid", dir=none];
+  e7_b1 -> e7_b2 [color="#64748B", style="solid", dir=none];
+  e7_b2 -> e7_b3 [color="#64748B", style="solid", dir=none];
+  e7_b3 -> e7_b4 [color="#64748B", style="solid", dir=none];
+  e7_b4 -> e7_b5 [color="#64748B", style="solid", dir=none];
+  e7_b5 -> e7_prov [color="#64748B", style="solid", dir=none];
+  e7_prov -> e7_tgt_port [color="#64748B", style="solid", dir=none];
+  e7_lbl [shape=box, label="reservation commands", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="550.00,246.00!", pin=true];
+
+  // edge 8: auth -> ordering
+  e8_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="384.00,468.58!", pin=true];
+  e8_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="644.41,785.02!", pin=true];
+  e8_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="384.00,454.58!", pin=true];
+  e8_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="658.41,785.02!", pin=true];
+  e8_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="384.00,459.58!", pin=true];
+  e8_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="384.00,541.74!", pin=true];
+  e8_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="384.00,785.02!", pin=true];
+  e8_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="384.00,785.02!", pin=true];
+  e8_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="384.00,785.02!", pin=true];
+  e8_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="644.41,785.02!", pin=true];
+  e8_src_port -> e8_req [color="#64748B", style="solid", dir=none];
+  e8_req -> e8_b1 [color="#64748B", style="solid", dir=none];
+  e8_b1 -> e8_b2 [color="#64748B", style="solid", dir=none];
+  e8_b2 -> e8_b3 [color="#64748B", style="solid", dir=none];
+  e8_b3 -> e8_b4 [color="#64748B", style="solid", dir=none];
+  e8_b4 -> e8_b5 [color="#64748B", style="solid", dir=none];
+  e8_b5 -> e8_prov [color="#64748B", style="solid", dir=none];
+  e8_prov -> e8_tgt_port [color="#64748B", style="solid", dir=none];
+  e8_lbl [shape=box, label="order commands", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="550.00,758.02!", pin=true];
+
+  // edge 9: auth -> kitchen
+  e9_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="436.00,468.69!", pin=true];
+  e9_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="633.90,565.25!", pin=true];
+  e9_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="436.00,454.69!", pin=true];
+  e9_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="647.90,565.25!", pin=true];
+  e9_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="436.00,459.69!", pin=true];
+  e9_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="436.00,502.35!", pin=true];
+  e9_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="436.00,565.25!", pin=true];
+  e9_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="436.00,565.25!", pin=true];
+  e9_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="436.00,565.25!", pin=true];
+  e9_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="633.90,565.25!", pin=true];
+  e9_src_port -> e9_req [color="#64748B", style="solid", dir=none];
+  e9_req -> e9_b1 [color="#64748B", style="solid", dir=none];
+  e9_b1 -> e9_b2 [color="#64748B", style="solid", dir=none];
+  e9_b2 -> e9_b3 [color="#64748B", style="solid", dir=none];
+  e9_b3 -> e9_b4 [color="#64748B", style="solid", dir=none];
+  e9_b4 -> e9_b5 [color="#64748B", style="solid", dir=none];
+  e9_b5 -> e9_prov [color="#64748B", style="solid", dir=none];
+  e9_prov -> e9_tgt_port [color="#64748B", style="solid", dir=none];
+  e9_lbl [shape=box, label="kitchen updates", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="550.00,561.00!", pin=true];
+
+  // edge 10: auth -> billing
+  e10_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="410.00,468.60!", pin=true];
+  e10_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="635.88,667.00!", pin=true];
+  e10_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="410.00,454.60!", pin=true];
+  e10_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="649.88,667.00!", pin=true];
+  e10_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="410.00,459.60!", pin=true];
+  e10_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="410.00,523.12!", pin=true];
+  e10_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="410.00,667.00!", pin=true];
+  e10_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="410.00,667.00!", pin=true];
+  e10_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="410.00,667.00!", pin=true];
+  e10_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="635.88,667.00!", pin=true];
+  e10_src_port -> e10_req [color="#64748B", style="solid", dir=none];
+  e10_req -> e10_b1 [color="#64748B", style="solid", dir=none];
+  e10_b1 -> e10_b2 [color="#64748B", style="solid", dir=none];
+  e10_b2 -> e10_b3 [color="#64748B", style="solid", dir=none];
+  e10_b3 -> e10_b4 [color="#64748B", style="solid", dir=none];
+  e10_b4 -> e10_b5 [color="#64748B", style="solid", dir=none];
+  e10_b5 -> e10_prov [color="#64748B", style="solid", dir=none];
+  e10_prov -> e10_tgt_port [color="#64748B", style="solid", dir=none];
+  e10_lbl [shape=box, label="billing / payment", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="550.00,689.00!", pin=true];
+
+  // edge 11: auth -> inventory
+  e11_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="462.17,448.00!", pin=true];
+  e11_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="633.99,448.00!", pin=true];
+  e11_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="448.17,448.00!", pin=true];
+  e11_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="647.99,448.00!", pin=true];
+  e11_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="443.17,448.00!", pin=true];
+  e11_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="462.17,448.00!", pin=true];
+  e11_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="633.99,448.00!", pin=true];
+  e11_src_port -> e11_req [color="#64748B", style="solid", dir=none];
+  e11_req -> e11_b1 [color="#64748B", style="solid", dir=none];
+  e11_b1 -> e11_b2 [color="#64748B", style="solid", dir=none];
+  e11_b2 -> e11_prov [color="#64748B", style="solid", dir=none];
+  e11_prov -> e11_tgt_port [color="#64748B", style="solid", dir=none];
+  e11_lbl [shape=box, label="inventory admin", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="550.00,453.00!", pin=true];
+
+  // edge 12: auth -> reporting
+  e12_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="384.00,427.37!", pin=true];
+  e12_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="645.43,54.00!", pin=true];
+  e12_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="384.00,441.37!", pin=true];
+  e12_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="659.43,54.00!", pin=true];
+  e12_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="384.00,436.37!", pin=true];
+  e12_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="384.00,346.31!", pin=true];
+  e12_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="384.00,54.00!", pin=true];
+  e12_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="384.00,54.00!", pin=true];
+  e12_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="384.00,54.00!", pin=true];
+  e12_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="645.43,54.00!", pin=true];
+  e12_src_port -> e12_req [color="#64748B", style="solid", dir=none];
+  e12_req -> e12_b1 [color="#64748B", style="solid", dir=none];
+  e12_b1 -> e12_b2 [color="#64748B", style="solid", dir=none];
+  e12_b2 -> e12_b3 [color="#64748B", style="solid", dir=none];
+  e12_b3 -> e12_b4 [color="#64748B", style="solid", dir=none];
+  e12_b4 -> e12_b5 [color="#64748B", style="solid", dir=none];
+  e12_b5 -> e12_prov [color="#64748B", style="solid", dir=none];
+  e12_prov -> e12_tgt_port [color="#64748B", style="solid", dir=none];
+  e12_lbl [shape=box, label="report queries", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="550.00,178.00!", pin=true];
+
+  // edge 13: auth -> iam
+  e13_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="436.00,427.10!", pin=true];
+  e13_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="638.38,365.17!", pin=true];
+  e13_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="436.00,441.10!", pin=true];
+  e13_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="652.38,365.17!", pin=true];
+  e13_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="436.00,436.10!", pin=true];
+  e13_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="436.00,402.56!", pin=true];
+  e13_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="436.00,365.17!", pin=true];
+  e13_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="436.00,365.17!", pin=true];
+  e13_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="436.00,365.17!", pin=true];
+  e13_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="638.38,365.17!", pin=true];
+  e13_src_port -> e13_req [color="#64748B", style="solid", dir=none];
+  e13_req -> e13_b1 [color="#64748B", style="solid", dir=none];
+  e13_b1 -> e13_b2 [color="#64748B", style="solid", dir=none];
+  e13_b2 -> e13_b3 [color="#64748B", style="solid", dir=none];
+  e13_b3 -> e13_b4 [color="#64748B", style="solid", dir=none];
+  e13_b4 -> e13_b5 [color="#64748B", style="solid", dir=none];
+  e13_b5 -> e13_prov [color="#64748B", style="solid", dir=none];
+  e13_prov -> e13_tgt_port [color="#64748B", style="solid", dir=none];
+  e13_lbl [shape=box, label="identity / role admin", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="550.00,385.00!", pin=true];
+
+  // edge 14: reservation -> dispatcher
+  e14_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="759.31,180.70!", pin=true];
+  e14_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="909.14,517.25!", pin=true];
+  e14_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="773.31,180.70!", pin=true];
+  e14_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="923.14,517.25!", pin=true];
+  e14_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="778.31,180.70!", pin=true];
+  e14_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="788.83,180.70!", pin=true];
+  e14_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="817.99,180.70!", pin=true];
+  e14_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="817.99,180.70!", pin=true];
+  e14_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="817.99,180.70!", pin=true];
+  e14_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="817.99,517.25!", pin=true];
+  e14_b6 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="817.99,517.25!", pin=true];
+  e14_b7 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="817.99,517.25!", pin=true];
+  e14_b8 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="909.14,517.25!", pin=true];
+  e14_src_port -> e14_req [color="#64748B", style="dashed", dir=none];
+  e14_req -> e14_b1 [color="#64748B", style="dashed", dir=none];
+  e14_b1 -> e14_b2 [color="#64748B", style="dashed", dir=none];
+  e14_b2 -> e14_b3 [color="#64748B", style="dashed", dir=none];
+  e14_b3 -> e14_b4 [color="#64748B", style="dashed", dir=none];
+  e14_b4 -> e14_b5 [color="#64748B", style="dashed", dir=none];
+  e14_b5 -> e14_b6 [color="#64748B", style="dashed", dir=none];
+  e14_b6 -> e14_b7 [color="#64748B", style="dashed", dir=none];
+  e14_b7 -> e14_b8 [color="#64748B", style="dashed", dir=none];
+  e14_b8 -> e14_prov [color="#64748B", style="dashed", dir=none];
+  e14_prov -> e14_tgt_port [color="#64748B", style="dashed", dir=none];
+  e14_lbl [shape=box, label="reservation events", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="837.00,200.00!", pin=true];
+
+  // edge 15: reservation -> persistence
+  e15_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="759.24,185.60!", pin=true];
+  e15_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="990.00,425.76!", pin=true];
+  e15_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="773.24,185.60!", pin=true];
+  e15_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1004.00,425.76!", pin=true];
+  e15_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="778.24,185.60!", pin=true];
+  e15_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="844.70,185.60!", pin=true];
+  e15_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="990.00,185.60!", pin=true];
+  e15_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="990.00,185.60!", pin=true];
+  e15_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="990.00,185.60!", pin=true];
+  e15_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="990.00,425.76!", pin=true];
+  e15_src_port -> e15_req [color="#64748B", style="solid", dir=none];
+  e15_req -> e15_b1 [color="#64748B", style="solid", dir=none];
+  e15_b1 -> e15_b2 [color="#64748B", style="solid", dir=none];
+  e15_b2 -> e15_b3 [color="#64748B", style="solid", dir=none];
+  e15_b3 -> e15_b4 [color="#64748B", style="solid", dir=none];
+  e15_b4 -> e15_b5 [color="#64748B", style="solid", dir=none];
+  e15_b5 -> e15_prov [color="#64748B", style="solid", dir=none];
+  e15_prov -> e15_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 16: reservation -> notification
+  e16_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="759.24,170.90!", pin=true];
+  e16_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1489.03,346.80!", pin=true];
+  e16_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="773.24,170.90!", pin=true];
+  e16_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1503.03,346.80!", pin=true];
+  e16_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="778.24,170.90!", pin=true];
+  e16_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="944.35,170.90!", pin=true];
+  e16_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1489.03,170.90!", pin=true];
+  e16_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1489.03,170.90!", pin=true];
+  e16_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1489.03,170.90!", pin=true];
+  e16_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1489.03,346.80!", pin=true];
+  e16_src_port -> e16_req [color="#64748B", style="dashed", dir=none];
+  e16_req -> e16_b1 [color="#64748B", style="dashed", dir=none];
+  e16_b1 -> e16_b2 [color="#64748B", style="dashed", dir=none];
+  e16_b2 -> e16_b3 [color="#64748B", style="dashed", dir=none];
+  e16_b3 -> e16_b4 [color="#64748B", style="dashed", dir=none];
+  e16_b4 -> e16_b5 [color="#64748B", style="dashed", dir=none];
+  e16_b5 -> e16_prov [color="#64748B", style="dashed", dir=none];
+  e16_prov -> e16_tgt_port [color="#64748B", style="dashed", dir=none];
+  e16_lbl [shape=box, label="reservation notice", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1112.98,87.00!", pin=true];
+
+  // edge 17: ordering -> kitchen
+  e17_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="745.63,777.10!", pin=true];
+  e17_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="763.13,579.25!", pin=true];
+  e17_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="759.63,777.10!", pin=true];
+  e17_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="777.13,579.25!", pin=true];
+  e17_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="764.63,777.10!", pin=true];
+  e17_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="798.19,777.10!", pin=true];
+  e17_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="876.02,777.10!", pin=true];
+  e17_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="876.02,777.10!", pin=true];
+  e17_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="876.02,777.10!", pin=true];
+  e17_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="876.02,579.25!", pin=true];
+  e17_b6 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="876.02,579.25!", pin=true];
+  e17_b7 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="876.02,579.25!", pin=true];
+  e17_b8 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="763.13,579.25!", pin=true];
+  e17_src_port -> e17_req [color="#64748B", style="solid", dir=none];
+  e17_req -> e17_b1 [color="#64748B", style="solid", dir=none];
+  e17_b1 -> e17_b2 [color="#64748B", style="solid", dir=none];
+  e17_b2 -> e17_b3 [color="#64748B", style="solid", dir=none];
+  e17_b3 -> e17_b4 [color="#64748B", style="solid", dir=none];
+  e17_b4 -> e17_b5 [color="#64748B", style="solid", dir=none];
+  e17_b5 -> e17_b6 [color="#64748B", style="solid", dir=none];
+  e17_b6 -> e17_b7 [color="#64748B", style="solid", dir=none];
+  e17_b7 -> e17_b8 [color="#64748B", style="solid", dir=none];
+  e17_b8 -> e17_prov [color="#64748B", style="solid", dir=none];
+  e17_prov -> e17_tgt_port [color="#64748B", style="solid", dir=none];
+  e17_lbl [shape=box, label="OrderConfirmed", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="550.00,634.00!", pin=true];
+
+  // edge 18: ordering -> billing
+  e18_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="699.00,766.80!", pin=true];
+  e18_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="699.00,694.79!", pin=true];
+  e18_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="685.00,766.80!", pin=true];
+  e18_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="713.00,694.79!", pin=true];
+  e18_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="680.00,766.80!", pin=true];
+  e18_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="699.00,766.80!", pin=true];
+  e18_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="699.00,694.79!", pin=true];
+  e18_src_port -> e18_req [color="#64748B", style="solid", dir=none];
+  e18_req -> e18_b1 [color="#64748B", style="solid", dir=none];
+  e18_b1 -> e18_b2 [color="#64748B", style="solid", dir=none];
+  e18_b2 -> e18_prov [color="#64748B", style="solid", dir=none];
+  e18_prov -> e18_tgt_port [color="#64748B", style="solid", dir=none];
+  e18_lbl [shape=box, label="billable order facts", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1598.98,209.00!", pin=true];
+
+  // edge 19: ordering -> dispatcher
+  e19_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="745.85,794.38!", pin=true];
+  e19_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="988.99,552.38!", pin=true];
+  e19_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="759.85,794.38!", pin=true];
+  e19_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1002.99,552.38!", pin=true];
+  e19_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="764.85,794.38!", pin=true];
+  e19_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="828.14,794.38!", pin=true];
+  e19_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="988.99,794.38!", pin=true];
+  e19_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="988.99,794.38!", pin=true];
+  e19_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="988.99,794.38!", pin=true];
+  e19_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="988.99,552.38!", pin=true];
+  e19_src_port -> e19_req [color="#64748B", style="dashed", dir=none];
+  e19_req -> e19_b1 [color="#64748B", style="dashed", dir=none];
+  e19_b1 -> e19_b2 [color="#64748B", style="dashed", dir=none];
+  e19_b2 -> e19_b3 [color="#64748B", style="dashed", dir=none];
+  e19_b3 -> e19_b4 [color="#64748B", style="dashed", dir=none];
+  e19_b4 -> e19_b5 [color="#64748B", style="dashed", dir=none];
+  e19_b5 -> e19_prov [color="#64748B", style="dashed", dir=none];
+  e19_prov -> e19_tgt_port [color="#64748B", style="dashed", dir=none];
+  e19_lbl [shape=box, label="order events", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="837.00,889.99!", pin=true];
+
+  // edge 20: ordering -> persistence
+  e20_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="745.56,785.74!", pin=true];
+  e20_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="907.70,462.59!", pin=true];
+  e20_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="759.56,785.74!", pin=true];
+  e20_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="921.70,462.59!", pin=true];
+  e20_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="764.56,785.74!", pin=true];
+  e20_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="803.95,785.74!", pin=true];
+  e20_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="895.97,785.74!", pin=true];
+  e20_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="895.97,785.74!", pin=true];
+  e20_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="895.97,785.74!", pin=true];
+  e20_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="895.97,462.59!", pin=true];
+  e20_b6 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="895.97,462.59!", pin=true];
+  e20_b7 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="895.97,462.59!", pin=true];
+  e20_b8 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="907.70,462.59!", pin=true];
+  e20_src_port -> e20_req [color="#64748B", style="solid", dir=none];
+  e20_req -> e20_b1 [color="#64748B", style="solid", dir=none];
+  e20_b1 -> e20_b2 [color="#64748B", style="solid", dir=none];
+  e20_b2 -> e20_b3 [color="#64748B", style="solid", dir=none];
+  e20_b3 -> e20_b4 [color="#64748B", style="solid", dir=none];
+  e20_b4 -> e20_b5 [color="#64748B", style="solid", dir=none];
+  e20_b5 -> e20_b6 [color="#64748B", style="solid", dir=none];
+  e20_b6 -> e20_b7 [color="#64748B", style="solid", dir=none];
+  e20_b7 -> e20_b8 [color="#64748B", style="solid", dir=none];
+  e20_b8 -> e20_prov [color="#64748B", style="solid", dir=none];
+  e20_prov -> e20_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 21: kitchen -> inventory
+  e21_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="680.00,548.47!", pin=true];
+  e21_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="680.00,475.62!", pin=true];
+  e21_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="666.00,548.47!", pin=true];
+  e21_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="694.00,475.62!", pin=true];
+  e21_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="661.00,548.47!", pin=true];
+  e21_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="680.00,548.47!", pin=true];
+  e21_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="680.00,475.62!", pin=true];
+  e21_src_port -> e21_req [color="#64748B", style="dashed", dir=none];
+  e21_req -> e21_b1 [color="#64748B", style="dashed", dir=none];
+  e21_b1 -> e21_b2 [color="#64748B", style="dashed", dir=none];
+  e21_b2 -> e21_prov [color="#64748B", style="dashed", dir=none];
+  e21_prov -> e21_tgt_port [color="#64748B", style="dashed", dir=none];
+  e21_lbl [shape=box, label="DishServed", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1598.98,209.00!", pin=true];
+
+  // edge 22: kitchen -> dispatcher
+  e22_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="756.29,569.00!", pin=true];
+  e22_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="940.97,552.05!", pin=true];
+  e22_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="770.29,569.00!", pin=true];
+  e22_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="954.97,552.05!", pin=true];
+  e22_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="775.29,569.00!", pin=true];
+  e22_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="828.00,569.00!", pin=true];
+  e22_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="940.97,569.00!", pin=true];
+  e22_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="940.97,569.00!", pin=true];
+  e22_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="940.97,569.00!", pin=true];
+  e22_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="940.97,552.05!", pin=true];
+  e22_src_port -> e22_req [color="#64748B", style="dashed", dir=none];
+  e22_req -> e22_b1 [color="#64748B", style="dashed", dir=none];
+  e22_b1 -> e22_b2 [color="#64748B", style="dashed", dir=none];
+  e22_b2 -> e22_b3 [color="#64748B", style="dashed", dir=none];
+  e22_b3 -> e22_b4 [color="#64748B", style="dashed", dir=none];
+  e22_b4 -> e22_b5 [color="#64748B", style="dashed", dir=none];
+  e22_b5 -> e22_prov [color="#64748B", style="dashed", dir=none];
+  e22_prov -> e22_tgt_port [color="#64748B", style="dashed", dir=none];
+  e22_lbl [shape=box, label="dish status events", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="837.00,592.00!", pin=true];
+
+  // edge 23: kitchen -> persistence
+  e23_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="756.00,558.75!", pin=true];
+  e23_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="907.85,450.75!", pin=true];
+  e23_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="770.00,558.75!", pin=true];
+  e23_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="921.85,450.75!", pin=true];
+  e23_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="775.00,558.75!", pin=true];
+  e23_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="794.09,558.75!", pin=true];
+  e23_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="837.00,558.75!", pin=true];
+  e23_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="837.00,558.75!", pin=true];
+  e23_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="837.00,558.75!", pin=true];
+  e23_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="837.00,450.75!", pin=true];
+  e23_b6 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="837.00,450.75!", pin=true];
+  e23_b7 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="837.00,450.75!", pin=true];
+  e23_b8 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="907.85,450.75!", pin=true];
+  e23_src_port -> e23_req [color="#64748B", style="solid", dir=none];
+  e23_req -> e23_b1 [color="#64748B", style="solid", dir=none];
+  e23_b1 -> e23_b2 [color="#64748B", style="solid", dir=none];
+  e23_b2 -> e23_b3 [color="#64748B", style="solid", dir=none];
+  e23_b3 -> e23_b4 [color="#64748B", style="solid", dir=none];
+  e23_b4 -> e23_b5 [color="#64748B", style="solid", dir=none];
+  e23_b5 -> e23_b6 [color="#64748B", style="solid", dir=none];
+  e23_b6 -> e23_b7 [color="#64748B", style="solid", dir=none];
+  e23_b7 -> e23_b8 [color="#64748B", style="solid", dir=none];
+  e23_b8 -> e23_prov [color="#64748B", style="solid", dir=none];
+  e23_prov -> e23_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 24: billing -> reservation
+  e24_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="754.06,654.50!", pin=true];
+  e24_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="766.22,175.80!", pin=true];
+  e24_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="768.06,654.50!", pin=true];
+  e24_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="780.22,175.80!", pin=true];
+  e24_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="773.06,654.50!", pin=true];
+  e24_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="776.88,654.50!", pin=true];
+  e24_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="797.98,654.50!", pin=true];
+  e24_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="797.98,654.50!", pin=true];
+  e24_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="797.98,654.50!", pin=true];
+  e24_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="797.98,175.80!", pin=true];
+  e24_b6 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="797.98,175.80!", pin=true];
+  e24_b7 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="797.98,175.80!", pin=true];
+  e24_b8 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="766.22,175.80!", pin=true];
+  e24_src_port -> e24_req [color="#64748B", style="dashed", dir=none];
+  e24_req -> e24_b1 [color="#64748B", style="dashed", dir=none];
+  e24_b1 -> e24_b2 [color="#64748B", style="dashed", dir=none];
+  e24_b2 -> e24_b3 [color="#64748B", style="dashed", dir=none];
+  e24_b3 -> e24_b4 [color="#64748B", style="dashed", dir=none];
+  e24_b4 -> e24_b5 [color="#64748B", style="dashed", dir=none];
+  e24_b5 -> e24_b6 [color="#64748B", style="dashed", dir=none];
+  e24_b6 -> e24_b7 [color="#64748B", style="dashed", dir=none];
+  e24_b7 -> e24_b8 [color="#64748B", style="dashed", dir=none];
+  e24_b8 -> e24_prov [color="#64748B", style="dashed", dir=none];
+  e24_prov -> e24_tgt_port [color="#64748B", style="dashed", dir=none];
+  e24_lbl [shape=box, label="close table session", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="550.00,493.00!", pin=true];
+
+  // edge 25: billing -> dispatcher
+  e25_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="754.06,670.50!", pin=true];
+  e25_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="965.02,552.18!", pin=true];
+  e25_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="768.06,670.50!", pin=true];
+  e25_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="979.02,552.18!", pin=true];
+  e25_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="773.06,670.50!", pin=true];
+  e25_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="832.18,670.50!", pin=true];
+  e25_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="965.02,670.50!", pin=true];
+  e25_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="965.02,670.50!", pin=true];
+  e25_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="965.02,670.50!", pin=true];
+  e25_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="965.02,552.18!", pin=true];
+  e25_src_port -> e25_req [color="#64748B", style="dashed", dir=none];
+  e25_req -> e25_b1 [color="#64748B", style="dashed", dir=none];
+  e25_b1 -> e25_b2 [color="#64748B", style="dashed", dir=none];
+  e25_b2 -> e25_b3 [color="#64748B", style="dashed", dir=none];
+  e25_b3 -> e25_b4 [color="#64748B", style="dashed", dir=none];
+  e25_b4 -> e25_b5 [color="#64748B", style="dashed", dir=none];
+  e25_b5 -> e25_prov [color="#64748B", style="dashed", dir=none];
+  e25_prov -> e25_tgt_port [color="#64748B", style="dashed", dir=none];
+  e25_lbl [shape=box, label="payment events", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="837.00,694.00!", pin=true];
+
+  // edge 26: billing -> persistence
+  e26_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="754.42,662.50!", pin=true];
+  e26_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="907.85,456.67!", pin=true];
+  e26_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="768.42,662.50!", pin=true];
+  e26_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="921.85,456.67!", pin=true];
+  e26_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="773.42,662.50!", pin=true];
+  e26_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="799.99,662.50!", pin=true];
+  e26_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="857.02,662.50!", pin=true];
+  e26_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="857.02,662.50!", pin=true];
+  e26_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="857.02,662.50!", pin=true];
+  e26_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="857.02,456.67!", pin=true];
+  e26_b6 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="857.02,456.67!", pin=true];
+  e26_b7 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="857.02,456.67!", pin=true];
+  e26_b8 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="907.85,456.67!", pin=true];
+  e26_src_port -> e26_req [color="#64748B", style="solid", dir=none];
+  e26_req -> e26_b1 [color="#64748B", style="solid", dir=none];
+  e26_b1 -> e26_b2 [color="#64748B", style="solid", dir=none];
+  e26_b2 -> e26_b3 [color="#64748B", style="solid", dir=none];
+  e26_b3 -> e26_b4 [color="#64748B", style="solid", dir=none];
+  e26_b4 -> e26_b5 [color="#64748B", style="solid", dir=none];
+  e26_b5 -> e26_b6 [color="#64748B", style="solid", dir=none];
+  e26_b6 -> e26_b7 [color="#64748B", style="solid", dir=none];
+  e26_b7 -> e26_b8 [color="#64748B", style="solid", dir=none];
+  e26_b8 -> e26_prov [color="#64748B", style="solid", dir=none];
+  e26_prov -> e26_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 27: billing -> payment
+  e27_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="754.06,678.50!", pin=true];
+  e27_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1492.99,761.47!", pin=true];
+  e27_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="768.06,678.50!", pin=true];
+  e27_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1506.99,761.47!", pin=true];
+  e27_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="773.06,678.50!", pin=true];
+  e27_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="934.56,678.50!", pin=true];
+  e27_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1492.99,678.50!", pin=true];
+  e27_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1492.99,678.50!", pin=true];
+  e27_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1492.99,678.50!", pin=true];
+  e27_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1492.99,761.47!", pin=true];
+  e27_src_port -> e27_req [color="#64748B", style="solid", dir=none];
+  e27_req -> e27_b1 [color="#64748B", style="solid", dir=none];
+  e27_b1 -> e27_b2 [color="#64748B", style="solid", dir=none];
+  e27_b2 -> e27_b3 [color="#64748B", style="solid", dir=none];
+  e27_b3 -> e27_b4 [color="#64748B", style="solid", dir=none];
+  e27_b4 -> e27_b5 [color="#64748B", style="solid", dir=none];
+  e27_b5 -> e27_prov [color="#64748B", style="solid", dir=none];
+  e27_prov -> e27_tgt_port [color="#64748B", style="solid", dir=none];
+  e27_lbl [shape=box, label="authorize / capture / refund", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1112.98,794.02!", pin=true];
+
+  // edge 28: billing -> printer
+  e28_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="750.02,687.72!", pin=true];
+  e28_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1489.75,707.50!", pin=true];
+  e28_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="750.02,673.72!", pin=true];
+  e28_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1503.75,707.50!", pin=true];
+  e28_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="750.02,678.72!", pin=true];
+  e28_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="750.02,697.69!", pin=true];
+  e28_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="750.02,707.50!", pin=true];
+  e28_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="750.02,707.50!", pin=true];
+  e28_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="750.02,707.50!", pin=true];
+  e28_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1489.75,707.50!", pin=true];
+  e28_src_port -> e28_req [color="#64748B", style="dashed", dir=none];
+  e28_req -> e28_b1 [color="#64748B", style="dashed", dir=none];
+  e28_b1 -> e28_b2 [color="#64748B", style="dashed", dir=none];
+  e28_b2 -> e28_b3 [color="#64748B", style="dashed", dir=none];
+  e28_b3 -> e28_b4 [color="#64748B", style="dashed", dir=none];
+  e28_b4 -> e28_b5 [color="#64748B", style="dashed", dir=none];
+  e28_b5 -> e28_prov [color="#64748B", style="dashed", dir=none];
+  e28_prov -> e28_tgt_port [color="#64748B", style="dashed", dir=none];
+  e28_lbl [shape=box, label="issue receipt", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1112.98,712.00!", pin=true];
+
+  // edge 29: inventory -> dispatcher
+  e29_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="718.00,468.77!", pin=true];
+  e29_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="909.36,525.50!", pin=true];
+  e29_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="718.00,454.77!", pin=true];
+  e29_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="923.36,525.50!", pin=true];
+  e29_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="718.00,459.77!", pin=true];
+  e29_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="718.00,491.72!", pin=true];
+  e29_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="718.00,525.50!", pin=true];
+  e29_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="718.00,525.50!", pin=true];
+  e29_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="718.00,525.50!", pin=true];
+  e29_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="909.36,525.50!", pin=true];
+  e29_src_port -> e29_req [color="#64748B", style="dashed", dir=none];
+  e29_req -> e29_b1 [color="#64748B", style="dashed", dir=none];
+  e29_b1 -> e29_b2 [color="#64748B", style="dashed", dir=none];
+  e29_b2 -> e29_b3 [color="#64748B", style="dashed", dir=none];
+  e29_b3 -> e29_b4 [color="#64748B", style="dashed", dir=none];
+  e29_b4 -> e29_b5 [color="#64748B", style="dashed", dir=none];
+  e29_b5 -> e29_prov [color="#64748B", style="dashed", dir=none];
+  e29_prov -> e29_tgt_port [color="#64748B", style="dashed", dir=none];
+  e29_lbl [shape=box, label="stock events", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="837.00,490.00!", pin=true];
+
+  // edge 30: inventory -> persistence
+  e30_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="756.22,444.83!", pin=true];
+  e30_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="907.92,444.83!", pin=true];
+  e30_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="742.22,444.83!", pin=true];
+  e30_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="921.92,444.83!", pin=true];
+  e30_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="737.22,444.83!", pin=true];
+  e30_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="756.22,444.83!", pin=true];
+  e30_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="907.92,444.83!", pin=true];
+  e30_src_port -> e30_req [color="#64748B", style="solid", dir=none];
+  e30_req -> e30_b1 [color="#64748B", style="solid", dir=none];
+  e30_b1 -> e30_b2 [color="#64748B", style="solid", dir=none];
+  e30_b2 -> e30_prov [color="#64748B", style="solid", dir=none];
+  e30_prov -> e30_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 31: inventory -> notification
+  e31_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="756.14,438.92!", pin=true];
+  e31_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1477.22,362.38!", pin=true];
+  e31_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="770.14,438.92!", pin=true];
+  e31_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1491.22,362.38!", pin=true];
+  e31_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="775.14,438.92!", pin=true];
+  e31_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="769.03,438.92!", pin=true];
+  e31_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="778.97,438.92!", pin=true];
+  e31_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="778.97,438.92!", pin=true];
+  e31_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="778.97,438.92!", pin=true];
+  e31_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="778.97,362.38!", pin=true];
+  e31_b6 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="778.97,362.38!", pin=true];
+  e31_b7 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="778.97,362.38!", pin=true];
+  e31_b8 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1477.22,362.38!", pin=true];
+  e31_src_port -> e31_req [color="#64748B", style="dashed", dir=none];
+  e31_req -> e31_b1 [color="#64748B", style="dashed", dir=none];
+  e31_b1 -> e31_b2 [color="#64748B", style="dashed", dir=none];
+  e31_b2 -> e31_b3 [color="#64748B", style="dashed", dir=none];
+  e31_b3 -> e31_b4 [color="#64748B", style="dashed", dir=none];
+  e31_b4 -> e31_b5 [color="#64748B", style="dashed", dir=none];
+  e31_b5 -> e31_b6 [color="#64748B", style="dashed", dir=none];
+  e31_b6 -> e31_b7 [color="#64748B", style="dashed", dir=none];
+  e31_b7 -> e31_b8 [color="#64748B", style="dashed", dir=none];
+  e31_b8 -> e31_prov [color="#64748B", style="dashed", dir=none];
+  e31_prov -> e31_tgt_port [color="#64748B", style="dashed", dir=none];
+  e31_lbl [shape=box, label="low-stock alert", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1112.98,377.00!", pin=true];
+
+  // edge 32: reporting -> readmodel
+  e32_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="699.00,74.76!", pin=true];
+  e32_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1486.44,139.75!", pin=true];
+  e32_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="699.00,60.76!", pin=true];
+  e32_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1500.44,139.75!", pin=true];
+  e32_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="699.00,65.76!", pin=true];
+  e32_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="699.00,100.14!", pin=true];
+  e32_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="699.00,139.75!", pin=true];
+  e32_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="699.00,139.75!", pin=true];
+  e32_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="699.00,139.75!", pin=true];
+  e32_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1486.44,139.75!", pin=true];
+  e32_src_port -> e32_req [color="#64748B", style="solid", dir=none];
+  e32_req -> e32_b1 [color="#64748B", style="solid", dir=none];
+  e32_b1 -> e32_b2 [color="#64748B", style="solid", dir=none];
+  e32_b2 -> e32_b3 [color="#64748B", style="solid", dir=none];
+  e32_b3 -> e32_b4 [color="#64748B", style="solid", dir=none];
+  e32_b4 -> e32_b5 [color="#64748B", style="solid", dir=none];
+  e32_b5 -> e32_prov [color="#64748B", style="solid", dir=none];
+  e32_prov -> e32_tgt_port [color="#64748B", style="solid", dir=none];
+  e32_lbl [shape=box, label="query views", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1112.98,5.00!", pin=true];
+
+  // edge 33: iam -> audit
+  e33_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="699.00,346.44!", pin=true];
+  e33_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="699.00,274.00!", pin=true];
+  e33_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="685.00,346.44!", pin=true];
+  e33_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="713.00,274.00!", pin=true];
+  e33_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="680.00,346.44!", pin=true];
+  e33_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="699.00,346.44!", pin=true];
+  e33_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="699.00,274.00!", pin=true];
+  e33_src_port -> e33_req [color="#64748B", style="dashed", dir=none];
+  e33_req -> e33_b1 [color="#64748B", style="dashed", dir=none];
+  e33_b1 -> e33_b2 [color="#64748B", style="dashed", dir=none];
+  e33_b2 -> e33_prov [color="#64748B", style="dashed", dir=none];
+  e33_prov -> e33_tgt_port [color="#64748B", style="dashed", dir=none];
+  e33_lbl [shape=box, label="access decisions", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1598.98,209.00!", pin=true];
+
+  // edge 34: iam -> persistence
+  e34_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="751.82,379.12!", pin=true];
+  e34_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="940.03,425.87!", pin=true];
+  e34_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="765.82,379.12!", pin=true];
+  e34_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="954.03,425.87!", pin=true];
+  e34_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="770.82,379.12!", pin=true];
+  e34_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="822.89,379.12!", pin=true];
+  e34_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="940.03,379.12!", pin=true];
+  e34_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="940.03,379.12!", pin=true];
+  e34_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="940.03,379.12!", pin=true];
+  e34_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="940.03,425.87!", pin=true];
+  e34_src_port -> e34_req [color="#64748B", style="solid", dir=none];
+  e34_req -> e34_b1 [color="#64748B", style="solid", dir=none];
+  e34_b1 -> e34_b2 [color="#64748B", style="solid", dir=none];
+  e34_b2 -> e34_b3 [color="#64748B", style="solid", dir=none];
+  e34_b3 -> e34_b4 [color="#64748B", style="solid", dir=none];
+  e34_b4 -> e34_b5 [color="#64748B", style="solid", dir=none];
+  e34_b5 -> e34_prov [color="#64748B", style="solid", dir=none];
+  e34_prov -> e34_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 35: audit -> persistence
+  e35_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="738.14,255.00!", pin=true];
+  e35_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="965.02,425.91!", pin=true];
+  e35_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="752.14,255.00!", pin=true];
+  e35_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="979.02,425.91!", pin=true];
+  e35_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="757.14,255.00!", pin=true];
+  e35_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="812.38,255.00!", pin=true];
+  e35_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="965.02,255.00!", pin=true];
+  e35_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="965.02,255.00!", pin=true];
+  e35_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="965.02,255.00!", pin=true];
+  e35_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="965.02,425.91!", pin=true];
+  e35_src_port -> e35_req [color="#64748B", style="solid", dir=none];
+  e35_req -> e35_b1 [color="#64748B", style="solid", dir=none];
+  e35_b1 -> e35_b2 [color="#64748B", style="solid", dir=none];
+  e35_b2 -> e35_b3 [color="#64748B", style="solid", dir=none];
+  e35_b3 -> e35_b4 [color="#64748B", style="solid", dir=none];
+  e35_b4 -> e35_b5 [color="#64748B", style="solid", dir=none];
+  e35_b5 -> e35_prov [color="#64748B", style="solid", dir=none];
+  e35_prov -> e35_tgt_port [color="#64748B", style="solid", dir=none];
+
+  // edge 36: dispatcher -> worker
+  e36_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1012.61,534.00!", pin=true];
+  e36_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1265.98,476.01!", pin=true];
+  e36_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1026.61,534.00!", pin=true];
+  e36_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1279.98,476.01!", pin=true];
+  e36_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="1031.61,534.00!", pin=true];
+  e36_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1097.71,534.00!", pin=true];
+  e36_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1265.98,534.00!", pin=true];
+  e36_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1265.98,534.00!", pin=true];
+  e36_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1265.98,534.00!", pin=true];
+  e36_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1265.98,476.01!", pin=true];
+  e36_src_port -> e36_req [color="#64748B", style="solid", dir=none];
+  e36_req -> e36_b1 [color="#64748B", style="solid", dir=none];
+  e36_b1 -> e36_b2 [color="#64748B", style="solid", dir=none];
+  e36_b2 -> e36_b3 [color="#64748B", style="solid", dir=none];
+  e36_b3 -> e36_b4 [color="#64748B", style="solid", dir=none];
+  e36_b4 -> e36_b5 [color="#64748B", style="solid", dir=none];
+  e36_b5 -> e36_prov [color="#64748B", style="solid", dir=none];
+  e36_prov -> e36_tgt_port [color="#64748B", style="solid", dir=none];
+  e36_lbl [shape=box, label="dispatch async work", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1112.98,489.00!", pin=true];
+
+  // edge 37: worker -> audit
+  e37_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1238.98,432.91!", pin=true];
+  e37_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="745.27,243.00!", pin=true];
+  e37_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1238.98,446.91!", pin=true];
+  e37_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="759.27,243.00!", pin=true];
+  e37_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="1238.98,441.91!", pin=true];
+  e37_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1238.98,382.30!", pin=true];
+  e37_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1238.98,243.00!", pin=true];
+  e37_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1238.98,243.00!", pin=true];
+  e37_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1238.98,243.00!", pin=true];
+  e37_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="745.27,243.00!", pin=true];
+  e37_src_port -> e37_req [color="#64748B", style="solid", dir=none];
+  e37_req -> e37_b1 [color="#64748B", style="solid", dir=none];
+  e37_b1 -> e37_b2 [color="#64748B", style="solid", dir=none];
+  e37_b2 -> e37_b3 [color="#64748B", style="solid", dir=none];
+  e37_b3 -> e37_b4 [color="#64748B", style="solid", dir=none];
+  e37_b4 -> e37_b5 [color="#64748B", style="solid", dir=none];
+  e37_b5 -> e37_prov [color="#64748B", style="solid", dir=none];
+  e37_prov -> e37_tgt_port [color="#64748B", style="solid", dir=none];
+  e37_lbl [shape=box, label="append audit traces", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="964.51,236.00!", pin=true];
+
+  // edge 38: worker -> notification
+  e38_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1292.98,432.79!", pin=true];
+  e38_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1477.51,370.75!", pin=true];
+  e38_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1292.98,446.79!", pin=true];
+  e38_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1491.51,370.75!", pin=true];
+  e38_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="1292.98,441.79!", pin=true];
+  e38_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1292.98,409.11!", pin=true];
+  e38_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1292.98,370.75!", pin=true];
+  e38_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1292.98,370.75!", pin=true];
+  e38_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1292.98,370.75!", pin=true];
+  e38_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1477.51,370.75!", pin=true];
+  e38_src_port -> e38_req [color="#64748B", style="solid", dir=none];
+  e38_req -> e38_b1 [color="#64748B", style="solid", dir=none];
+  e38_b1 -> e38_b2 [color="#64748B", style="solid", dir=none];
+  e38_b2 -> e38_b3 [color="#64748B", style="solid", dir=none];
+  e38_b3 -> e38_b4 [color="#64748B", style="solid", dir=none];
+  e38_b4 -> e38_b5 [color="#64748B", style="solid", dir=none];
+  e38_b5 -> e38_prov [color="#64748B", style="solid", dir=none];
+  e38_prov -> e38_tgt_port [color="#64748B", style="solid", dir=none];
+  e38_lbl [shape=box, label="deliver notifications", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1399.54,498.00!", pin=true];
+
+  // edge 39: worker -> readmodel
+  e39_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1265.98,432.66!", pin=true];
+  e39_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1486.44,157.75!", pin=true];
+  e39_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1265.98,446.66!", pin=true];
+  e39_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1500.44,157.75!", pin=true];
+  e39_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.2900, height=0.1389, pos="1265.98,441.66!", pin=true];
+  e39_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1265.98,368.45!", pin=true];
+  e39_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1265.98,157.75!", pin=true];
+  e39_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1265.98,157.75!", pin=true];
+  e39_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1265.98,157.75!", pin=true];
+  e39_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1486.44,157.75!", pin=true];
+  e39_src_port -> e39_req [color="#64748B", style="solid", dir=none];
+  e39_req -> e39_b1 [color="#64748B", style="solid", dir=none];
+  e39_b1 -> e39_b2 [color="#64748B", style="solid", dir=none];
+  e39_b2 -> e39_b3 [color="#64748B", style="solid", dir=none];
+  e39_b3 -> e39_b4 [color="#64748B", style="solid", dir=none];
+  e39_b4 -> e39_b5 [color="#64748B", style="solid", dir=none];
+  e39_b5 -> e39_prov [color="#64748B", style="solid", dir=none];
+  e39_prov -> e39_tgt_port [color="#64748B", style="solid", dir=none];
+  e39_lbl [shape=box, label="refresh read model", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1399.54,443.00!", pin=true];
+
+  // edge 40: persistence -> opdb
+  e40_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1014.34,451.00!", pin=true];
+  e40_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1472.76,523.00!", pin=true];
+  e40_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1028.34,451.00!", pin=true];
+  e40_prov [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="1486.76,523.00!", pin=true];
+  e40_req_mask [shape=box, label="", style="filled", fillcolor="white", color="white", penwidth=0, fixedsize=true, width=0.1389, height=0.2900, pos="1033.34,451.00!", pin=true];
+  e40_b1 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1057.54,451.00!", pin=true];
+  e40_b2 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1112.98,451.00!", pin=true];
+  e40_b3 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1112.98,451.00!", pin=true];
+  e40_b4 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1112.98,451.00!", pin=true];
+  e40_b5 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1112.98,523.00!", pin=true];
+  e40_b6 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1112.98,523.00!", pin=true];
+  e40_b7 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1112.98,523.00!", pin=true];
+  e40_b8 [shape=point, label="", width=0.01, height=0.01, color="#64748B", pos="1472.76,523.00!", pin=true];
+  e40_src_port -> e40_req [color="#64748B", style="solid", dir=none];
+  e40_req -> e40_b1 [color="#64748B", style="solid", dir=none];
+  e40_b1 -> e40_b2 [color="#64748B", style="solid", dir=none];
+  e40_b2 -> e40_b3 [color="#64748B", style="solid", dir=none];
+  e40_b3 -> e40_b4 [color="#64748B", style="solid", dir=none];
+  e40_b4 -> e40_b5 [color="#64748B", style="solid", dir=none];
+  e40_b5 -> e40_b6 [color="#64748B", style="solid", dir=none];
+  e40_b6 -> e40_b7 [color="#64748B", style="solid", dir=none];
+  e40_b7 -> e40_b8 [color="#64748B", style="solid", dir=none];
+  e40_b8 -> e40_prov [color="#64748B", style="solid", dir=none];
+  e40_prov -> e40_tgt_port [color="#64748B", style="solid", dir=none];
+
 }

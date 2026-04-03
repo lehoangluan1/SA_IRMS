@@ -1,179 +1,169 @@
 digraph G {
-  rankdir=LR;
-  compound=true;
-
   graph [
-    bgcolor="white",
-    pad=0.35,
-    nodesep=0.5,
-    ranksep=0.8,
+    rankdir=LR,
+    newrank=true,
+    bgcolor="#FFFFFF",
+    pad=0.5,
+    nodesep=0.8,
+    ranksep=1.2,
     splines=polyline,
-    fontname="Segoe UI"
+    fontname="Arial",
+    dpi=300
   ];
 
   node [
-    fontname="Segoe UI",
-    fontsize=11,
-    color="#334155",
+    fontname="Arial",
+    fontsize=12,
+    color="#2C3E50",
     shape=box,
-    style="rounded,filled"
+    style="rounded,filled",
+    penwidth=2,
+    margin="0.4,0.3"
   ];
 
   edge [
-    fontname="Segoe UI",
-    fontsize=10,
-    color="#64748B",
-    arrowsize=0.7
+    fontname="Arial",
+    fontsize=9,
+    color="#7F8C8D",
+    arrowsize=1.0,
+    penwidth=1.5
   ];
 
-  "NguoiDung" [
-    label="Người dùng\nLễ tân | Phục vụ | Bếp | Thu ngân | Quản lý",
-    fillcolor="#FFFFFF"
-  ];
+  // === CLIENT TIER ===
+  users [label="Operational Users\n\nHost | Server | Kitchen\nCashier | Manager",
+         fillcolor="#ECF0F1", color="#34495E", fontsize=11, shape=box];
 
-  "Frontend" [
-    label="Ứng dụng web\n(ReactJS)",
-    fillcolor="#DBEAFE"
-  ];
+  // === PRESENTATION TIER ===
+  frontend [label="Frontend",
+           fillcolor="#FFFFFF", color="#61DAFB", fontcolor="#282C34", fontsize=11,
+           image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/react-official.png", imagescale=width, width=0.03, height=0.03, labelloc=b, penwidth=2.5];
 
-  "Gateway" [
-    label="Cổng vào hệ thống\n(Nginx)",
-    fillcolor="#BFDBFE"
-  ];
+  // === API GATEWAY ===
+  gateway [label="Gateway",
+          fillcolor="#F0F9F7", color="#009639", fontcolor="#1a1a1a", fontsize=11,
+          image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/nginx-logo-official.png", imagescale=width, width=0.4, height=0.4, labelloc=b, penwidth=2.5];
 
-  subgraph cluster_irms {
-    label="INTELLIGENT RESTAURANT MANAGEMENT SYSTEM";
+  // === BACKEND RUNTIME ===
+  subgraph cluster_runtime {
+    label="Spring Boot - Backend Runtime";
     labelloc=t;
-    fontsize=14;
-    color="#93C5FD";
-    penwidth=1.2;
+    fontsize=13;
+    fontcolor="#FFFFFF";
+    color="#6cb33f";
+    penwidth=2;
     style="rounded,filled";
-    fillcolor="#EFF6FF";
+    fillcolor="#f6f6f6";
+    margin="20,20";
 
-    subgraph cluster_services {
-      label="CÁC DỊCH VỤ NGHIỆP VỤ";
+    appLayer [label="Application",
+              fillcolor="#F5FBF0", color="#6cb33f", fontcolor="#1a1a1a", fontsize=10,
+              image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/spring-logo.png", imagescale=width, width=0.4, height=0.4, labelloc=b, penwidth=2.5];
+
+    subgraph cluster_modules {
+      label="Business Domain Modules";
       labelloc=t;
-      fontsize=12;
-      color="#A7F3D0";
-      penwidth=1.1;
+      fontsize=11;
+      fontcolor="#16A085";
+      color="#16A085";
+      penwidth=1.5;
       style="rounded,filled";
-      fillcolor="#ECFDF5";
+      fillcolor="#D5F4E6";
+      margin="15,15";
 
-      "ReservationService" [
-        label="Reservation & Seating Service\n(Spring Boot)",
-        fillcolor="#D1FAE5"
-      ];
-      "OrderingService" [
-        label="Ordering Service\n(Spring Boot)",
-        fillcolor="#D1FAE5"
-      ];
-      "KitchenService" [
-        label="Kitchen Coordination Service\n(Spring Boot)",
-        fillcolor="#D1FAE5"
-      ];
-      "BillingService" [
-        label="Billing Service\n(Spring Boot)",
-        fillcolor="#D1FAE5"
-      ];
-      "InventoryService" [
-        label="Inventory Service\n(Spring Boot)",
-        fillcolor="#D1FAE5"
-      ];
-      "ReportingService" [
-        label="Reporting Service\n(Spring Boot)",
-        fillcolor="#D1FAE5"
-      ];
-      "AccessService" [
-        label="IAM / Access Service\n(Spring Boot)",
-        fillcolor="#D1FAE5"
-      ];
+      ordering [label="Ordering\nModule", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      reservation [label="Reservation\n& Seating", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      kitchen [label="Kitchen\nCoordination", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      billing [label="Billing &\nSettlement", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      inventory [label="Inventory\nMonitoring", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      governance [label="IAM\n& Audit", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      reporting [label="Reporting", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
     }
 
-    subgraph cluster_data {
-      label="DỮ LIỆU";
-      labelloc=t;
-      fontsize=12;
-      color="#FCA5A5";
-      penwidth=1.1;
-      style="rounded,filled";
-      fillcolor="#FEF2F2";
-
-      "OperationalDB" [
-        label="Cơ sở dữ liệu nghiệp vụ\n(PostgreSQL)",
-        shape=cylinder,
-        style="filled",
-        fillcolor="#FDE2E2"
-      ];
-      "ReportingDB" [
-        label="Mô hình đọc và báo cáo\n(PostgreSQL)",
-        shape=cylinder,
-        style="filled",
-        fillcolor="#FDE2E2"
-      ];
-    }
+    worker [label="Background Worker\n\nOutbox Pattern\nAsync Tasks | Notifications",
+           fillcolor="#FF9800", color="#FFFFFF", fontcolor="#FFFFFF", fontsize=10];
   }
 
-  subgraph cluster_external {
-    label="TÍCH HỢP NGOÀI";
+  // === DATA TIER ===
+  subgraph cluster_data {
+    label="Persistent Data Layer - PostgreSQL";
     labelloc=t;
     fontsize=12;
-    color="#CBD5E1";
-    penwidth=1.0;
-    style="rounded,dashed";
+    fontcolor="#336791";
+    color="#336791";
+    penwidth=2;
+    style="rounded,filled";
+    fillcolor="#f0f0f0";
+    margin="15,15";
 
-    "PaymentGateway" [
-      label="Cổng thanh toán",
-      fillcolor="#F8FAFC"
-    ];
-    "NotificationChannel" [
-      label="Kênh gửi thông báo",
-      fillcolor="#F8FAFC"
-    ];
-    "ReceiptPrinter" [
-      label="Máy in biên lai",
-      fillcolor="#F8FAFC"
-    ];
+    operationalDb [label="Database",
+                   shape=cylinder, fillcolor="#F0F5FB", color="#336791", fontcolor="#1a1a1a",
+                   image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/postgresql-elephant.png", imagescale=width, width=0.4, height=0.4, labelloc=b, penwidth=2.5];
+    reportingDb [label="Analytics",
+                 shape=cylinder, fillcolor="#F0F5FB", color="#336791", fontcolor="#1a1a1a",
+                 image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/postgresql-elephant.png", imagescale=width, width=0.4, height=0.4, labelloc=b, penwidth=2.5];
   }
 
-  "NguoiDung" -> "Frontend" [label="HTTPS"];
-  "Frontend" -> "Gateway" [label="HTTPS / JSON"];
+  // === EXTERNAL SERVICES ===
+  subgraph cluster_external {
+    label="External Integrations";
+    labelloc=t;
+    fontsize=12;
+    fontcolor="#5B4B8A";
+    color="#5B4B8A";
+    penwidth=1.5;
+    style="rounded,dashed";
+    fillcolor="#EBDEF0";
+    margin="15,15";
 
-  "Gateway" -> "ReservationService";
-  "Gateway" -> "OrderingService";
-  "Gateway" -> "KitchenService";
-  "Gateway" -> "BillingService";
-  "Gateway" -> "InventoryService";
-  "Gateway" -> "ReportingService";
-  "Gateway" -> "AccessService";
+    payment [label="Payment Gateway\n\nAuthorize | Capture\nRefund Processing", fillcolor="#9B59B6", color="#FFFFFF", fontcolor="#FFFFFF"];
+    notification [label="Notification Service\n\nEmail | SMS\nPush Notifications", fillcolor="#9B59B6", color="#FFFFFF", fontcolor="#FFFFFF"];
+    printer [label="Receipt Printer\n\nKitchen Display\nPOS Terminal Output", fillcolor="#9B59B6", color="#FFFFFF", fontcolor="#FFFFFF"];
+  }
 
-  "ReservationService" -> "OperationalDB";
-  "OrderingService" -> "OperationalDB";
-  "KitchenService" -> "OperationalDB";
-  "BillingService" -> "OperationalDB";
-  "InventoryService" -> "OperationalDB";
-  "AccessService" -> "OperationalDB";
-  "ReportingService" -> "ReportingDB";
+  // === RANKING ===
+  { rank=same; ordering; reservation; kitchen; }
+  { rank=same; billing; inventory; governance; }
+  { rank=same; operationalDb; reportingDb; }
+  { rank=same; payment; notification; printer; }
 
-  "OperationalDB" -> "ReportingDB" [
-    style=dashed,
-    label="làm mới dữ liệu đọc"
-  ];
+  // === DATA FLOW - CLIENT TIER ===
+  users -> frontend [label="HTTPS", color="#34495E", penwidth=2];
+  frontend -> gateway [label="HTTPS/JSON", color="#34495E", penwidth=2];
+  gateway -> appLayer [color="#34495E", penwidth=2];
 
-  "BillingService" -> "PaymentGateway" [
-    style=dashed,
-    label="giao dịch thanh toán"
-  ];
-  "ReservationService" -> "NotificationChannel" [
-    style=dashed,
-    label="xác nhận đặt bàn"
-  ];
-  "BillingService" -> "NotificationChannel" [
-    style=dashed,
-    label="gửi biên lai điện tử"
-  ];
-  "BillingService" -> "ReceiptPrinter" [
-    style=dashed,
-    label="in biên lai"
-  ];
+  // === API TO MODULES ===
+  appLayer -> ordering [color="#16A085"];
+  appLayer -> reservation [color="#16A085"];
+  appLayer -> kitchen [color="#16A085"];
+  appLayer -> billing [color="#16A085"];
+  appLayer -> inventory [color="#16A085"];
+  appLayer -> governance [color="#16A085"];
+  appLayer -> reporting [color="#16A085"];
 
+  // === MODULES TO DATABASE ===
+  ordering -> operationalDb [color="#336791"];
+  reservation -> operationalDb [color="#336791"];
+  kitchen -> operationalDb [color="#336791"];
+  billing -> operationalDb [color="#336791"];
+  inventory -> operationalDb [color="#336791"];
+  governance -> operationalDb [color="#336791"];
+
+  // === INTER-MODULE COMMUNICATION ===
+  ordering -> kitchen [label="confirmed items", style="solid", color="#27AE60"];
+  ordering -> billing [label="billable snapshot", style="solid", color="#27AE60"];
+
+  // === EVENT STREAMS (ASYNC) ===
+  ordering -> worker [label="order events", style="dashed", color="#E67E22"];
+  kitchen -> worker [label="serve events", style="dashed", color="#E67E22"];
+  billing -> worker [label="payment events", style="dashed", color="#E67E22"];
+  inventory -> worker [label="stock alerts", style="dashed", color="#E67E22"];
+
+  // === WORKER OUTPUTS ===
+  worker -> reportingDb [label="refresh projections", color="#336791"];
+  worker -> payment [label="authorize/capture/refund", style="dashed", color="#8E44AD"];
+  worker -> notification [label="send notifications", style="dashed", color="#8E44AD"];
+  worker -> printer [label="print jobs", style="dashed", color="#8E44AD"];
+
+  // === REPORTING ===
+  reporting -> reportingDb [label="query", color="#336791"];
 }

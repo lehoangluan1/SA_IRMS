@@ -1,99 +1,86 @@
 digraph G {
   graph [
-    rankdir=TB,
+    rankdir=LR,
     newrank=true,
+    compound=true,
     bgcolor="white",
-    splines=polyline,
-    nodesep=0.55,
-    ranksep=0.85,
-    pad=0.4,
+    pad=0.34,
+    nodesep=0.58,
+    ranksep=1.05,
+    splines=ortho,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="Logical View - Core Service Chain of IRMS"
+    label="UML Package Diagram - Core Logical Service Chain of IRMS"
   ];
 
-  node [
-    shape=box,
-    style="rounded,filled",
-    fontname="DejaVu Sans",
-    fontsize=10.5,
-    color="#5B6B8C",
-    penwidth=1.2,
-    fillcolor="#F8FAFC",
-    margin="0.08,0.05"
-  ];
+  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.6, margin="0.14,0.08"];
+  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.2];
 
-  edge [
-    fontname="DejaVu Sans",
-    fontsize=9,
-    color="#5B6B8C",
-    arrowsize=0.7
-  ];
-
-  subgraph cluster_reference {
-    label="Reference Capabilities";
-    color="#9BB5FF";
+  subgraph cluster_model {
+    label="<<model>> Logical View";
+    color="#94A3B8";
+    penwidth=1.1;
     style="rounded";
-    menu [label="Menu Management\nmenu, modifier,\nprice and availability", fillcolor="#EEF4FF"];
-    inventory [label="Inventory Monitoring\nrecipe map,\nstock condition", fillcolor="#EEF4FF"];
+
+    subgraph cluster_reference {
+      label="<<package>> Reference Packages";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      menu [label="Menu Management"];
+      inventory [label="Inventory Monitoring"];
+    }
+
+    subgraph cluster_core {
+      label="<<package>> Core Service Chain";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      seating [label="Reservation and Seating"];
+      ordering [label="Ordering"];
+      kitchen [label="Kitchen Coordination"];
+      billing [label="Billing and Settlement"];
+    }
+
+    subgraph cluster_governance {
+      label="<<package>> Governance Packages";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      iam [label="Identity and Access Control"];
+      audit [label="Audit and Compliance"];
+    }
+
+    subgraph cluster_observation {
+      label="<<package>> Observation and Integration";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      facts [label="Operational Facts"];
+      reporting [label="Reporting and Analytics"];
+      notification [label="Notification Integration"];
+    }
   }
-
-  subgraph cluster_core {
-    label="Core Service Chain";
-    color="#9BB5FF";
-    style="rounded";
-    seating [label="Reservation & Seating\nreservation, waitlist,\ncheck-in, table session", fillcolor="#F5F8FC"];
-    ordering [label="Ordering\norder, item, modifier,\npricing snapshot", fillcolor="#F5F8FC"];
-    kitchen [label="Kitchen Coordination\nticket routing,\nstation queue, status", fillcolor="#F5F8FC"];
-    billing [label="Billing & Settlement\nbill, split, payment,\nrefund, receipt", fillcolor="#F5F8FC"];
-  }
-
-  subgraph cluster_governance {
-    label="Governance Capabilities";
-    color="#9BB5FF";
-    style="rounded";
-    iam [label="Identity & Access Control\nauthentication, role,\nauthorization policy", fillcolor="#EEF4FF"];
-    audit [label="Audit & Compliance\naudit trail,\noverride and refund trace", fillcolor="#EEF4FF"];
-  }
-
-  subgraph cluster_support {
-    label="Observation and Integration Capabilities";
-    color="#9BB5FF";
-    style="rounded";
-    reporting [label="Reporting & Analytics\nsales fact,\nkitchen SLA,\nsettlement KPI", fillcolor="#EEF4FF"];
-    notif [label="Notification Integration\nreservation notice,\nreceipt, operational alert", fillcolor="#EEF4FF"];
-  }
-
-  facts [label="Published Operational Facts\nreservation event,\norder fact, serve fact,\npayment fact", fillcolor="#EEF4FF"];
-
-  { rank=same; menu; seating; iam; }
-  { rank=same; inventory; ordering; audit; }
-  { rank=same; kitchen; }
-  { rank=same; billing; }
-  { rank=same; facts; }
-  { rank=same; reporting; notif; }
 
   seating -> ordering [label="table context"];
+  menu -> ordering [label="item rules"];
   ordering -> kitchen [label="confirmed items"];
   ordering -> billing [label="billable snapshot"];
   kitchen -> billing [label="served facts"];
-  billing -> seating [label="session closure", constraint=false];
+  billing -> seating [label="session closure"];
 
-  menu -> ordering [style=dashed, constraint=false];
-  inventory -> ordering [style=dashed, constraint=false];
-  inventory -> menu [style=dashed, constraint=false];
+  inventory -> ordering [label="recipe and stock context"];
+  inventory -> notification [label="low-stock alert"];
 
-  iam -> ordering [style=dashed, constraint=false];
-  iam -> billing [style=dashed, constraint=false];
-  iam -> audit [style=dashed, constraint=false];
+  iam -> ordering [label="authorize"];
+  iam -> billing [label="authorize"];
 
-  seating -> facts [style=dashed, constraint=false];
-  ordering -> facts [style=dashed, constraint=false];
-  kitchen -> facts [style=dashed, constraint=false];
-  billing -> facts [style=dashed, constraint=false];
+  seating -> facts [label="reservation events"];
+  ordering -> facts [label="order events"];
+  kitchen -> facts [label="kitchen events"];
+  billing -> facts [label="settlement events"];
 
-  facts -> audit [style=dashed, constraint=false];
-  facts -> reporting [style=dashed, constraint=false];
-  facts -> notif [style=dashed, constraint=false];
-  inventory -> notif [style=dashed, constraint=false];
+  facts -> audit [label="traceability"];
+  facts -> reporting [label="analytics feed"];
+  facts -> notification [label="operational notice"];
 }

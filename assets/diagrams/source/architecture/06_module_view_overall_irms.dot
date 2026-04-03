@@ -1,40 +1,81 @@
 digraph G {
-  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.4];
-  node [fontname="DejaVu Sans", fontsize=12];
-  edge [fontname="DejaVu Sans", fontsize=11, color="#475569", arrowsize=0.7];
-  subgraph cluster_1 {
-    label="IRMS Modules";
+  graph [
+    rankdir=LR,
+    newrank=true,
+    compound=true,
+    bgcolor="white",
+    pad=0.34,
+    nodesep=0.58,
+    ranksep=1.02,
+    splines=ortho,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="UML Package Diagram - Overall Module Structure of IRMS"
+  ];
+
+  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.8, margin="0.14,0.08"];
+  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.2];
+
+  subgraph cluster_model {
+    label="<<model>> Module View";
     color="#94A3B8";
+    penwidth=1.1;
     style="rounded";
-    "Table_Reservation" [label="Table & Reservation", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "Menu" [label="Menu", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "Ordering" [label="Ordering", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "Kitchen_Coordination" [label="Kitchen Coordination", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "Billing_Payment" [label="Billing & Payment", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "Inventory" [label="Inventory", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "Reporting" [label="Reporting", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "Notification" [label="Notification", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "Identity_Access_Control" [label="Identity & Access Control", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
-    "Audit_Log" [label="Audit Log", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+
+    subgraph cluster_core {
+      label="<<package>> Core Transaction Modules";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      reservation [label="Table and Reservation"];
+      menu [label="Menu"];
+      ordering [label="Ordering"];
+      kitchen [label="Kitchen Coordination"];
+      billing [label="Billing and Payment"];
+    }
+
+    subgraph cluster_support {
+      label="<<package>> Support Modules";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      inventory [label="Inventory"];
+      reporting [label="Reporting"];
+      notification [label="Notification"];
+    }
+
+    subgraph cluster_governance {
+      label="<<package>> Governance Modules";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      iam [label="Identity and Access Control"];
+      audit [label="Audit Log"];
+    }
   }
-  "Ordering" -> "Table_Reservation" [label="table / session context"];
-  "Ordering" -> "Menu" [label="item validation and pricing"];
-  "Ordering" -> "Kitchen_Coordination" [label="confirmed order items"];
-  "Billing_Payment" -> "Ordering" [label="order snapshot"];
-  "Billing_Payment" -> "Table_Reservation" [label="release session"];
-  "Inventory" -> "Ordering" [label="subscribe order events", style="dashed"];
-  "Inventory" -> "Billing_Payment" [label="subscribe payment events", style="dashed"];
-  "Reporting" -> "Ordering" [];
-  "Reporting" -> "Billing_Payment" [];
-  "Reporting" -> "Inventory" [];
-  "Reporting" -> "Audit_Log" [];
-  "Notification" -> "Table_Reservation" [label="reservation events", style="dashed"];
-  "Notification" -> "Billing_Payment" [label="receipt events", style="dashed"];
-  "Notification" -> "Inventory" [label="low stock alerts", style="dashed"];
-  "Identity_Access_Control" -> "Ordering" [style="dashed"];
-  "Identity_Access_Control" -> "Billing_Payment" [style="dashed"];
-  "Identity_Access_Control" -> "Reporting" [style="dashed"];
-  "Audit_Log" -> "Ordering" [style="dashed"];
-  "Audit_Log" -> "Billing_Payment" [style="dashed"];
-  "Audit_Log" -> "Identity_Access_Control" [style="dashed"];
+
+  reservation -> ordering [label="table and session context"];
+  menu -> ordering [label="item validation and pricing"];
+  ordering -> kitchen [label="confirmed order items"];
+  ordering -> billing [label="order snapshot"];
+  billing -> reservation [label="release session"];
+
+  inventory -> ordering [label="recipe and availability context"];
+  kitchen -> inventory [label="served item event"];
+
+  ordering -> reporting [label="sales facts"];
+  billing -> reporting [label="settlement facts"];
+  inventory -> reporting [label="stock facts"];
+
+  reservation -> notification [label="reservation event"];
+  billing -> notification [label="receipt event"];
+  inventory -> notification [label="low-stock alert"];
+
+  iam -> ordering [label="authorize"];
+  iam -> billing [label="authorize"];
+  iam -> reporting [label="authorize"];
+
+  ordering -> audit [label="override trace"];
+  billing -> audit [label="refund trace"];
+  iam -> audit [label="policy trace"];
 }

@@ -1,68 +1,84 @@
-
 digraph G {
+  graph [
+    rankdir=TB,
+    newrank=true,
+    compound=true,
+    bgcolor="white",
+    pad=0.34,
+    nodesep=0.58,
+    ranksep=0.98,
+    splines=ortho,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="UML Package Diagram - Logical Capability Layers of IRMS"
+  ];
 
-graph [bgcolor="#F3F4F6", pad="0.3", nodesep="0.45", ranksep="0.7", splines=ortho, fontname="Helvetica"];
-node [fontname="Helvetica", shape=box, style="rounded,filled", fillcolor="#F5F8FC", color="#5B6B8C", penwidth=1.2];
-edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.6, margin="0.14,0.08"];
+  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.2];
 
-labelloc="t";
-label="Logical View Overview - IRMS Capability Layers";
-rankdir=TB;
+  subgraph cluster_model {
+    label="<<model>> Logical View";
+    color="#94A3B8";
+    penwidth=1.1;
+    style="rounded";
 
-subgraph cluster_all {
-  label="IRMS Logical Capability Map";
-  color="#9BB5FF"; style="rounded";
+    subgraph cluster_experience {
+      label="<<package>> Experience Layer";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      reservation [label="Reservation and Seating"];
+      ordering [label="Ordering"];
+      kitchen [label="Kitchen Coordination"];
+      billing [label="Billing and Settlement"];
+    }
 
-  subgraph cluster_experience {
-    label="Frontline Experience Capabilities";
-    color="#C9D7EE"; style="rounded";
-    host [label="Table & Reservation\nreservation, waitlist,\ncheck-in, seating"];
-    order [label="Ordering\norder, item, modifier,\npricing snapshot"];
-    kitchen [label="Kitchen Coordination\nticket, station queue,\npreparation status"];
-    billing [label="Billing & Settlement\nbill, split, payment,\nrefund, receipt"];
+    subgraph cluster_reference {
+      label="<<package>> Reference Layer";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      menu [label="Menu Management"];
+      inventory [label="Inventory Monitoring"];
+    }
+
+    subgraph cluster_governance {
+      label="<<package>> Governance Layer";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      iam [label="Identity and Access Control"];
+      audit [label="Audit and Compliance"];
+    }
+
+    subgraph cluster_insight {
+      label="<<package>> Insight and Integration Layer";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      notification [label="Notification Integration"];
+      reporting [label="Reporting and Analytics"];
+    }
   }
 
-  subgraph cluster_reference {
-    label="Reference & Planning Capabilities";
-    color="#C9D7EE"; style="rounded";
-    menu [label="Menu Management\nmenu item, category,\nmodifier group, pricing rule"];
-    inventory [label="Inventory Monitoring\ningredient stock,\nrecipe usage, threshold"];
-  }
+  reservation -> ordering [label="table context"];
+  ordering -> kitchen [label="confirmed order"];
+  ordering -> billing [label="billable snapshot"];
+  kitchen -> billing [label="served facts"];
 
-  subgraph cluster_control {
-    label="Control & Governance Capabilities";
-    color="#C9D7EE"; style="rounded";
-    iam [label="Identity & Access Control\nuser, role, permission,\nauthorization policy"];
-    audit [label="Audit & Compliance\naudit trail, override,\nrefund traceability"];
-  }
+  menu -> ordering [label="availability and pricing"];
+  inventory -> menu [label="hide or restore items"];
+  inventory -> notification [label="low-stock alert"];
 
-  subgraph cluster_support {
-    label="Support & Insight Capabilities";
-    color="#C9D7EE"; style="rounded";
-    notif [label="Notification Integration\nreservation confirmation,\nlow stock alert, e-receipt"];
-    reporting [label="Reporting & Analytics\nsales KPI, bottleneck,\nrefund statistics"];
-  }
-}
+  iam -> reservation [label="authorize"];
+  iam -> ordering [label="authorize"];
+  iam -> billing [label="authorize"];
+  ordering -> audit [label="override trace"];
+  billing -> audit [label="refund trace"];
 
-menu -> order [label="availability + price snapshot"];
-inventory -> menu [label="hide/restore items"];
-order -> kitchen [label="confirmed order items"];
-order -> billing [label="billable order snapshot"];
-billing -> "Table Release" [shape=box, style="rounded,filled", fillcolor="#EEF4FF"];
-"Table Release" -> host [label="close table session"];
-billing -> inventory [style=dashed, label="finalized consumption event"];
-host -> order [label="open table context"];
-inventory -> notif [style=dashed, label="low stock alert"];
-billing -> notif [style=dashed, label="receipt / payment event"];
-host -> notif [style=dashed, label="reservation / waitlist event"];
-order -> audit [style=dashed, label="override / cancel trace"];
-billing -> audit [style=dashed, label="refund / payment trace"];
-iam -> host [style=dashed, label="authorize"];
-iam -> order [style=dashed, label="authorize"];
-iam -> billing [style=dashed, label="authorize"];
-iam -> audit [style=dashed, label="policy basis"];
-host -> reporting [style=dashed, label="occupancy facts"];
-order -> reporting [style=dashed, label="sales facts"];
-kitchen -> reporting [style=dashed, label="prep latency facts"];
-billing -> reporting [style=dashed, label="settlement facts"];
+  reservation -> reporting [label="occupancy facts"];
+  ordering -> reporting [label="sales facts"];
+  kitchen -> reporting [label="prep latency"];
+  billing -> reporting [label="settlement facts"];
+  billing -> notification [label="receipt event"];
 }

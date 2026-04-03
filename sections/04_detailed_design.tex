@@ -1,11 +1,12 @@
 ﻿\subsection{Góc nhìn lớp}
+\label{sec:detailed-design-class-view}
 \subsubsection{Phạm vi bao phủ của sơ đồ lớp}
 Sơ đồ lớp được tổ chức theo năm hướng chính nhằm bao phủ đầy đủ miền nghiệp vụ của IRMS:
 \begin{enumerate}
-  \item \textbf{Ngữ cảnh khách hàng và chi nhánh}: bổ sung \texttt{CustomerProfile} và \texttt{Branch} để việc đặt bàn, lập hóa đơn, quản lý tồn kho và phân công nhân sự luôn được xác định rõ theo khách hàng và theo địa điểm vận hành.
-  \item \textbf{Bao phủ đầy đủ hơn phần tùy biến món}: bổ sung \texttt{ModifierOption} và \texttt{OrderItemModifier} để lưu được lựa chọn chi tiết ở mức tùy chọn, thay vì chỉ dừng ở mức nhóm modifier.
-  \item \textbf{Bao phủ khuyến mãi và giảm giá}: bổ sung \texttt{PromotionCampaign} và \texttt{AppliedDiscount} để hóa đơn phản ánh đúng các chương trình ưu đãi được áp dụng trong từng giao dịch.
-  \item \textbf{Bao phủ quản trị nhân sự theo ca}: bổ sung \texttt{ShiftAssignment} vì đề bài IRMS có nêu rõ nhu cầu quản trị và sắp lịch nhân viên.
+  \item \textbf{Ngữ cảnh khách hàng và chi nhánh}: sơ đồ thể hiện \texttt{CustomerProfile} và \texttt{Branch} để việc đặt bàn, lập hóa đơn, quản lý tồn kho và phân công nhân sự luôn được xác định rõ theo khách hàng và theo địa điểm vận hành.
+  \item \textbf{Bao phủ đầy đủ hơn phần tùy biến món}: sơ đồ thể hiện \texttt{ModifierOption} và \texttt{OrderItemModifier} để lưu được lựa chọn chi tiết ở mức tùy chọn, thay vì chỉ dừng ở mức nhóm modifier.
+  \item \textbf{Bao phủ khuyến mãi và giảm giá}: sơ đồ thể hiện \texttt{PromotionCampaign} và \texttt{AppliedDiscount} để hóa đơn phản ánh đúng các chương trình ưu đãi được áp dụng trong từng giao dịch.
+  \item \textbf{Bao phủ quản trị nhân sự theo ca}: sơ đồ thể hiện \texttt{ShiftAssignment} vì IRMS có nêu rõ nhu cầu quản trị và sắp lịch nhân viên.
   \item \textbf{Làm rõ các giao diện mở rộng}: các giao diện cho thanh toán, thông báo và phân quyền được thể hiện riêng để chỉ ra rõ các điểm mở rộng và các chính sách nhạy cảm của hệ thống.
 \end{enumerate}
 
@@ -16,7 +17,7 @@ Thay vào đó, nó được dùng để biểu diễn \textbf{hành vi nghiệp
 thay vì chỉ liệt kê thuộc tính.
 Cách mô hình hóa này phù hợp hơn với mục tiêu của báo cáo,
 vì nó làm rõ hệ thống \emph{vận hành như thế nào},
-không chỉ \emph{lưu trữ dữ liệu gì trong cơ sở dữ liệu}.
+không chỉ \emph{lưu trữ dữ liệu gì trong cơ sở dữ liệu}; phần biện minh cho góc nhìn lớp, mức chi tiết của từng cụm lớp và mối liên hệ của chúng với kiến trúc tổng thể được dẫn ngay tới Bảng~\ref{tab:appendix-traceability}, Bảng~\ref{tab:appendix-view-rationale} và Bảng~\ref{tab:appendix-component-rationale}.
 
 \begin{landscape}
 \begin{figure}[H]
@@ -126,7 +127,7 @@ Hình~\ref{fig:irms-class-billing-inventory} tập trung vào vùng nhạy cảm
 
 Ưu điểm lớn nhất của sơ đồ này là cho thấy kiến trúc lớp của IRMS không chỉ giải quyết việc \enquote{thực hiện đúng chức năng}, mà còn giải quyết việc \enquote{kiểm soát được hậu quả vận hành} khi xảy ra hoàn tiền, điều chỉnh kho, ghi đè giá hay tranh chấp thanh toán. Đây là điểm làm cho phần thiết kế chặt chẽ hơn dưới góc nhìn kiến trúc phần mềm trong môi trường vận hành thực tế.
 
-\subsection{Giải thích theo từng cụm lớp}
+\subsection{Giải thích theo từng cụm lớp}\label{sec:detailed-design-clusters}
 
 Phần này được trình bày theo trình tự \emph{quan sát sơ đồ} $\rightarrow$ \emph{xác định cụm trách nhiệm} $\rightarrow$ \emph{làm rõ lý do mô hình hóa}. Cách trình bày này giúp phần sơ đồ lớp không dừng lại ở mức liệt kê lớp, mà làm rõ vai trò trong miền, ranh giới trách nhiệm và quyết định thiết kế của từng mô-đun.
 
@@ -374,12 +375,14 @@ Hình~\ref{fig:irms-class-governance-module} trình bày phần governance ở m
   \item Nó cũng hỗ trợ tốt cho phần biện minh nguyên lý SOLID, đặc biệt là SRP, OCP và DIP ở vùng policy, audit và reporting.
 \end{itemize}
 
+\FloatBarrier
 \subsection{Thiết kế hành vi dựa trên ca sử dụng}
 Phần này mở rộng trực tiếp từ các ca sử dụng đã đặc tả ở trên. Phần đặc tả ca sử dụng xác định tác nhân, mục tiêu, điều kiện và kết quả nghiệp vụ; còn sơ đồ hoạt động diễn đạt thứ tự xử lý, điểm rẽ nhánh và nơi phát sinh ngoại lệ trong từng luồng vận hành. Vì vậy, các sơ đồ dưới đây được xây dựng theo đúng ranh giới vận hành hiện tại của IRMS: lễ tân, phục vụ, bếp, thu ngân, quản lý và hệ thống IRMS.
 
 Một điểm quan trọng của nhóm sơ đồ này là mức độ chi tiết không hoàn toàn giống nhau. Những ca sử dụng nằm trên tuyến nghiệp vụ nóng như nhận khách, gọi món, gửi bếp, cập nhật chế biến, tạo hóa đơn, thanh toán, hoàn tiền và cập nhật tồn kho được mở rộng sâu hơn vì đây là các vị trí quyết định trực tiếp đến độ trễ phản hồi, độ tin cậy giao dịch và khả năng truy vết của toàn hệ thống.
 
-\subsubsection{Nhóm đặt bàn và bàn ăn}
+\activitygroup{Nhóm đặt bàn và bàn ăn}
+
 \activitydiagramfigure{uc-res-01-create-reservation}{Sơ đồ hoạt động cho UC-RES-01 -- Tạo đặt bàn}{fig:activity-uc-res-01-create-reservation}
 
 \activitydiagramfigure{uc-res-02-checkin-and-seat}{Sơ đồ hoạt động cho UC-RES-02 -- Nhận khách và sắp bàn}{fig:activity-uc-res-02-checkin-and-seat}
@@ -403,8 +406,8 @@ Giá trị nổi bật của sơ đồ là khả năng nối được ba miền 
 \paragraph{Phân tích sơ đồ UC-RES-05.}
 Sơ đồ thông báo khách hàng cho thấy đây không phải một thao tác phụ có thể bỏ qua, mà là một luồng nghiệp vụ có đầu vào, điều kiện và trạng thái riêng. Trong IRMS, việc thông báo đặt bàn thành công, nhắc giờ đến, gọi khách từ danh sách chờ hay xác nhận thay đổi không nên được mô tả như vài dòng tích hợp kỹ thuật ở rìa hệ thống. Trái lại, nó cần được hiểu là \textbf{hệ quả được kiểm soát của sự kiện nghiệp vụ}. Cách mô tả này giúp tách rõ phần nào thuộc trách nhiệm của lõi nghiệp vụ, phần nào thuộc bộ kết nối gửi thông báo và phần nào cần cơ chế retry hoặc fallback.
 
-\clearpage
-\subsubsection{Nhóm gọi món và điều phối bếp}
+\activitygroup{Nhóm gọi món và điều phối bếp}
+
 \activitydiagramfigure{uc-ord-01-create-table-order}{Sơ đồ hoạt động cho UC-ORD-01 -- Tạo đơn gọi món tại bàn}{fig:activity-uc-ord-01-create-table-order}
 
 \paragraph{Phân tích sơ đồ UC-ORD-01.}
@@ -439,8 +442,8 @@ Về mặt kiến trúc, sơ đồ cũng cho thấy quyết định ưu tiên ph
 
 \activitydiagramfigure{uc-ord-04-edit-or-cancel-item}{Sơ đồ hoạt động cho UC-ORD-04 -- Sửa hoặc hủy dòng món}{fig:activity-uc-ord-04-edit-or-cancel-item}
 
-\clearpage
-\subsubsection{Nhóm hóa đơn, thanh toán và biên lai}
+\activitygroup{Nhóm hóa đơn, thanh toán và biên lai}
+
 \activitydiagramfigure{uc-bil-01-create-bill}{Sơ đồ hoạt động cho UC-BIL-01 -- Tạo hóa đơn cho bàn}{fig:activity-uc-bil-01-create-bill}
 
 \paragraph{Phân tích sơ đồ UC-BIL-01.}
@@ -466,8 +469,8 @@ Sơ đồ hoàn tiền hiện đã thể hiện đầy đủ hơn các điểm k
 
 Một chi tiết đáng chú ý là sơ đồ đã tách rõ nhánh \enquote{chờ rà soát} khi cổng thanh toán không chấp nhận hoặc phản hồi không rõ ràng. Nhờ đó báo cáo có thể giải thích trạng thái nghiệp vụ chặt chẽ hơn, thay vì gom mọi trường hợp không thành công vào một nhãn lỗi duy nhất.
 
-\clearpage
-\subsubsection{Nhóm tồn kho, cảnh báo và phân tích}
+\activitygroup{Nhóm tồn kho, cảnh báo và phân tích}
+
 \activitydiagramfigure{uc-inv-01-update-stock-consumption}{Sơ đồ hoạt động cho UC-INV-01 -- Cập nhật tiêu hao tồn kho sau phục vụ}{fig:activity-uc-inv-01-update-stock-consumption}
 
 \paragraph{Phân tích sơ đồ UC-INV-01.}
@@ -486,8 +489,8 @@ Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \e
 
 \activitydiagramfigure{uc-rep-01-view-revenue-and-operations-report}{Sơ đồ hoạt động cho UC-REP-01 -- Xem báo cáo doanh thu và vận hành}{fig:activity-uc-rep-01-view-revenue-and-operations-report}
 
-\clearpage
-\subsubsection{Nhóm quản trị cấu hình và vận hành}
+\activitygroup{Nhóm quản trị cấu hình và vận hành}
+
 \activitydiagramfigure{uc-adm-01-manage-menu-and-pricing}{Sơ đồ hoạt động cho UC-ADM-01 -- Quản lý thực đơn và giá bán}{fig:activity-uc-adm-01-manage-menu-and-pricing}
 
 \activitydiagramfigure{uc-adm-02-manage-roles-and-permissions}{Sơ đồ hoạt động cho UC-ADM-02 -- Quản lý vai trò và phân quyền}{fig:activity-uc-adm-02-manage-roles-and-permissions}

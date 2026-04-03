@@ -2,91 +2,105 @@ digraph G {
   graph [
     rankdir=TB,
     newrank=true,
+    compound=true,
     bgcolor="white",
+    pad=0.34,
+    nodesep=0.56,
+    ranksep=0.96,
     splines=polyline,
-    nodesep=0.55,
-    ranksep=0.85,
-    pad=0.4,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="Module View - Supporting and Cross-Cutting Modules of IRMS"
+    label="UML Package Diagram - Supporting and Cross-Cutting Modules of IRMS"
   ];
 
   node [
-    shape=box,
-    style="rounded,filled",
-    fillcolor="#F8FAFC",
-    color="#334155",
+    shape=folder,
+    style="filled",
+    fillcolor="#FFFFFF",
+    color="#64748B",
+    penwidth=1.0,
     fontname="DejaVu Sans",
-    fontsize=11,
-    penwidth=1.2,
-    margin="0.08,0.05"
+    fontsize=9.5,
+    margin="0.14,0.08"
   ];
 
   edge [
+    style=dashed,
+    arrowhead=vee,
+    color="#64748B",
+    penwidth=0.9,
     fontname="DejaVu Sans",
-    fontsize=9,
-    color="#475569",
-    arrowsize=0.75
+    fontsize=8.0
   ];
 
-  subgraph cluster_sources {
-    label="Operational Source Modules";
+  subgraph cluster_model {
+    label="<<model>> Module View";
     color="#94A3B8";
+    penwidth=1.1;
     style="rounded";
-    reservation [label="Reservation\nreservation, seating,\nwaitlist state"];
-    ordering [label="Ordering\norder, modifier,\nstate transition"];
-    kitchen [label="Kitchen\nstation status,\nserve handoff"];
-    billing [label="Billing\npayment, refund,\nreceipt state"];
+
+    subgraph cluster_sources {
+      label="<<package>> Operational Source Packages";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+
+      reservation_source [label="Reservation Source\nreservation events,\nwaitlist state,\nseating updates"];
+      ordering_source [label="Ordering Source\norder events,\nmodifier updates,\nstate transitions"];
+      kitchen_source [label="Kitchen Source\ndish-ready events,\nserve events,\nstation updates"];
+      billing_source [label="Billing Source\npayment events,\nrefund trace,\nreceipt state"];
+    }
+
+    subgraph cluster_support {
+      label="<<package>> Support Packages";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+
+      contracts [label="Shared Event Contracts\nreservation event,\norder fact,\nserve fact,\npayment fact"];
+      inventory_support [label="Inventory Package\nstock projection,\nrecipe usage,\nthreshold policy"];
+      reporting_support [label="Reporting Package\nread-model projection,\nKPI query,\ntrend analysis"];
+      notification_support [label="Notification Package\nreservation message,\nlow-stock alert,\ne-receipt orchestration"];
+    }
+
+    subgraph cluster_governance {
+      label="<<package>> Cross-Cutting Governance Packages";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+
+      iam_package [label="IAM Package\nrole resolution,\nauthorization policy,\naccess decision"];
+      audit_package [label="Audit Package\naudit recorder,\ntrace enrichment,\ncompliance query"];
+    }
+
+    subgraph cluster_boundary {
+      label="<<package>> Boundary and Adapter Packages";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+
+      payment_adapter [label="Payment Gateway Adapter"];
+      receipt_adapter [label="Receipt Printer Adapter"];
+      notification_adapter [label="Notification Sender Adapter"];
+    }
   }
 
-  subgraph cluster_support {
-    label="Supporting Modules";
-    color="#9BB5FF";
-    style="rounded";
-    inventory [label="Inventory Monitoring\nstock movement,\nrecipe usage, threshold", fillcolor="#EEF4FF"];
-    reporting [label="Reporting & Analytics\nsales KPI,\nkitchen SLA, refund trend", fillcolor="#EEF4FF"];
-    notification [label="Notification Integration\nreservation notice,\nreceipt and operational alert", fillcolor="#EEF4FF"];
-    contracts [label="Shared Event Contracts\nreservation event,\norder fact, serve fact,\npayment fact", fillcolor="#EEF4FF"];
-  }
+  reservation_source -> contracts [label="publish"];
+  ordering_source -> contracts [label="publish"];
+  kitchen_source -> contracts [label="publish"];
+  billing_source -> contracts [label="publish"];
 
-  subgraph cluster_governance {
-    label="Cross-Cutting Governance Modules";
-    color="#9BB5FF";
-    style="rounded";
-    iam [label="Identity & Access Control\nidentity, role,\nauthorization policy", fillcolor="#EEF4FF"];
-    audit [label="Audit & Compliance\ncheck-in trace,\noverride and refund trace", fillcolor="#EEF4FF"];
-  }
+  contracts -> inventory_support [label="consume"];
+  contracts -> reporting_support [label="consume"];
+  contracts -> notification_support [label="consume"];
+  contracts -> audit_package [label="consume"];
 
-  subgraph cluster_integration {
-    label="Integration Boundary";
-    color="#9BB5FF";
-    style="rounded";
-    payment_adapter [label="Payment Gateway Adapter", fillcolor="#EEF4FF"];
-    notification_adapter [label="Notification Sender Adapter", fillcolor="#EEF4FF"];
-    receipt_adapter [label="Receipt Printer Adapter", fillcolor="#EEF4FF"];
-  }
+  iam_package -> reservation_source [label="authorize"];
+  iam_package -> ordering_source [label="authorize"];
+  iam_package -> kitchen_source [label="authorize"];
+  iam_package -> billing_source [label="authorize"];
 
-  { rank=same; reservation; ordering; kitchen; billing; }
-  { rank=same; inventory; reporting; notification; iam; audit; }
-  { rank=same; payment_adapter; notification_adapter; receipt_adapter; }
-
-  reservation -> contracts [style=dashed];
-  ordering -> contracts [style=dashed];
-  kitchen -> contracts [style=dashed];
-  billing -> contracts [style=dashed];
-
-  contracts -> inventory [style=dashed];
-  contracts -> reporting [style=dashed];
-  contracts -> notification [style=dashed];
-  contracts -> audit [style=dashed];
-
-  iam -> reservation [style=dashed, constraint=false];
-  iam -> ordering [style=dashed, constraint=false];
-  iam -> kitchen [style=dashed, constraint=false];
-  iam -> billing [style=dashed, constraint=false];
-
-  billing -> payment_adapter [label="capture / refund"];
-  billing -> receipt_adapter [label="issue receipt"];
-  notification -> notification_adapter [label="dispatch"];
+  billing_source -> payment_adapter [label="capture and refund"];
+  billing_source -> receipt_adapter [label="issue receipt"];
+  notification_support -> notification_adapter [label="dispatch"];
 }

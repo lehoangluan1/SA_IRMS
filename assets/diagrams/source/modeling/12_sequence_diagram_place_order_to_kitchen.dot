@@ -1,19 +1,189 @@
 digraph G {
-  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.55, ranksep=0.7, pad=0.35];
-  node [shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=11];
-  edge [color="#475569", arrowsize=0.7, fontname="DejaVu Sans", fontsize=10];
+  graph [
+    layout=neato,
+    splines=false,
+    outputorder=nodesfirst,
+    bgcolor="white",
+    pad=0.34,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="UML Sequence Diagram - Place Order to Kitchen",
+    imagepath="C:/Users/LUAN/Downloads/SA_BTL/assets/images/misc"
+  ];
 
-  serverUI [label="Server POS UI"];
-  orderingService [label="Ordering Service"];
-  kitchenService [label="Kitchen Coordination Service"];
-  kitchenUI [label="Kitchen Display UI"];
-  inventoryService [label="Inventory Service"];
+  node [fontname="DejaVu Sans", fontsize=9.4, color="#475569", penwidth=1.0, pin=true];
+  edge [fontname="DejaVu Sans", fontsize=8.0, color="#475569", arrowsize=0.66, penwidth=0.95];
 
-  serverUI -> orderingService [label="1. Tạo và xác nhận Order"];
-  orderingService -> serverUI [label="2. Trả kết quả xác nhận"];
-  orderingService -> kitchenService [label="3. Phát sự kiện\nOrderConfirmed"];
-  kitchenService -> kitchenUI [label="4. Tạo KitchenTicket\nvà hiển thị"];
-  kitchenUI -> kitchenService [label="5. Cập nhật Started/Cooking/Ready"];
-  kitchenService -> serverUI [label="6. Đồng bộ trạng thái món"];
-  serverUI -> inventoryService [label="7. Khi phục vụ xong,\nphát cập nhật trừ tồn"];
+  server_actor_h [shape=none, image="actor_stickman.png", label="Server", labelloc=b, imagepos=tc, imagescale=true, pos="0,920!"];
+  pos_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Server POS UI", pos="220,920!"];
+  ordering_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Ordering Service", pos="460,920!"];
+  menu_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Menu Service", pos="700,920!"];
+  kitchen_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Kitchen Coordination Service", pos="940,920!"];
+  display_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Kitchen Display UI", pos="1180,920!"];
+  inventory_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Inventory Service", pos="1420,920!"];
+
+  server_actor_1 [shape=point, width=0.01, label="", pos="0,780!"];
+  server_actor_2 [shape=point, width=0.01, label="", pos="0,700!"];
+  server_actor_3 [shape=point, width=0.01, label="", pos="0,620!"];
+  server_actor_4 [shape=point, width=0.01, label="", pos="0,540!"];
+  server_actor_5 [shape=point, width=0.01, label="", pos="0,460!"];
+  server_actor_6 [shape=point, width=0.01, label="", pos="0,380!"];
+  server_actor_7 [shape=point, width=0.01, label="", pos="0,300!"];
+  server_actor_8 [shape=point, width=0.01, label="", pos="0,220!"];
+  server_actor_9 [shape=point, width=0.01, label="", pos="0,140!"];
+  server_actor_10 [shape=point, width=0.01, label="", pos="0,60!"];
+
+  pos_1 [shape=point, width=0.01, label="", pos="220,780!"];
+  pos_2 [shape=point, width=0.01, label="", pos="220,700!"];
+  pos_3 [shape=point, width=0.01, label="", pos="220,620!"];
+  pos_4 [shape=point, width=0.01, label="", pos="220,540!"];
+  pos_5 [shape=point, width=0.01, label="", pos="220,460!"];
+  pos_6 [shape=point, width=0.01, label="", pos="220,380!"];
+  pos_7 [shape=point, width=0.01, label="", pos="220,300!"];
+  pos_8 [shape=point, width=0.01, label="", pos="220,220!"];
+  pos_9 [shape=point, width=0.01, label="", pos="220,140!"];
+  pos_10 [shape=point, width=0.01, label="", pos="220,60!"];
+
+  ordering_1 [shape=point, width=0.01, label="", pos="460,780!"];
+  ordering_2 [shape=point, width=0.01, label="", pos="460,700!"];
+  ordering_3 [shape=point, width=0.01, label="", pos="460,620!"];
+  ordering_4 [shape=point, width=0.01, label="", pos="460,540!"];
+  ordering_5 [shape=point, width=0.01, label="", pos="460,460!"];
+  ordering_6 [shape=point, width=0.01, label="", pos="460,380!"];
+  ordering_7 [shape=point, width=0.01, label="", pos="460,300!"];
+  ordering_8 [shape=point, width=0.01, label="", pos="460,220!"];
+  ordering_9 [shape=point, width=0.01, label="", pos="460,140!"];
+  ordering_10 [shape=point, width=0.01, label="", pos="460,60!"];
+
+  menu_1 [shape=point, width=0.01, label="", pos="700,780!"];
+  menu_2 [shape=point, width=0.01, label="", pos="700,700!"];
+  menu_3 [shape=point, width=0.01, label="", pos="700,620!"];
+  menu_4 [shape=point, width=0.01, label="", pos="700,540!"];
+  menu_5 [shape=point, width=0.01, label="", pos="700,460!"];
+  menu_6 [shape=point, width=0.01, label="", pos="700,380!"];
+  menu_7 [shape=point, width=0.01, label="", pos="700,300!"];
+  menu_8 [shape=point, width=0.01, label="", pos="700,220!"];
+  menu_9 [shape=point, width=0.01, label="", pos="700,140!"];
+  menu_10 [shape=point, width=0.01, label="", pos="700,60!"];
+
+  kitchen_1 [shape=point, width=0.01, label="", pos="940,780!"];
+  kitchen_2 [shape=point, width=0.01, label="", pos="940,700!"];
+  kitchen_3 [shape=point, width=0.01, label="", pos="940,620!"];
+  kitchen_4 [shape=point, width=0.01, label="", pos="940,540!"];
+  kitchen_5 [shape=point, width=0.01, label="", pos="940,460!"];
+  kitchen_6 [shape=point, width=0.01, label="", pos="940,380!"];
+  kitchen_7 [shape=point, width=0.01, label="", pos="940,300!"];
+  kitchen_8 [shape=point, width=0.01, label="", pos="940,220!"];
+  kitchen_9 [shape=point, width=0.01, label="", pos="940,140!"];
+  kitchen_10 [shape=point, width=0.01, label="", pos="940,60!"];
+
+  display_1 [shape=point, width=0.01, label="", pos="1180,780!"];
+  display_2 [shape=point, width=0.01, label="", pos="1180,700!"];
+  display_3 [shape=point, width=0.01, label="", pos="1180,620!"];
+  display_4 [shape=point, width=0.01, label="", pos="1180,540!"];
+  display_5 [shape=point, width=0.01, label="", pos="1180,460!"];
+  display_6 [shape=point, width=0.01, label="", pos="1180,380!"];
+  display_7 [shape=point, width=0.01, label="", pos="1180,300!"];
+  display_8 [shape=point, width=0.01, label="", pos="1180,220!"];
+  display_9 [shape=point, width=0.01, label="", pos="1180,140!"];
+  display_10 [shape=point, width=0.01, label="", pos="1180,60!"];
+
+  inventory_1 [shape=point, width=0.01, label="", pos="1420,780!"];
+  inventory_2 [shape=point, width=0.01, label="", pos="1420,700!"];
+  inventory_3 [shape=point, width=0.01, label="", pos="1420,620!"];
+  inventory_4 [shape=point, width=0.01, label="", pos="1420,540!"];
+  inventory_5 [shape=point, width=0.01, label="", pos="1420,460!"];
+  inventory_6 [shape=point, width=0.01, label="", pos="1420,380!"];
+  inventory_7 [shape=point, width=0.01, label="", pos="1420,300!"];
+  inventory_8 [shape=point, width=0.01, label="", pos="1420,220!"];
+  inventory_9 [shape=point, width=0.01, label="", pos="1420,140!"];
+  inventory_10 [shape=point, width=0.01, label="", pos="1420,60!"];
+
+  server_actor_h -> server_actor_1 [style=dashed, arrowhead=none];
+  server_actor_1 -> server_actor_2 [style=dashed, arrowhead=none];
+  server_actor_2 -> server_actor_3 [style=dashed, arrowhead=none];
+  server_actor_3 -> server_actor_4 [style=dashed, arrowhead=none];
+  server_actor_4 -> server_actor_5 [style=dashed, arrowhead=none];
+  server_actor_5 -> server_actor_6 [style=dashed, arrowhead=none];
+  server_actor_6 -> server_actor_7 [style=dashed, arrowhead=none];
+  server_actor_7 -> server_actor_8 [style=dashed, arrowhead=none];
+  server_actor_8 -> server_actor_9 [style=dashed, arrowhead=none];
+  server_actor_9 -> server_actor_10 [style=dashed, arrowhead=none];
+
+  pos_h -> pos_1 [style=dashed, arrowhead=none];
+  pos_1 -> pos_2 [style=dashed, arrowhead=none];
+  pos_2 -> pos_3 [style=dashed, arrowhead=none];
+  pos_3 -> pos_4 [style=dashed, arrowhead=none];
+  pos_4 -> pos_5 [style=dashed, arrowhead=none];
+  pos_5 -> pos_6 [style=dashed, arrowhead=none];
+  pos_6 -> pos_7 [style=dashed, arrowhead=none];
+  pos_7 -> pos_8 [style=dashed, arrowhead=none];
+  pos_8 -> pos_9 [style=dashed, arrowhead=none];
+  pos_9 -> pos_10 [style=dashed, arrowhead=none];
+
+  ordering_h -> ordering_1 [style=dashed, arrowhead=none];
+  ordering_1 -> ordering_2 [style=dashed, arrowhead=none];
+  ordering_2 -> ordering_3 [style=dashed, arrowhead=none];
+  ordering_3 -> ordering_4 [style=dashed, arrowhead=none];
+  ordering_4 -> ordering_5 [style=dashed, arrowhead=none];
+  ordering_5 -> ordering_6 [style=dashed, arrowhead=none];
+  ordering_6 -> ordering_7 [style=dashed, arrowhead=none];
+  ordering_7 -> ordering_8 [style=dashed, arrowhead=none];
+  ordering_8 -> ordering_9 [style=dashed, arrowhead=none];
+  ordering_9 -> ordering_10 [style=dashed, arrowhead=none];
+
+  menu_h -> menu_1 [style=dashed, arrowhead=none];
+  menu_1 -> menu_2 [style=dashed, arrowhead=none];
+  menu_2 -> menu_3 [style=dashed, arrowhead=none];
+  menu_3 -> menu_4 [style=dashed, arrowhead=none];
+  menu_4 -> menu_5 [style=dashed, arrowhead=none];
+  menu_5 -> menu_6 [style=dashed, arrowhead=none];
+  menu_6 -> menu_7 [style=dashed, arrowhead=none];
+  menu_7 -> menu_8 [style=dashed, arrowhead=none];
+  menu_8 -> menu_9 [style=dashed, arrowhead=none];
+  menu_9 -> menu_10 [style=dashed, arrowhead=none];
+
+  kitchen_h -> kitchen_1 [style=dashed, arrowhead=none];
+  kitchen_1 -> kitchen_2 [style=dashed, arrowhead=none];
+  kitchen_2 -> kitchen_3 [style=dashed, arrowhead=none];
+  kitchen_3 -> kitchen_4 [style=dashed, arrowhead=none];
+  kitchen_4 -> kitchen_5 [style=dashed, arrowhead=none];
+  kitchen_5 -> kitchen_6 [style=dashed, arrowhead=none];
+  kitchen_6 -> kitchen_7 [style=dashed, arrowhead=none];
+  kitchen_7 -> kitchen_8 [style=dashed, arrowhead=none];
+  kitchen_8 -> kitchen_9 [style=dashed, arrowhead=none];
+  kitchen_9 -> kitchen_10 [style=dashed, arrowhead=none];
+
+  display_h -> display_1 [style=dashed, arrowhead=none];
+  display_1 -> display_2 [style=dashed, arrowhead=none];
+  display_2 -> display_3 [style=dashed, arrowhead=none];
+  display_3 -> display_4 [style=dashed, arrowhead=none];
+  display_4 -> display_5 [style=dashed, arrowhead=none];
+  display_5 -> display_6 [style=dashed, arrowhead=none];
+  display_6 -> display_7 [style=dashed, arrowhead=none];
+  display_7 -> display_8 [style=dashed, arrowhead=none];
+  display_8 -> display_9 [style=dashed, arrowhead=none];
+  display_9 -> display_10 [style=dashed, arrowhead=none];
+
+  inventory_h -> inventory_1 [style=dashed, arrowhead=none];
+  inventory_1 -> inventory_2 [style=dashed, arrowhead=none];
+  inventory_2 -> inventory_3 [style=dashed, arrowhead=none];
+  inventory_3 -> inventory_4 [style=dashed, arrowhead=none];
+  inventory_4 -> inventory_5 [style=dashed, arrowhead=none];
+  inventory_5 -> inventory_6 [style=dashed, arrowhead=none];
+  inventory_6 -> inventory_7 [style=dashed, arrowhead=none];
+  inventory_7 -> inventory_8 [style=dashed, arrowhead=none];
+  inventory_8 -> inventory_9 [style=dashed, arrowhead=none];
+  inventory_9 -> inventory_10 [style=dashed, arrowhead=none];
+
+  server_actor_1 -> pos_1 [label="1. Submit selected items and modifiers"];
+  pos_2 -> ordering_2 [label="2. Validate active table session"];
+  ordering_3 -> menu_3 [label="3. Load price and availability snapshot"];
+  menu_4 -> ordering_4 [style=dashed, label="4. Return validated item snapshot"];
+  ordering_5 -> kitchen_5 [label="5. Publish confirmed order ticket"];
+  kitchen_6 -> display_6 [label="6. Route ticket to station queue"];
+  display_7 -> kitchen_7 [style=dashed, label="7. Confirm ticket visible to kitchen"];
+  display_8 -> kitchen_8 [label="8. Update dish status to ready"];
+  kitchen_9 -> inventory_9 [label="9. Record projected ingredient consumption"];
+  kitchen_10 -> pos_10 [style=dashed, label="10. Return ticket number and kitchen status"];
 }

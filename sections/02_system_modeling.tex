@@ -1,7 +1,7 @@
 ﻿\section{Mô hình hóa hệ thống}
 
-\subsection{Danh mục ca sử dụng}
-Ba hình dưới đây không chỉ có vai trò minh họa mà còn là phần chuyển tiếp quan trọng trước khi đi vào đặc tả ca sử dụng. Chúng lần lượt trả lời ba câu hỏi nền tảng: \textbf{IRMS giao tiếp với ai}, \textbf{IRMS phải hỗ trợ những nhóm nghiệp vụ nào} và \textbf{một vòng vận hành đầu-cuối trong nhà hàng diễn ra ra sao}. Việc diễn giải ba hình này giúp phần ca sử dụng phía sau bám đúng bối cảnh toàn hệ thống thay vì bị nhìn như những kịch bản rời rạc.
+\subsection{Danh mục ca sử dụng}\label{sec:system-modeling-overview}
+Ba hình dưới đây không chỉ có vai trò minh họa mà còn là phần chuyển tiếp quan trọng trước khi đi vào đặc tả ca sử dụng. Chúng lần lượt trả lời ba câu hỏi nền tảng: \textbf{IRMS giao tiếp với ai}, \textbf{IRMS phải hỗ trợ những nhóm nghiệp vụ nào} và \textbf{một vòng vận hành đầu-cuối trong nhà hàng diễn ra ra sao}. Việc diễn giải ba hình này giúp phần ca sử dụng phía sau bám đúng bối cảnh toàn hệ thống thay vì bị nhìn như những kịch bản rời rạc; phần định vị và biện minh tương ứng được nối trực tiếp về Bảng~\ref{tab:appendix-traceability} và Bảng~\ref{tab:appendix-view-rationale} trong Phụ lục~\ref{appendix:traceability} và Phụ lục~\ref{appendix:view-rationale}.
 
 \begin{figure}[H]
 \centering
@@ -11,7 +11,17 @@ Ba hình dưới đây không chỉ có vai trò minh họa mà còn là phần 
 \end{figure}
 
 
-Hình~\ref{fig:irms-context-overview} chốt rõ ranh giới hệ thống và các điểm giao tiếp bên ngoài của IRMS. Ở lớp ngoài cùng là các tác nhân nghiệp vụ như khách hàng, lễ tân, phục vụ, bếp, thu ngân và quản lý; ở lớp tích hợp là các đối tác như cổng thanh toán, kênh gửi thông báo hoặc hạ tầng báo cáo. Ý nghĩa của hình này là xác nhận rằng IRMS không phải một ứng dụng gọi món đơn lẻ, mà là trục điều phối trung tâm của cả khu vực phục vụ phía trước, khu vực bếp và khu vực quản trị.
+Hình~\ref{fig:irms-context-overview} chốt rõ ranh giới hệ thống theo đúng kiểu \emph{context/process diagram}: IRMS được đặt ở trung tâm như một tiến trình điều phối duy nhất, còn xung quanh là các thực thể bên ngoài và hệ thống đối tác trao đổi dữ liệu với nó. Cách thể hiện này không chỉ trả lời câu hỏi \enquote{ai dùng IRMS}, mà còn làm rõ \enquote{dữ liệu gì đi vào, kết quả gì đi ra} ở từng điểm chạm như đặt bàn, xếp bàn, gọi món, điều phối bếp, quyết toán, kiểm soát truy cập và tích hợp dịch vụ ngoài.
+
+\paragraph{Các điểm cần đọc từ sơ đồ ngữ cảnh.}
+\begin{itemize}
+  \item \textbf{Tuyến phục vụ phía trước}: \texttt{Customer}, \texttt{Host / Reception}, \texttt{Server / Floor Staff} và \texttt{Cashier} trao đổi trực tiếp các luồng dữ liệu thời gian thực như yêu cầu đặt bàn, trạng thái chờ, đơn gọi món, tách hóa đơn và nhập thông tin thanh toán.
+  \item \textbf{Tuyến thực thi phía sau}: \texttt{Kitchen Operations} trả về trạng thái chế biến, tín hiệu món sẵn sàng hoặc hết nguyên liệu; \texttt{Manager} và \texttt{System Administrator} gửi thay đổi cấu hình, truy vấn báo cáo và yêu cầu kiểm toán ở lớp điều hành.
+  \item \textbf{Các hợp đồng tích hợp ngoài}: \texttt{Payment Gateway}, \texttt{Notification Service} và \texttt{Receipt Printer} được đặt ngoài biên hệ thống để nhấn mạnh rằng thanh toán, gửi thông báo và in biên lai là các phụ thuộc cần được cách ly bằng giao tiếp có tên gọi rõ ràng.
+  \item \textbf{Các luồng dữ liệu đều được đặt tên}: hình không dừng ở mức liệt kê vai trò, mà chỉ ra cụ thể các trao đổi như \enquote{reservation request}, \enquote{kitchen ticket}, \enquote{transaction result}, \enquote{audit trail} hoặc \enquote{print status}; nhờ đó ranh giới trách nhiệm của IRMS được khóa chặt hơn trước khi đi vào use case và kiến trúc.
+\end{itemize}
+
+Chính vì vậy, hình ngữ cảnh là cầu nối trực tiếp từ bối cảnh nghiệp vụ ở Chương 1 sang sơ đồ tổng quan kiến trúc ở Mục~\ref{sec:architecture-overview}: nó khóa ranh giới hệ thống trước khi tài liệu đi sâu vào cách phân rã các năng lực bên trong.
 
 \begin{figure}[H]
 \centering
@@ -21,9 +31,20 @@ Hình~\ref{fig:irms-context-overview} chốt rõ ranh giới hệ thống và c�
 \end{figure}
 
 
-Hình~\ref{fig:irms-usecase-overview} gom các tương tác nghiệp vụ thành năm cụm lớn: đặt bàn và vòng đời bàn, gọi món và điều phối bếp, hóa đơn và thanh toán, tồn kho và dự báo nhập hàng, cùng quản trị, kiểm toán và phân tích. Cách tổ chức này cho thấy phạm vi của IRMS không dừng ở các thao tác trực tiếp trước khách hàng, mà bao trùm cả phần kết thúc vòng đời bàn, giao tiếp chủ động với khách hàng, điều phối ưu tiên trong bếp, hỗ trợ quyết định nhập hàng từ dữ liệu tiêu hao lịch sử và truy vết thao tác nhạy cảm ở tầng quản trị. Vì vậy, sơ đồ tổng quan ca sử dụng không chỉ là danh sách chức năng, mà là bản đồ nghiệp vụ đủ kín để dẫn sang phần kiến trúc và thiết kế chi tiết.
+Hình~\ref{fig:irms-usecase-overview} trình bày tổng quan ca sử dụng theo đúng ký pháp UML: các actor đứng ngoài biên hệ thống, các ca sử dụng được biểu diễn bằng ellipse và được gom thành năm gói nghiệp vụ lớn gồm đặt bàn và vòng đời bàn, gọi món và điều phối bếp, hóa đơn và thanh toán, tồn kho và dự báo nhập hàng, cùng quản trị, kiểm toán và phân tích. Cách tổ chức này cho thấy phạm vi của IRMS không dừng ở các thao tác trực tiếp trước khách hàng, mà bao trùm cả phần kết thúc vòng đời bàn, giao tiếp chủ động với khách hàng, điều phối ưu tiên trong bếp, hỗ trợ quyết định nhập hàng từ dữ liệu tiêu hao lịch sử và truy vết thao tác nhạy cảm ở tầng quản trị.
 
 Nhìn theo góc độ nghiệp vụ, năm cụm này cũng tương ứng với năm lớp trách nhiệm khác nhau trong hệ thống. Cụm đặt bàn và bàn ăn quản lý năng lực tiếp nhận khách theo thời gian thực; cụm gọi món và bếp điều khiển luồng thực thi nóng nhất của nhà hàng; cụm hóa đơn và thanh toán chốt quyết định tài chính; cụm tồn kho và dự báo hỗ trợ điều hành vật tư; còn cụm quản trị, kiểm toán và phân tích bảo đảm hệ thống có thể được kiểm soát, truy vết và cải tiến sau vận hành. Vì vậy, sơ đồ tổng quan ca sử dụng không chỉ là danh mục chức năng, mà còn là bản đồ chỉ ra nơi nào cần phản hồi tức thời, nơi nào cần độ đúng đắn cao, và nơi nào có thể chấp nhận xử lý sau trên tuyến nền.
+
+\paragraph{Năm gói ca sử dụng chính thể hiện trong hình.}
+\begin{itemize}
+  \item \textbf{Reservation and Seating}: gom toàn bộ vòng đời đặt bàn, check-in, danh sách chờ, giải phóng bàn và thông báo cho khách.
+  \item \textbf{Ordering and Kitchen}: gom tuyến gọi món, tùy biến món, điều phối bếp, cập nhật trạng thái chế biến và xử lý ưu tiên trong giờ cao điểm.
+  \item \textbf{Billing and Payment}: gom các thao tác tạo hóa đơn, tách hóa đơn, thanh toán, phát hành biên lai và hoàn tiền.
+  \item \textbf{Inventory and Reorder}: gom tiêu hao tồn kho, cảnh báo mức tồn thấp và hỗ trợ quyết định nhập hàng.
+  \item \textbf{Governance and Analytics}: gom các ca sử dụng quản trị menu, phân quyền, nhật ký kiểm toán, báo cáo và lịch ca.
+\end{itemize}
+
+Việc gom theo gói ở mức tổng quan giúp hình giữ được khả năng đọc, còn phần chi tiết của từng mã ca sử dụng vẫn được triển khai ngay sau đó trong danh mục và các đặc tả cụ thể. Cách trình bày này cũng tạo nhịp chuyển hợp lý sang các góc nhìn logic và mô-đun ở chương kiến trúc, nơi năm gói nghiệp vụ này được ánh xạ thành các miền trách nhiệm ổn định hơn; phần định vị và giải thích mở rộng của sơ đồ tổng quan ca sử dụng được dẫn ngay tới Bảng~\ref{tab:appendix-traceability} và Bảng~\ref{tab:appendix-view-rationale}.
 
 \begin{figure}[H]
 \centering
@@ -36,6 +57,14 @@ Nhìn theo góc độ nghiệp vụ, năm cụm này cũng tương ứng với n
 Hình~\ref{fig:irms-activity-end-to-end} mô tả luồng vận hành đầu-cuối tiêu biểu của nhà hàng, bắt đầu từ khâu tiếp nhận khách hoặc kiểm tra đặt bàn, chuyển sang mở phiên bàn, tạo đơn gọi món, gửi phiếu xuống bếp, cập nhật tiến độ chế biến, giao món, lập hóa đơn, xử lý thanh toán và kết thúc bằng giải phóng bàn. Điểm quan trọng của sơ đồ hoạt động này là nó cho thấy những trạng thái nào phải được đồng bộ mạnh giữa các bộ phận: một bàn chỉ được mở một phiên phục vụ, một đơn đã xác nhận phải sinh phiếu bếp, và một hóa đơn chỉ được đóng khi thanh toán hoàn tất hoặc được ghi nhận là thất bại có kiểm soát.
 
 Nhìn dưới góc độ kiến trúc, luồng đầu-cuối này cũng chỉ ra ranh giới giữa \textbf{đường giao dịch nóng} và \textbf{đường xử lý nền}. Các bước như xác nhận đơn gọi món, cập nhật trạng thái phiếu \texttt{Ready}, ghi nhận thanh toán thành công và đóng \texttt{TableSession} thuộc về tuyến đồng bộ bắt buộc vì chúng tác động trực tiếp đến trải nghiệm khách hàng. Ngược lại, các bước như cập nhật báo cáo, phát cảnh báo mức tồn thấp, gửi thông báo xác nhận hoặc đồng bộ số liệu quản trị có thể được đẩy sang luồng bất đồng bộ để giảm tải cho các điểm chạm thời gian thực.
+
+\paragraph{Những mắt xích kiến trúc được khóa bởi sơ đồ đầu-cuối.}
+\begin{itemize}
+  \item \textbf{Điểm bàn giao giữa các khu vực}: lễ tân mở phiên bàn, phục vụ xác nhận đơn, bếp cập nhật trạng thái, thu ngân quyết toán; mỗi điểm bàn giao đều gắn với một thay đổi trạng thái có hậu quả nghiệp vụ.
+  \item \textbf{Điểm đồng bộ bắt buộc}: mở \texttt{TableSession}, xác nhận đơn, đánh dấu món sẵn sàng, ghi nhận thanh toán và giải phóng bàn không được nhập nhằng về trạng thái.
+  \item \textbf{Điểm bất đồng bộ chấp nhận được}: thông báo, báo cáo và một phần cảnh báo tồn kho được đẩy ra sau mà không làm sai tuyến phục vụ trước mặt khách hàng.
+  \item \textbf{Điểm nối sang chương kiến trúc}: hình này là cơ sở để kiểm tra xem các sơ đồ logic, mô-đun, thành phần và triển khai ở chương sau có thật sự bảo vệ được luồng vận hành đầu-cuối hay không.
+\end{itemize}
 
 \begin{table}[H]
 \centering
@@ -191,7 +220,7 @@ Vì thế, góc nhìn sử dụng này là bằng chứng rằng cơ chế nhấ
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
 \begin{itemize}
-  \item Sơ đồ được viết để nhấn mạnh thứ tự \enquote{xác nhận trước, lan truyền sau} của tuyến gọi món.
+  \item Sơ đồ này nhấn mạnh thứ tự \enquote{xác nhận trước, lan truyền sau} của tuyến gọi món.
   \item Đây là kịch bản quan trọng nhất để giải thích vì sao kiến trúc phải cân bằng giữa phản hồi nhanh và nhất quán có kiểm soát.
 \end{itemize}
 
@@ -1489,7 +1518,7 @@ và nơi nào thì tuyệt đối không nên chấp nhận điều đó.
     \textbf{Hậu điều kiện}
     \begin{itemize}[leftmargin=1.8em]
   \item Một hoặc nhiều \texttt{ShiftAssignment} được tạo hoặc cập nhật.
-  \item Nhân viên nhìn thấy ca của mình trong lịch làm việc.
+  \item Nhân viên nhìn thấy ca được phân trong lịch làm việc.
 \end{itemize}
 
     \textbf{Luồng chính}

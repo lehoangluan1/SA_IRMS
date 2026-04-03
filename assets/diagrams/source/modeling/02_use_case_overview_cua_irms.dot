@@ -1,198 +1,92 @@
 digraph G {
-  charset="UTF-8";
-  rankdir=TB;
-
   graph [
-    bgcolor="white",
-    pad=0.35,
-    nodesep=0.42,
-    ranksep=0.8,
+    layout=neato,
     splines=polyline,
-    fontname="Arial",
-    newrank=true,
-    compound=true
+    outputorder=nodesfirst,
+    bgcolor="white",
+    pad=0.32,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="UML Use-Case Diagram - IRMS Overview",
+    imagepath="C:/Users/LUAN/Downloads/SA_BTL/assets/images/misc"
   ];
-  node [fontname="Arial", fontsize=10, color="#334155"];
-  edge [fontname="Arial", fontsize=9, color="#475569", arrowsize=0.65];
 
-  edge [dir=none];
+  node [fontname="DejaVu Sans", fontsize=9.1, color="#475569", penwidth=1.0, pin=true];
+  edge [fontname="DejaVu Sans", fontsize=8.0, color="#64748B", penwidth=0.9, arrowhead=none];
 
-  a_customer [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Khách hàng", labelloc=b, imagepos=tc, imagescale=true];
-  a_host [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Lễ tân", labelloc=b, imagepos=tc, imagescale=true];
-  a_server [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Phục vụ", labelloc=b, imagepos=tc, imagescale=true];
-  a_chef [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Bếp", labelloc=b, imagepos=tc, imagescale=true];
-  a_cashier [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Thu ngân", labelloc=b, imagepos=tc, imagescale=true];
-  a_manager [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Quản lý", labelloc=b, imagepos=tc, imagescale=true];
-  a_admin [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Quản trị viên", labelloc=b, imagepos=tc, imagescale=true];
-  a_payment [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Cổng thanh toán", labelloc=b, imagepos=tc, imagescale=true];
-  a_notify [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Dịch vụ thông báo", labelloc=b, imagepos=tc, imagescale=true];
-  a_receipt [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Máy in biên lai", labelloc=b, imagepos=tc, imagescale=true];
+  system_boundary [shape=box, style="rounded,filled", fillcolor="#EFF6FF", color="#60A5FA", penwidth=1.25, label="", width=13.6, height=8.9, fixedsize=true, pos="830,470!"];
+  system_title [shape=plaintext, label="<<system>> IRMS", pos="830,960!"];
 
-  {rank=same; a_customer; a_host; a_server; a_chef; a_cashier; a_manager; a_admin;}
+  reservation_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=3.7, height=3.4, fixedsize=true, pos="470,680!"];
+  reservation_title [shape=plaintext, label="Reservation and Seating", pos="470,860!"];
+  dining_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=4.4, height=3.8, fixedsize=true, pos="470,250!"];
+  dining_title [shape=plaintext, label="Ordering and Kitchen", pos="470,470!"];
+  operations_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=4.4, height=3.6, fixedsize=true, pos="1120,700!"];
+  operations_title [shape=plaintext, label="Operations and Governance", pos="1120,900!"];
+  billing_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=3.8, height=3.2, fixedsize=true, pos="1120,250!"];
+  billing_title [shape=plaintext, label="Billing and Settlement", pos="1120,450!"];
 
-  subgraph cluster_system {
-    label="Tổng quan ca sử dụng của IRMS";
-    labelloc=t;
-    fontsize=14;
-    style="rounded";
-    color="#94A3B8";
-    penwidth=1.2;
+  customer [shape=none, image="actor_stickman.png", label="Customer", labelloc=b, imagepos=tc, imagescale=true, pos="20,760!"];
+  host [shape=none, image="actor_stickman.png", label="Host", labelloc=b, imagepos=tc, imagescale=true, pos="20,620!"];
+  server [shape=none, image="actor_stickman.png", label="Server", labelloc=b, imagepos=tc, imagescale=true, pos="20,320!"];
+  chef [shape=none, image="actor_stickman.png", label="Chef", labelloc=b, imagepos=tc, imagescale=true, pos="20,180!"];
+  cashier [shape=none, image="actor_stickman.png", label="Cashier", labelloc=b, imagepos=tc, imagescale=true, pos="20,60!"];
 
-    subgraph cluster_reservation {
-      label="Đặt bàn, bàn ăn và thông báo khách";
-      color="#CBD5E1";
-      style="rounded,filled";
-      fillcolor="#F8FAFC";
+  manager [shape=none, image="actor_stickman.png", label="Manager", labelloc=b, imagepos=tc, imagescale=true, pos="1640,780!"];
+  admin [shape=none, image="actor_stickman.png", label="Administrator", labelloc=b, imagepos=tc, imagescale=true, pos="1640,620!"];
+  payment_gateway [shape=none, image="actor_stickman.png", label="Payment Gateway", labelloc=b, imagepos=tc, imagescale=true, pos="1640,180!"];
+  notification_service [shape=none, image="actor_stickman.png", label="Notification Service", labelloc=b, imagepos=tc, imagescale=true, pos="1640,520!"];
+  receipt_printer [shape=none, image="actor_stickman.png", label="Receipt Printer", labelloc=b, imagepos=tc, imagescale=true, pos="1640,300!"];
 
-      uc_res_01 [label="UC-RES-01\nTạo đặt bàn", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_res_02 [label="UC-RES-02\nNhận khách và sắp bàn", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_res_03 [label="UC-RES-03\nQuản lý danh sách chờ", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_res_04 [label="UC-RES-04\nCập nhật trạng thái bàn /\nGiải phóng bàn", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_res_05 [label="UC-RES-05\nGửi thông báo cho khách hàng", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+  node [shape=ellipse, style="filled", fillcolor="#FFFFFF", color="#94A3B8", fontsize=8.5, margin="0.06,0.03", pin=true];
 
-      uc_res_01 -> uc_res_02 [style=invis, weight=15];
-      uc_res_02 -> uc_res_03 [style=invis, weight=15];
-      uc_res_03 -> uc_res_04 [style=invis, weight=15];
-      uc_res_04 -> uc_res_05 [style=invis, weight=15];
-    }
+  uc_reserve [label="Create Reservation", pos="470,790!"];
+  uc_checkin [label="Check In and Seat Guest", pos="470,700!"];
+  uc_waitlist [label="Manage Waitlist", pos="470,610!"];
+  uc_notify [label="Send Reservation Update", pos="470,520!"];
 
-    subgraph cluster_ordering {
-      label="Gọi món và điều phối bếp";
-      color="#CBD5E1";
-      style="rounded,filled";
-      fillcolor="#F8FAFC";
+  uc_order [label="Create Table Order", pos="360,360!"];
+  uc_adjust [label="Adjust Order Item", pos="360,270!"];
+  uc_dispatch [label="Dispatch Order to Kitchen", pos="360,180!"];
+  uc_progress [label="Update Kitchen Status", pos="580,270!"];
+  uc_serve [label="Mark Dish as Served", pos="580,180!"];
 
-      uc_ord_01 [label="UC-ORD-01\nTạo đơn gọi món tại bàn", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_ord_02 [label="UC-ORD-02\nTùy biến món /\nGhi chú dị ứng", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_ord_03 [label="UC-ORD-03\nGửi đơn gọi món sang bếp", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_kit_01 [label="UC-KIT-01\nCập nhật tiến độ chế biến", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_kit_02 [label="UC-KIT-02\nRa món cho bàn", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_kit_03 [label="UC-KIT-03\nƯu tiên hàng chờ bếp /\nXử lý món gấp", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_ord_04 [label="UC-ORD-04\nSửa hoặc hủy dòng món", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+  uc_menu [label="Manage Menu and Pricing", pos="980,800!"];
+  uc_stock [label="Review Inventory Alerts", pos="980,710!"];
+  uc_report [label="View Operations Report", pos="980,620!"];
+  uc_roles [label="Manage Roles and Permissions", pos="1260,800!"];
+  uc_audit [label="Review Audit Log", pos="1260,710!"];
 
-      uc_ord_01 -> uc_ord_02 [style=invis, weight=15];
-      uc_ord_02 -> uc_ord_03 [style=invis, weight=15];
-      uc_ord_03 -> uc_kit_01 [style=invis, weight=15];
-      uc_kit_01 -> uc_kit_02 [style=invis, weight=15];
-      uc_kit_02 -> uc_kit_03 [style=invis, weight=15];
-      uc_kit_03 -> uc_ord_04 [style=invis, weight=15];
-    }
+  uc_bill [label="Create Bill", pos="1020,340!"];
+  uc_payment [label="Process Payment", pos="1020,250!"];
+  uc_receipt [label="Issue Receipt", pos="1240,250!"];
+  uc_refund [label="Process Refund", pos="1020,160!"];
 
-    subgraph cluster_billing {
-      label="Hóa đơn, thanh toán và chứng từ";
-      color="#CBD5E1";
-      style="rounded,filled";
-      fillcolor="#F8FAFC";
+  customer -> uc_reserve;
+  host -> uc_checkin;
+  host -> uc_waitlist;
+  server -> uc_order;
+  server -> uc_adjust;
+  server -> uc_dispatch;
+  chef -> uc_progress;
+  chef -> uc_serve;
+  cashier -> uc_bill;
+  cashier -> uc_payment;
+  cashier -> uc_refund;
 
-      uc_bil_01 [label="UC-BIL-01\nTạo hóa đơn cho bàn", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_bil_02 [label="UC-BIL-02\nTách hóa đơn /\nThêm tiền boa", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_pay_01 [label="UC-PAY-01\nXử lý thanh toán", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_pay_02 [label="UC-PAY-02\nPhát hành biên lai", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_pay_03 [label="UC-PAY-03\nHoàn tiền", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+  manager -> uc_menu;
+  manager -> uc_stock;
+  manager -> uc_report;
+  admin -> uc_roles;
+  admin -> uc_audit;
+  payment_gateway -> uc_payment;
+  payment_gateway -> uc_refund;
+  notification_service -> uc_notify;
+  receipt_printer -> uc_receipt;
 
-      uc_bil_01 -> uc_bil_02 [style=invis, weight=15];
-      uc_bil_02 -> uc_pay_01 [style=invis, weight=15];
-      uc_pay_01 -> uc_pay_02 [style=invis, weight=15];
-      uc_pay_02 -> uc_pay_03 [style=invis, weight=15];
-    }
-
-    subgraph cluster_inventory {
-      label="Tồn kho, cảnh báo và dự báo nhập hàng";
-      color="#CBD5E1";
-      style="rounded,filled";
-      fillcolor="#F8FAFC";
-
-      uc_inv_01 [label="UC-INV-01\nCập nhật tiêu hao tồn kho", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_inv_02 [label="UC-INV-02\nNhận cảnh báo sắp hết hàng", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_inv_03 [label="UC-INV-03\nPhân tích tiêu hao /\nĐề xuất nhập hàng", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-
-      uc_inv_01 -> uc_inv_02 [style=invis, weight=15];
-      uc_inv_02 -> uc_inv_03 [style=invis, weight=15];
-    }
-
-    subgraph cluster_governance {
-      label="Quản trị, kiểm toán và phân tích";
-      color="#CBD5E1";
-      style="rounded,filled";
-      fillcolor="#F8FAFC";
-
-      uc_rep_01 [label="UC-REP-01\nXem báo cáo doanh thu /\nVận hành", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_adm_01 [label="UC-ADM-01\nQuản lý menu /\nGiá bán", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_adm_02 [label="UC-ADM-02\nQuản lý vai trò /\nPhân quyền", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_adm_03 [label="UC-ADM-03\nXem nhật ký kiểm toán /\nTruy vết thao tác", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-      uc_ops_01 [label="UC-OPS-01\nQuản lý ca làm nhân viên", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-
-      uc_rep_01 -> uc_adm_01 [style=invis, weight=15];
-      uc_adm_01 -> uc_adm_02 [style=invis, weight=15];
-      uc_adm_02 -> uc_adm_03 [style=invis, weight=15];
-      uc_adm_03 -> uc_ops_01 [style=invis, weight=15];
-    }
-
-    uc_res_05 -> uc_ord_01 [style=invis, weight=25];
-    uc_ord_04 -> uc_bil_01 [style=invis, weight=25];
-    uc_pay_03 -> uc_inv_01 [style=invis, weight=25];
-    uc_inv_03 -> uc_rep_01 [style=invis, weight=25];
-  }
-
-  {rank=same; a_payment; a_notify; a_receipt;}
-
-  a_customer -> uc_res_01;
-  a_customer -> uc_res_05;
-  a_customer -> uc_bil_02;
-  a_customer -> uc_pay_02;
-
-  a_host -> uc_res_01;
-  a_host -> uc_res_02;
-  a_host -> uc_res_03;
-  a_host -> uc_res_04;
-  a_host -> uc_res_05;
-
-  a_server -> uc_res_04;
-  a_server -> uc_ord_01;
-  a_server -> uc_ord_02;
-  a_server -> uc_ord_03;
-  a_server -> uc_kit_02;
-  a_server -> uc_ord_04;
-
-  a_chef -> uc_kit_01;
-  a_chef -> uc_kit_03;
-
-  a_cashier -> uc_res_04;
-  a_cashier -> uc_bil_01;
-  a_cashier -> uc_bil_02;
-  a_cashier -> uc_pay_01;
-  a_cashier -> uc_pay_02;
-  a_cashier -> uc_pay_03;
-
-  a_manager -> uc_res_05;
-  a_manager -> uc_kit_03;
-  a_manager -> uc_inv_03;
-  a_manager -> uc_rep_01;
-  a_manager -> uc_adm_01;
-  a_manager -> uc_adm_03;
-  a_manager -> uc_ops_01;
-
-  a_admin -> uc_adm_01;
-  a_admin -> uc_adm_02;
-  a_admin -> uc_adm_03;
-
-  edge [dir=forward, arrowhead=open, style=dashed, color="#64748B"];
-  uc_res_05 -> uc_res_01 [label="<<extend>>"];
-  uc_res_05 -> uc_res_03 [label="<<extend>>"];
-  uc_ord_02 -> uc_ord_01 [label="<<include>>"];
-  uc_ord_03 -> uc_ord_01 [label="<<extend>>"];
-  uc_ord_04 -> uc_ord_01 [label="<<extend>>"];
-  uc_kit_03 -> uc_kit_01 [label="<<extend>>"];
-  uc_bil_02 -> uc_bil_01 [label="<<extend>>"];
-  uc_pay_01 -> uc_bil_01 [label="<<include>>"];
-  uc_pay_02 -> uc_pay_01 [label="<<extend>>"];
-  uc_pay_03 -> uc_pay_01 [label="<<extend>>"];
-  uc_inv_02 -> uc_inv_01 [label="<<extend>>"];
-
-  edge [dir=none, style=solid, color="#475569"];
-  a_payment -> uc_pay_01;
-  a_payment -> uc_pay_03;
-  a_notify -> uc_res_05;
-  a_notify -> uc_inv_02;
-  a_receipt -> uc_pay_02;
+  edge [style=dashed, arrowhead=open, fontsize=7.8];
+  uc_reserve -> uc_notify [label="<<include>>"];
+  uc_order -> uc_dispatch [label="<<include>>"];
+  uc_payment -> uc_receipt [label="<<include>>"];
+  uc_serve -> uc_stock [label="<<include>>"];
 }

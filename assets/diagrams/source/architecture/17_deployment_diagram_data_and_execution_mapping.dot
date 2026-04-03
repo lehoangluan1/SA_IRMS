@@ -1,102 +1,137 @@
 digraph G {
-  rankdir=LR;
+  graph [
+    rankdir=LR,
+    compound=true,
+    newrank=true,
+    bgcolor="white",
+    pad=0.45,
+    nodesep=0.55,
+    ranksep=1.0,
+    splines=polyline,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="Deployment Diagram - Data and Execution Mapping"
+  ];
 
-  graph [bgcolor="white", pad=0.35, nodesep=0.5, ranksep=0.85, splines=polyline, fontname="Arial"];
-  node [fontname="Arial", fontsize=11, color="#334155"];
-  edge [fontname="Arial", fontsize=10, color="#475569", arrowsize=0.7];
+  node [fontname="DejaVu Sans", fontsize=10.5, color="#334155", penwidth=1.1, style="filled"];
+  edge [fontname="DejaVu Sans", fontsize=9.4, color="#64748B", penwidth=1.0, arrowsize=0.72];
 
-  node [fontname="DejaVu Sans", fontsize=11, color="#334155"];
   subgraph cluster_appserver {
-    label="Application Server"; labelloc=t; fontsize=14; style="rounded"; color="#94A3B8"; penwidth=1.2;
-    "APP" [label="«device»
-Backend IRMS Application Server", shape=box3d, style="filled", fillcolor="#ECFEFF"];
-    "App_Runtime" [label="«executionEnvironment»
-IRMS Runtime", shape=box3d, style="filled", fillcolor="#F8FAFC"];
-    "TableReservation_Module" [label="«artifact»
-table-reservation-module.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Menu_Module" [label="«artifact»
-menu-module.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Ordering_Module" [label="«artifact»
-ordering-module.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Kitchen_Module" [label="«artifact»
-kitchen-module.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "BillingPayment_Module" [label="«artifact»
-billing-payment-module.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Inventory_Module" [label="«artifact»
-inventory-module.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Reporting_Module" [label="«artifact»
-reporting-module.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "IdentityAccess_Module" [label="«artifact»
-identity-access-module.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Audit_Module" [label="«artifact»
-audit-module.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "APP" -> "App_Runtime" [arrowhead=none];
-    "App_Runtime" -> "TableReservation_Module" [arrowhead=none];
-    "App_Runtime" -> "Menu_Module" [arrowhead=none];
-    "App_Runtime" -> "Ordering_Module" [arrowhead=none];
-    "App_Runtime" -> "Kitchen_Module" [arrowhead=none];
-    "App_Runtime" -> "BillingPayment_Module" [arrowhead=none];
-    "App_Runtime" -> "Inventory_Module" [arrowhead=none];
-    "App_Runtime" -> "Reporting_Module" [arrowhead=none];
-    "App_Runtime" -> "IdentityAccess_Module" [arrowhead=none];
-    "App_Runtime" -> "Audit_Module" [arrowhead=none];
+    label="Backend Application Node";
+    color="#93C5FD";
+    style="rounded,filled";
+    fillcolor="#EFF6FF";
+    apphost [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Backend IRMS Application Server"];
+    apprt [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+IRMS Runtime"];
+
+    reservation [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Reservation & Seating Module"];
+    ordering    [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Ordering Module"];
+    kitchen     [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Kitchen Coordination Module"];
+    billing     [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Billing & Settlement Module"];
+    inventory   [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Inventory Monitoring Module"];
+    reporting   [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Reporting Module"];
+    iam         [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Identity & Access Module"];
+    audit       [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Audit Module"];
+
+    apphost -> apprt [arrowhead=none, color="#94A3B8"];
+    apprt -> reservation [arrowhead=none, color="#94A3B8"];
+    apprt -> ordering    [arrowhead=none, color="#94A3B8"];
+    apprt -> kitchen     [arrowhead=none, color="#94A3B8"];
+    apprt -> billing     [arrowhead=none, color="#94A3B8"];
+    apprt -> inventory   [arrowhead=none, color="#94A3B8"];
+    apprt -> reporting   [arrowhead=none, color="#94A3B8"];
+    apprt -> iam         [arrowhead=none, color="#94A3B8"];
+    apprt -> audit       [arrowhead=none, color="#94A3B8"];
   }
+
   subgraph cluster_worker {
-    label="Background Worker"; labelloc=t; fontsize=14; style="rounded"; color="#94A3B8"; penwidth=1.2;
-    "WORKER" [label="«device»
-Background Worker Host", shape=box3d, style="filled", fillcolor="#ECFEFF"];
-    "Worker_Runtime" [label="«executionEnvironment»
-Worker Runtime", shape=box3d, style="filled", fillcolor="#F8FAFC"];
-    "Notification_Job_Handler" [label="«artifact»
-notification-job-handler.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Receipt_Job_Handler" [label="«artifact»
-receipt-job-handler.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Projection_Refresh_Handler" [label="«artifact»
-projection-refresh-handler.jar", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "WORKER" -> "Worker_Runtime" [arrowhead=none];
-    "Worker_Runtime" -> "Notification_Job_Handler" [arrowhead=none];
-    "Worker_Runtime" -> "Receipt_Job_Handler" [arrowhead=none];
-    "Worker_Runtime" -> "Projection_Refresh_Handler" [arrowhead=none];
+    label="Asynchronous Worker Node";
+    color="#C4B5FD";
+    style="rounded,filled";
+    fillcolor="#F5F3FF";
+    workerh [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Background Worker Host"];
+    workrt [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+Worker Runtime"];
+    notifyj [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Notification Job Handler"];
+    receiptj[shape=note, fillcolor="#FFFFFF", label="«artifact»
+Receipt Job Handler"];
+    projj   [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Projection Refresh Handler"];
+    workerh -> workrt [arrowhead=none, color="#94A3B8"];
+    workrt -> notifyj [arrowhead=none, color="#94A3B8"];
+    workrt -> receiptj[arrowhead=none, color="#94A3B8"];
+    workrt -> projj   [arrowhead=none, color="#94A3B8"];
   }
+
   subgraph cluster_db {
-    label="Operational RDBMS"; labelloc=t; fontsize=14; style="rounded"; color="#94A3B8"; penwidth=1.2;
-    "ODB" [label="«device»
-Database Server", shape=box3d, style="filled", fillcolor="#ECFEFF"];
-    "PGSQL" [label="«executionEnvironment»
-PostgreSQL", shape=box3d, style="filled", fillcolor="#F8FAFC"];
-    "Orders_Bills_Payments" [label="«artifact»
-orders_bills_payments schema", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Tables_Reservations_Sessions" [label="«artifact»
-tables_reservations_sessions schema", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Menu_Promotion_Price_Rules" [label="«artifact»
-menu_promotion_price_rules schema", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Inventory_StockTransactions_Recipes" [label="«artifact»
-inventory_stocktransactions_recipes schema", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "Users_Roles_Permissions_AuditLogs" [label="«artifact»
-users_roles_permissions_auditlogs schema", shape=note, style="filled", fillcolor="#FEFCE8"];
-    "ODB" -> "PGSQL" [arrowhead=none];
-    "PGSQL" -> "Orders_Bills_Payments" [arrowhead=none];
-    "PGSQL" -> "Tables_Reservations_Sessions" [arrowhead=none];
-    "PGSQL" -> "Menu_Promotion_Price_Rules" [arrowhead=none];
-    "PGSQL" -> "Inventory_StockTransactions_Recipes" [arrowhead=none];
-    "PGSQL" -> "Users_Roles_Permissions_AuditLogs" [arrowhead=none];
+    label="Operational RDBMS Node";
+    color="#FCA5A5";
+    style="rounded,filled";
+    fillcolor="#FEF2F2";
+    dbhost [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Database Server"];
+    pg [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+PostgreSQL"];
+
+    schema_orders [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Orders / Bills / Payments Schema"];
+    schema_tables [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Tables / Reservations / Sessions Schema"];
+    schema_menu   [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Menu / Promotion / Price Rules Schema"];
+    schema_stock  [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Inventory / StockTransactions / Recipes Schema"];
+    schema_iam    [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Users / Roles / Permissions / Audit Logs Schema"];
+    rv            [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Reporting Views"];
+
+    dbhost -> pg [arrowhead=none, color="#94A3B8"];
+    pg -> schema_orders [arrowhead=none, color="#94A3B8"];
+    pg -> schema_tables [arrowhead=none, color="#94A3B8"];
+    pg -> schema_menu   [arrowhead=none, color="#94A3B8"];
+    pg -> schema_stock  [arrowhead=none, color="#94A3B8"];
+    pg -> schema_iam    [arrowhead=none, color="#94A3B8"];
+    pg -> rv            [arrowhead=none, color="#94A3B8"];
   }
-  "RV" [label="«artifact»
-Reporting Views", shape=note, style="filled", fillcolor="#F8FAFC"];
-  "KDS" [label="«device»
-Kitchen Display Client", shape=box3d, style="filled", fillcolor="#ECFEFF"];
-  "RP" [label="«device»
-Receipt Printer Gateway", shape=box3d, style="filled", fillcolor="#ECFEFF"];
-  "PG" [label="«device»
-Payment Gateway", shape=box3d, style="filled", fillcolor="#ECFEFF"];
-  "NS" [label="«device»
-Notification Service", shape=box3d, style="filled", fillcolor="#ECFEFF"];
-  edge [arrowhead=open];
-  "APP" -> "ODB" [label="shared transactional store"];
-  "APP" -> "WORKER" [label="async jobs"];
-  "WORKER" -> "RV" [label="refresh read models"];
-  "APP" -> "KDS" [label="ticket stream / poll API"];
-  "APP" -> "PG" [label="payment adapter"];
-  "WORKER" -> "NS" [label="notification adapter"];
-  "WORKER" -> "RP" [label="print adapter"];
+
+  kds [shape=box3d, fillcolor="#FEFCE8", label="«device»
+Kitchen Display Client"];
+  printer [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Receipt Printer Gateway"];
+  payment [shape=box3d, fillcolor="#F8FAFC", label="«external»
+Payment Gateway"];
+  notify [shape=box3d, fillcolor="#F8FAFC", label="«external»
+Notification Service"];
+
+  reservation -> schema_tables [label="reservations / sessions"];
+  ordering    -> schema_orders [label="orders"];
+  kitchen     -> schema_orders [label="ticket status"];
+  billing     -> schema_orders [label="bills / payments"];
+  inventory   -> schema_stock  [label="stock facts"];
+  reporting   -> rv            [label="read queries"];
+  iam         -> schema_iam    [label="access control"];
+  audit       -> schema_iam    [label="audit trail"];
+
+  apprt -> workrt [style=dashed, label="async jobs"];
+  projj -> rv [label="refresh read model"];
+  workrt -> notify [label="notification adapter"];
+  workrt -> printer [label="print adapter"];
+  billing -> payment [label="payment adapter"];
+  kitchen -> kds [label="ticket stream / poll API"];
+
+  apphost -> workerh [style=invis, weight=8];
+  workerh -> dbhost [style=invis, weight=8];
 }

@@ -1,20 +1,189 @@
 digraph G {
-  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.55, ranksep=0.7, pad=0.35];
-  node [shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=11];
-  edge [color="#475569", arrowsize=0.7, fontname="DejaVu Sans", fontsize=10];
+  graph [
+    layout=neato,
+    splines=false,
+    outputorder=nodesfirst,
+    bgcolor="white",
+    pad=0.34,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="UML Sequence Diagram - Checkout, Payment and Receipt",
+    imagepath="C:/Users/LUAN/Downloads/SA_BTL/assets/images/misc"
+  ];
 
-  cashierUI [label="Cashier UI"];
-  billingService [label="Billing Service"];
-  paymentGateway [label="Payment Gateway Adapter"];
-  receiptAdapter [label="Receipt Printer Adapter"];
-  tableSession [label="TableSession"];
+  node [fontname="DejaVu Sans", fontsize=9.4, color="#475569", penwidth=1.0, pin=true];
+  edge [fontname="DejaVu Sans", fontsize=8.0, color="#475569", arrowsize=0.66, penwidth=0.95];
 
-  cashierUI -> billingService [label="1. Yêu cầu tạo Bill"];
-  billingService -> cashierUI [label="2. Trả Bill và số tiền"];
-  cashierUI -> billingService [label="3. Chọn phương thức thanh toán"];
-  billingService -> paymentGateway [label="4. Authorize/Capture"];
-  paymentGateway -> billingService [label="5. Trả kết quả giao dịch"];
-  billingService -> receiptAdapter [label="6. Phát hành Receipt"];
-  billingService -> tableSession [label="7. Đóng phiên bàn nếu đã thanh toán đủ"];
-  billingService -> cashierUI [label="8. Trả trạng thái hoàn tất"];
+  cashier_actor_h [shape=none, image="actor_stickman.png", label="Cashier", labelloc=b, imagepos=tc, imagescale=true, pos="0,920!"];
+  cashier_ui_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Cashier UI", pos="220,920!"];
+  billing_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Billing Service", pos="460,920!"];
+  payment_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Payment Gateway Adapter", pos="700,920!"];
+  printer_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Receipt Printer Adapter", pos="940,920!"];
+  notification_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Notification Service", pos="1180,920!"];
+  session_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="TableSession", pos="1420,920!"];
+
+  cashier_actor_1 [shape=point, width=0.01, label="", pos="0,780!"];
+  cashier_actor_2 [shape=point, width=0.01, label="", pos="0,700!"];
+  cashier_actor_3 [shape=point, width=0.01, label="", pos="0,620!"];
+  cashier_actor_4 [shape=point, width=0.01, label="", pos="0,540!"];
+  cashier_actor_5 [shape=point, width=0.01, label="", pos="0,460!"];
+  cashier_actor_6 [shape=point, width=0.01, label="", pos="0,380!"];
+  cashier_actor_7 [shape=point, width=0.01, label="", pos="0,300!"];
+  cashier_actor_8 [shape=point, width=0.01, label="", pos="0,220!"];
+  cashier_actor_9 [shape=point, width=0.01, label="", pos="0,140!"];
+  cashier_actor_10 [shape=point, width=0.01, label="", pos="0,60!"];
+
+  cashier_ui_1 [shape=point, width=0.01, label="", pos="220,780!"];
+  cashier_ui_2 [shape=point, width=0.01, label="", pos="220,700!"];
+  cashier_ui_3 [shape=point, width=0.01, label="", pos="220,620!"];
+  cashier_ui_4 [shape=point, width=0.01, label="", pos="220,540!"];
+  cashier_ui_5 [shape=point, width=0.01, label="", pos="220,460!"];
+  cashier_ui_6 [shape=point, width=0.01, label="", pos="220,380!"];
+  cashier_ui_7 [shape=point, width=0.01, label="", pos="220,300!"];
+  cashier_ui_8 [shape=point, width=0.01, label="", pos="220,220!"];
+  cashier_ui_9 [shape=point, width=0.01, label="", pos="220,140!"];
+  cashier_ui_10 [shape=point, width=0.01, label="", pos="220,60!"];
+
+  billing_1 [shape=point, width=0.01, label="", pos="460,780!"];
+  billing_2 [shape=point, width=0.01, label="", pos="460,700!"];
+  billing_3 [shape=point, width=0.01, label="", pos="460,620!"];
+  billing_4 [shape=point, width=0.01, label="", pos="460,540!"];
+  billing_5 [shape=point, width=0.01, label="", pos="460,460!"];
+  billing_6 [shape=point, width=0.01, label="", pos="460,380!"];
+  billing_7 [shape=point, width=0.01, label="", pos="460,300!"];
+  billing_8 [shape=point, width=0.01, label="", pos="460,220!"];
+  billing_9 [shape=point, width=0.01, label="", pos="460,140!"];
+  billing_10 [shape=point, width=0.01, label="", pos="460,60!"];
+
+  payment_1 [shape=point, width=0.01, label="", pos="700,780!"];
+  payment_2 [shape=point, width=0.01, label="", pos="700,700!"];
+  payment_3 [shape=point, width=0.01, label="", pos="700,620!"];
+  payment_4 [shape=point, width=0.01, label="", pos="700,540!"];
+  payment_5 [shape=point, width=0.01, label="", pos="700,460!"];
+  payment_6 [shape=point, width=0.01, label="", pos="700,380!"];
+  payment_7 [shape=point, width=0.01, label="", pos="700,300!"];
+  payment_8 [shape=point, width=0.01, label="", pos="700,220!"];
+  payment_9 [shape=point, width=0.01, label="", pos="700,140!"];
+  payment_10 [shape=point, width=0.01, label="", pos="700,60!"];
+
+  printer_1 [shape=point, width=0.01, label="", pos="940,780!"];
+  printer_2 [shape=point, width=0.01, label="", pos="940,700!"];
+  printer_3 [shape=point, width=0.01, label="", pos="940,620!"];
+  printer_4 [shape=point, width=0.01, label="", pos="940,540!"];
+  printer_5 [shape=point, width=0.01, label="", pos="940,460!"];
+  printer_6 [shape=point, width=0.01, label="", pos="940,380!"];
+  printer_7 [shape=point, width=0.01, label="", pos="940,300!"];
+  printer_8 [shape=point, width=0.01, label="", pos="940,220!"];
+  printer_9 [shape=point, width=0.01, label="", pos="940,140!"];
+  printer_10 [shape=point, width=0.01, label="", pos="940,60!"];
+
+  notification_1 [shape=point, width=0.01, label="", pos="1180,780!"];
+  notification_2 [shape=point, width=0.01, label="", pos="1180,700!"];
+  notification_3 [shape=point, width=0.01, label="", pos="1180,620!"];
+  notification_4 [shape=point, width=0.01, label="", pos="1180,540!"];
+  notification_5 [shape=point, width=0.01, label="", pos="1180,460!"];
+  notification_6 [shape=point, width=0.01, label="", pos="1180,380!"];
+  notification_7 [shape=point, width=0.01, label="", pos="1180,300!"];
+  notification_8 [shape=point, width=0.01, label="", pos="1180,220!"];
+  notification_9 [shape=point, width=0.01, label="", pos="1180,140!"];
+  notification_10 [shape=point, width=0.01, label="", pos="1180,60!"];
+
+  session_1 [shape=point, width=0.01, label="", pos="1420,780!"];
+  session_2 [shape=point, width=0.01, label="", pos="1420,700!"];
+  session_3 [shape=point, width=0.01, label="", pos="1420,620!"];
+  session_4 [shape=point, width=0.01, label="", pos="1420,540!"];
+  session_5 [shape=point, width=0.01, label="", pos="1420,460!"];
+  session_6 [shape=point, width=0.01, label="", pos="1420,380!"];
+  session_7 [shape=point, width=0.01, label="", pos="1420,300!"];
+  session_8 [shape=point, width=0.01, label="", pos="1420,220!"];
+  session_9 [shape=point, width=0.01, label="", pos="1420,140!"];
+  session_10 [shape=point, width=0.01, label="", pos="1420,60!"];
+
+  cashier_actor_h -> cashier_actor_1 [style=dashed, arrowhead=none];
+  cashier_actor_1 -> cashier_actor_2 [style=dashed, arrowhead=none];
+  cashier_actor_2 -> cashier_actor_3 [style=dashed, arrowhead=none];
+  cashier_actor_3 -> cashier_actor_4 [style=dashed, arrowhead=none];
+  cashier_actor_4 -> cashier_actor_5 [style=dashed, arrowhead=none];
+  cashier_actor_5 -> cashier_actor_6 [style=dashed, arrowhead=none];
+  cashier_actor_6 -> cashier_actor_7 [style=dashed, arrowhead=none];
+  cashier_actor_7 -> cashier_actor_8 [style=dashed, arrowhead=none];
+  cashier_actor_8 -> cashier_actor_9 [style=dashed, arrowhead=none];
+  cashier_actor_9 -> cashier_actor_10 [style=dashed, arrowhead=none];
+
+  cashier_ui_h -> cashier_ui_1 [style=dashed, arrowhead=none];
+  cashier_ui_1 -> cashier_ui_2 [style=dashed, arrowhead=none];
+  cashier_ui_2 -> cashier_ui_3 [style=dashed, arrowhead=none];
+  cashier_ui_3 -> cashier_ui_4 [style=dashed, arrowhead=none];
+  cashier_ui_4 -> cashier_ui_5 [style=dashed, arrowhead=none];
+  cashier_ui_5 -> cashier_ui_6 [style=dashed, arrowhead=none];
+  cashier_ui_6 -> cashier_ui_7 [style=dashed, arrowhead=none];
+  cashier_ui_7 -> cashier_ui_8 [style=dashed, arrowhead=none];
+  cashier_ui_8 -> cashier_ui_9 [style=dashed, arrowhead=none];
+  cashier_ui_9 -> cashier_ui_10 [style=dashed, arrowhead=none];
+
+  billing_h -> billing_1 [style=dashed, arrowhead=none];
+  billing_1 -> billing_2 [style=dashed, arrowhead=none];
+  billing_2 -> billing_3 [style=dashed, arrowhead=none];
+  billing_3 -> billing_4 [style=dashed, arrowhead=none];
+  billing_4 -> billing_5 [style=dashed, arrowhead=none];
+  billing_5 -> billing_6 [style=dashed, arrowhead=none];
+  billing_6 -> billing_7 [style=dashed, arrowhead=none];
+  billing_7 -> billing_8 [style=dashed, arrowhead=none];
+  billing_8 -> billing_9 [style=dashed, arrowhead=none];
+  billing_9 -> billing_10 [style=dashed, arrowhead=none];
+
+  payment_h -> payment_1 [style=dashed, arrowhead=none];
+  payment_1 -> payment_2 [style=dashed, arrowhead=none];
+  payment_2 -> payment_3 [style=dashed, arrowhead=none];
+  payment_3 -> payment_4 [style=dashed, arrowhead=none];
+  payment_4 -> payment_5 [style=dashed, arrowhead=none];
+  payment_5 -> payment_6 [style=dashed, arrowhead=none];
+  payment_6 -> payment_7 [style=dashed, arrowhead=none];
+  payment_7 -> payment_8 [style=dashed, arrowhead=none];
+  payment_8 -> payment_9 [style=dashed, arrowhead=none];
+  payment_9 -> payment_10 [style=dashed, arrowhead=none];
+
+  printer_h -> printer_1 [style=dashed, arrowhead=none];
+  printer_1 -> printer_2 [style=dashed, arrowhead=none];
+  printer_2 -> printer_3 [style=dashed, arrowhead=none];
+  printer_3 -> printer_4 [style=dashed, arrowhead=none];
+  printer_4 -> printer_5 [style=dashed, arrowhead=none];
+  printer_5 -> printer_6 [style=dashed, arrowhead=none];
+  printer_6 -> printer_7 [style=dashed, arrowhead=none];
+  printer_7 -> printer_8 [style=dashed, arrowhead=none];
+  printer_8 -> printer_9 [style=dashed, arrowhead=none];
+  printer_9 -> printer_10 [style=dashed, arrowhead=none];
+
+  notification_h -> notification_1 [style=dashed, arrowhead=none];
+  notification_1 -> notification_2 [style=dashed, arrowhead=none];
+  notification_2 -> notification_3 [style=dashed, arrowhead=none];
+  notification_3 -> notification_4 [style=dashed, arrowhead=none];
+  notification_4 -> notification_5 [style=dashed, arrowhead=none];
+  notification_5 -> notification_6 [style=dashed, arrowhead=none];
+  notification_6 -> notification_7 [style=dashed, arrowhead=none];
+  notification_7 -> notification_8 [style=dashed, arrowhead=none];
+  notification_8 -> notification_9 [style=dashed, arrowhead=none];
+  notification_9 -> notification_10 [style=dashed, arrowhead=none];
+
+  session_h -> session_1 [style=dashed, arrowhead=none];
+  session_1 -> session_2 [style=dashed, arrowhead=none];
+  session_2 -> session_3 [style=dashed, arrowhead=none];
+  session_3 -> session_4 [style=dashed, arrowhead=none];
+  session_4 -> session_5 [style=dashed, arrowhead=none];
+  session_5 -> session_6 [style=dashed, arrowhead=none];
+  session_6 -> session_7 [style=dashed, arrowhead=none];
+  session_7 -> session_8 [style=dashed, arrowhead=none];
+  session_8 -> session_9 [style=dashed, arrowhead=none];
+  session_9 -> session_10 [style=dashed, arrowhead=none];
+
+  cashier_actor_1 -> cashier_ui_1 [label="1. Request bill for active table"];
+  cashier_ui_2 -> billing_2 [label="2. Load bill and current balance"];
+  billing_3 -> cashier_ui_3 [style=dashed, label="3. Return bill, split options and balance"];
+  cashier_ui_4 -> billing_4 [label="4. Submit selected payment method"];
+  billing_5 -> payment_5 [label="5. Authorize or capture payment"];
+  payment_6 -> billing_6 [style=dashed, label="6. Return transaction result"];
+  billing_7 -> session_7 [label="7. Close table session when paid in full"];
+  billing_8 -> printer_8 [label="8. Issue receipt job"];
+  billing_9 -> notification_9 [label="9. Send e-receipt and payment notice"];
+  billing_10 -> cashier_ui_10 [style=dashed, label="10. Return settlement completed"];
 }

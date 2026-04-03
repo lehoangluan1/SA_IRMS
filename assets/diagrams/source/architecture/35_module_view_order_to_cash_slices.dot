@@ -1,126 +1,104 @@
 digraph G {
   graph [
-    rankdir=TB,
+    rankdir=LR,
     newrank=true,
+    compound=true,
     bgcolor="white",
-    splines=polyline,
-    nodesep=0.45,
-    ranksep=0.8,
-    pad=0.35,
+    pad=0.34,
+    nodesep=0.54,
+    ranksep=0.96,
+    splines=ortho,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="Module View - Order-to-Cash Execution Slices of IRMS"
+    label="UML Package Diagram - Order-to-Cash Module Slices of IRMS"
   ];
 
-  node [
-    shape=box,
-    style="rounded,filled",
-    fontname="DejaVu Sans",
-    fontsize=10,
-    color="#5B6B8C",
-    penwidth=1.2,
-    fillcolor="#F8FAFC",
-    margin="0.08,0.05"
-  ];
+  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.3, margin="0.14,0.08"];
+  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.0];
 
-  edge [
-    fontname="DejaVu Sans",
-    fontsize=9,
-    color="#5B6B8C",
-    arrowsize=0.7
-  ];
-
-  subgraph cluster_entry {
-    label="Entry Modules";
-    color="#9BB5FF";
+  subgraph cluster_model {
+    label="<<model>> Module View";
+    color="#94A3B8";
+    penwidth=1.1;
     style="rounded";
-    hostui [label="Host UI", fillcolor="#EEF4FF"];
-    posui [label="Server POS UI", fillcolor="#EEF4FF"];
-    kdsui [label="Kitchen Display UI", fillcolor="#EEF4FF"];
-    cashierui [label="Cashier UI", fillcolor="#EEF4FF"];
-    managerui [label="Manager UI", fillcolor="#EEF4FF"];
+
+    subgraph cluster_reservation {
+      label="<<package>> Reservation Slice";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      r_app [label="Application"];
+      r_domain [label="Domain"];
+      r_infra [label="Infrastructure"];
+    }
+
+    subgraph cluster_ordering {
+      label="<<package>> Ordering Slice";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      o_app [label="Application"];
+      o_domain [label="Domain"];
+      o_infra [label="Infrastructure"];
+    }
+
+    subgraph cluster_kitchen {
+      label="<<package>> Kitchen Slice";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      k_app [label="Application"];
+      k_domain [label="Domain"];
+      k_infra [label="Infrastructure"];
+    }
+
+    subgraph cluster_billing {
+      label="<<package>> Billing Slice";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      b_app [label="Application"];
+      b_domain [label="Domain"];
+      b_infra [label="Infrastructure"];
+    }
+
+    subgraph cluster_shared {
+      label="<<package>> Shared Contracts and Downstream Modules";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      outbox [label="Outbox and Event Contracts"];
+      inventory [label="Inventory Projection"];
+      reporting [label="Reporting Projection"];
+      notification [label="Notification Module"];
+      payment [label="Payment Gateway Port"];
+      audit [label="Audit Trail Module"];
+    }
   }
 
-  gateway [label="API and Policy Gate\nrouting, validation,\nauth filter", fillcolor="#E9F1FF"];
+  r_app -> r_domain [label="invoke"];
+  r_domain -> r_infra [label="persist"];
+  o_app -> o_domain [label="invoke"];
+  o_domain -> o_infra [label="persist"];
+  k_app -> k_domain [label="invoke"];
+  k_domain -> k_infra [label="persist"];
+  b_app -> b_domain [label="invoke"];
+  b_domain -> b_infra [label="persist"];
 
-  r_slice [shape=plain label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C">
-      <TR><TD BGCOLOR="#EEF4FF"><B>Reservation Slice</B></TD></TR>
-      <TR><TD>Application</TD></TR>
-      <TR><TD>Domain</TD></TR>
-      <TR><TD>Repository</TD></TR>
-    </TABLE>
-  >];
+  r_app -> o_app [label="table context"];
+  o_app -> k_app [label="confirmed order"];
+  o_app -> b_app [label="billable snapshot"];
+  k_app -> b_app [label="served facts"];
+  b_app -> r_app [label="session closure"];
 
-  o_slice [shape=plain label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C">
-      <TR><TD BGCOLOR="#EEF4FF"><B>Ordering Slice</B></TD></TR>
-      <TR><TD>Application</TD></TR>
-      <TR><TD>Domain</TD></TR>
-      <TR><TD>Repository</TD></TR>
-    </TABLE>
-  >];
+  r_infra -> outbox [label="publish event"];
+  o_infra -> outbox [label="publish event"];
+  k_infra -> outbox [label="publish event"];
+  b_infra -> outbox [label="publish event"];
 
-  k_slice [shape=plain label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C">
-      <TR><TD BGCOLOR="#EEF4FF"><B>Kitchen Slice</B></TD></TR>
-      <TR><TD>Application</TD></TR>
-      <TR><TD>Domain</TD></TR>
-      <TR><TD>Repository</TD></TR>
-    </TABLE>
-  >];
-
-  b_slice [shape=plain label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C">
-      <TR><TD BGCOLOR="#EEF4FF"><B>Billing Slice</B></TD></TR>
-      <TR><TD>Application</TD></TR>
-      <TR><TD>Domain</TD></TR>
-      <TR><TD>Repository</TD></TR>
-    </TABLE>
-  >];
-
-  subgraph cluster_shared {
-    label="Shared Contracts and Downstream Modules";
-    color="#9BB5FF";
-    style="rounded";
-    outbox [label="Outbox and Event Contracts", fillcolor="#EEF4FF"];
-    inventory [label="Inventory Projection", fillcolor="#EEF4FF"];
-    reporting [label="Reporting Projection", fillcolor="#EEF4FF"];
-    notification [label="Notification Module", fillcolor="#EEF4FF"];
-    payment [label="Payment Gateway Port", fillcolor="#EEF4FF"];
-    audit [label="Audit Trail Module", fillcolor="#EEF4FF"];
-  }
-
-  { rank=same; hostui; posui; kdsui; cashierui; managerui; }
-  { rank=same; r_slice; o_slice; k_slice; b_slice; }
-  { rank=same; outbox; inventory; reporting; notification; payment; audit; }
-
-  hostui -> gateway;
-  posui -> gateway;
-  kdsui -> gateway;
-  cashierui -> gateway;
-  managerui -> gateway;
-
-  gateway -> r_slice;
-  gateway -> o_slice;
-  gateway -> k_slice;
-  gateway -> b_slice;
-
-  r_slice -> o_slice [label="table context"];
-  o_slice -> k_slice [label="confirmed order"];
-  o_slice -> b_slice [label="billable snapshot"];
-  k_slice -> b_slice [style=dashed, label="served facts"];
-  b_slice -> r_slice [style=dashed, label="session closure"];
-
-  r_slice -> outbox [style=dashed];
-  o_slice -> outbox [style=dashed];
-  k_slice -> outbox [style=dashed];
-  b_slice -> outbox [style=dashed];
-
-  outbox -> inventory [style=dashed];
-  outbox -> reporting [style=dashed];
-  outbox -> notification [style=dashed];
-  outbox -> audit [style=dashed];
-
-  b_slice -> payment [label="authorize / capture /\nrefund"];
+  outbox -> inventory [label="stock projection"];
+  outbox -> reporting [label="reporting projection"];
+  outbox -> notification [label="notification job"];
+  outbox -> audit [label="audit feed"];
+  b_app -> payment [label="authorize, capture, refund"];
 }

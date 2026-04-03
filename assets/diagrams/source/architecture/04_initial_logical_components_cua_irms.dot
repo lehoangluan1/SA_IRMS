@@ -1,92 +1,78 @@
 digraph G {
   graph [
-    rankdir=TB,
+    rankdir=LR,
     newrank=true,
+    compound=true,
     bgcolor="white",
-    pad=0.35,
-    nodesep=0.55,
-    ranksep=0.85,
-    splines=polyline,
+    pad=0.34,
+    nodesep=0.58,
+    ranksep=1.00,
+    splines=ortho,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="Initial Logical Capability Breakdown of IRMS"
+    label="UML Package Diagram - Initial Logical Structure of IRMS"
   ];
 
-  node [
-    shape=box,
-    style="rounded,filled",
-    fillcolor="#F8FAFC",
-    color="#334155",
-    fontname="DejaVu Sans",
-    fontsize=11,
-    penwidth=1.2,
-    margin="0.08,0.05"
-  ];
+  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.8, margin="0.14,0.08"];
+  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.2];
 
-  edge [
-    fontname="DejaVu Sans",
-    fontsize=9,
-    color="#64748B",
-    arrowsize=0.75
-  ];
-
-  subgraph cluster_frontline {
-    label="Frontline and Transactional Capabilities";
-    color="#9BB5FF";
+  subgraph cluster_model {
+    label="<<model>> Logical View";
+    color="#94A3B8";
+    penwidth=1.1;
     style="rounded";
 
-    reservation [label="Reservation Handling\nbooking request,\nreservation record"];
-    seating [label="Waitlist and Seating\nwaitlist, seating plan,\ntable assignment"];
-    menu [label="Menu Browsing and Availability\nmenu lookup,\nitem availability"];
-    ordering [label="Order Capture\norder entry,\nmodifier, allergy note"];
-    kitchen [label="Kitchen Dispatch\nkitchen ticket,\nstation routing"];
-    billing [label="Bill Generation\nbillable line,\nfee and promotion"];
-    payment [label="Payment Processing\ncash, card,\ndigital wallet"];
+    subgraph cluster_frontline {
+      label="<<package>> Frontline Capabilities";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      reservation [label="Reservation\nrequests and records"];
+      seating [label="Seating\nwaitlist and assignment"];
+      ordering [label="Ordering\norder capture"];
+      kitchen [label="Kitchen Dispatch\nticket routing"];
+      billing [label="Bill Generation\nbillable lines"];
+      payment [label="Payment Processing\ncash, card and wallet"];
+    }
+
+    subgraph cluster_support {
+      label="<<package>> Reference and Support";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      menu [label="Menu Reference\nitems and availability"];
+      inventory [label="Inventory Tracking\nstock and recipe usage"];
+      reporting [label="Reporting and Analytics\nsales and service metrics"];
+      notification [label="Notification Delivery\nreservation, alert and receipt"];
+    }
+
+    subgraph cluster_governance {
+      label="<<package>> Governance";
+      color="#BFDBFE";
+      style="rounded,filled";
+      fillcolor="#F8FBFF";
+      access [label="Access Control\nroles and permissions"];
+      audit [label="Audit and Review\noverride and refund trace"];
+    }
   }
-
-  subgraph cluster_support {
-    label="Operational Support Capabilities";
-    color="#9BB5FF";
-    style="rounded";
-
-    inventory [label="Inventory Tracking\nstock movement,\nrecipe consumption", fillcolor="#EEF4FF"];
-    reporting [label="Reporting and Analytics\nsales trend,\nservice performance", fillcolor="#EEF4FF"];
-    notification [label="Notification Delivery\nreservation notice,\nreceipt, alert", fillcolor="#EEF4FF"];
-  }
-
-  subgraph cluster_control {
-    label="Control and Governance Capabilities";
-    color="#9BB5FF";
-    style="rounded";
-
-    access [label="Access Control\nrole, permission,\nauthentication", fillcolor="#EEF4FF"];
-    audit [label="Audit and Review\noverride trace,\nrefund traceability", fillcolor="#EEF4FF"];
-  }
-
-  { rank=same; reservation; menu; access; }
-  { rank=same; seating; ordering; billing; inventory; audit; }
-  { rank=same; kitchen; payment; reporting; notification; }
 
   reservation -> seating [label="booking context"];
   seating -> ordering [label="table session"];
-  menu -> ordering [label="menu and availability"];
-  ordering -> kitchen [label="confirmed order"];
+  menu -> ordering [label="menu and price snapshot"];
+  ordering -> kitchen [label="confirmed items"];
   ordering -> billing [label="billable items"];
-  kitchen -> billing [style=dashed, label="served facts"];
-  billing -> payment [label="settlement flow"];
+  billing -> payment [label="settlement"];
 
-  kitchen -> inventory [style=dashed, label="consumption facts", constraint=false];
-  inventory -> menu [style=dashed, label="availability update", constraint=false];
-  ordering -> reporting [style=dashed, label="sales facts", constraint=false];
-  payment -> reporting [style=dashed, label="revenue facts", constraint=false];
-  reservation -> notification [style=dashed, label="reservation notice", constraint=false];
-  payment -> notification [style=dashed, label="receipt notice", constraint=false];
+  kitchen -> inventory [label="served item facts"];
+  payment -> notification [label="receipt notice"];
+  reservation -> notification [label="reservation notice"];
+  ordering -> reporting [label="sales facts"];
+  payment -> reporting [label="revenue facts"];
 
-  access -> reservation [style=dashed, constraint=false];
-  access -> ordering [style=dashed, constraint=false];
-  access -> payment [style=dashed, constraint=false];
-
-  ordering -> audit [style=dashed, label="override trace", constraint=false];
-  payment -> audit [style=dashed, label="refund trace", constraint=false];
-  inventory -> audit [style=dashed, label="stock trace", constraint=false];
+  access -> reservation [label="authorize"];
+  access -> ordering [label="authorize"];
+  access -> payment [label="authorize"];
+  ordering -> audit [label="override trace"];
+  payment -> audit [label="refund trace"];
+  inventory -> audit [label="stock trace"];
 }

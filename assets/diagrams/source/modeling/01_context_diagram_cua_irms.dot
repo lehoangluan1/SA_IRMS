@@ -1,55 +1,167 @@
 digraph G {
-  rankdir=TB;
+  graph [
+    layout=neato,
+    splines=polyline,
+    outputorder=nodesfirst,
+    bgcolor="white",
+    pad=0.35,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="System Context Diagram - IRMS"
+  ];
 
-  graph [bgcolor="white", pad=0.35, nodesep=0.55, ranksep=0.8, splines=polyline, fontname="DejaVu Sans", newrank=true];
-  node [fontname="DejaVu Sans", fontsize=11, color="#334155"];
-  edge [fontname="DejaVu Sans", fontsize=10, color="#475569", arrowsize=0.7];
+  node [
+    fontname="DejaVu Sans",
+    fontsize=10.0,
+    color="#475569",
+    penwidth=1.10,
+    pin=true,
+    shape=box,
+    style="filled",
+    fillcolor="#ECFDF5",
+    margin="0.12,0.08"
+  ];
 
-  edge [dir=none];
-  "Customer" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Customer", labelloc=b, imagepos=tc, imagescale=true];
-  "Host" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Host", labelloc=b, imagepos=tc, imagescale=true];
-  "Server" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Server", labelloc=b, imagepos=tc, imagescale=true];
-  "Chef" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Chef", labelloc=b, imagepos=tc, imagescale=true];
-  "Cashier" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Cashier", labelloc=b, imagepos=tc, imagescale=true];
-  "Manager" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Manager", labelloc=b, imagepos=tc, imagescale=true];
-  "System Administrator" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="System Administrator", labelloc=b, imagepos=tc, imagescale=true];
-  "Payment Gateway" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Payment Gateway", labelloc=b, imagepos=tc, imagescale=true];
-  "Notification Service" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Notification Service", labelloc=b, imagepos=tc, imagescale=true];
-  "Receipt Printer" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Receipt Printer", labelloc=b, imagepos=tc, imagescale=true];
+  edge [
+    fontname="DejaVu Sans",
+    fontsize=8.1,
+    color="#475569",
+    penwidth=0.95,
+    arrowsize=0.72
+  ];
 
-  {rank=same; "Customer"; "Host"; "Server"; "Chef"; "Cashier"; "Manager"; "System Administrator";}
-  subgraph cluster_system {
-    label="IRMS";
-    labelloc=t;
-    fontsize=14;
-    style="rounded";
-    color="#94A3B8";
-    penwidth=1.2;
-    "UC1" [label="Reservation and Waitlist", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-    "UC2" [label="Table Session and Seating", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-    "UC3" [label="Order Capture and Validation", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-    "UC4" [label="Kitchen Ticket Coordination", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-    "UC5" [label="Billing, Split and Payment", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-    "UC6" [label="Inventory Monitoring", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-    "UC7" [label="Reporting and Dashboard", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-    "UC8" [label="Access Control and Audit", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
-    {rank=same; "UC1"; "UC2"; "UC3"; "UC4";}
-    {rank=same; "UC5"; "UC6"; "UC7"; "UC8";}
-  }
-  {rank=same; "Payment Gateway"; "Notification Service"; "Receipt Printer";}
-  "Customer" -> "UC1";
-  "Customer" -> "UC5";
-  "Host" -> "UC1";
-  "Host" -> "UC2";
-  "Server" -> "UC2";
-  "Server" -> "UC3";
-  "Chef" -> "UC4";
-  "Cashier" -> "UC5";
-  "Manager" -> "UC6";
-  "Manager" -> "UC7";
-  "System Administrator" -> "UC8";
-  "Payment Gateway" -> "UC5";
-  "Notification Service" -> "UC1";
-  "Notification Service" -> "UC5";
-  "Receipt Printer" -> "UC5";
+  irms [
+    shape=ellipse,
+    style="filled",
+    fillcolor="#E5E7EB",
+    color="#0F766E",
+    penwidth=1.40,
+    width=4.1,
+    height=4.1,
+    fixedsize=true,
+    pos="620,420!",
+    label="0\nIRMS\nIntegrated Restaurant\nManagement System"
+  ];
+
+  customer [pos="620,790!", label="Customer"];
+  host [pos="110,660!", label="Host / Reception"];
+  server [pos="110,500!", label="Server / Floor Staff"];
+  kitchen [pos="110,340!", label="Kitchen Operations"];
+  cashier [pos="110,180!", label="Cashier"];
+
+  manager [pos="1130,660!", label="Manager"];
+  admin [pos="1130,500!", label="System Administrator"];
+  payment [pos="1130,340!", label="Payment Gateway"];
+  notification [pos="1130,180!", label="Notification Service"];
+  printer [pos="620,45!", label="Receipt Printer"];
+
+  customer -> irms [
+    tailport=s,
+    headport=n,
+    label="reservation request,\narrival update,\nparty preferences"
+  ];
+  irms -> customer [
+    tailport=ne,
+    headport=se,
+    label="booking confirmation,\nwaitlist notice,\ne-receipt reference"
+  ];
+
+  host -> irms [
+    tailport=e,
+    headport=nw,
+    label="check-in action,\nwaitlist operation,\ntable assignment confirmation"
+  ];
+  irms -> host [
+    tailport=w,
+    headport=e,
+    label="reservation board,\nqueue status,\ncandidate table list"
+  ];
+
+  server -> irms [
+    tailport=e,
+    headport=w,
+    label="order entry,\nmodifier note,\nserve completion"
+  ];
+  irms -> server [
+    tailport=sw,
+    headport=se,
+    label="active table session,\nitem availability,\nbill readiness"
+  ];
+
+  kitchen -> irms [
+    tailport=e,
+    headport=sw,
+    label="prep status,\ndish ready event,\nstock-out signal"
+  ];
+  irms -> kitchen [
+    tailport=w,
+    headport=e,
+    label="kitchen ticket,\npriority update,\ncancel or amend order"
+  ];
+
+  cashier -> irms [
+    tailport=e,
+    headport=sw,
+    label="bill split choice,\npayment input,\nmanual cash settlement"
+  ];
+  irms -> cashier [
+    tailport=sw,
+    headport=ne,
+    label="bill total,\ntransaction state,\nclosure eligibility"
+  ];
+
+  manager -> irms [
+    tailport=w,
+    headport=ne,
+    label="menu change,\nstock rule update,\nreport query"
+  ];
+  irms -> manager [
+    tailport=e,
+    headport=w,
+    label="revenue snapshot,\nlow-stock alert,\noperations dashboard"
+  ];
+
+  admin -> irms [
+    tailport=w,
+    headport=e,
+    label="role update,\npolicy change,\naudit request"
+  ];
+  irms -> admin [
+    tailport=se,
+    headport=sw,
+    label="access matrix,\naudit trail,\ncompliance evidence"
+  ];
+
+  irms -> payment [
+    tailport=e,
+    headport=w,
+    label="authorize,\ncapture,\nrefund request"
+  ];
+  payment -> irms [
+    tailport=w,
+    headport=e,
+    label="transaction result,\nreference code,\nfailure reason"
+  ];
+
+  irms -> notification [
+    tailport=e,
+    headport=w,
+    label="reservation notice,\nwaitlist call,\nalert dispatch"
+  ];
+  notification -> irms [
+    tailport=w,
+    headport=e,
+    label="delivery status,\nbounce report,\nprovider error"
+  ];
+
+  irms -> printer [
+    tailport=s,
+    headport=n,
+    label="receipt print job,\nbill payload"
+  ];
+  printer -> irms [
+    tailport=nw,
+    headport=sw,
+    label="print status,\nprinter fault"
+  ];
 }

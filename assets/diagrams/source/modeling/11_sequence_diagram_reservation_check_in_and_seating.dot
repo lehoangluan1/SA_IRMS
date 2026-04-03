@@ -1,19 +1,166 @@
 digraph G {
-  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.55, ranksep=0.7, pad=0.35];
-  node [shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=11];
-  edge [color="#475569", arrowsize=0.7, fontname="DejaVu Sans", fontsize=10];
+  graph [
+    layout=neato,
+    splines=false,
+    outputorder=nodesfirst,
+    bgcolor="white",
+    pad=0.34,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="UML Sequence Diagram - Reservation Check-In and Seating",
+    imagepath="C:/Users/LUAN/Downloads/SA_BTL/assets/images/misc"
+  ];
 
-  customer [label="Khách hàng"];
-  hostUI [label="Host UI"];
-  reservationService [label="Reservation Service"];
-  tableSession [label="TableSession"];
-  serverUI [label="Server POS UI"];
+  node [fontname="DejaVu Sans", fontsize=9.6, color="#475569", penwidth=1.0, pin=true];
+  edge [fontname="DejaVu Sans", fontsize=8.2, color="#475569", arrowsize=0.68, penwidth=0.95];
 
-  customer -> hostUI [label="1. Yêu cầu đặt bàn\nhoặc check-in"];
-  hostUI -> reservationService [label="2. Tra cứu đặt bàn\nhoặc sức chứa"];
-  reservationService -> hostUI [label="3. Trả kết quả gợi ý bàn"];
-  hostUI -> reservationService [label="4. Xác nhận tiếp nhận khách"];
-  reservationService -> tableSession [label="5. Mở phiên bàn"];
-  tableSession -> reservationService [label="6. Trả trạng thái bàn đang hoạt động"];
-  reservationService -> serverUI [label="7. Đồng bộ bàn cho phục vụ"];
+  customer_h [shape=none, image="actor_stickman.png", label="Customer", labelloc=b, imagepos=tc, imagescale=true, pos="0,920!"];
+  host_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Host UI", pos="240,920!"];
+  reservation_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Reservation Service", pos="480,920!"];
+  table_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Table Session Service", pos="720,920!"];
+  notification_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Notification Service", pos="960,920!"];
+  server_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Server POS UI", pos="1200,920!"];
+
+  customer_1 [shape=point, width=0.01, label="", pos="0,780!"];
+  customer_2 [shape=point, width=0.01, label="", pos="0,700!"];
+  customer_3 [shape=point, width=0.01, label="", pos="0,620!"];
+  customer_4 [shape=point, width=0.01, label="", pos="0,540!"];
+  customer_5 [shape=point, width=0.01, label="", pos="0,460!"];
+  customer_6 [shape=point, width=0.01, label="", pos="0,380!"];
+  customer_7 [shape=point, width=0.01, label="", pos="0,300!"];
+  customer_8 [shape=point, width=0.01, label="", pos="0,220!"];
+  customer_9 [shape=point, width=0.01, label="", pos="0,140!"];
+  customer_10 [shape=point, width=0.01, label="", pos="0,60!"];
+
+  host_1 [shape=point, width=0.01, label="", pos="240,780!"];
+  host_2 [shape=point, width=0.01, label="", pos="240,700!"];
+  host_3 [shape=point, width=0.01, label="", pos="240,620!"];
+  host_4 [shape=point, width=0.01, label="", pos="240,540!"];
+  host_5 [shape=point, width=0.01, label="", pos="240,460!"];
+  host_6 [shape=point, width=0.01, label="", pos="240,380!"];
+  host_7 [shape=point, width=0.01, label="", pos="240,300!"];
+  host_8 [shape=point, width=0.01, label="", pos="240,220!"];
+  host_9 [shape=point, width=0.01, label="", pos="240,140!"];
+  host_10 [shape=point, width=0.01, label="", pos="240,60!"];
+
+  reservation_1 [shape=point, width=0.01, label="", pos="480,780!"];
+  reservation_2 [shape=point, width=0.01, label="", pos="480,700!"];
+  reservation_3 [shape=point, width=0.01, label="", pos="480,620!"];
+  reservation_4 [shape=point, width=0.01, label="", pos="480,540!"];
+  reservation_5 [shape=point, width=0.01, label="", pos="480,460!"];
+  reservation_6 [shape=point, width=0.01, label="", pos="480,380!"];
+  reservation_7 [shape=point, width=0.01, label="", pos="480,300!"];
+  reservation_8 [shape=point, width=0.01, label="", pos="480,220!"];
+  reservation_9 [shape=point, width=0.01, label="", pos="480,140!"];
+  reservation_10 [shape=point, width=0.01, label="", pos="480,60!"];
+
+  table_1 [shape=point, width=0.01, label="", pos="720,780!"];
+  table_2 [shape=point, width=0.01, label="", pos="720,700!"];
+  table_3 [shape=point, width=0.01, label="", pos="720,620!"];
+  table_4 [shape=point, width=0.01, label="", pos="720,540!"];
+  table_5 [shape=point, width=0.01, label="", pos="720,460!"];
+  table_6 [shape=point, width=0.01, label="", pos="720,380!"];
+  table_7 [shape=point, width=0.01, label="", pos="720,300!"];
+  table_8 [shape=point, width=0.01, label="", pos="720,220!"];
+  table_9 [shape=point, width=0.01, label="", pos="720,140!"];
+  table_10 [shape=point, width=0.01, label="", pos="720,60!"];
+
+  notification_1 [shape=point, width=0.01, label="", pos="960,780!"];
+  notification_2 [shape=point, width=0.01, label="", pos="960,700!"];
+  notification_3 [shape=point, width=0.01, label="", pos="960,620!"];
+  notification_4 [shape=point, width=0.01, label="", pos="960,540!"];
+  notification_5 [shape=point, width=0.01, label="", pos="960,460!"];
+  notification_6 [shape=point, width=0.01, label="", pos="960,380!"];
+  notification_7 [shape=point, width=0.01, label="", pos="960,300!"];
+  notification_8 [shape=point, width=0.01, label="", pos="960,220!"];
+  notification_9 [shape=point, width=0.01, label="", pos="960,140!"];
+  notification_10 [shape=point, width=0.01, label="", pos="960,60!"];
+
+  server_1 [shape=point, width=0.01, label="", pos="1200,780!"];
+  server_2 [shape=point, width=0.01, label="", pos="1200,700!"];
+  server_3 [shape=point, width=0.01, label="", pos="1200,620!"];
+  server_4 [shape=point, width=0.01, label="", pos="1200,540!"];
+  server_5 [shape=point, width=0.01, label="", pos="1200,460!"];
+  server_6 [shape=point, width=0.01, label="", pos="1200,380!"];
+  server_7 [shape=point, width=0.01, label="", pos="1200,300!"];
+  server_8 [shape=point, width=0.01, label="", pos="1200,220!"];
+  server_9 [shape=point, width=0.01, label="", pos="1200,140!"];
+  server_10 [shape=point, width=0.01, label="", pos="1200,60!"];
+
+  customer_h -> customer_1 [style=dashed, arrowhead=none];
+  customer_1 -> customer_2 [style=dashed, arrowhead=none];
+  customer_2 -> customer_3 [style=dashed, arrowhead=none];
+  customer_3 -> customer_4 [style=dashed, arrowhead=none];
+  customer_4 -> customer_5 [style=dashed, arrowhead=none];
+  customer_5 -> customer_6 [style=dashed, arrowhead=none];
+  customer_6 -> customer_7 [style=dashed, arrowhead=none];
+  customer_7 -> customer_8 [style=dashed, arrowhead=none];
+  customer_8 -> customer_9 [style=dashed, arrowhead=none];
+  customer_9 -> customer_10 [style=dashed, arrowhead=none];
+
+  host_h -> host_1 [style=dashed, arrowhead=none];
+  host_1 -> host_2 [style=dashed, arrowhead=none];
+  host_2 -> host_3 [style=dashed, arrowhead=none];
+  host_3 -> host_4 [style=dashed, arrowhead=none];
+  host_4 -> host_5 [style=dashed, arrowhead=none];
+  host_5 -> host_6 [style=dashed, arrowhead=none];
+  host_6 -> host_7 [style=dashed, arrowhead=none];
+  host_7 -> host_8 [style=dashed, arrowhead=none];
+  host_8 -> host_9 [style=dashed, arrowhead=none];
+  host_9 -> host_10 [style=dashed, arrowhead=none];
+
+  reservation_h -> reservation_1 [style=dashed, arrowhead=none];
+  reservation_1 -> reservation_2 [style=dashed, arrowhead=none];
+  reservation_2 -> reservation_3 [style=dashed, arrowhead=none];
+  reservation_3 -> reservation_4 [style=dashed, arrowhead=none];
+  reservation_4 -> reservation_5 [style=dashed, arrowhead=none];
+  reservation_5 -> reservation_6 [style=dashed, arrowhead=none];
+  reservation_6 -> reservation_7 [style=dashed, arrowhead=none];
+  reservation_7 -> reservation_8 [style=dashed, arrowhead=none];
+  reservation_8 -> reservation_9 [style=dashed, arrowhead=none];
+  reservation_9 -> reservation_10 [style=dashed, arrowhead=none];
+
+  table_h -> table_1 [style=dashed, arrowhead=none];
+  table_1 -> table_2 [style=dashed, arrowhead=none];
+  table_2 -> table_3 [style=dashed, arrowhead=none];
+  table_3 -> table_4 [style=dashed, arrowhead=none];
+  table_4 -> table_5 [style=dashed, arrowhead=none];
+  table_5 -> table_6 [style=dashed, arrowhead=none];
+  table_6 -> table_7 [style=dashed, arrowhead=none];
+  table_7 -> table_8 [style=dashed, arrowhead=none];
+  table_8 -> table_9 [style=dashed, arrowhead=none];
+  table_9 -> table_10 [style=dashed, arrowhead=none];
+
+  notification_h -> notification_1 [style=dashed, arrowhead=none];
+  notification_1 -> notification_2 [style=dashed, arrowhead=none];
+  notification_2 -> notification_3 [style=dashed, arrowhead=none];
+  notification_3 -> notification_4 [style=dashed, arrowhead=none];
+  notification_4 -> notification_5 [style=dashed, arrowhead=none];
+  notification_5 -> notification_6 [style=dashed, arrowhead=none];
+  notification_6 -> notification_7 [style=dashed, arrowhead=none];
+  notification_7 -> notification_8 [style=dashed, arrowhead=none];
+  notification_8 -> notification_9 [style=dashed, arrowhead=none];
+  notification_9 -> notification_10 [style=dashed, arrowhead=none];
+
+  server_h -> server_1 [style=dashed, arrowhead=none];
+  server_1 -> server_2 [style=dashed, arrowhead=none];
+  server_2 -> server_3 [style=dashed, arrowhead=none];
+  server_3 -> server_4 [style=dashed, arrowhead=none];
+  server_4 -> server_5 [style=dashed, arrowhead=none];
+  server_5 -> server_6 [style=dashed, arrowhead=none];
+  server_6 -> server_7 [style=dashed, arrowhead=none];
+  server_7 -> server_8 [style=dashed, arrowhead=none];
+  server_8 -> server_9 [style=dashed, arrowhead=none];
+  server_9 -> server_10 [style=dashed, arrowhead=none];
+
+  customer_1 -> host_1 [label="1. Request reservation lookup or walk-in seating"];
+  host_2 -> reservation_2 [label="2. Query reservation and floor availability"];
+  reservation_3 -> host_3 [style=dashed, label="3. Return reservation and candidate tables"];
+  host_4 -> table_4 [label="4. Lock selected table for arriving party"];
+  table_5 -> reservation_5 [style=dashed, label="5. Confirm table lock"];
+  host_6 -> reservation_6 [label="6. Confirm arrival and selected table"];
+  reservation_7 -> table_7 [label="7. Open active table session"];
+  reservation_8 -> notification_8 [label="8. Send seating confirmation"];
+  reservation_9 -> server_9 [label="9. Publish opened table session"];
+  server_10 -> host_10 [style=dashed, label="10. Return session visible to service staff"];
 }

@@ -2,38 +2,38 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.42, ranksep=0.62, pad=0.28, dpi=180, bgcolor="white", fontname="DejaVu Sans"];
   node [fontname="DejaVu Sans"];
   edge [fontname="DejaVu Sans", fontsize=10, color="#475569", penwidth=1.1, arrowsize=0.72];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="Luồng vận hành đầu-cuối của nhà hàng";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="End-to-End Restaurant Operation Flow";
 
   subgraph cluster_host {
     style="rounded,filled";
     fillcolor="#EAF3FF"; color="#BBBBBB";
-    label="Lễ tân";
+    label="Host";
     h0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    h1 [label="Tiếp nhận khách hoặc\ntra cứu đặt bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    h2 [label="Xác nhận số khách\nthực tế", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    h1 [label="Receive guest or\nlook up reservation", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    h2 [label="Confirm actual\nparty size", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     h0 -> h1 -> h2 [style=invis, weight=20];
   }
 
   subgraph cluster_system {
     style="rounded,filled";
     fillcolor="#FFF8DB"; color="#BBBBBB";
-    label="Hệ thống IRMS";
-    s1 [label="Kiểm tra đặt bàn,\nhiệu lực và bàn khả dụng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s2 [label="Có bàn phù hợp?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    s3 [label="Mở TableSession và\ncập nhật trạng thái bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s4 [label="Tải thực đơn và trạng thái\nmón đang còn bán", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s5 [label="Kiểm tra món, tùy chọn,\nghi chú và giá hiện hành", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s6 [label="Đơn gọi món hợp lệ?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    s7 [label="Lưu đơn gọi món đã xác nhận\nvà chụp trạng thái giá", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s8 [label="Tạo KitchenTicket theo\ntrạm bếp và mức ưu tiên", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s9 [label="Toàn bộ món đã sẵn sàng?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    s10 [label="Ghi nhận thời điểm phục vụ\nvà cập nhật tiêu hao tồn kho", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s11 [label="Gom các đơn gọi món,\ntính hóa đơn và phí", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s12 [label="Hóa đơn cần tách?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    s13 [label="Tạo các phần thanh toán\nvà phân bổ tiền boa", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s14 [label="Ghi nhận thanh toán,\nđóng hóa đơn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s15 [label="Phát hành biên lai,\nđóng TableSession và giải phóng bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    s16 [label="Cập nhật báo cáo,\nnhật ký kiểm toán và cảnh báo", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="IRMS System";
+    s1 [label="Validate reservation,\nhold window and table availability", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s2 [label="Suitable table\navailable?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    s3 [label="Open TableSession and\nupdate table status", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s4 [label="Load menu and current\nsellable item status", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s5 [label="Validate item, modifier,\nnote and current price", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s6 [label="Order request\nvalid?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    s7 [label="Store confirmed order and\ncapture pricing snapshot", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s8 [label="Create KitchenTicket by\nstation and priority", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s9 [label="All dishes\nready?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    s10 [label="Record served time and\nupdate stock consumption", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s11 [label="Aggregate orders and\ncalculate bill totals", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s12 [label="Bill split\nrequired?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    s13 [label="Create payment parts and\nallocate tip", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s14 [label="Record payment and\nclose bill", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s15 [label="Issue receipt, close TableSession\nand release table", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    s16 [label="Refresh reports,\naudit trail and alerts", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     s17 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> s7 -> s8 -> s9 -> s10 -> s11 -> s12 -> s13 -> s14 -> s15 -> s16 -> s17 [style=invis, weight=20];
   }
@@ -41,32 +41,32 @@ digraph G {
   subgraph cluster_server {
     style="rounded,filled";
     fillcolor="#EAFBF1"; color="#BBBBBB";
-    label="Phục vụ";
-    p1 [label="Mở phiên bàn và nhập\nđơn gọi món", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    p2 [label="Điều chỉnh món nếu vừa\nhết hàng hoặc sai tùy biến", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    p3 [label="Nhận thông báo món sẵn sàng\nvà giao món cho bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    p4 [label="Nhận yêu cầu tính tiền\ncủa khách", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="Server";
+    p1 [label="Open table session and\nenter table order", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    p2 [label="Adjust item if sold out\nor customization is invalid", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    p3 [label="Receive ready notice and\nserve dishes to table", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    p4 [label="Receive bill request\nfrom customer", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     p1 -> p2 -> p3 -> p4 [style=invis, weight=20];
   }
 
   subgraph cluster_kitchen {
     style="rounded,filled";
     fillcolor="#FDECEC"; color="#BBBBBB";
-    label="Bếp";
-    k1 [label="Nhận phiếu bếp,\nbắt đầu chế biến", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    k2 [label="Cập nhật trạng thái:\nbắt đầu, đang nấu, sẵn sàng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    k3 [label="Thiếu nguyên liệu hoặc\ncó trở ngại?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    k4 [label="Đánh dấu chặn và báo\nngược về tuyến phục vụ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="Kitchen";
+    k1 [label="Receive kitchen ticket and\nstart preparation", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    k2 [label="Update state:\nstarted, cooking, ready", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    k3 [label="Ingredient shortage or\noperational blocker?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    k4 [label="Mark blocked and notify\nfrontline service", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     k1 -> k2 -> k3 -> k4 [style=invis, weight=20];
   }
 
   subgraph cluster_cashier {
     style="rounded,filled";
     fillcolor="#EEF2FF"; color="#BBBBBB";
-    label="Thu ngân";
-    c1 [label="Chọn phương thức thanh toán\nhoặc tách hóa đơn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    c2 [label="Thanh toán điện tử?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    c3 [label="Nhập số tiền khách đưa\nvà tính tiền thối", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="Cashier";
+    c1 [label="Choose payment method\nor split bill", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    c2 [label="Electronic payment?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    c3 [label="Enter cash received and\ncalculate change", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     c1 -> c2 -> c3 [style=invis, weight=20];
   }
 
@@ -74,45 +74,45 @@ digraph G {
     style="rounded,filled";
     fillcolor="#ECFDF5"; color="#BBBBBB";
     label="Payment Gateway";
-    g1 [label="Xử lý giao dịch\nđiện tử", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    g2 [label="Giao dịch thành công?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    g1 [label="Process electronic\ntransaction", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    g2 [label="Transaction\nsuccessful?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
     g1 -> g2 [style=invis, weight=20];
   }
 
   h0 -> h1;
   h1 -> s1;
-  s2 -> h2 [xlabel="Có"];
-  s2 -> s17 [xlabel="Không"];
+  s2 -> h2 [xlabel="Yes"];
+  s2 -> s17 [xlabel="No"];
   h2 -> s3;
   s3 -> p1;
   p1 -> s4;
   s4 -> s5;
   s5 -> s6;
-  s6 -> s7 [xlabel="Có"];
-  s6 -> p2 [xlabel="Không"];
+  s6 -> s7 [xlabel="Yes"];
+  s6 -> p2 [xlabel="No"];
   p2 -> p1;
   s7 -> s8;
   s8 -> k1;
   k1 -> k2;
   k2 -> k3;
-  k3 -> k4 [xlabel="Có"];
-  k3 -> s9 [xlabel="Không"];
+  k3 -> k4 [xlabel="Yes"];
+  k3 -> s9 [xlabel="No"];
   k4 -> p2;
-  s9 -> k2 [xlabel="Không"];
-  s9 -> p3 [xlabel="Có"];
+  s9 -> k2 [xlabel="No"];
+  s9 -> p3 [xlabel="Yes"];
   p3 -> s10;
   s10 -> p4;
   p4 -> s11;
   s11 -> s12;
-  s12 -> s13 [xlabel="Có"];
-  s12 -> c1 [xlabel="Không"];
+  s12 -> s13 [xlabel="Yes"];
+  s12 -> c1 [xlabel="No"];
   s13 -> c1;
   c1 -> c2;
-  c2 -> g1 [xlabel="Có"];
-  c2 -> c3 [xlabel="Không"];
+  c2 -> g1 [xlabel="Yes"];
+  c2 -> c3 [xlabel="No"];
   g1 -> g2;
-  g2 -> s14 [xlabel="Có"];
-  g2 -> c1 [xlabel="Không"];
+  g2 -> s14 [xlabel="Yes"];
+  g2 -> c1 [xlabel="No"];
   c3 -> s14;
   s14 -> s15;
   s15 -> s16;

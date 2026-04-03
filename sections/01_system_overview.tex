@@ -13,7 +13,7 @@ Các mục tiêu thiết kế chính của IRMS không chỉ dừng ở mức \e
     \item \textbf{Đồng bộ trạng thái vận hành theo thời gian gần thực}: trạng thái bàn, đơn gọi món, phiếu bếp, hóa đơn và thanh toán phải phản ánh trên các màn hình liên quan với độ trễ quan sát được không vượt quá 5 giây đối với các thay đổi quan trọng.
     \item \textbf{Rút ngắn thời gian đóng phiên phục vụ}: với một bàn tiêu chuẩn không có tách hóa đơn phức tạp, thời gian từ lúc yêu cầu thanh toán đến lúc phát hành biên lai nên dưới 2 phút; với tách hóa đơn tiêu chuẩn cho 2--4 người, mục tiêu là dưới 4 phút.
     \item \textbf{Tăng khả năng kiểm soát và truy vết}: 100\% thao tác nhạy cảm như hoàn tiền, hủy đơn đã gửi bếp, ghi đè giá, mở lại hóa đơn hoặc đổi trạng thái thanh toán phải được ghi nhận đầy đủ người thực hiện, thời điểm và lý do.
-    \item \textbf{Tạo nền tảng mở rộng về sau}: khi cần thêm phương thức thanh toán, kênh gửi thông báo, thiết bị tự phục vụ hoặc mở rộng sang nhiều chi nhánh, nhóm phát triển phải có thể mở rộng qua giao diện và dịch vụ mới mà không buộc sửa chéo logic lõi của toàn bộ hệ thống.
+    \item \textbf{Tạo nền tảng mở rộng về sau}: khi cần thêm phương thức thanh toán, kênh gửi thông báo, thiết bị tự phục vụ hoặc mở rộng sang nhiều chi nhánh, kiến trúc phải cho phép mở rộng qua các giao diện và bộ kết nối phù hợp mà không buộc sửa chéo logic lõi của toàn bộ hệ thống.
 \end{enumerate}
 
 \subsubsection{Phạm vi hệ thống}
@@ -38,7 +38,7 @@ Các mục tiêu thiết kế chính của IRMS không chỉ dừng ở mức \e
     \item hệ quản trị quan hệ khách hàng và nền tảng khách hàng thân thiết mở rộng.
 \end{itemize}
 
-\subsection{Phạm vi hệ thống}
+\subsection{Nhóm chức năng trong phạm vi}
 IRMS bao phủ các nhóm chức năng sau:
 \begin{itemize}
   \item \textbf{Đặt bàn và xếp bàn}: đặt bàn, tiếp nhận khách, danh sách chờ, sơ đồ bàn, trạng thái bàn và vòng quay bàn.
@@ -93,7 +93,7 @@ Trong hai điều kiện trên, dự án chịu các ràng buộc thực tế sa
     \item \textbf{Ràng buộc mạng}: mạng nội bộ có thể chập chờn ngắn hạn trong phạm vi dưới 60 giây; hệ thống được phép thử lại nhưng không được làm mất đơn gọi món đã xác nhận hoặc tạo phiếu trùng.
     \item \textbf{Ràng buộc thanh toán}: thanh toán điện tử luôn đi qua cổng đối tác ngoài; IRMS không lưu dữ liệu thẻ thô mà chỉ lưu kết quả giao dịch và mã tham chiếu.
     \item \textbf{Ràng buộc kiểm soát}: dữ liệu nghiệp vụ phải được lưu tập trung và có nhật ký kiểm toán cho hoàn tiền, hủy bỏ, ghi đè hoặc thay đổi nhạy cảm.
-    \item \textbf{Ràng buộc học phần}: nhóm có thể chỉ hiện thực một phần module lõi trong học phần, nhưng kiến trúc phải phản ánh đầy đủ bức tranh hệ thống để chứng minh tư duy thiết kế tổng thể.
+    \item \textbf{Ràng buộc học phần}: phạm vi hiện thực có thể tập trung vào một phần mô-đun lõi, nhưng kiến trúc vẫn phải phản ánh đầy đủ bức tranh hệ thống để chứng minh tư duy thiết kế tổng thể.
 \end{itemize}
 
 \subsection{Yêu cầu chức năng}

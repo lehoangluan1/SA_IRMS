@@ -1,7 +1,8 @@
 ﻿\appendix
 \section{Phụ lục}
 
-\subsection{Lý do lựa chọn kiến trúc và hồ sơ quyết định kiến trúc}
+\label{appendix:overall}
+\subsection{Lý do lựa chọn kiến trúc và hồ sơ quyết định kiến trúc}\label{appendix:architecture-rationale}
 
 Phụ lục này tổng hợp phần biện minh cho lựa chọn kiến trúc của IRMS dưới dạng
 \textbf{so sánh phương án} và \textbf{hồ sơ quyết định kiến trúc}
@@ -13,6 +14,8 @@ mà còn để làm rõ \textbf{bối cảnh ra quyết định},
 và \textbf{hệ quả thiết kế} của phương án cuối cùng.
 Cách trình bày này giúp phụ lục đóng vai trò như một hồ sơ giải thích quyết định,
 thay vì chỉ là phần bổ sung hình thức cho báo cáo chính.
+
+Các mục trong phụ lục này không đứng riêng với thân báo cáo. Chúng được dùng để giải thích ngược cho các phần mô hình hóa ở Mục~\ref{sec:system-modeling-overview}, phần tổng quan và các góc nhìn kiến trúc ở Mục~\ref{sec:architecture-overview}, Mục~\ref{sec:architecture-views}, cùng phần thiết kế chi tiết ở Mục~\ref{sec:detailed-design-class-view} và Mục~\ref{sec:detailed-design-clusters}.
 
 \subsubsection{So sánh các kiểu kiến trúc ứng viên}
 
@@ -204,7 +207,7 @@ mà không phải gánh toàn bộ độ phức tạp của một hệ phân tá
   \item \textbf{Ví dụ áp dụng trong IRMS:}
   \begin{itemize}
     \item \texttt{CreateOrder}, \texttt{CreateBill}, \texttt{ProcessPayment} đi theo tuyến đồng bộ.
-    \item \texttt{OrderConfirmed}, \texttt{DishReady}, \texttt{StockLow}, \texttt{ReportRefreshRequested}
+    \item \texttt{OrderConfirmed}, \texttt{DishReady}, \texttt{DishServed}, \texttt{LowStockDetected}, \texttt{ReportRefreshRequested}
     là các ví dụ phù hợp với tuyến bất đồng bộ.
   \end{itemize}
 \end{enumerate}
@@ -219,7 +222,7 @@ mà không phải gánh toàn bộ độ phức tạp của một hệ phân tá
   và dễ làm cho truy vấn báo cáo tác động ngược lại tuyến giao dịch nóng.
 
   \item \textbf{Quyết định:}
-  Mỗi mô-đun sở hữu dữ liệu giao dịch theo miền của mình.
+  Mỗi mô-đun sở hữu dữ liệu giao dịch theo miền tương ứng.
   Phần báo cáo không đọc trực tiếp đường ghi nghiệp vụ,
   mà sử dụng \textbf{read model} hoặc \textbf{snapshot}
   được cập nhật từ sự kiện miền hoặc từ một đường đồng bộ nhẹ có kiểm soát.
@@ -294,15 +297,97 @@ mà không phải gánh toàn bộ độ phức tạp của một hệ phân tá
 \end{enumerate}
 \end{adrbox}
 
+\subsection{Liên kết giữa phụ lục và các phần chính}\label{appendix:traceability}
+Phần này cho thấy mỗi phụ lục kỹ thuật được dùng để đọc ngược và biện minh cho đúng phần tương ứng trong báo cáo chính. Nhờ vậy, khi một quyết định đã xuất hiện trong thân báo cáo, người đọc có thể lần ngay sang phụ lục phù hợp để xem lý do chọn kiến trúc, thành phần hoặc loại hình sơ đồ.
+
+\begin{table}[H]
+\centering
+\caption{Liên kết giữa các phần chính và các phụ lục biện minh}
+\label{tab:appendix-traceability}
+\small
+\begin{tabularx}{\textwidth}{|p{3.7cm}|p{4.0cm}|X|}
+\hline
+\textbf{Phần chính} & \textbf{Điểm cần được giải thích} & \textbf{Phụ lục dùng để biện minh} \\
+\hline
+Mục~\ref{sec:system-modeling-overview} & Vì sao phần mô hình hóa mở đầu bằng sơ đồ ngữ cảnh, sơ đồ tổng quan ca sử dụng và sơ đồ hoạt động đầu-cuối thay vì đi thẳng vào đặc tả chi tiết. & Phụ lục~\ref{appendix:view-rationale} giải thích giá trị của từng loại sơ đồ; Phụ lục~\ref{appendix:architecture-rationale} cho thấy các sơ đồ này là nền để đọc kiến trúc, không phải hình minh họa rời rạc. \\
+\hline
+Mục~\ref{sec:architecture-overview} & Vì sao IRMS được mô tả như modular monolith theo năng lực, có lớp biên web, tuyến nền và mô hình đọc tách riêng. & Phụ lục~\ref{appendix:architecture-rationale} chứa các ADR về kiểu kiến trúc, điểm vào, kiểu kết nối và dữ liệu đọc; Phụ lục~\ref{appendix:component-rationale} giải thích vì sao dùng các thành phần nền tương ứng. \\
+\hline
+Mục~\ref{sec:architecture-views} và Mục~\ref{sec:architecture-principles} & Vì sao báo cáo đồng thời dùng góc nhìn logic, mô-đun, thành phần, triển khai và nguyên tắc thiết kế. & Phụ lục~\ref{appendix:view-rationale} giải thích vai trò của từng góc nhìn; Phụ lục~\ref{appendix:traceability} giúp nối mỗi góc nhìn với đúng phần giải thích tương ứng. \\
+\hline
+Mục~\ref{sec:detailed-design-class-view} và Mục~\ref{sec:detailed-design-clusters} & Vì sao phần thiết kế chi tiết dùng sơ đồ lớp ở mức aggregate, điểm mở rộng và hành vi thay vì chỉ mô tả dữ liệu; vì sao các sơ đồ hoạt động chi tiết đi theo từng cụm nghiệp vụ. & Phụ lục~\ref{appendix:view-rationale} giải thích lý do chọn góc nhìn lớp và hoạt động; Phụ lục~\ref{appendix:component-rationale} giải thích vì sao các điểm mở rộng như thanh toán, thông báo, phân quyền được đưa vào mô hình chi tiết. \\
+\hline
+\end{tabularx}
+\normalsize
+\end{table}
+
+\subsection{Lý do chọn các góc nhìn và loại sơ đồ}\label{appendix:view-rationale}
+Mỗi loại sơ đồ trong báo cáo trả lời một câu hỏi kiến trúc riêng: ranh giới hệ thống ở đâu, phạm vi ca sử dụng được gom như thế nào, luồng nóng đi qua những mắt xích nào, ranh giới mô-đun nào cần giữ ổn định và mô hình lớp nào phản ánh đúng hành vi miền nghiệp vụ.
+
+\begin{table}[H]
+\centering
+\caption{Lý do chọn từng góc nhìn và loại sơ đồ trong báo cáo}
+\label{tab:appendix-view-rationale}
+\small
+\begin{tabularx}{\textwidth}{|p{3.2cm}|p{3.6cm}|X|}
+\hline
+\textbf{Loại sơ đồ / góc nhìn} & \textbf{Dùng ở phần nào} & \textbf{Lý do chọn} \\
+\hline
+Sơ đồ ngữ cảnh & Mục~\ref{sec:system-modeling-overview} & Dùng để chốt ranh giới hệ thống, các vai trò vận hành và các tích hợp ngoài trước khi đi sâu vào kiến trúc. Nếu không có hình này, các mô-đun ở chương kiến trúc dễ bị đọc như cấu trúc kỹ thuật nội bộ thay vì phản ánh bối cảnh thật của IRMS. \\
+\hline
+Sơ đồ tổng quan ca sử dụng & Mục~\ref{sec:system-modeling-overview} & Dùng để gom 25 ca sử dụng thành các gói nghiệp vụ lớn, nhờ đó người đọc nhìn ra phạm vi bắt buộc và các tuyến chức năng nóng trước khi đi vào đặc tả từng mã. Đây là lớp nối giữa yêu cầu chức năng và phân rã kiến trúc. \\
+\hline
+Sơ đồ hoạt động đầu-cuối & Mục~\ref{sec:system-modeling-overview} & Dùng để khóa tuyến vận hành xuyên suốt từ tiếp nhận khách đến giải phóng bàn, qua đó làm rõ những trạng thái nào phải đồng bộ mạnh và những hệ quả nào có thể đẩy sang bất đồng bộ. \\
+\hline
+Góc nhìn logic & Mục~\ref{sec:architecture-views} & Dùng để ánh xạ hệ thống thành các năng lực nghiệp vụ, qua đó kiểm tra xem kiến trúc có phản ánh đúng vận hành nhà hàng hay chưa. Đây là góc nhìn phù hợp để nói về kết tụ, phụ thuộc và ranh giới quyết định ở mức khái niệm. \\
+\hline
+Góc nhìn mô-đun và thành phần & Mục~\ref{sec:architecture-views} & Dùng để chuyển từ bản đồ năng lực sang cấu trúc thực thi bên trong runtime: mô-đun nào giữ trách nhiệm nào, hợp đồng nào đi qua bộ kết nối, luồng nào nên đồng bộ và luồng nào nên phát tán qua sự kiện. \\
+\hline
+Góc nhìn triển khai và phân bổ & Mục~\ref{sec:architecture-views} & Dùng để trả lời hệ thống chạy ở đâu, tuyến dữ liệu và tuyến nền đi qua đâu, và cách cô lập lỗi hoặc mở rộng tải được thực hiện như thế nào. Đây là phần giúp nối quyết định mô-đun với hạ tầng thực thi. \\
+\hline
+Sơ đồ lớp & Mục~\ref{sec:detailed-design-class-view} & Dùng để thể hiện aggregate, hành vi miền nghiệp vụ và các điểm mở rộng như \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{AuthorizationPolicy}; vì vậy nó phù hợp hơn ERD thuần dữ liệu trong bối cảnh báo cáo kiến trúc. \\
+\hline
+Sơ đồ hoạt động chi tiết & Mục~\ref{sec:detailed-design-clusters} & Dùng để kiểm chứng từng ca sử dụng trọng yếu bằng chuỗi thực thi cụ thể, nhất là ở những vị trí nhạy cảm như gửi bếp, thanh toán, hoàn tiền, cập nhật tồn kho và kiểm toán. \\
+\hline
+\end{tabularx}
+\normalsize
+\end{table}
+
+\subsection{Lý do chọn các thành phần và loại hình kiến trúc nền}\label{appendix:component-rationale}
+Phần này tổng hợp cơ sở giải thích cho các thành phần và kiểu tổ chức xuất hiện trong sơ đồ tổng quan, mô-đun, thành phần và triển khai; đồng thời nối từng lựa chọn với yêu cầu vận hành của IRMS.
+
+\begin{table}[H]
+\centering
+\caption{Lý do chọn các thành phần và loại hình kiến trúc nền của IRMS}
+\label{tab:appendix-component-rationale}
+\small
+\begin{tabularx}{\textwidth}{|p{3.2cm}|p{4.0cm}|X|}
+\hline
+\textbf{Thành phần / loại hình} & \textbf{Lý do dùng trong IRMS} & \textbf{Liên hệ trực tiếp trong báo cáo} \\
+\hline
+\texttt{ReactJS} cho lớp giao diện & Phù hợp với nhiều màn hình thao tác nhanh theo vai trò như lễ tân, phục vụ, bếp, thu ngân và quản lý; thuận lợi cho đồng bộ trạng thái giao diện và điều hướng thống nhất. & Xuất hiện trong Mục~\ref{sec:architecture-overview} như lớp biên người dùng, đồng thời là điểm vào chung cho các kịch bản ở Mục~\ref{sec:system-modeling-overview}. \\
+\hline
+\texttt{Nginx} / API edge boundary & Tạo biên truy cập rõ ràng, gom xác thực sơ bộ, định tuyến, chuẩn hóa phản hồi và che giấu cấu trúc nội bộ khỏi client. & Biện minh cho ADR-02 trong Phụ lục~\ref{appendix:architecture-rationale} và xuất hiện trực tiếp trong sơ đồ tổng quan kiến trúc. \\
+\hline
+Modular monolith theo năng lực & Phù hợp với IRMS vì các giao dịch lõi như gọi món, bếp và thanh toán cần gần nhau, nhưng vẫn phải tách ranh giới mô-đun để dễ bảo trì và mở rộng có kiểm soát. & Là trục chính của ADR-01; được thể hiện xuyên suốt ở Mục~\ref{sec:architecture-overview} và Mục~\ref{sec:architecture-views}. \\
+\hline
+Outbox / background worker & Tách các hệ quả phụ như làm mới read model, gửi thông báo, in biên lai và phát cảnh báo khỏi tuyến giao dịch nóng; hỗ trợ retry và giảm ghép nối. & Biện minh cho ADR-03 và xuất hiện trong sơ đồ tổng quan, mô-đun, thành phần và triển khai. \\
+\hline
+\texttt{PostgreSQL} giao dịch & Phù hợp để neo giữ tính nhất quán của các quyết định có hậu quả nghiệp vụ cao như xác nhận đơn, đóng hóa đơn, hoàn tiền và truy vết kiểm toán. & Gắn với ADR-04 và các sơ đồ dữ liệu / triển khai trong Mục~\ref{sec:architecture-views}. \\
+\hline
+Read model cho báo cáo & Giữ báo cáo và phân tích không làm nặng tuyến giao dịch nóng, đồng thời chấp nhận độ trễ nhỏ có kiểm soát cho dữ liệu quản trị. & Biện minh bởi ADR-04; liên kết trực tiếp với các sơ đồ báo cáo và triển khai. \\
+\hline
+Payment gateway adapter & Cô lập giao thức và nhà cung cấp thanh toán khỏi lõi nghiệp vụ; cho phép thay đổi cách ủy quyền, capture hoặc refund mà không kéo logic tài chính vào mã hạ tầng. & Xuất hiện ở Mục~\ref{sec:architecture-overview} và Mục~\ref{sec:detailed-design-class-view} như một điểm mở rộng bắt buộc của vùng thanh toán. \\
+\hline
+Notification sender / receipt printer adapter & Tách những tích hợp có độ biến động cao khỏi miền nghiệp vụ; thuận tiện cho retry, fallback và thay đổi nhà cung cấp. & Nối trực tiếp giữa phần kiến trúc tổng quan với phần lớp / hoạt động chi tiết ở Mục~\ref{sec:detailed-design-clusters}. \\
+\hline
+RBAC + \texttt{AuthorizationPolicy} + audit log & Bảo vệ các thao tác nhạy cảm như hoàn tiền, ghi đè giá, đổi quyền, xem audit log; đồng thời giữ khả năng truy vết khi điều tra sự cố. & Được biện minh bởi ADR-05 và được dùng trong cả góc nhìn kiến trúc lẫn góc nhìn lớp chi tiết. \\
+\hline
+\end{tabularx}
+\normalsize
+\end{table}
+
 \subsection{Phân công công việc}
-
-Bảng dưới đây tóm tắt \textbf{phạm vi đóng góp chính} của từng thành viên trong nhóm.
-Việc trình bày theo phạm vi chính nhằm phản ánh vai trò nổi bật của mỗi thành viên
-trong quá trình xây dựng báo cáo,
-không hàm ý rằng các phần việc được thực hiện hoàn toàn tách biệt.
-Trong thực tế, nhóm vẫn có hoạt động rà soát chéo, góp ý nội dung
-và hiệu chỉnh để bảo đảm tính nhất quán của tài liệu cuối cùng.
-
 Phần phân công dưới đây được trình bày theo hướng mỗi thành viên phụ trách một mảng chính, đồng thời đều tham gia phối hợp rà soát và hiệu chỉnh để bảo đảm tính liên kết giữa các phần của báo cáo. Cách phân công này phản ánh vai trò chính của từng thành viên nhưng vẫn nhấn mạnh tính cộng tác chung của toàn nhóm trong quá trình hoàn thiện tài liệu.
 
 \begin{table}[H]

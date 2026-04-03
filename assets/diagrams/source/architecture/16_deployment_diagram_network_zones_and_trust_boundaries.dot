@@ -1,66 +1,109 @@
 digraph G {
-  rankdir=TB;
+  graph [
+    rankdir=LR,
+    compound=true,
+    newrank=true,
+    bgcolor="white",
+    pad=0.42,
+    nodesep=0.48,
+    ranksep=0.9,
+    splines=polyline,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="Deployment Diagram - Network Zones and Trust Boundaries"
+  ];
 
-  graph [bgcolor="white", pad=0.35, nodesep=0.45, ranksep=0.7, splines=ortho, fontname="DejaVu Sans"];
-  node [fontname="DejaVu Sans", fontsize=11, color="#334155"];
-  edge [fontname="DejaVu Sans", fontsize=10, color="#475569", arrowsize=0.7];
+  node [fontname="DejaVu Sans", fontsize=11, color="#334155", penwidth=1.1, style="filled"];
+  edge [fontname="DejaVu Sans", fontsize=9.8, color="#64748B", penwidth=1.0, arrowsize=0.72];
 
-  node [shape=box3d, style="filled", fillcolor="#ECFEFF", fontname="DejaVu Sans", fontsize=11, color="#334155"];
   subgraph cluster_foh {
-    label="Front-of-House Zone"; labelloc=t; fontsize=14; style="rounded"; color="#94A3B8"; penwidth=1.2;
-    "Host_Tablet" [label="«device»
-Host Tablet", fillcolor="#FEFCE8"];
-    "Server_Tablet" [label="«device»
-Server Tablet", fillcolor="#FEFCE8"];
-    "Cashier_Terminal" [label="«device»
-Cashier Terminal", fillcolor="#FEFCE8"];
+    label="Front-of-House Zone";
+    color="#CBD5E1";
+    style="rounded,filled";
+    fillcolor="#FFFBEB";
+    host [shape=box3d, fillcolor="#FEFCE8", label="«device»
+Host Tablet"];
+    server [shape=box3d, fillcolor="#FEFCE8", label="«device»
+Server Tablet"];
+    cashier [shape=box3d, fillcolor="#FEFCE8", label="«device»
+Cashier Terminal"];
   }
+
   subgraph cluster_boh {
-    label="Back-of-House Zone"; labelloc=t; fontsize=14; style="rounded"; color="#94A3B8"; penwidth=1.2;
-    "Kitchen_Display_Client" [label="«device»
-Kitchen Display Client", fillcolor="#FEFCE8"];
-    "Manager_Console" [label="«device»
-Manager Console", fillcolor="#FEFCE8"];
+    label="Back-of-House Zone";
+    color="#CBD5E1";
+    style="rounded,filled";
+    fillcolor="#FFFBEB";
+    kds [shape=box3d, fillcolor="#FEFCE8", label="«device»
+Kitchen Display Client"];
+    manager [shape=box3d, fillcolor="#FEFCE8", label="«device»
+Manager Console"];
   }
+
   subgraph cluster_app {
-    label="Application Zone"; labelloc=t; fontsize=14; style="rounded"; color="#94A3B8"; penwidth=1.2;
-    "Reverse_Proxy_Web_Server" [label="«device»
+    label="Application Zone";
+    color="#93C5FD";
+    style="rounded,filled";
+    fillcolor="#EFF6FF";
+    proxy [shape=box3d, fillcolor="#DBEAFE", color="#60A5FA", label="«device»
 Reverse Proxy / Web Server"];
-    "IRMS_Backend" [label="«device»
+    backend [shape=box3d, fillcolor="#ECFEFF", label="«device»
 IRMS Backend Node"];
-    "Backend_Runtime" [label="«executionEnvironment»
-Application Runtime", fillcolor="#F8FAFC"];
-    "Background_Worker" [label="«device»
+    runtime [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+Application Runtime"];
+    worker [shape=box3d, fillcolor="#ECFEFF", label="«device»
 Background Worker"];
-    "IRMS_Backend" -> "Backend_Runtime" [arrowhead=none];
+    backend -> runtime [arrowhead=none, color="#94A3B8"];
   }
+
   subgraph cluster_data {
-    label="Data Zone"; labelloc=t; fontsize=14; style="rounded"; color="#94A3B8"; penwidth=1.2;
-    "DB_Server" [label="«device»
+    label="Data Zone";
+    color="#FCA5A5";
+    style="rounded,filled";
+    fillcolor="#FEF2F2";
+    db [shape=box3d, fillcolor="#ECFEFF", label="«device»
 Operational DB Server"];
-    "Operational_Database" [label="«executionEnvironment»
-Operational Database", fillcolor="#F8FAFC"];
-    "Read_Model_Reporting_Views" [label="«artifact»
-Reporting Views", shape=note, fillcolor="#F8FAFC"];
-    "DB_Server" -> "Operational_Database" [arrowhead=none];
+    dbms [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+PostgreSQL"];
+    readm [shape=note, fillcolor="#FFFFFF", label="«artifact»
+Reporting Views / Read Model"];
+    db -> dbms [arrowhead=none, color="#94A3B8"];
+    dbms -> readm [arrowhead=none, color="#94A3B8"];
   }
+
+  printer [shape=box3d, fillcolor="#ECFEFF", label="«device»
+Receipt Printer Gateway"];
+
   subgraph cluster_external {
-    label="External Integration Zone"; labelloc=t; fontsize=14; style="rounded"; color="#94A3B8"; penwidth=1.2;
-    "Payment_Gateway" [label="«device»
+    label="External Integration Zone";
+    color="#CBD5E1";
+    style="rounded,dashed";
+    payment [shape=box3d, fillcolor="#F8FAFC", label="«external»
 Payment Gateway"];
-    "Notification_Service" [label="«device»
+    notify [shape=box3d, fillcolor="#F8FAFC", label="«external»
 Notification Service"];
   }
-  edge [arrowhead=open];
-  "Host_Tablet" -> "Reverse_Proxy_Web_Server" [label="reservation / seating API"];
-  "Server_Tablet" -> "Reverse_Proxy_Web_Server" [label="order API"];
-  "Cashier_Terminal" -> "Reverse_Proxy_Web_Server" [label="billing API"];
-  "Kitchen_Display_Client" -> "IRMS_Backend" [label="kitchen status API"];
-  "Manager_Console" -> "IRMS_Backend" [label="reporting / admin API"];
-  "Reverse_Proxy_Web_Server" -> "IRMS_Backend" [label="route + auth"];
-  "IRMS_Backend" -> "DB_Server" [label="transactional data"];
-  "Background_Worker" -> "Read_Model_Reporting_Views" [label="async refresh"];
-  "IRMS_Backend" -> "Background_Worker" [label="publish jobs"];
-  "IRMS_Backend" -> "Payment_Gateway" [label="payment calls"];
-  "Background_Worker" -> "Notification_Service" [label="notifications"];
+
+  { rank=same; host; server; cashier; }
+  { rank=same; kds; manager; }
+  { rank=same; proxy; backend; worker; db; payment; notify; }
+
+  host    -> proxy   [label="HTTPS"];
+  server  -> proxy   [label="HTTPS"];
+  cashier -> proxy   [label="HTTPS"];
+  kds     -> proxy   [label="HTTPS"];
+  manager -> proxy   [label="HTTPS"];
+
+  proxy   -> backend [label="route + auth"];
+  backend -> db      [label="transactional data"];
+  backend -> worker  [style=dashed, label="publish jobs"];
+  worker  -> readm   [label="async refresh"];
+  backend -> payment [label="payment calls"];
+  worker  -> notify  [label="notifications"];
+  worker  -> printer [label="print jobs"];
+
+  proxy -> backend [weight=8];
+  backend -> worker [style=invis, weight=8];
+  worker -> db [style=invis, weight=8];
+  db -> payment [style=invis, weight=8];
 }
