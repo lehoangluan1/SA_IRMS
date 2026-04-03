@@ -1,0 +1,179 @@
+digraph G {
+  rankdir=LR;
+  compound=true;
+
+  graph [
+    bgcolor="white",
+    pad=0.35,
+    nodesep=0.5,
+    ranksep=0.8,
+    splines=polyline,
+    fontname="Segoe UI"
+  ];
+
+  node [
+    fontname="Segoe UI",
+    fontsize=11,
+    color="#334155",
+    shape=box,
+    style="rounded,filled"
+  ];
+
+  edge [
+    fontname="Segoe UI",
+    fontsize=10,
+    color="#64748B",
+    arrowsize=0.7
+  ];
+
+  "NguoiDung" [
+    label="Người dùng\nLễ tân | Phục vụ | Bếp | Thu ngân | Quản lý",
+    fillcolor="#FFFFFF"
+  ];
+
+  "Frontend" [
+    label="Ứng dụng web\n(ReactJS)",
+    fillcolor="#DBEAFE"
+  ];
+
+  "Gateway" [
+    label="Cổng vào hệ thống\n(Nginx)",
+    fillcolor="#BFDBFE"
+  ];
+
+  subgraph cluster_irms {
+    label="INTELLIGENT RESTAURANT MANAGEMENT SYSTEM";
+    labelloc=t;
+    fontsize=14;
+    color="#93C5FD";
+    penwidth=1.2;
+    style="rounded,filled";
+    fillcolor="#EFF6FF";
+
+    subgraph cluster_services {
+      label="CÁC DỊCH VỤ NGHIỆP VỤ";
+      labelloc=t;
+      fontsize=12;
+      color="#A7F3D0";
+      penwidth=1.1;
+      style="rounded,filled";
+      fillcolor="#ECFDF5";
+
+      "ReservationService" [
+        label="Reservation & Seating Service\n(Spring Boot)",
+        fillcolor="#D1FAE5"
+      ];
+      "OrderingService" [
+        label="Ordering Service\n(Spring Boot)",
+        fillcolor="#D1FAE5"
+      ];
+      "KitchenService" [
+        label="Kitchen Coordination Service\n(Spring Boot)",
+        fillcolor="#D1FAE5"
+      ];
+      "BillingService" [
+        label="Billing Service\n(Spring Boot)",
+        fillcolor="#D1FAE5"
+      ];
+      "InventoryService" [
+        label="Inventory Service\n(Spring Boot)",
+        fillcolor="#D1FAE5"
+      ];
+      "ReportingService" [
+        label="Reporting Service\n(Spring Boot)",
+        fillcolor="#D1FAE5"
+      ];
+      "AccessService" [
+        label="IAM / Access Service\n(Spring Boot)",
+        fillcolor="#D1FAE5"
+      ];
+    }
+
+    subgraph cluster_data {
+      label="DỮ LIỆU";
+      labelloc=t;
+      fontsize=12;
+      color="#FCA5A5";
+      penwidth=1.1;
+      style="rounded,filled";
+      fillcolor="#FEF2F2";
+
+      "OperationalDB" [
+        label="Cơ sở dữ liệu nghiệp vụ\n(PostgreSQL)",
+        shape=cylinder,
+        style="filled",
+        fillcolor="#FDE2E2"
+      ];
+      "ReportingDB" [
+        label="Mô hình đọc và báo cáo\n(PostgreSQL)",
+        shape=cylinder,
+        style="filled",
+        fillcolor="#FDE2E2"
+      ];
+    }
+  }
+
+  subgraph cluster_external {
+    label="TÍCH HỢP NGOÀI";
+    labelloc=t;
+    fontsize=12;
+    color="#CBD5E1";
+    penwidth=1.0;
+    style="rounded,dashed";
+
+    "PaymentGateway" [
+      label="Cổng thanh toán",
+      fillcolor="#F8FAFC"
+    ];
+    "NotificationChannel" [
+      label="Kênh gửi thông báo",
+      fillcolor="#F8FAFC"
+    ];
+    "ReceiptPrinter" [
+      label="Máy in biên lai",
+      fillcolor="#F8FAFC"
+    ];
+  }
+
+  "NguoiDung" -> "Frontend" [label="HTTPS"];
+  "Frontend" -> "Gateway" [label="HTTPS / JSON"];
+
+  "Gateway" -> "ReservationService";
+  "Gateway" -> "OrderingService";
+  "Gateway" -> "KitchenService";
+  "Gateway" -> "BillingService";
+  "Gateway" -> "InventoryService";
+  "Gateway" -> "ReportingService";
+  "Gateway" -> "AccessService";
+
+  "ReservationService" -> "OperationalDB";
+  "OrderingService" -> "OperationalDB";
+  "KitchenService" -> "OperationalDB";
+  "BillingService" -> "OperationalDB";
+  "InventoryService" -> "OperationalDB";
+  "AccessService" -> "OperationalDB";
+  "ReportingService" -> "ReportingDB";
+
+  "OperationalDB" -> "ReportingDB" [
+    style=dashed,
+    label="làm mới dữ liệu đọc"
+  ];
+
+  "BillingService" -> "PaymentGateway" [
+    style=dashed,
+    label="giao dịch thanh toán"
+  ];
+  "ReservationService" -> "NotificationChannel" [
+    style=dashed,
+    label="xác nhận đặt bàn"
+  ];
+  "BillingService" -> "NotificationChannel" [
+    style=dashed,
+    label="gửi biên lai điện tử"
+  ];
+  "BillingService" -> "ReceiptPrinter" [
+    style=dashed,
+    label="in biên lai"
+  ];
+
+}

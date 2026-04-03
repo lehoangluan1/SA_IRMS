@@ -1,0 +1,101 @@
+
+digraph G {
+
+graph [bgcolor="#F3F4F6", pad="0.3", nodesep="0.45", ranksep="0.7", splines=ortho, fontname="Helvetica"];
+node [fontname="Helvetica", shape=box, style="rounded,filled", fillcolor="#F5F8FC", color="#5B6B8C", penwidth=1.2];
+edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+
+labelloc="t";
+label="Component Diagram - Operational Command Collaboration";
+rankdir=LR;
+nodesep=0.45;
+ranksep=0.85;
+
+subgraph cluster_clients {
+  label="Operational Clients";
+  color="#9BB5FF"; style="rounded";
+  hostui [label="Host UI"];
+  serverui [label="Server UI"];
+  cashierui [label="Cashier UI"];
+  kitchenui [label="Kitchen UI"];
+}
+
+gateway [label="API Gateway / Controller Layer", fillcolor="#E9F1FF"];
+auth [label="Auth Filter / Policy Check"];
+
+subgraph cluster_reserve {
+  label="Reservation Components";
+  color="#C9D7EE"; style="rounded";
+  reservationApp [label="ReservationApplicationService"];
+  seatingDomain [label="SeatingDomainService"];
+  tableRepo [label="TableRepository"];
+  reservationRepo [label="ReservationRepository"];
+}
+
+subgraph cluster_order {
+  label="Ordering Components";
+  color="#C9D7EE"; style="rounded";
+  orderApp [label="OrderApplicationService"];
+  menuQuery [label="MenuValidationComponent"];
+  pricing [label="PricingPolicyComponent"];
+  orderRepo [label="OrderRepository"];
+}
+
+subgraph cluster_kitchen {
+  label="Kitchen Components";
+  color="#C9D7EE"; style="rounded";
+  kitchenApp [label="KitchenApplicationService"];
+  ticketFactory [label="KitchenTicketFactory"];
+  ticketRepo [label="KitchenTicketRepository"];
+}
+
+subgraph cluster_bill {
+  label="Billing Components";
+  color="#C9D7EE"; style="rounded";
+  billingApp [label="BillingApplicationService"];
+  orderSnapshot [label="BillableOrderSnapshotQuery"];
+  billingDomain [label="BillingDomainComponent"];
+  billRepo [label="BillRepository"];
+}
+
+outbox [label="Outbox / Event Publisher"];
+payment [label="Payment Gateway Adapter"];
+printer [label="Receipt Printer Adapter"];
+notif [label="Notification Adapter"];
+
+hostui -> gateway;
+serverui -> gateway;
+cashierui -> gateway;
+kitchenui -> gateway;
+gateway -> auth;
+
+auth -> reservationApp [label="host actions"];
+auth -> orderApp [label="server actions"];
+auth -> kitchenApp [label="kitchen actions"];
+auth -> billingApp [label="cashier actions"];
+
+reservationApp -> seatingDomain;
+seatingDomain -> tableRepo;
+reservationApp -> reservationRepo;
+reservationApp -> outbox [style=dashed, label="ReservationCheckedIn"];
+
+orderApp -> menuQuery [label="validate items"];
+orderApp -> pricing [label="price snapshot"];
+orderApp -> orderRepo [label="persist order"];
+orderApp -> outbox [style=dashed, label="OrderConfirmed"];
+
+outbox -> ticketFactory [style=dashed, label="OrderConfirmed"];
+ticketFactory -> ticketRepo;
+kitchenApp -> ticketRepo [label="update status"];
+kitchenApp -> outbox [style=dashed, label="DishReady"];
+
+billingApp -> orderSnapshot [label="load confirmed items"];
+billingApp -> billingDomain [label="build bill"];
+billingDomain -> billRepo [label="persist bill/payment"];
+billingDomain -> payment [label="authorize/capture"];
+billingDomain -> printer [style=dashed, label="print receipt"];
+billingDomain -> notif [style=dashed, label="send e-receipt"];
+billingDomain -> outbox [style=dashed, label="PaymentCompleted"];
+
+outbox -> notif [style=dashed, label="reservation / stock / receipt event"];
+}

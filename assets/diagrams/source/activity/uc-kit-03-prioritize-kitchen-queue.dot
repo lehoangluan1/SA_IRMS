@@ -1,0 +1,50 @@
+digraph G {
+  charset="UTF-8";
+  graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.68, pad=0.25, dpi=170, bgcolor="white", fontname="Arial"];
+  node [fontname="Arial"];
+  edge [fontname="Arial", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="Arial"; label="UC-KIT-03 -- Ưu tiên hàng chờ bếp và xử lý món gấp";
+
+  subgraph cluster_l1 {
+    style="rounded,filled"; fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
+    label="Bếp / Quản lý"; fontsize=14; labelloc="t"; labeljust="l";
+    n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n1 [label="Mở hàng chờ trạm bếp\nhoặc nhận cảnh báo món gấp", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Chọn ticket hoặc item\ncần ưu tiên", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="Nhập lý do:\nVIP, sắp quá SLA,\nra theo course", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+  }
+
+  subgraph cluster_l2 {
+    style="rounded,filled"; fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
+    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    n2 [label="Hiển thị SLA, mức ưu tiên,\nđộ trễ và trạng thái station", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Có ticket gần trễ hạn\nhoặc yêu cầu expedite?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n4 [label="Áp dụng policy ưu tiên:\nSLA, VIP, phụ thuộc course", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n6 [label="Người thao tác đủ quyền\nao đổi ưu tiên?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n7 [label="Yêu cầu quản lý xác nhận\nhoặc giữ thứ tự gốc", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n9 [label="Cập nhật priority,\nsắp xếp lại hàng chờ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Ghi audit log và dấu thời gian expedite", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+  }
+
+  subgraph cluster_l3 {
+    style="rounded,filled"; fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
+    label="KDS"; fontsize=14; labelloc="t"; labeljust="l";
+    n11 [label="Làm mới thứ tự hiển thị,\ngắn cờ ticket gấp", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n12 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+  }
+
+  n0 -> n1;
+  n1 -> n2;
+  n2 -> n3;
+  n3 -> n4 [xlabel="Có"];
+  n3 -> n12 [xlabel="Không"];
+  n4 -> n5;
+  n5 -> n6;
+  n6 -> n8 [xlabel="Có"];
+  n6 -> n7 [xlabel="Không"];
+  n7 -> n12;
+  n8 -> n9;
+  n9 -> n10;
+  n10 -> n11;
+  n11 -> n12;
+}

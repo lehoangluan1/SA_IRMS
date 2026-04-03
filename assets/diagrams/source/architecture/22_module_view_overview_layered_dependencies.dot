@@ -1,0 +1,96 @@
+
+digraph G {
+
+graph [bgcolor="#F3F4F6", pad="0.3", nodesep="0.45", ranksep="0.7", splines=ortho, fontname="Helvetica"];
+node [fontname="Helvetica", shape=box, style="rounded,filled", fillcolor="#F5F8FC", color="#5B6B8C", penwidth=1.2];
+edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+
+labelloc="t";
+label="Module View Overview - Layered Decomposition and Dependency Rules";
+rankdir=TB;
+
+subgraph cluster_clients {
+  label="Client Modules";
+  color="#9BB5FF"; style="rounded";
+  hostui [label="Host UI"];
+  serverui [label="Server UI"];
+  kitchenui [label="Kitchen Display UI"];
+  cashierui [label="Cashier UI"];
+  managerui [label="Manager Console"];
+  adminui [label="Admin Console"];
+}
+
+gateway [label="API / Web Layer\nrouting, auth, input validation", fillcolor="#E9F1FF"];
+
+subgraph cluster_app {
+  label="Business Modules";
+  color="#9BB5FF"; style="rounded";
+  reserve [label="Reservation Module"];
+  menu [label="Menu Module"];
+  order [label="Ordering Module"];
+  kitchen [label="Kitchen Module"];
+  billing [label="Billing Module"];
+  inventory [label="Inventory Module"];
+  reporting [label="Reporting Module"];
+  iam [label="IAM Module"];
+  audit [label="Audit Module"];
+  notif [label="Notification Module"];
+}
+
+subgraph cluster_platform {
+  label="Shared Platform Modules";
+  color="#9BB5FF"; style="rounded";
+  repo [label="Repositories / Unit of Work"];
+  eventbus [label="Event Bus / Outbox"];
+  readmodel [label="Reporting Views"];
+  ext [label="External Adapters\npayment, printer, notification"];
+}
+
+{ rank=same; reserve menu order kitchen billing inventory reporting iam audit notif; }
+
+hostui -> gateway;
+serverui -> gateway;
+kitchenui -> gateway;
+cashierui -> gateway;
+managerui -> gateway;
+adminui -> gateway;
+
+gateway -> reserve;
+gateway -> order;
+gateway -> kitchen;
+gateway -> billing;
+gateway -> reporting;
+gateway -> iam;
+gateway -> audit;
+
+reserve -> order [label="table context"];
+menu -> order [label="item rules"];
+order -> kitchen [label="confirmed items"];
+order -> billing [label="order snapshot"];
+billing -> reserve [label="release session"];
+billing -> inventory [style=dashed, label="payment completed"];
+inventory -> menu [style=dashed, label="availability update"];
+reserve -> notif [style=dashed, label="reservation event"];
+billing -> notif [style=dashed, label="receipt event"];
+inventory -> notif [style=dashed, label="low stock alert"];
+reporting -> readmodel;
+order -> eventbus [style=dashed, label="domain events"];
+billing -> eventbus [style=dashed];
+inventory -> eventbus [style=dashed];
+reserve -> eventbus [style=dashed];
+eventbus -> notif [style=dashed];
+eventbus -> reporting [style=dashed];
+iam -> gateway [label="auth decision"];
+audit -> repo [label="audit persistence"];
+reserve -> repo;
+menu -> repo;
+order -> repo;
+kitchen -> repo;
+billing -> repo;
+inventory -> repo;
+iam -> repo;
+audit -> repo;
+reporting -> repo [style=dashed, label="query metadata"];
+billing -> ext [label="payment / receipt"];
+notif -> ext [label="notification API"];
+}

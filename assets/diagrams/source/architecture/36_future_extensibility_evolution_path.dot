@@ -1,0 +1,66 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.45, ranksep=0.85, pad=0.35];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, color="#5B6B8C", penwidth=1.2, fillcolor="#F8FAFC"];
+  edge [fontname="Helvetica", fontsize=9, color="#5B6B8C", arrowsize=0.7];
+
+  labelloc="t";
+  label="Future Extensibility - Evolution Path of IRMS";
+
+  current [label="Current Baseline\nModular monolith\n+ background worker\n+ reporting read model", fillcolor="#E9F1FF"];
+
+  subgraph cluster_extensions {
+    label="Extension Points That Must Stay Stable";
+    color="#9BB5FF";
+    style="rounded";
+    pay [label="Payment Ports\nnew gateway or wallet"];
+    notif [label="Notification Ports\nemail, SMS, push"];
+    client [label="Client/API Boundary\nkiosk, handheld, self-order"];
+    rules [label="Business Policies\npricing, authorization,\nlow-stock rule"];
+  }
+
+  subgraph cluster_scale {
+    label="Scaling Paths";
+    color="#9BB5FF";
+    style="rounded";
+    appscale [label="Scale Request Path\nmore app nodes,\nmore cache capacity"];
+    workerscale [label="Scale Background Path\nmore worker nodes,\nmore queue consumers"];
+    readscale [label="Scale Read Path\nmore projections,\nseparate read capacity"];
+  }
+
+  subgraph cluster_extract {
+    label="Candidates for First Extraction";
+    color="#9BB5FF";
+    style="rounded";
+    reporting [label="Reporting Service\nif query load diverges"];
+    notification [label="Notification Service\nif channel count grows"];
+    kitchen [label="Kitchen Coordination Service\nif station load diverges"];
+    inventory [label="Inventory Service\nif stock workflow grows"];
+  }
+
+  subgraph cluster_expand {
+    label="Operational Expansion";
+    color="#9BB5FF";
+    style="rounded";
+    branch [label="Multi-Branch Governance\nbranch policy,\nshared catalog"];
+    analytics [label="Advanced Analytics\nforecasting,\nwaste control"];
+    ecosystem [label="External Ecosystem\nloyalty, delivery,\npartner integrations"];
+  }
+
+  current -> pay [label="new provider"];
+  current -> notif [label="new channel"];
+  current -> client [label="new device or app"];
+  current -> rules [label="new policy"];
+
+  current -> appscale [label="higher transaction load"];
+  current -> workerscale [label="higher event volume"];
+  current -> readscale [label="heavier dashboard and report load"];
+
+  appscale -> reporting [style=dashed, label="separate read-heavy concern"];
+  workerscale -> notification [style=dashed, label="separate delivery concern"];
+  appscale -> kitchen [style=dashed, label="separate hot operational concern"];
+  workerscale -> inventory [style=dashed, label="separate stock concern"];
+
+  reporting -> analytics [label="deeper insight"];
+  current -> branch [label="more branches"];
+  branch -> ecosystem [label="broader integration scope"];
+}

@@ -1,0 +1,19 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.55, ranksep=0.7, pad=0.35];
+  node [shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=11];
+  edge [color="#475569", arrowsize=0.7, fontname="DejaVu Sans", fontsize=10];
+
+  serverUI [label="Server POS UI"];
+  orderingService [label="Ordering Service"];
+  kitchenService [label="Kitchen Coordination Service"];
+  kitchenUI [label="Kitchen Display UI"];
+  inventoryService [label="Inventory Service"];
+
+  serverUI -> orderingService [label="1. Tạo và xác nhận Order"];
+  orderingService -> serverUI [label="2. Trả kết quả xác nhận"];
+  orderingService -> kitchenService [label="3. Phát sự kiện\nOrderConfirmed"];
+  kitchenService -> kitchenUI [label="4. Tạo KitchenTicket\nvà hiển thị"];
+  kitchenUI -> kitchenService [label="5. Cập nhật Started/Cooking/Ready"];
+  kitchenService -> serverUI [label="6. Đồng bộ trạng thái món"];
+  serverUI -> inventoryService [label="7. Khi phục vụ xong,\nphát cập nhật trừ tồn"];
+}

@@ -1,0 +1,61 @@
+
+digraph G {
+
+graph [bgcolor="#F3F4F6", pad="0.3", nodesep="0.45", ranksep="0.78", splines=ortho, fontname="Arial"];
+node [fontname="Arial", shape=box, style="rounded,filled", fillcolor="#F5F8FC", color="#5B6B8C", penwidth=1.2];
+edge [fontname="Arial", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+
+labelloc="t";
+label="Component Diagram - Supporting Async Processing, Governance and Read Models";
+rankdir=TB;
+nodesep=0.45;
+ranksep=0.85;
+
+subgraph cluster_write {
+  label="Transactional Producers";
+  color="#9BB5FF"; style="rounded";
+  reserve [label="Reservation Module"];
+  order [label="Ordering Module"];
+  kitchen [label="Kitchen Module"];
+  billing [label="Billing Module"];
+  inventory [label="Inventory Module"];
+}
+
+outbox [label="Outbox Table"];
+dispatcher [label="Background Dispatcher"];
+eventbus [label="Internal Event Bus"];
+audit [label="Audit Service"];
+iam [label="IAM / Authorization Service"];
+projection [label="Projection Refresh Worker"];
+reporting [label="Reporting Query Service"];
+views [label="Reporting Views"];
+stockResolver [label="Inventory Consumption Resolver"];
+notification [label="Notification Sender"];
+opsDash [label="Operations Dashboard"];
+adminConsole [label="Manager / Admin Console"];
+
+reserve -> outbox [style=dashed, label="reservation events"];
+order -> outbox [style=dashed, label="order events"];
+kitchen -> outbox [style=dashed, label="dish status events"];
+billing -> outbox [style=dashed, label="payment / refund events"];
+inventory -> outbox [style=dashed, label="stock events"];
+
+outbox -> dispatcher [label="pull unpublished"];
+dispatcher -> eventbus [label="publish"];
+eventbus -> projection [style=dashed, label="refresh projections"];
+projection -> views [label="update facts"];
+reporting -> views [label="query"];
+opsDash -> reporting;
+adminConsole -> reporting;
+
+eventbus -> stockResolver [style=dashed, label="PaymentCompleted"];
+stockResolver -> inventory [label="deduct ingredients"];
+stockResolver -> audit [style=dashed, label="stock change trace"];
+inventory -> notification [style=dashed, label="LowStockDetected"];
+
+iam -> adminConsole [label="policy decisions"];
+iam -> audit [style=dashed, label="access trace"];
+billing -> audit [style=dashed, label="refund / override trace"];
+order -> audit [style=dashed, label="cancel / edit trace"];
+notification -> adminConsole [style=dashed, label="delivery status / alerts"];
+}

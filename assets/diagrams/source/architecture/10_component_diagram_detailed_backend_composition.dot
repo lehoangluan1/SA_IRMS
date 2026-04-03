@@ -1,0 +1,87 @@
+digraph G {
+  rankdir=TB;
+
+  graph [bgcolor="white", pad=0.35, nodesep=0.45, ranksep=0.7, splines=ortho, fontname="DejaVu Sans"];
+  node [fontname="DejaVu Sans", fontsize=11, color="#334155"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#475569", arrowsize=0.7];
+
+  node [shape=component, style="filled", fillcolor="#F8FAFC", fontname="DejaVu Sans", fontsize=11, color="#334155"];
+  subgraph cluster_backend {
+    label="Backend IRMS - UML Component Diagram";
+    labelloc=t; fontsize=14; style="rounded"; color="#94A3B8"; penwidth=1.2;
+    subgraph cluster_presentation {
+      label="«package» Presentation"; color="#CBD5E1"; style="rounded";
+      "ReservationController" [label="ReservationController"];
+      "OrderController" [label="OrderController"];
+      "KitchenController" [label="KitchenController"];
+      "BillingController" [label="BillingController"];
+      "ReportingController" [label="ReportingController"];
+      "AdminController" [label="AdminController"];
+    }
+    subgraph cluster_application {
+      label="«package» Application"; color="#CBD5E1"; style="rounded";
+      "ReservationAppService" [label="ReservationAppService"];
+      "OrderAppService" [label="OrderAppService"];
+      "KitchenAppService" [label="KitchenAppService"];
+      "BillingAppService" [label="BillingAppService"];
+      "InventoryAppService" [label="InventoryAppService"];
+      "ReportingAppService" [label="ReportingAppService"];
+      "AuditAppService" [label="AuditAppService"];
+    }
+    subgraph cluster_domain {
+      label="«package» Domain"; color="#CBD5E1"; style="rounded";
+      "Reservation_Aggregate" [label="Reservation Aggregate"];
+      "Table_Session_Aggregate" [label="Table Session Aggregate"];
+      "Order_Aggregate" [label="Order Aggregate"];
+      "Kitchen_Ticket_Aggregate" [label="Kitchen Ticket Aggregate"];
+      "Bill_Aggregate" [label="Bill Aggregate"];
+      "Payment_Aggregate" [label="Payment Aggregate"];
+      "Inventory_Aggregate" [label="Inventory Aggregate"];
+      "RBAC_Policy" [label="RBAC Policy"];
+      "Audit_Policy" [label="Audit Policy"];
+    }
+    subgraph cluster_infra {
+      label="«package» Infrastructure"; color="#CBD5E1"; style="rounded";
+      "Repositories" [label="Repositories"];
+      "Event_Bus" [label="Event Bus"];
+      "Payment_Adapter" [label="Payment Adapter"];
+      "Notification_Adapter" [label="Notification Adapter"];
+      "Printer_Adapter" [label="Printer Adapter"];
+      "Database_Mapper" [label="Database Mapper"];
+    }
+  }
+  edge [arrowhead=open];
+  "ReservationController" -> "ReservationAppService";
+  "OrderController" -> "OrderAppService";
+  "KitchenController" -> "KitchenAppService";
+  "BillingController" -> "BillingAppService";
+  "ReportingController" -> "ReportingAppService";
+  "AdminController" -> "AuditAppService";
+  "ReservationAppService" -> "Reservation_Aggregate";
+  "ReservationAppService" -> "Table_Session_Aggregate";
+  "OrderAppService" -> "Order_Aggregate";
+  "KitchenAppService" -> "Kitchen_Ticket_Aggregate";
+  "BillingAppService" -> "Bill_Aggregate";
+  "BillingAppService" -> "Payment_Aggregate";
+  "InventoryAppService" -> "Inventory_Aggregate";
+  "AuditAppService" -> "RBAC_Policy";
+  "AuditAppService" -> "Audit_Policy";
+  "Reservation_Aggregate" -> "Repositories";
+  "Table_Session_Aggregate" -> "Repositories";
+  "Order_Aggregate" -> "Repositories";
+  "Kitchen_Ticket_Aggregate" -> "Repositories";
+  "Bill_Aggregate" -> "Repositories";
+  "Payment_Aggregate" -> "Repositories";
+  "Inventory_Aggregate" -> "Repositories";
+  "Repositories" -> "Database_Mapper";
+  edge [style=dashed, arrowhead=open];
+  "OrderAppService" -> "Event_Bus";
+  "KitchenAppService" -> "Event_Bus";
+  "BillingAppService" -> "Event_Bus";
+  "InventoryAppService" -> "Event_Bus";
+  edge [style=solid, arrowhead=open];
+  "BillingAppService" -> "Payment_Adapter";
+  "BillingAppService" -> "Printer_Adapter";
+  "ReservationAppService" -> "Notification_Adapter";
+  "InventoryAppService" -> "Notification_Adapter";
+}

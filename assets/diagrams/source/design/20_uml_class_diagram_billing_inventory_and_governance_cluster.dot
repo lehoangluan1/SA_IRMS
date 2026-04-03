@@ -1,0 +1,71 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.45, ranksep=0.8, pad=0.4];
+  node [shape=plain, fontname="DejaVu Sans", fontsize=11];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#475569", arrowsize=0.7];
+  "Bill" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>Bill</B></TD></TR>
+<TR><TD ALIGN="LEFT">+billId: UUID<BR ALIGN="LEFT"/>+status: BillStatus<BR ALIGN="LEFT"/>+subTotal: Money<BR ALIGN="LEFT"/>+taxAmount: Money<BR ALIGN="LEFT"/>+serviceFee: Money<BR ALIGN="LEFT"/>+discountAmount: Money<BR ALIGN="LEFT"/>+tipAmount: Money</TD></TR>
+<TR><TD ALIGN="LEFT">+generateFromOrder()<BR ALIGN="LEFT"/>+applyPromotion()<BR ALIGN="LEFT"/>+split()<BR ALIGN="LEFT"/>+calculateGrandTotal()<BR ALIGN="LEFT"/>+close()</TD></TR>
+</TABLE>>];
+  "BillSplit" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>BillSplit</B></TD></TR>
+<TR><TD ALIGN="LEFT">+splitId: UUID<BR ALIGN="LEFT"/>+label: String<BR ALIGN="LEFT"/>+amount: Money<BR ALIGN="LEFT"/>+status: SplitStatus</TD></TR>
+<TR><TD ALIGN="LEFT"> </TD></TR>
+</TABLE>>];
+  "Payment" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>Payment</B></TD></TR>
+<TR><TD ALIGN="LEFT">+paymentId: UUID<BR ALIGN="LEFT"/>+amount: Money<BR ALIGN="LEFT"/>+method: PaymentMethod<BR ALIGN="LEFT"/>+status: PaymentStatus<BR ALIGN="LEFT"/>+paidAt: DateTime</TD></TR>
+<TR><TD ALIGN="LEFT">+authorize()<BR ALIGN="LEFT"/>+capture()<BR ALIGN="LEFT"/>+fail()<BR ALIGN="LEFT"/>+refund()</TD></TR>
+</TABLE>>];
+  "PaymentGateway" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>&lt;&lt;interface&gt;&gt; PaymentGateway</B></TD></TR>
+<TR><TD ALIGN="LEFT"> </TD></TR>
+<TR><TD ALIGN="LEFT">+authorize(amount)<BR ALIGN="LEFT"/>+capture(reference)<BR ALIGN="LEFT"/>+refund(paymentId)</TD></TR>
+</TABLE>>];
+  "Receipt" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>Receipt</B></TD></TR>
+<TR><TD ALIGN="LEFT">+receiptId: UUID<BR ALIGN="LEFT"/>+issuedAt: DateTime<BR ALIGN="LEFT"/>+deliveryChannel: ReceiptChannel</TD></TR>
+<TR><TD ALIGN="LEFT">+issue()</TD></TR>
+</TABLE>>];
+  "InventoryItem" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>InventoryItem</B></TD></TR>
+<TR><TD ALIGN="LEFT">+inventoryItemId: UUID<BR ALIGN="LEFT"/>+name: String<BR ALIGN="LEFT"/>+unit: String<BR ALIGN="LEFT"/>+onHand: Decimal<BR ALIGN="LEFT"/>+threshold: Decimal</TD></TR>
+<TR><TD ALIGN="LEFT">+deduct()<BR ALIGN="LEFT"/>+isBelowThreshold()</TD></TR>
+</TABLE>>];
+  "StockTransaction" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>StockTransaction</B></TD></TR>
+<TR><TD ALIGN="LEFT">+transactionId: UUID<BR ALIGN="LEFT"/>+delta: Decimal<BR ALIGN="LEFT"/>+reason: StockReason<BR ALIGN="LEFT"/>+sourceRef: UUID</TD></TR>
+<TR><TD ALIGN="LEFT"> </TD></TR>
+</TABLE>>];
+  "User" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>User</B></TD></TR>
+<TR><TD ALIGN="LEFT">+userId: UUID<BR ALIGN="LEFT"/>+username: String<BR ALIGN="LEFT"/>+status: UserStatus</TD></TR>
+<TR><TD ALIGN="LEFT"> </TD></TR>
+</TABLE>>];
+  "Role" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>Role</B></TD></TR>
+<TR><TD ALIGN="LEFT">+roleId: UUID<BR ALIGN="LEFT"/>+name: String</TD></TR>
+<TR><TD ALIGN="LEFT"> </TD></TR>
+</TABLE>>];
+  "Permission" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>Permission</B></TD></TR>
+<TR><TD ALIGN="LEFT">+permissionId: UUID<BR ALIGN="LEFT"/>+code: String</TD></TR>
+<TR><TD ALIGN="LEFT"> </TD></TR>
+</TABLE>>];
+  "AuditLog" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>AuditLog</B></TD></TR>
+<TR><TD ALIGN="LEFT">+auditLogId: UUID<BR ALIGN="LEFT"/>+action: String<BR ALIGN="LEFT"/>+entityType: String<BR ALIGN="LEFT"/>+entityId: UUID<BR ALIGN="LEFT"/>+recordedAt: DateTime</TD></TR>
+<TR><TD ALIGN="LEFT"> </TD></TR>
+</TABLE>>];
+  "Bill" -> "BillSplit" [taillabel="1", headlabel="0..*", arrowtail=diamond, dir=both, arrowhead=vee];
+  "Bill" -> "Payment" [taillabel="1", headlabel="1..*", arrowtail=diamond, dir=both, arrowhead=vee];
+  "Payment" -> "PaymentGateway" [style=dashed, arrowhead=open, label="uses"];
+  "Bill" -> "Receipt" [taillabel="1", headlabel="0..1", arrowtail=diamond, dir=both, arrowhead=vee];
+  "InventoryItem" -> "StockTransaction" [taillabel="1", headlabel="0..*", arrowtail=diamond, dir=both, arrowhead=vee];
+  "User" -> "Role" [taillabel="*", headlabel="*", arrowhead=vee];
+  "Role" -> "Permission" [taillabel="*", headlabel="*", arrowhead=vee];
+  "User" -> "AuditLog" [label="records", taillabel="1", headlabel="0..*", arrowhead=vee];
+  "AuditLog" -> "Bill" [label="billing trail", style=dashed, arrowhead=open];
+  "AuditLog" -> "Payment" [label="payment trail", style=dashed, arrowhead=open];
+  "AuditLog" -> "InventoryItem" [label="stock adjustment trail", style=dashed, arrowhead=open];
+}

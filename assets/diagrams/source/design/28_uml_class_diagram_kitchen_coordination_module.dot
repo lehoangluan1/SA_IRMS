@@ -1,0 +1,77 @@
+
+digraph G {
+
+graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.5", ranksep="0.82", splines=ortho, fontname="Arial"];
+node [fontname="Arial", shape=plaintext];
+edge [fontname="Arial", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+
+labelloc="t";
+label="UML Class Diagram - Kitchen Coordination Module";
+rankdir=TB;
+KitchenStation [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>KitchenStation</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+stationId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+kind: StationKind<BR ALIGN='LEFT'/>+maxParallelTickets: int</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+enqueue(ticket)<BR ALIGN='LEFT'/>+startNext()<BR ALIGN='LEFT'/>+estimateDelay()</TD></TR>
+</TABLE>
+>];
+KitchenTicket [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>KitchenTicket</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+ticketId: UUID<BR ALIGN='LEFT'/>+priority: int<BR ALIGN='LEFT'/>+status: KitchenTicketStatus<BR ALIGN='LEFT'/>+createdAt: DateTime<BR ALIGN='LEFT'/>+readyAt: DateTime</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+queue()<BR ALIGN='LEFT'/>+startCooking()<BR ALIGN='LEFT'/>+markReady()<BR ALIGN='LEFT'/>+markServed()</TD></TR>
+</TABLE>
+>];
+KitchenTicketItem [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>KitchenTicketItem</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+ticketItemId: UUID<BR ALIGN='LEFT'/>+quantity: int<BR ALIGN='LEFT'/>+status: KitchenTicketItemStatus<BR ALIGN='LEFT'/>+fireAt: DateTime</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+start()<BR ALIGN='LEFT'/>+ready()<BR ALIGN='LEFT'/>+hold(reason)</TD></TR>
+</TABLE>
+>];
+PreparationPolicy [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>PreparationPolicy</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+groupByStation: bool<BR ALIGN='LEFT'/>+supportsBatching: bool<BR ALIGN='LEFT'/>+rushThresholdMin: int</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+groupItems()<BR ALIGN='LEFT'/>+prioritize(ticket)<BR ALIGN='LEFT'/>+splitTicket()</TD></TR>
+</TABLE>
+>];
+RoutePlan [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>RoutePlan</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+routePlanId: UUID<BR ALIGN='LEFT'/>+createdFromOrderId: UUID<BR ALIGN='LEFT'/>+notes: String</TD></TR>
+
+</TABLE>
+>];
+ExpediteRule [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>ExpediteRule</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+ruleId: UUID<BR ALIGN='LEFT'/>+vipBoost: int<BR ALIGN='LEFT'/>+lateThresholdMin: int</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+shouldExpedite()<BR ALIGN='LEFT'/>+boostPriority()</TD></TR>
+</TABLE>
+>];
+ServeHandoff [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>ServeHandoff</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+handoffId: UUID<BR ALIGN='LEFT'/>+serverId: UUID<BR ALIGN='LEFT'/>+handedOffAt: DateTime<BR ALIGN='LEFT'/>+acceptedAt: DateTime</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+dispatch()<BR ALIGN='LEFT'/>+acknowledge()</TD></TR>
+</TABLE>
+>];
+DishStatusEvent [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>DishStatusEvent</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+eventId: UUID<BR ALIGN='LEFT'/>+type: DishStatusType<BR ALIGN='LEFT'/>+occurredAt: DateTime<BR ALIGN='LEFT'/>+sourceStation: String</TD></TR>
+
+</TABLE>
+>];
+
+KitchenStation -> KitchenTicket [label="1 to many queued tickets"];
+KitchenTicket -> KitchenTicketItem [label="1 to many lines"];
+PreparationPolicy -> KitchenTicket [style=dashed, label="priority / batching"];
+PreparationPolicy -> RoutePlan [style=dashed, label="derive station route"];
+RoutePlan -> KitchenStation [label="targets"];
+ExpediteRule -> KitchenTicket [style=dashed, label="speed-up candidate"];
+KitchenTicket -> ServeHandoff [label="0..1 handoff"];
+KitchenTicketItem -> DishStatusEvent [style=dashed, label="emits status"];
+ServeHandoff -> DishStatusEvent [style=dashed, label="served event"];
+}

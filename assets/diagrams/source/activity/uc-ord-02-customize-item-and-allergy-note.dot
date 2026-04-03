@@ -1,0 +1,55 @@
+digraph G {
+  graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
+  node [fontname="DejaVu Sans"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-ORD-02 — Tùy biến món và ghi chú dị ứng";
+  subgraph cluster_l1 {
+    style="rounded,filled";
+    fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
+    label="Phục vụ"; fontsize=14; labelloc="t"; labeljust="l";
+    rank=same;
+    n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n1 [label="Mở chi tiết dòng món", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n3 [label="Chọn modifier và
+nhập ghi chú dị ứng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n0 -> n1 -> n3 [style=invis, weight=20];
+  }
+  subgraph cluster_l2 {
+    style="rounded,filled";
+    fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
+    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    rank=same;
+    n2 [label="Hiển thị modifier,
+preset và giới hạn
+chọn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n4 [label="Kiểm tra min / max
+và thay đổi giá", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n5 [label="Dữ liệu hợp lệ?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n6 [label="Lưu
+OrderItemModifier và
+cảnh báo dị ứng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n8 [label="Hiển thị lỗi và yêu
+cầu chỉnh lại", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n2 -> n4 -> n5 -> n6 -> n8 [style=invis, weight=20];
+  }
+  subgraph cluster_l3 {
+    style="rounded,filled";
+    fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
+    label="Bếp / KDS"; fontsize=14; labelloc="t"; labeljust="l";
+    rank=same;
+    n7 [label="Nhận ghi chú nổi bật
+trên ticket bếp", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n9 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n7 -> n9 [style=invis, weight=20];
+  }
+  n0 -> n1;
+  n1 -> n2;
+  n2 -> n3;
+  n3 -> n4;
+  n4 -> n5;
+  n5 -> n6 [xlabel="Có"];
+  n5 -> n8 [xlabel="Không"];
+  n8 -> n3;
+  n6 -> n7;
+  n7 -> n9;
+}

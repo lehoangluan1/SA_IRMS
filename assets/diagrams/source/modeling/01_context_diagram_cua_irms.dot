@@ -1,0 +1,55 @@
+digraph G {
+  rankdir=TB;
+
+  graph [bgcolor="white", pad=0.35, nodesep=0.55, ranksep=0.8, splines=polyline, fontname="DejaVu Sans", newrank=true];
+  node [fontname="DejaVu Sans", fontsize=11, color="#334155"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#475569", arrowsize=0.7];
+
+  edge [dir=none];
+  "Customer" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Customer", labelloc=b, imagepos=tc, imagescale=true];
+  "Host" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Host", labelloc=b, imagepos=tc, imagescale=true];
+  "Server" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Server", labelloc=b, imagepos=tc, imagescale=true];
+  "Chef" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Chef", labelloc=b, imagepos=tc, imagescale=true];
+  "Cashier" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Cashier", labelloc=b, imagepos=tc, imagescale=true];
+  "Manager" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Manager", labelloc=b, imagepos=tc, imagescale=true];
+  "System Administrator" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="System Administrator", labelloc=b, imagepos=tc, imagescale=true];
+  "Payment Gateway" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Payment Gateway", labelloc=b, imagepos=tc, imagescale=true];
+  "Notification Service" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Notification Service", labelloc=b, imagepos=tc, imagescale=true];
+  "Receipt Printer" [shape=none, margin=0, image="assets/images/misc/actor_stickman.png", label="Receipt Printer", labelloc=b, imagepos=tc, imagescale=true];
+
+  {rank=same; "Customer"; "Host"; "Server"; "Chef"; "Cashier"; "Manager"; "System Administrator";}
+  subgraph cluster_system {
+    label="IRMS";
+    labelloc=t;
+    fontsize=14;
+    style="rounded";
+    color="#94A3B8";
+    penwidth=1.2;
+    "UC1" [label="Reservation and Waitlist", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+    "UC2" [label="Table Session and Seating", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+    "UC3" [label="Order Capture and Validation", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+    "UC4" [label="Kitchen Ticket Coordination", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+    "UC5" [label="Billing, Split and Payment", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+    "UC6" [label="Inventory Monitoring", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+    "UC7" [label="Reporting and Dashboard", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+    "UC8" [label="Access Control and Audit", shape=ellipse, style="filled", fillcolor="#EEF2FF"];
+    {rank=same; "UC1"; "UC2"; "UC3"; "UC4";}
+    {rank=same; "UC5"; "UC6"; "UC7"; "UC8";}
+  }
+  {rank=same; "Payment Gateway"; "Notification Service"; "Receipt Printer";}
+  "Customer" -> "UC1";
+  "Customer" -> "UC5";
+  "Host" -> "UC1";
+  "Host" -> "UC2";
+  "Server" -> "UC2";
+  "Server" -> "UC3";
+  "Chef" -> "UC4";
+  "Cashier" -> "UC5";
+  "Manager" -> "UC6";
+  "Manager" -> "UC7";
+  "System Administrator" -> "UC8";
+  "Payment Gateway" -> "UC5";
+  "Notification Service" -> "UC1";
+  "Notification Service" -> "UC5";
+  "Receipt Printer" -> "UC5";
+}

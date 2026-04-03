@@ -1,0 +1,36 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.4];
+  node [fontname="DejaVu Sans", fontsize=12];
+  edge [fontname="DejaVu Sans", fontsize=11, color="#475569", arrowsize=0.7];
+  subgraph cluster_1 {
+    label="Refined Logical Capabilities";
+    color="#94A3B8";
+    style="rounded";
+    "Table_and_Reservation" [label="Table and Reservation", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Menu_Management" [label="Menu Management", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Ordering" [label="Ordering", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Kitchen_Coordination" [label="Kitchen Coordination", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Billing_and_Settlement" [label="Billing and Settlement", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Inventory_Monitoring" [label="Inventory Monitoring", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Reporting_and_Analytics" [label="Reporting and Analytics", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Identity_and_Access_Control" [label="Identity and Access Control", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Audit_and_Compliance" [label="Audit and Compliance", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Notification_Integration" [label="Notification Integration", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+  }
+  "Ordering" -> "Table_and_Reservation" [label="table context"];
+  "Ordering" -> "Menu_Management" [label="availability and price snapshot"];
+  "Ordering" -> "Kitchen_Coordination" [label="confirmed items"];
+  "Billing_and_Settlement" -> "Ordering" [label="billable order snapshot"];
+  "Billing_and_Settlement" -> "Table_and_Reservation" [label="close table session"];
+  "Inventory_Monitoring" -> "Ordering" [label="subscribe order/payment events", style="dashed"];
+  "Reporting_and_Analytics" -> "Ordering" [];
+  "Reporting_and_Analytics" -> "Billing_and_Settlement" [];
+  "Reporting_and_Analytics" -> "Inventory_Monitoring" [];
+  "Ordering" -> "Audit_and_Compliance" [style="dashed"];
+  "Billing_and_Settlement" -> "Audit_and_Compliance" [style="dashed"];
+  "Identity_and_Access_Control" -> "Ordering" [style="dashed"];
+  "Identity_and_Access_Control" -> "Billing_and_Settlement" [style="dashed"];
+  "Table_and_Reservation" -> "Notification_Integration" [];
+  "Billing_and_Settlement" -> "Notification_Integration" [];
+  "Inventory_Monitoring" -> "Notification_Integration" [];
+}

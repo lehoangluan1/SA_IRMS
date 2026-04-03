@@ -1,0 +1,60 @@
+digraph G {
+  charset="UTF-8";
+  graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.68, pad=0.25, dpi=170, bgcolor="white", fontname="Arial"];
+  node [fontname="Arial"];
+  edge [fontname="Arial", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="Arial"; label="UC-RES-04 -- Cập nhật trạng thái bàn và giải phóng bàn";
+
+  subgraph cluster_l1 {
+    style="rounded,filled"; fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
+    label="Lễ tân / Phục vụ / Thu ngân"; fontsize=14; labelloc="t"; labeljust="l";
+    n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n1 [label="Chọn bàn hoặc phiên phục vụ\ncần cập nhật", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Chọn trạng thái đích:\nCleaning / Available / OutOfService", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n12 [label="Xác nhận bàn đã dọn xong", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+  }
+
+  subgraph cluster_l2 {
+    style="rounded,filled"; fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
+    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    n2 [label="Tải trạng thái bàn,\nTableSession và bill liên quan", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Có phiên phục vụ hoặc\nhóa đơn đang mở?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n4 [label="Kiểm tra số dư và split\nchưa tất toán", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n6 [label="Mục tiêu là giải phóng bàn?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n7 [label="Cho phép đóng session\nvà chuyển Cleaning?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n8 [label="Từ chối giải phóng bàn,\nyêu cầu xử lý công nợ trước", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n9 [label="Đóng TableSession,\nđặt trạng thái Cleaning", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Cập nhật trạng thái khác\nvà ghi lý do", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n13 [label="Chuyển bàn sang Available\nvà đồng bộ sơ đồ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n14 [label="Có khách chờ phù hợp?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n15 [label="Ghi audit log và dấu thời gian", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+  }
+
+  subgraph cluster_l3 {
+    style="rounded,filled"; fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
+    label="Danh sách chờ / Điều phối"; fontsize=14; labelloc="t"; labeljust="l";
+    n16 [label="Gợi ý gọi khách tiếp theo\nhoặc cập nhật ETA", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n17 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+  }
+
+  n0 -> n1;
+  n1 -> n2;
+  n2 -> n3;
+  n3 -> n4 [xlabel="Có"];
+  n3 -> n5 [xlabel="Không"];
+  n4 -> n5;
+  n5 -> n6;
+  n6 -> n7 [xlabel="Có"];
+  n6 -> n10 [xlabel="Không"];
+  n7 -> n9 [xlabel="Có"];
+  n7 -> n8 [xlabel="Không"];
+  n8 -> n17;
+  n9 -> n12;
+  n12 -> n13;
+  n10 -> n15;
+  n13 -> n14;
+  n14 -> n16 [xlabel="Có"];
+  n14 -> n15 [xlabel="Không"];
+  n16 -> n15;
+  n15 -> n17;
+}

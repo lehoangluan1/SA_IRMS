@@ -1,0 +1,79 @@
+
+digraph G {
+
+graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.55", ranksep="0.9", splines=ortho, fontname="Helvetica"];
+node [fontname="Helvetica", shape=plaintext];
+edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+
+labelloc="t";
+label="UML Class Diagram - Reservation and Seating Module";
+rankdir=LR;
+Reservation [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>Reservation</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+reservationId: UUID<BR ALIGN='LEFT'/>+arrivalAt: DateTime<BR ALIGN='LEFT'/>+partySize: int<BR ALIGN='LEFT'/>+status: ReservationStatus<BR ALIGN='LEFT'/>+source: ReservationSource</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+confirm()<BR ALIGN='LEFT'/>+checkIn()<BR ALIGN='LEFT'/>+markNoShow()<BR ALIGN='LEFT'/>+cancel(reason)</TD></TR>
+</TABLE>
+>];
+WaitlistEntry [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>WaitlistEntry</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+waitlistEntryId: UUID<BR ALIGN='LEFT'/>+partySize: int<BR ALIGN='LEFT'/>+quotedWaitMin: int<BR ALIGN='LEFT'/>+status: WaitlistStatus</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+enqueue()<BR ALIGN='LEFT'/>+quoteTime(minutes)<BR ALIGN='LEFT'/>+seatNow()<BR ALIGN='LEFT'/>+expire()</TD></TR>
+</TABLE>
+>];
+DiningTable [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>DiningTable</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+tableId: UUID<BR ALIGN='LEFT'/>+code: String<BR ALIGN='LEFT'/>+capacity: int<BR ALIGN='LEFT'/>+zone: String<BR ALIGN='LEFT'/>+status: TableStatus</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+hold()<BR ALIGN='LEFT'/>+occupy()<BR ALIGN='LEFT'/>+release()<BR ALIGN='LEFT'/>+mergeWith(other)</TD></TR>
+</TABLE>
+>];
+TableSession [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>TableSession</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+sessionId: UUID<BR ALIGN='LEFT'/>+openedAt: DateTime<BR ALIGN='LEFT'/>+guestCount: int<BR ALIGN='LEFT'/>+status: TableSessionStatus</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+open()<BR ALIGN='LEFT'/>+attachReservation()<BR ALIGN='LEFT'/>+increaseGuestCount()<BR ALIGN='LEFT'/>+close()</TD></TR>
+</TABLE>
+>];
+SeatingPreference [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>SeatingPreference</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+windowSide: bool<BR ALIGN='LEFT'/>+indoorOnly: bool<BR ALIGN='LEFT'/>+highChairCount: int<BR ALIGN='LEFT'/>+tableAreaHint: String</TD></TR>
+
+</TABLE>
+>];
+TableAssignment [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>TableAssignment</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+assignmentId: UUID<BR ALIGN='LEFT'/>+assignedAt: DateTime<BR ALIGN='LEFT'/>+reason: AssignmentReason<BR ALIGN='LEFT'/>+score: Decimal</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+assign()<BR ALIGN='LEFT'/>+reassign(newTable)<BR ALIGN='LEFT'/>+release()</TD></TR>
+</TABLE>
+>];
+SeatingPolicy [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>SeatingPolicy</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+maxHoldMinutes: int<BR ALIGN='LEFT'/>+walkInBias: Decimal<BR ALIGN='LEFT'/>+reservationGraceMinutes: int</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+findCandidateTables()<BR ALIGN='LEFT'/>+scoreTable()<BR ALIGN='LEFT'/>+canOpenSession()</TD></TR>
+</TABLE>
+>];
+ReservationContact [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>ReservationContact</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+name: String<BR ALIGN='LEFT'/>+phone: String<BR ALIGN='LEFT'/>+email: String<BR ALIGN='LEFT'/>+notificationChannel: Channel</TD></TR>
+
+</TABLE>
+>];
+
+Reservation -> ReservationContact [arrowhead=vee, label="1 to 1"];
+Reservation -> SeatingPreference [arrowhead=vee, label="1 to 0..1"];
+Reservation -> TableAssignment [arrowhead=vee, label="0..1 assignment"];
+TableAssignment -> DiningTable [arrowhead=vee, label="assigns"];
+TableAssignment -> TableSession [arrowhead=vee, label="opens"];
+WaitlistEntry -> SeatingPreference [arrowhead=vee, label="0..1"];
+WaitlistEntry -> TableAssignment [style=dashed, label="fulfilled by"];
+DiningTable -> TableSession [label="1 to 0..1 current session"];
+SeatingPolicy -> Reservation [style=dashed, label="validate party / time"];
+SeatingPolicy -> WaitlistEntry [style=dashed, label="prioritize queue"];
+SeatingPolicy -> DiningTable [style=dashed, label="capacity / merge rules"];
+}

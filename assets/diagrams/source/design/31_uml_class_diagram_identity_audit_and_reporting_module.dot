@@ -1,0 +1,93 @@
+
+digraph G {
+
+graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.55", ranksep="0.9", splines=ortho, fontname="Arial"];
+node [fontname="Arial", shape=plaintext];
+edge [fontname="Arial", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+
+labelloc="t";
+label="UML Class Diagram - Identity, Audit and Reporting Module";
+rankdir=LR;
+User [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>User</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+userId: UUID<BR ALIGN='LEFT'/>+username: String<BR ALIGN='LEFT'/>+displayName: String<BR ALIGN='LEFT'/>+status: UserStatus</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+assignRole()<BR ALIGN='LEFT'/>+lock()<BR ALIGN='LEFT'/>+unlock()</TD></TR>
+</TABLE>
+>];
+Role [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>Role</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+roleId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+scope: RoleScope</TD></TR>
+
+</TABLE>
+>];
+Permission [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>Permission</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+permissionId: UUID<BR ALIGN='LEFT'/>+code: String<BR ALIGN='LEFT'/>+description: String</TD></TR>
+
+</TABLE>
+>];
+UserSession [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>UserSession</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+sessionId: UUID<BR ALIGN='LEFT'/>+startedAt: DateTime<BR ALIGN='LEFT'/>+expiresAt: DateTime<BR ALIGN='LEFT'/>+deviceId: String<BR ALIGN='LEFT'/>+status: SessionStatus</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+refresh()<BR ALIGN='LEFT'/>+terminate()</TD></TR>
+</TABLE>
+>];
+AuthorizationPolicy [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>AuthorizationPolicy</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+policyId: UUID<BR ALIGN='LEFT'/>+requiresReasonForOverride: bool<BR ALIGN='LEFT'/>+maxRefundLimit: Money</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+canPerform(user, action, target)<BR ALIGN='LEFT'/>+requiresApproval()</TD></TR>
+</TABLE>
+>];
+AuditLog [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>AuditLog</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+auditLogId: UUID<BR ALIGN='LEFT'/>+action: String<BR ALIGN='LEFT'/>+entityType: String<BR ALIGN='LEFT'/>+entityId: UUID<BR ALIGN='LEFT'/>+recordedAt: DateTime</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+record()<BR ALIGN='LEFT'/>+linkCorrelationId()</TD></TR>
+</TABLE>
+>];
+AuditDetail [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>AuditDetail</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+detailId: UUID<BR ALIGN='LEFT'/>+fieldName: String<BR ALIGN='LEFT'/>+beforeValue: String<BR ALIGN='LEFT'/>+afterValue: String</TD></TR>
+
+</TABLE>
+>];
+ShiftAssignment [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>ShiftAssignment</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+shiftAssignmentId: UUID<BR ALIGN='LEFT'/>+shiftDate: Date<BR ALIGN='LEFT'/>+startAt: Time<BR ALIGN='LEFT'/>+endAt: Time<BR ALIGN='LEFT'/>+position: String</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+assign()<BR ALIGN='LEFT'/>+swap()<BR ALIGN='LEFT'/>+closeShift()</TD></TR>
+</TABLE>
+>];
+ReportSnapshot [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>ReportSnapshot</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+snapshotId: UUID<BR ALIGN='LEFT'/>+type: ReportType<BR ALIGN='LEFT'/>+periodStart: DateTime<BR ALIGN='LEFT'/>+periodEnd: DateTime<BR ALIGN='LEFT'/>+generatedAt: DateTime</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+refresh()<BR ALIGN='LEFT'/>+publish()</TD></TR>
+</TABLE>
+>];
+ReportQuery [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>ReportQuery</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+queryId: UUID<BR ALIGN='LEFT'/>+filters: Json<BR ALIGN='LEFT'/>+groupBy: String<BR ALIGN='LEFT'/>+measure: String</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+execute()<BR ALIGN='LEFT'/>+exportCsv()</TD></TR>
+</TABLE>
+>];
+
+User -> Role [label="many to many"];
+Role -> Permission [label="many to many"];
+User -> UserSession [label="1 to many"];
+AuthorizationPolicy -> Role [style=dashed, label="evaluates grants"];
+AuthorizationPolicy -> Permission [style=dashed];
+User -> AuditLog [style=dashed, label="actor"];
+AuditLog -> AuditDetail [label="1 to many"];
+User -> ShiftAssignment [label="0..* shifts"];
+ReportQuery -> ReportSnapshot [label="reads"];
+AuditLog -> ReportSnapshot [style=dashed, label="compliance facts"];
+ShiftAssignment -> ReportSnapshot [style=dashed, label="labor facts"];
+}

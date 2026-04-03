@@ -1,0 +1,138 @@
+﻿\section{Tổng quan hệ thống}
+
+\subsubsection{Bối cảnh nghiệp vụ}
+IRMS được thiết kế cho môi trường vận hành nhà hàng có phục vụ tại bàn, khu bếp, quầy thanh toán và hoạt động điều phối theo ca. Trong bối cảnh thực tế, các sai sót thường xuất hiện đúng vào giờ cao điểm: đơn gọi món ghi nhầm món, ghi chú dị ứng bị bỏ sót, trạng thái bàn thay đổi nhưng không được cập nhật kịp, hóa đơn bị lệch khi có tách hóa đơn hoặc áp dụng khuyến mãi, và tồn kho cuối ngày không phản ánh đúng mức tiêu hao thực tế.
+
+Bài toán vì vậy không chỉ là ``ghi đơn gọi món trên màn hình''. IRMS phải đóng vai trò như một nền tảng số trung tâm liên kết khu vực phục vụ phía trước, khu vực bếp và khu vực quản trị: đặt bàn, xếp bàn, gọi món, điều phối bếp, lập hóa đơn, thanh toán, tồn kho, báo cáo, kiểm soát truy cập, nhật ký kiểm toán và các tích hợp bên ngoài. Đây là một hệ thống nghiệp vụ hoàn chỉnh, có đường xử lý lõi rõ ràng, có luồng hỗ trợ bất đồng bộ và có yêu cầu mở rộng về sau.
+
+\subsubsection{Mục tiêu của hệ thống}
+Các mục tiêu thiết kế chính của IRMS không chỉ dừng ở mức \enquote{có đủ chức năng}, mà còn phải chuyển thành kết quả vận hành có thể kiểm chứng trong phạm vi một dự án phần mềm cho nhà hàng quy mô trung bình. Vì vậy, báo cáo đặt ra các mục tiêu sau:
+\begin{enumerate}
+    \item \textbf{Giảm sai sót nghiệp vụ trên tuyến gọi món}: mục tiêu là giữ tỷ lệ đơn gọi món bị sửa do nhập sai dưới 2\% tổng số đơn đã xác nhận trong một ca, thông qua thực đơn số hóa, tùy chọn món có ràng buộc, cảnh báo ghi chú dị ứng và bước xác nhận trước khi gửi bếp.
+    \item \textbf{Rút ngắn độ trễ từ phục vụ xuống bếp}: phiếu món phải xuất hiện trên màn hình bếp trong vòng tối đa 2 giây ở điều kiện thường và không quá 3 giây ở giờ cao điểm, để tránh việc phục vụ phải gọi miệng hoặc ghi tay .
+    \item \textbf{Đồng bộ trạng thái vận hành theo thời gian gần thực}: trạng thái bàn, đơn gọi món, phiếu bếp, hóa đơn và thanh toán phải phản ánh trên các màn hình liên quan với độ trễ quan sát được không vượt quá 5 giây đối với các thay đổi quan trọng.
+    \item \textbf{Rút ngắn thời gian đóng phiên phục vụ}: với một bàn tiêu chuẩn không có tách hóa đơn phức tạp, thời gian từ lúc yêu cầu thanh toán đến lúc phát hành biên lai nên dưới 2 phút; với tách hóa đơn tiêu chuẩn cho 2--4 người, mục tiêu là dưới 4 phút.
+    \item \textbf{Tăng khả năng kiểm soát và truy vết}: 100\% thao tác nhạy cảm như hoàn tiền, hủy đơn đã gửi bếp, ghi đè giá, mở lại hóa đơn hoặc đổi trạng thái thanh toán phải được ghi nhận đầy đủ người thực hiện, thời điểm và lý do.
+    \item \textbf{Tạo nền tảng mở rộng về sau}: khi cần thêm phương thức thanh toán, kênh gửi thông báo, thiết bị tự phục vụ hoặc mở rộng sang nhiều chi nhánh, nhóm phát triển phải có thể mở rộng qua giao diện và dịch vụ mới mà không buộc sửa chéo logic lõi của toàn bộ hệ thống.
+\end{enumerate}
+
+\subsubsection{Phạm vi hệ thống}
+\paragraph{Trong phạm vi}
+\begin{itemize}
+    \item \textbf{Đặt bàn và bàn ăn}: đặt bàn, danh sách chờ, tiếp nhận khách, gán bàn, giải phóng bàn, theo dõi phiên phục vụ tại bàn;
+    \item \textbf{Gọi món số hóa}: tạo đơn gọi món, chỉnh sửa đơn gọi món, tùy chọn món, món kết hợp, ghi chú dị ứng, hướng dẫn đặc biệt;
+    \item \textbf{Quản lý thực đơn}: quản lý món, nhóm món, nhóm tùy chọn, trạng thái còn bán, khuyến mãi cơ bản;
+    \item \textbf{Điều phối bếp}: phát phiếu theo trạm, cập nhật trạng thái món, theo dõi hàng chờ của bếp;
+    \item \textbf{Lập hóa đơn và thanh toán}: tạo hóa đơn, tách hóa đơn, thuế, phí phục vụ, tiền boa, tiền mặt, thẻ hoặc ví điện tử;
+    \item \textbf{Theo dõi tồn kho}: trừ nguyên liệu, lưu giao dịch kho, cảnh báo mức tồn thấp;
+    \item \textbf{Phân tích và báo cáo}: doanh thu, món bán chạy, giờ cao điểm, điểm nghẽn, thống kê hoàn tiền;
+    \item \textbf{Quản trị}: người dùng, vai trò, quyền, nhật ký kiểm toán, cấu hình thực đơn, chính sách giá.
+\end{itemize}
+
+\paragraph{Ngoài phạm vi}
+\begin{itemize}
+    \item kế toán doanh nghiệp và đối soát tài chính ở mức tập đoàn;
+    \item hệ quản trị chuỗi nhiều chi nhánh ở mức triển khai đầy đủ;
+    \item học máy nâng cao cho dự báo nhu cầu hoặc định giá động;
+    \item tích hợp nền tảng giao hàng bên thứ ba ở mức hoàn chỉnh;
+    \item hệ quản trị quan hệ khách hàng và nền tảng khách hàng thân thiết mở rộng.
+\end{itemize}
+
+\subsection{Phạm vi hệ thống}
+IRMS bao phủ các nhóm chức năng sau:
+\begin{itemize}
+  \item \textbf{Đặt bàn và xếp bàn}: đặt bàn, tiếp nhận khách, danh sách chờ, sơ đồ bàn, trạng thái bàn và vòng quay bàn.
+  \item \textbf{Gọi món và thực đơn}: tra cứu thực đơn, tạo đơn gọi món, ghi chú dị ứng, tùy chọn món, món kết hợp và quản lý trạng thái món.
+  \item \textbf{Điều phối bếp}: chuyển phiếu đến từng trạm bếp, theo dõi tiến độ chế biến, đồng bộ thông tin món sẵn sàng và món đã phục vụ.
+  \item \textbf{Lập hóa đơn và thanh toán}: tạo hóa đơn, tách hóa đơn, tiền boa, thanh toán nhiều phương thức, biên lai và hoàn tiền.
+  \item \textbf{Theo dõi tồn kho}: trừ tồn theo công thức món, theo dõi mức tồn thấp và hỗ trợ quyết định ẩn món.
+  \item \textbf{Phân tích và quản trị}: báo cáo doanh thu, báo cáo vận hành, quản trị thực đơn, giá, khuyến mãi, vai trò và lịch làm việc.
+\end{itemize}
+
+\subsection{Các bên liên quan}
+\begin{table}[H]
+\centering
+\caption{Các bên liên quan chính của IRMS}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{2.4cm} >{\bfseries}p{2.8cm} X}
+\toprule
+Bên liên quan & Vai trò & Mối quan tâm chính \\
+\midrule
+Khách hàng & Người dùng/đơn vị vận hành & Tạo/cập nhật đặt bàn, nhận xác nhận, thanh toán và nhận biên lai điện tử. \\
+Lễ tân & Người dùng/đơn vị vận hành & Quản lý đặt bàn, danh sách chờ, tiếp nhận khách và tối ưu sơ đồ bàn. \\
+Phục vụ & Người dùng/đơn vị vận hành & Tạo đơn gọi món, ghi chú tuỳ biến, theo dõi món, phục vụ tại bàn và hỗ trợ tính tiền. \\
+Nhân viên bếp & Người dùng/đơn vị vận hành & Nhận phiếu bếp, cập nhật tiến độ chế biến và phát hiện nghẽn vận hành. \\
+Thu ngân & Người dùng/đơn vị vận hành & Tạo hoá đơn, tách hóa đơn, xử lý thanh toán, in hoặc gửi biên lai và hoàn tiền theo quyền. \\
+Quản lý & Người dùng/đơn vị vận hành & Quản lý menu, giá, khuyến mãi, ca làm, báo cáo và xử lý ngoại lệ nghiệp vụ. \\
+Quản trị viên & Người dùng/đơn vị vận hành & Quản lý tài khoản, vai trò, phân quyền và nhật ký kiểm toán toàn hệ thống. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\subsubsection{Cơ sở đo tải và ràng buộc dự án}
+Để các yêu cầu phi chức năng không bị mô tả chung chung, báo cáo dùng \textbf{hai điều kiện vận hành chuẩn} làm mốc đánh giá. Đây là giả định thiết kế cho một nhà hàng tầm trung, được dùng thống nhất ở toàn bộ báo cáo khi nói về hiệu năng, độ tin cậy và khả năng mở rộng.
+
+\begin{table}[H]
+\centering
+\caption{Hai điều kiện vận hành dùng làm cơ sở thiết kế của IRMS}
+\small
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.2cm} p{4.4cm} X}
+\toprule
+Điều kiện & Tải giả định & Ý nghĩa với kiến trúc \\
+\midrule
+Điều kiện 1 --- Ca thông thường & 20--25 bàn hoạt động, 8--12 nhân viên đăng nhập đồng thời, tối đa 35 đơn gọi món mỗi giờ, khoảng 120 dòng món mỗi giờ. & Hệ thống phải phản hồi mượt cho các tác vụ tạo đơn gọi món, cập nhật màn hình bếp, đổi trạng thái bàn và chốt hóa đơn mà chưa cần mở rộng hay hy sinh trải nghiệm thao tác. \\
+Điều kiện 2 --- Giờ cao điểm & 35--40 bàn hoạt động, 15--18 nhân viên đăng nhập đồng thời, tối đa 60 đơn gọi món mỗi giờ, khoảng 220 dòng món mỗi giờ và 20 hóa đơn mỗi giờ. & Kiến trúc phải giữ ổn định tuyến giao dịch nóng; các luồng nền như báo cáo, cảnh báo mức tồn thấp và đồng bộ thông báo không được làm nghẽn gọi món, điều phối bếp hay thanh toán. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Trong hai điều kiện trên, dự án chịu các ràng buộc thực tế sau:
+\begin{itemize}
+    \item \textbf{Ràng buộc phạm vi}: phiên bản hiện tại phục vụ một nhà hàng đơn lẻ, chưa tối ưu cho vận hành nhiều chi nhánh ở quy mô đầy đủ, nhưng kiến trúc phải chừa điểm mở cho mở rộng về sau.
+    \item \textbf{Ràng buộc thiết bị}: nhân viên thao tác qua máy tính bảng gọi món, màn hình bếp, thiết bị thu ngân hoặc giao diện web nội bộ; trải nghiệm phải ưu tiên thao tác nhanh, ít bước và dễ học theo ca.
+    \item \textbf{Ràng buộc mạng}: mạng nội bộ có thể chập chờn ngắn hạn trong phạm vi dưới 60 giây; hệ thống được phép thử lại nhưng không được làm mất đơn gọi món đã xác nhận hoặc tạo phiếu trùng.
+    \item \textbf{Ràng buộc thanh toán}: thanh toán điện tử luôn đi qua cổng đối tác ngoài; IRMS không lưu dữ liệu thẻ thô mà chỉ lưu kết quả giao dịch và mã tham chiếu.
+    \item \textbf{Ràng buộc kiểm soát}: dữ liệu nghiệp vụ phải được lưu tập trung và có nhật ký kiểm toán cho hoàn tiền, hủy bỏ, ghi đè hoặc thay đổi nhạy cảm.
+    \item \textbf{Ràng buộc học phần}: nhóm có thể chỉ hiện thực một phần module lõi trong học phần, nhưng kiến trúc phải phản ánh đầy đủ bức tranh hệ thống để chứng minh tư duy thiết kế tổng thể.
+\end{itemize}
+
+\subsection{Yêu cầu chức năng}
+Các yêu cầu chức năng ở mức hạt thô được tổ chức thành năm cụm:
+\begin{enumerate}
+  \item \textbf{Đặt bàn và xếp bàn}: tạo hoặc cập nhật đặt bàn, quản lý danh sách chờ, tiếp nhận khách, mở hoặc đóng phiên bàn.
+  \item \textbf{Gọi món và bếp}: tạo đơn gọi món, chỉnh sửa dòng món, chuyển phiếu sang màn hình bếp, cập nhật tiến độ và ra món.
+  \item \textbf{Thanh toán}: tạo hóa đơn, áp dụng khuyến mãi, tách hóa đơn, tiền boa, thanh toán, biên lai, hoàn tiền.
+  \item \textbf{Tồn kho và thực đơn}: quản lý thực đơn, giá, tùy chọn món, công thức, trừ tồn và cảnh báo mức tồn thấp.
+  \item \textbf{Quản trị và phân tích}: phân quyền theo vai trò, nhật ký kiểm toán, lịch ca, báo cáo doanh thu, hiệu suất nhân viên và điểm nghẽn của bếp.
+\end{enumerate}
+
+\subsection{Yêu cầu phi chức năng ở góc nhìn toàn dự án}
+Khác với ca sử dụng vốn mô tả hành vi theo từng kịch bản, yêu cầu phi chức năng của IRMS phải được nhìn ở mức \textbf{toàn dự án}. Chúng quyết định kiến trúc nào được chọn, mô-đun nào phải tách riêng, dữ liệu nào cần đồng bộ mạnh và luồng nào có thể xử lý bất đồng bộ. Vì vậy, mỗi yêu cầu dưới đây đều được gắn với \textbf{số liệu mục tiêu}, \textbf{điều kiện áp dụng} và \textbf{cách đáp ứng trong kiến trúc}.
+
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\small
+\begin{longtable}{
+  >{\bfseries\raggedright\arraybackslash}p{2.8cm}
+  >{\raggedright\arraybackslash}p{4.4cm}
+  >{\raggedright\arraybackslash}p{3.0cm}
+  >{\raggedright\arraybackslash}p{4.2cm}
+}
+\caption{Yêu cầu phi chức năng của IRMS ở góc nhìn toàn dự án}\\
+\toprule
+Thuộc tính & Mục tiêu đo được & Điều kiện áp dụng & Cách đáp ứng trong kiến trúc \\
+\midrule
+\endfirsthead
+\toprule
+Thuộc tính & Mục tiêu đo được & Điều kiện áp dụng & Cách đáp ứng trong kiến trúc \\
+\midrule
+\endhead
+Hiệu năng \& độ phản hồi & Tra cứu thực đơn và trạng thái bàn có thời gian phản hồi bách phân vị thứ 95 dưới 1 giây; thao tác xác nhận đơn gọi món và gửi bếp có thời gian phản hồi bách phân vị thứ 95 dưới 2 giây ở Điều kiện 1 và dưới 3 giây ở Điều kiện 2; phiếu phải hiển thị trên màn hình bếp không quá 2 giây sau khi đơn được xác nhận. & Áp dụng cho toàn bộ giờ mở cửa, đặc biệt tại màn hình gọi món, màn hình bếp và quầy thu ngân là ba điểm chạm không được gây nghẽn thao tác người dùng. & Tách riêng các miền \texttt{Ordering}, \texttt{Kitchen Coordination} và \texttt{Billing} để giảm cạnh tranh tài nguyên; dùng mô hình đọc hoặc bộ nhớ đệm cho thực đơn và trạng thái thường đọc; giữ các tác vụ trên tuyến giao dịch nóng ở dạng gọi đồng bộ ngắn, còn báo cáo và cảnh báo chuyển sang xử lý nền. \\
+Độ tin cậy \& toàn vẹn giao dịch & Không làm mất đơn gọi món đã xác nhận; tỷ lệ tạo phiếu trùng hoặc ghi nhận thanh toán trùng phải thấp hơn 0.1\%; dữ liệu gọi món và thanh toán có mục tiêu điểm khôi phục bằng 0 và khôi phục sau lỗi một nút ứng dụng trong vòng tối đa 10 phút. & Áp dụng ở cả Điều kiện 1 và Điều kiện 2; vẫn phải giữ đúng khi mạng nội bộ gián đoạn ngắn hạn dưới 60 giây hoặc khi đối tác thanh toán phản hồi chậm. & Dùng giao dịch cục bộ theo dịch vụ, khóa chống xử lý lặp cho gọi món, thanh toán và hoàn tiền, khóa lạc quan khi cập nhật trạng thái, cùng hộp thư ra và bộ truyền sự kiện cho sự kiện miền để tránh vừa mất dữ liệu vừa xử lý lặp. \\
+Khả năng mở rộng & Hệ thống phải chịu được tối thiểu 1.5 lần tải của Điều kiện 2 trong các đợt cao điểm ngắn 10--15 phút mà không cần thiết kế lại; riêng các miền \texttt{Ordering}, \texttt{Kitchen Coordination} và \texttt{Billing} phải có thể tăng số phiên bản chạy độc lập khi tải tăng. & Áp dụng cho bữa trưa, bữa tối, ngày cuối tuần hoặc các đơn đặt nhóm lớn; báo cáo và phân tích không được kéo chậm tuyến giao dịch nóng. & Chọn kiến trúc tách miền nghiệp vụ rõ ràng để phân bố tải theo nhu cầu thực tế; mở rộng theo chiều ngang các miền có nhu cầu cao; cô lập báo cáo bằng mô hình đọc và ảnh chụp dữ liệu để truy vấn phân tích không tranh chấp với cơ sở dữ liệu giao dịch. \\
+Bảo mật \& khả năng kiểm toán & 100\% thao tác hoàn tiền, hủy món đã gửi bếp, ghi đè giá, mở lại hóa đơn và thay đổi quyền phải có nhật ký người thực hiện, thời điểm, giá trị trước, giá trị sau và lý do; phiên thu ngân hoặc quản lý tự khóa sau 15 phút không hoạt động; hệ thống không lưu dữ liệu thẻ gốc. & Áp dụng liên tục trong toàn bộ vòng đời vận hành và đặc biệt quan trọng ở các ca đổi nhân sự, bàn giao ca hoặc xử lý khiếu nại sau thanh toán. & Dùng \texttt{IAM} tập trung, phân quyền theo vai trò, chính sách kiểm tra quyền trong từng dịch vụ, nhật ký kiểm toán bất biến cho hành động nhạy cảm, và tích hợp thanh toán qua đối tác ngoài để giới hạn phạm vi dữ liệu nhạy cảm nằm trong IRMS. \\
+Khả năng quan sát \& vận hành & 100\% yêu cầu ghi dữ liệu phải mang mã liên kết xuyên suốt; cảnh báo mức tồn thấp phải xuất hiện trong vòng 60 giây sau khi vượt ngưỡng; bảng điều khiển vận hành có độ trễ dữ liệu không quá 5 phút; lỗi ở cổng vào hoặc cổng thanh toán phải sinh cảnh báo vận hành trong vòng 1 phút. & Áp dụng cho cả thời gian phục vụ và giai đoạn chốt ca, khi quản lý cần đối chiếu chênh lệch đơn gọi món, hóa đơn, tồn kho và thao tác hoàn tiền. & Ghi nhật ký tập trung theo dịch vụ, truy vết xuyên suốt bằng mã liên kết, thu thập số đo cho độ trễ phiếu và thanh toán, tổng hợp bảng điều khiển từ mô hình đọc, cùng với dấu thời gian sự kiện để có thể truy vết một đơn từ lúc tạo đến lúc đóng hóa đơn. \\
+Khả năng bảo trì \& mở rộng & Khi thêm một phương thức thanh toán hoặc một kênh thông báo mới, thay đổi chủ yếu chỉ nằm ở bộ kết nối, cấu hình và kiểm thử tích hợp; thay đổi thực đơn, giá, khuyến mãi hoặc ngưỡng mức tồn thấp không được buộc sửa chéo bộ điều khiển, thanh toán và tồn kho cùng lúc. & Áp dụng trong suốt vòng đời dự án, đặc biệt khi nhà hàng đổi chính sách giá, khuyến mãi theo mùa hoặc cần thí điểm thêm kênh thanh toán mới. & Phân rã theo miền nghiệp vụ, áp dụng nguyên lý SOLID và đảo ngược phụ thuộc cho cổng ngoài, tách lớp điều phối ứng dụng khỏi quy tắc miền, chuẩn hóa hợp đồng giữa các dịch vụ để mỗi thay đổi được khu trú trong biên chức năng tương ứng. \\
+\bottomrule
+\end{longtable}
+\normalsize

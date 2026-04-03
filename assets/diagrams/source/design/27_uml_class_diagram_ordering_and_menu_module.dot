@@ -1,0 +1,93 @@
+
+digraph G {
+
+graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.55", ranksep="0.9", splines=ortho, fontname="Helvetica"];
+node [fontname="Helvetica", shape=plaintext];
+edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+
+labelloc="t";
+label="UML Class Diagram - Ordering and Menu Module";
+rankdir=TB;
+MenuCategory [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>MenuCategory</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+categoryId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+displayOrder: int</TD></TR>
+
+</TABLE>
+>];
+MenuItem [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>MenuItem</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+menuItemId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+basePrice: Money<BR ALIGN='LEFT'/>+station: String<BR ALIGN='LEFT'/>+availability: ItemAvailability</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+rename()<BR ALIGN='LEFT'/>+changeBasePrice()<BR ALIGN='LEFT'/>+markUnavailable()</TD></TR>
+</TABLE>
+>];
+ModifierGroup [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>ModifierGroup</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+groupId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+minSelect: int<BR ALIGN='LEFT'/>+maxSelect: int<BR ALIGN='LEFT'/>+required: bool</TD></TR>
+
+</TABLE>
+>];
+ModifierOption [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>ModifierOption</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+optionId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+extraPrice: Money<BR ALIGN='LEFT'/>+active: bool</TD></TR>
+
+</TABLE>
+>];
+AvailabilityRule [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>AvailabilityRule</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+ruleId: UUID<BR ALIGN='LEFT'/>+effectiveFrom: DateTime<BR ALIGN='LEFT'/>+effectiveTo: DateTime<BR ALIGN='LEFT'/>+outOfStockHidesItem: bool</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+isSellable(menuItem, context)</TD></TR>
+</TABLE>
+>];
+PricingPolicy [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>PricingPolicy</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+policyId: UUID<BR ALIGN='LEFT'/>+serviceChargeRate: Decimal<BR ALIGN='LEFT'/>+supportsHappyHour: bool</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+priceMenuItem()<BR ALIGN='LEFT'/>+priceOrderLine()</TD></TR>
+</TABLE>
+>];
+Order [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>Order</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+orderId: UUID<BR ALIGN='LEFT'/>+channel: OrderChannel<BR ALIGN='LEFT'/>+status: OrderStatus<BR ALIGN='LEFT'/>+createdAt: DateTime<BR ALIGN='LEFT'/>+confirmedAt: DateTime</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+addItem()<BR ALIGN='LEFT'/>+applyModifier()<BR ALIGN='LEFT'/>+confirm()<BR ALIGN='LEFT'/>+cancel()<BR ALIGN='LEFT'/>+calculateSubtotal()</TD></TR>
+</TABLE>
+>];
+OrderItem [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>OrderItem</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+orderItemId: UUID<BR ALIGN='LEFT'/>+quantity: int<BR ALIGN='LEFT'/>+unitPrice: Money<BR ALIGN='LEFT'/>+specialInstruction: String<BR ALIGN='LEFT'/>+lineStatus: OrderItemStatus</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+changeQuantity()<BR ALIGN='LEFT'/>+snapshotName()<BR ALIGN='LEFT'/>+markPrepared()</TD></TR>
+</TABLE>
+>];
+OrderItemModifier [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>OrderItemModifier</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+selectionId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+extraPrice: Money<BR ALIGN='LEFT'/>+qtyMultiplier: int</TD></TR>
+
+</TABLE>
+>];
+OrderSnapshot [label=<
+<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
+<TR><TD BGCOLOR="#DDE5F0"><B>OrderSnapshot</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+snapshotId: UUID<BR ALIGN='LEFT'/>+menuVersion: String<BR ALIGN='LEFT'/>+pricedAt: DateTime<BR ALIGN='LEFT'/>+currency: String</TD></TR>
+
+</TABLE>
+>];
+
+MenuCategory -> MenuItem [label="1 to many"];
+MenuItem -> ModifierGroup [label="0..* groups"];
+ModifierGroup -> ModifierOption [label="1 to many"];
+AvailabilityRule -> MenuItem [style=dashed, label="controls visibility"];
+PricingPolicy -> MenuItem [style=dashed, label="base / promo price"];
+Order -> OrderItem [label="1 to many"];
+OrderItem -> OrderItemModifier [label="0..* chosen"];
+OrderItem -> MenuItem [style=dashed, label="copied from menu"];
+Order -> OrderSnapshot [label="1 to 1 confirmed snapshot"];
+PricingPolicy -> OrderItem [style=dashed, label="materializes price"];
+AvailabilityRule -> Order [style=dashed, label="validate before confirm"];
+}

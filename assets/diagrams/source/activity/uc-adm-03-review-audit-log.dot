@@ -1,0 +1,43 @@
+digraph G {
+  charset="UTF-8";
+  graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.68, pad=0.25, dpi=170, bgcolor="white", fontname="Arial"];
+  node [fontname="Arial"];
+  edge [fontname="Arial", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="Arial"; label="UC-ADM-03 -- Xem nhật ký kiểm toán và truy vết thao tác nhạy cảm";
+
+  subgraph cluster_l1 {
+    style="rounded,filled"; fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
+    label="Quản lý / Quản trị viên"; fontsize=14; labelloc="t"; labeljust="l";
+    n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n1 [label="Mở màn hình audit log", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Nhập bộ lọc:\nthời gian, người thao tác,\nthực thể, hành động", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="Mở chi tiết bản ghi,\nxem before/after và lý do", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Chọn xuất báo cáo hoặc\ngắn cờ follow-up", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+  }
+
+  subgraph cluster_l2 {
+    style="rounded,filled"; fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
+    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    n2 [label="Kiểm tra quyền truy cập\nlog nhạy cảm", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n4 [label="Truy vấn audit log bất biến,\ntải correlation id và đối tượng liên quan", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Có bản ghi phù hợp?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n6 [label="Thông báo không có kết quả\nhoặc bộ lọc quá hẹp", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n7 [label="Làm mờ dữ liệu nhạy cảm,\nsắp xếp theo thời gian", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n9 [label="Ghi nhận hành động xem / xuất\nnhật ký kiểm toán", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n11 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+  }
+
+  n0 -> n1;
+  n1 -> n2;
+  n2 -> n3 [xlabel="Có"];
+  n2 -> n11 [xlabel="Không"];
+  n3 -> n4;
+  n4 -> n5;
+  n5 -> n8 [xlabel="Có"];
+  n5 -> n6 [xlabel="Không"];
+  n6 -> n11;
+  n8 -> n7;
+  n7 -> n10;
+  n10 -> n9;
+  n9 -> n11;
+}

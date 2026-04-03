@@ -1,0 +1,59 @@
+digraph G {
+  graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
+  node [fontname="DejaVu Sans"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-ORD-01 — Tạo đơn gọi món tại bàn";
+
+  subgraph cluster_l1 {
+    style="rounded,filled";
+    fillcolor="#EAF3FF"; color="#BBBBBB";
+    label="Phục vụ";
+    n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n1 [label="Mở phiên bàn và chọn\nchức năng tạo đơn gọi món", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n4 [label="Chọn món, số lượng,\nghi chú phục vụ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Cần mở bước tùy biến\nmón?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n6 [label="Chọn tùy biến và ghi chú\nđi kèm từng món", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n9 [label="Tiếp tục thêm món?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n10 [label="Chọn lưu nháp hay xác nhận\nđơn gọi món", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n0 -> n1 -> n4 -> n5 -> n6 -> n9 -> n10 [style=invis, weight=20];
+  }
+
+  subgraph cluster_l2 {
+    style="rounded,filled";
+    fillcolor="#FFF8DB"; color="#BBBBBB";
+    label="Hệ thống IRMS";
+    n2 [label="Kiểm tra quyền thao tác\nvà trạng thái TableSession", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Phiên bàn còn hiệu lực?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n7 [label="Tải thực đơn, món gợi ý,\ntrạng thái còn bán", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="Món đang còn bán và\nđủ điều kiện chọn?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n11 [label="Tính tạm tính theo giá hiện hành\nvà số lượng đang chọn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n12 [label="Lưu đơn gọi món ở trạng thái nháp", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n13 [label="Chụp trạng thái giá,\nlưu đơn gọi món đã xác nhận", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n14 [label="Chặn thao tác và yêu cầu\nmở lại phiên bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n15 [label="Chặn món, gợi ý món thay thế\nhoặc quay lại bước chọn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n16 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n2 -> n3 -> n7 -> n8 -> n11 -> n12 -> n13 -> n14 -> n15 -> n16 [style=invis, weight=20];
+  }
+
+  n0 -> n1;
+  n1 -> n2;
+  n2 -> n3;
+  n3 -> n7 [xlabel="Có"];
+  n3 -> n14 [xlabel="Không"];
+  n7 -> n4;
+  n4 -> n5;
+  n5 -> n6 [xlabel="Có"];
+  n5 -> n8 [xlabel="Không"];
+  n6 -> n8;
+  n8 -> n11 [xlabel="Có"];
+  n8 -> n15 [xlabel="Không"];
+  n15 -> n4;
+  n11 -> n9;
+  n9 -> n4 [xlabel="Có"];
+  n9 -> n10 [xlabel="Không"];
+  n10 -> n12;
+  n10 -> n13;
+  n12 -> n16;
+  n13 -> n16;
+  n14 -> n16;
+}

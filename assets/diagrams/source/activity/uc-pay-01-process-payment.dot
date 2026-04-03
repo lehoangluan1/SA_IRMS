@@ -1,0 +1,65 @@
+digraph G {
+  graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
+  node [fontname="DejaVu Sans"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-PAY-01 — Xử lý thanh toán";
+
+  subgraph cluster_l1 {
+    style="rounded,filled";
+    fillcolor="#EAF3FF"; color="#BBBBBB";
+    label="Thu ngân";
+    n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n1 [label="Chọn hóa đơn hoặc phần thanh toán\ncần thu tiền", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Chọn phương thức thanh toán", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="Nhập số tiền khách đưa", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n9 [label="Tiền khách đưa đủ?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n0 -> n1 -> n3 -> n8 -> n9 [style=invis, weight=20];
+  }
+
+  subgraph cluster_l2 {
+    style="rounded,filled";
+    fillcolor="#FFF8DB"; color="#BBBBBB";
+    label="Hệ thống IRMS";
+    n2 [label="Kiểm tra số dư còn phải thu,\ntrạng thái hóa đơn và quyền thu tiền", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n4 [label="Thanh toán điện tử?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n5 [label="Tạo yêu cầu giao dịch và chờ\nkết quả từ Payment Gateway", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Tính tiền thối và ghi nhận\nthanh toán tiền mặt", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n11 [label="Lưu Payment, mã tham chiếu\nvà cập nhật số dư còn lại", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n12 [label="Còn số dư phải thu?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n13 [label="Giữ hóa đơn ở trạng thái\nchưa thanh toán đủ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n14 [label="Đóng hóa đơn và chuyển sang\nphát hành biên lai", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n15 [label="Đánh dấu thất bại hoặc\nchờ rà soát", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n16 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n2 -> n4 -> n5 -> n10 -> n11 -> n12 -> n13 -> n14 -> n15 -> n16 [style=invis, weight=20];
+  }
+
+  subgraph cluster_l3 {
+    style="rounded,filled";
+    fillcolor="#EAFBF1"; color="#BBBBBB";
+    label="Payment Gateway";
+    n6 [label="Thực hiện xác thực và\nthu tiền điện tử", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n7 [label="Giao dịch thành công?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n6 -> n7 [style=invis, weight=20];
+  }
+
+  n0 -> n1;
+  n1 -> n2;
+  n2 -> n3;
+  n3 -> n4;
+  n4 -> n5 [xlabel="Có"];
+  n4 -> n8 [xlabel="Không"];
+  n5 -> n6;
+  n6 -> n7;
+  n7 -> n11 [xlabel="Có"];
+  n7 -> n15 [xlabel="Không"];
+  n8 -> n9;
+  n9 -> n10 [xlabel="Có"];
+  n9 -> n8 [xlabel="Không"];
+  n10 -> n11;
+  n11 -> n12;
+  n12 -> n13 [xlabel="Có"];
+  n12 -> n14 [xlabel="Không"];
+  n13 -> n16;
+  n14 -> n16;
+  n15 -> n16;
+}

@@ -1,0 +1,17 @@
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.xdv
+*.tmp
+*.bak
+*.gz
+
+# Local editor/system files
+.DS_Store
+Thumbs.db

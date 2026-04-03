@@ -1,0 +1,20 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.55, ranksep=0.7, pad=0.35];
+  node [shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=11];
+  edge [color="#475569", arrowsize=0.7, fontname="DejaVu Sans", fontsize=10];
+
+  cashierUI [label="Cashier UI"];
+  billingService [label="Billing Service"];
+  paymentGateway [label="Payment Gateway Adapter"];
+  receiptAdapter [label="Receipt Printer Adapter"];
+  tableSession [label="TableSession"];
+
+  cashierUI -> billingService [label="1. Yêu cầu tạo Bill"];
+  billingService -> cashierUI [label="2. Trả Bill và số tiền"];
+  cashierUI -> billingService [label="3. Chọn phương thức thanh toán"];
+  billingService -> paymentGateway [label="4. Authorize/Capture"];
+  paymentGateway -> billingService [label="5. Trả kết quả giao dịch"];
+  billingService -> receiptAdapter [label="6. Phát hành Receipt"];
+  billingService -> tableSession [label="7. Đóng phiên bàn nếu đã thanh toán đủ"];
+  billingService -> cashierUI [label="8. Trả trạng thái hoàn tất"];
+}

@@ -1,0 +1,56 @@
+digraph G {
+  graph [
+    rankdir=LR,
+    newrank=true,
+    bgcolor="white",
+    splines=polyline,
+    nodesep=0.55,
+    ranksep=0.9,
+    pad=0.4,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="Module View - Core Fulfillment Path of IRMS"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#F8FAFC",
+    color="#334155",
+    fontname="DejaVu Sans",
+    fontsize=11,
+    penwidth=1.2,
+    margin="0.08,0.05"
+  ];
+
+  edge [
+    fontname="DejaVu Sans",
+    fontsize=9,
+    color="#475569",
+    arrowsize=0.75
+  ];
+
+  subgraph cluster_context {
+    label="Reference and Context Modules";
+    color="#94A3B8";
+    style="rounded";
+    reservation [label="Reservation & Table Session\nreservation, waitlist,\nseating, occupancy state"];
+    menu [label="Menu Reference\nmenu item, modifier,\navailability, pricing policy"];
+  }
+
+  subgraph cluster_core {
+    label="Core Fulfillment Modules";
+    color="#94A3B8";
+    style="rounded";
+    ordering [label="Ordering Module\norder aggregate,\nitem snapshot, special note"];
+    kitchen [label="Kitchen Module\nticket, station queue,\npreparation and handoff"];
+    billing [label="Billing Module\nbill, split, payment,\nreceipt and closure"];
+  }
+
+  reservation -> ordering [label="table-session context"];
+  menu -> ordering [label="item, modifier and price basis"];
+  ordering -> kitchen [label="confirmed order snapshot"];
+  ordering -> billing [style=dashed, label="billable snapshot"];
+  kitchen -> billing [style=dashed, label="served facts"];
+  billing -> reservation [label="session close and table release"];
+}

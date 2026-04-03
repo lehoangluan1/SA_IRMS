@@ -1,0 +1,55 @@
+digraph G {
+  graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
+  node [fontname="DejaVu Sans"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-INV-02 — Nhận cảnh báo sắp hết hàng";
+  subgraph cluster_l1 {
+    style="rounded,filled";
+    fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
+    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    rank=same;
+    n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n1 [label="Đánh giá
+LowStockRule sau cập
+nhật tồn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n2 [label="Tồn kho dưới ngưỡng?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n3 [label="Tạo alert event", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n8 [label="Lưu pending
+notification để gửi
+lại", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n0 -> n1 -> n2 -> n3 -> n8 [style=invis, weight=20];
+  }
+  subgraph cluster_l2 {
+    style="rounded,filled";
+    fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
+    label="Notification Service"; fontsize=14; labelloc="t"; labeljust="l";
+    rank=same;
+    n4 [label="Gửi cảnh báo nội bộ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n5 [label="Gửi thành công?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n4 -> n5 [style=invis, weight=20];
+  }
+  subgraph cluster_l3 {
+    style="rounded,filled";
+    fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
+    label="Quản lý / Bếp"; fontsize=14; labelloc="t"; labeljust="l";
+    rank=same;
+    n6 [label="Mở danh sách cảnh
+báo", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n7 [label="Quyết định đặt hàng
+/ ẩn món / điều
+chỉnh ngưỡng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n9 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n6 -> n7 -> n9 [style=invis, weight=20];
+  }
+  n0 -> n1;
+  n1 -> n2;
+  n2 -> n3 [xlabel="Có"];
+  n2 -> n9 [xlabel="Không"];
+  n3 -> n4;
+  n4 -> n5;
+  n5 -> n6 [xlabel="Có"];
+  n5 -> n8 [xlabel="Không"];
+  n6 -> n7;
+  n7 -> n9;
+  n8 -> n9;
+}

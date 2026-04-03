@@ -1,0 +1,52 @@
+digraph G {
+  charset="UTF-8";
+  graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.68, pad=0.25, dpi=170, bgcolor="white", fontname="Arial"];
+  node [fontname="Arial"];
+  edge [fontname="Arial", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="Arial"; label="UC-RES-03 -- Quản lý danh sách chờ";
+
+  subgraph cluster_l1 {
+    style="rounded,filled"; fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
+    label="Lễ tân"; fontsize=14; labelloc="t"; labeljust="l";
+    n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n1 [label="Nhập thông tin khách,\nsố người và kênh liên hệ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Xác nhận thêm vào waitlist", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="Chọn khách để gọi", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n11 [label="Chuyển sang use case\nnhận khách và sắp bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+  }
+
+  subgraph cluster_l2 {
+    style="rounded,filled"; fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
+    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    n2 [label="Ước tính thời gian chờ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n4 [label="Tạo bản ghi waitlist", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Theo dõi sự kiện bàn được giải phóng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n6 [label="Có bàn phù hợp?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n7 [label="So khớp theo sức chứa,\nkhu vực và ưu tiên", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Khách phản hồi trong thời hạn?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n12 [label="Đánh dấu Skipped hoặc\ncập nhật thứ tự chờ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+  }
+
+  subgraph cluster_l3 {
+    style="rounded,filled"; fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
+    label="Dịch vụ thông báo"; fontsize=14; labelloc="t"; labeljust="l";
+    n9 [label="Gửi thông báo giữ lượt gọi", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n13 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+  }
+
+  n0 -> n1;
+  n1 -> n2;
+  n2 -> n3;
+  n3 -> n4;
+  n4 -> n5;
+  n5 -> n6;
+  n6 -> n7 [xlabel="Có"];
+  n6 -> n5 [xlabel="Không"];
+  n7 -> n8;
+  n8 -> n9;
+  n9 -> n10;
+  n10 -> n11 [xlabel="Có"];
+  n10 -> n12 [xlabel="Không"];
+  n11 -> n13;
+  n12 -> n13;
+}

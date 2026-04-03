@@ -1,0 +1,58 @@
+digraph G {
+  graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
+  node [fontname="DejaVu Sans"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-KIT-01 — Cập nhật tiến độ chế biến";
+
+  subgraph cluster_l1 {
+    style="rounded,filled";
+    fillcolor="#EAF3FF"; color="#BBBBBB";
+    label="Bếp";
+    n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n1 [label="Mở phiếu bếp đang chờ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Đánh dấu bắt đầu chế biến", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Cập nhật từng món sang\nđang nấu", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n7 [label="Có thiếu nguyên liệu hoặc\nvướng trở ngại?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n9 [label="Đánh dấu món sẵn sàng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n0 -> n1 -> n3 -> n5 -> n7 -> n9 [style=invis, weight=20];
+  }
+
+  subgraph cluster_l2 {
+    style="rounded,filled";
+    fillcolor="#FFF8DB"; color="#BBBBBB";
+    label="Hệ thống IRMS";
+    n2 [label="Kiểm tra đúng trạm chịu trách nhiệm\nvà trạng thái phiếu hiện tại", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n4 [label="Ghi dấu thời gian bắt đầu,\nso sánh với hạn phục vụ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n6 [label="Sắp chậm hạn?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n8 [label="Đánh dấu chặn, tạo cảnh báo\nvà ghi nhận lý do", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Toàn bộ món trong phiếu\nđã sẵn sàng?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n11 [label="Đánh dấu KitchenTicket sẵn sàng\nvà lưu thời điểm hoàn tất", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n12 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n2 -> n4 -> n6 -> n8 -> n10 -> n11 -> n12 [style=invis, weight=20];
+  }
+
+  subgraph cluster_l3 {
+    style="rounded,filled";
+    fillcolor="#EAFBF1"; color="#BBBBBB";
+    label="Thiết bị phục vụ";
+    n13 [label="Nhận thông báo món sẵn sàng\nđể chuẩn bị ra món", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n14 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n13 -> n14 [style=invis, weight=20];
+  }
+
+  n0 -> n1;
+  n1 -> n2;
+  n2 -> n3;
+  n3 -> n4;
+  n4 -> n5;
+  n5 -> n6;
+  n6 -> n7 [xlabel="Có hoặc chưa"];
+  n7 -> n8 [xlabel="Có"];
+  n7 -> n9 [xlabel="Không"];
+  n8 -> n12;
+  n9 -> n10;
+  n10 -> n5 [xlabel="Không"];
+  n10 -> n11 [xlabel="Có"];
+  n11 -> n13;
+  n13 -> n14;
+}

@@ -1,0 +1,216 @@
+﻿% !TEX program = xelatex
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.2cm,headheight=28pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\usepackage{polyglossia}
+\setdefaultlanguage{vietnamese}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{csquotes}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{pdflscape}
+\usepackage{float}
+\usepackage{caption}
+
+\definecolor{TitleBlue}{HTML}{0B33B7}
+\definecolor{AccentBlue}{HTML}{1D4ED8}
+\definecolor{LightBlue}{HTML}{EEF4FF}
+\definecolor{BorderBlue}{HTML}{9BB5FF}
+\definecolor{SoftGray}{HTML}{F8FAFC}
+
+\newcommand{\headerbrandlogo}{%
+  \IfFileExists{bachkhoa_logo.png}{%
+    \includegraphics[height=0.56cm]{bachkhoa_logo.png}%
+  }{%
+    \fbox{\rule{0pt}{0.56cm}\rule{0.56cm}{0pt}}%
+  }%
+}
+
+\newcommand{\headerbrandblock}{%
+  \headerbrandlogo\hspace{0.55em}%
+  \parbox[b]{0.62\textwidth}{\fontsize{8.5}{9.5}\selectfont Trường Đại học Bách khoa, Đại học Quốc gia TP.HCM\\Khoa Khoa học và Kỹ thuật Máy tính}%
+}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=AccentBlue,
+  urlcolor=AccentBlue
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\headerbrandblock}
+\rhead{}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\Large\bfseries\color{TitleBlue}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\large\bfseries\color{black}}{\thesubsection}{0.7em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{black}}{}{0em}{}
+
+\setlist[itemize]{topsep=2pt,itemsep=2pt}
+\setlist[enumerate]{topsep=2pt,itemsep=2pt}
+
+\newtcolorbox{infobox}[1][]{
+  enhanced,
+  breakable,
+  colback=LightBlue,
+  colframe=BorderBlue,
+  boxrule=0.7pt,
+  arc=2mm,
+  left=2mm,right=2mm,top=1.6mm,bottom=1.6mm,
+  #1
+}
+
+\newtcolorbox{usecasebox}[1][]{
+  enhanced,
+  breakable,
+  colback=white,
+  colframe=BorderBlue,
+  colbacktitle=TitleBlue,
+  coltitle=white,
+  fonttitle=\bfseries,
+  boxrule=0.85pt,
+  arc=2mm,
+  left=2.2mm,right=2.2mm,top=1.8mm,bottom=1.8mm,
+  title filled,
+  #1
+}
+
+\newtcolorbox{adrbox}[1][]{
+  enhanced,
+  breakable,
+  colback=white,
+  colframe=BorderBlue,
+  colbacktitle=TitleBlue,
+  coltitle=white,
+  fonttitle=\bfseries,
+  boxrule=0.9pt,
+  arc=2mm,
+  left=2.2mm,right=2.2mm,top=1.8mm,bottom=1.8mm,
+  title filled,
+  #1
+}
+
+\newcommand{\activitydiagramfigure}[3]{
+  \begin{figure}[H]
+  \centering
+  \IfFileExists{#1.pdf}{
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{#1.pdf}
+  }{
+    \IfFileExists{#1.png}{
+      \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{#1.png}
+    }{
+      \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{#1.(pdf/png)}.}}
+    }
+  }
+  \caption{#2}
+  \label{#3}
+  \end{figure}
+}
+
+
+% Project structure helpers
+\graphicspath{{assets/diagrams/rendered/modeling/}{assets/diagrams/rendered/architecture/}{assets/diagrams/rendered/design/}{assets/diagrams/rendered/activity/}{assets/images/branding/}{assets/images/misc/}}
+\makeatletter
+\def\input@path{{assets/diagrams/rendered/modeling/}{assets/diagrams/rendered/architecture/}{assets/diagrams/rendered/design/}{assets/diagrams/rendered/activity/}{assets/images/branding/}{assets/images/misc/}}
+\makeatother
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH \\
+TRƯỜNG ĐẠI HỌC BÁCH KHOA \\
+KHOA KHOA HỌC VÀ KỸ THUẬT MÁY TÍNH
+\end{center}
+
+\begin{figure}[h!]
+\begin{center}
+\IfFileExists{bachkhoa_logo.png}{
+  \includegraphics[width=4cm]{bachkhoa_logo.png}
+}{
+  \fbox{\parbox[c][4cm][c]{4cm}{\centering Logo\\Bach Khoa}}
+}
+\end{center}
+\end{figure}
+
+\begin{center}
+\begin{tabular}{c}
+\multicolumn{1}{c}{\textbf{{\LARGE Kiến trúc Phần mềm (CO3017)}}}\\
+~~\\
+\\
+\hline
+\\
+\multicolumn{1}{c}{\textbf{{\Large BÁO CÁO BÀI TẬP LỚN}}}\\
+\\
+\multicolumn{1}{c}{\parbox{0.88\textwidth}{\centering\textbf{{\Huge Intelligent Restaurant Management System (IRMS)}}}}\\[5pt]
+\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{1.5cm}
+
+\begin{center}
+{\Large\bf Giảng viên: Trần Trương Tuấn Phát}\\[10pt]
+{\Large\bf Lớp học phần: L01}\\[10pt]
+{\Large\bf Nhóm: 8}\\[10pt]
+{\Large\bf Khoa: Khoa học và Kỹ thuật Máy tính}
+\end{center}
+
+\vspace{1.2cm}
+
+\begin{center}
+\begin{tabular}{|c|l|l|}
+\hline
+\textbf{MSSV} & \textbf{Họ và tên} & \textbf{Email} \\
+\hline
+2311896 & Đỗ Quang Long & long.doquang1896@hcmut.edu.vn \\
+\hline
+2311982 & Lê Hoàng Luân & luan.le2311982@hcmut.edu.vn \\
+\hline
+2310990 & Lê Thúy Hiền & hien.lethuy@hcmut.edu.vn \\
+\hline
+2213698 & Nguyễn Hải Trung & trung.nguyen2004@hcmut.edu.vn \\
+\hline
+2211384 & Tô Thế Hưng & hung.totothehung@hcmut.edu.vn \\
+\hline
+2310737 & Trần Nhật Đăng & dang.trannh388@hcmut.edu.vn \\
+\hline
+\end{tabular}
+\end{center}
+
+\vfill
+
+\begin{center}
+{\footnotesize Thành phố Hồ Chí Minh, tháng 4 năm 2026}
+\end{center}
+\end{titlepage}
+
+\pagenumbering{arabic}
+
+\vspace{0.5em}
+\tableofcontents
+\newpage
+
+\input{sections/01_system_overview}
+\input{sections/02_system_modeling}
+\input{sections/03_software_architecture}
+\input{sections/04_detailed_design}
+\input{sections/05_appendix}
+
+\end{document}

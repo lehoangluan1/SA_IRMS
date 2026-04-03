@@ -1,0 +1,92 @@
+digraph G {
+  graph [
+    rankdir=TB,
+    newrank=true,
+    bgcolor="white",
+    pad=0.35,
+    nodesep=0.55,
+    ranksep=0.85,
+    splines=polyline,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="Initial Logical Capability Breakdown of IRMS"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#F8FAFC",
+    color="#334155",
+    fontname="DejaVu Sans",
+    fontsize=11,
+    penwidth=1.2,
+    margin="0.08,0.05"
+  ];
+
+  edge [
+    fontname="DejaVu Sans",
+    fontsize=9,
+    color="#64748B",
+    arrowsize=0.75
+  ];
+
+  subgraph cluster_frontline {
+    label="Frontline and Transactional Capabilities";
+    color="#9BB5FF";
+    style="rounded";
+
+    reservation [label="Reservation Handling\nbooking request,\nreservation record"];
+    seating [label="Waitlist and Seating\nwaitlist, seating plan,\ntable assignment"];
+    menu [label="Menu Browsing and Availability\nmenu lookup,\nitem availability"];
+    ordering [label="Order Capture\norder entry,\nmodifier, allergy note"];
+    kitchen [label="Kitchen Dispatch\nkitchen ticket,\nstation routing"];
+    billing [label="Bill Generation\nbillable line,\nfee and promotion"];
+    payment [label="Payment Processing\ncash, card,\ndigital wallet"];
+  }
+
+  subgraph cluster_support {
+    label="Operational Support Capabilities";
+    color="#9BB5FF";
+    style="rounded";
+
+    inventory [label="Inventory Tracking\nstock movement,\nrecipe consumption", fillcolor="#EEF4FF"];
+    reporting [label="Reporting and Analytics\nsales trend,\nservice performance", fillcolor="#EEF4FF"];
+    notification [label="Notification Delivery\nreservation notice,\nreceipt, alert", fillcolor="#EEF4FF"];
+  }
+
+  subgraph cluster_control {
+    label="Control and Governance Capabilities";
+    color="#9BB5FF";
+    style="rounded";
+
+    access [label="Access Control\nrole, permission,\nauthentication", fillcolor="#EEF4FF"];
+    audit [label="Audit and Review\noverride trace,\nrefund traceability", fillcolor="#EEF4FF"];
+  }
+
+  { rank=same; reservation; menu; access; }
+  { rank=same; seating; ordering; billing; inventory; audit; }
+  { rank=same; kitchen; payment; reporting; notification; }
+
+  reservation -> seating [label="booking context"];
+  seating -> ordering [label="table session"];
+  menu -> ordering [label="menu and availability"];
+  ordering -> kitchen [label="confirmed order"];
+  ordering -> billing [label="billable items"];
+  kitchen -> billing [style=dashed, label="served facts"];
+  billing -> payment [label="settlement flow"];
+
+  kitchen -> inventory [style=dashed, label="consumption facts", constraint=false];
+  inventory -> menu [style=dashed, label="availability update", constraint=false];
+  ordering -> reporting [style=dashed, label="sales facts", constraint=false];
+  payment -> reporting [style=dashed, label="revenue facts", constraint=false];
+  reservation -> notification [style=dashed, label="reservation notice", constraint=false];
+  payment -> notification [style=dashed, label="receipt notice", constraint=false];
+
+  access -> reservation [style=dashed, constraint=false];
+  access -> ordering [style=dashed, constraint=false];
+  access -> payment [style=dashed, constraint=false];
+
+  ordering -> audit [style=dashed, label="override trace", constraint=false];
+  payment -> audit [style=dashed, label="refund trace", constraint=false];
+  inventory -> audit [style=dashed, label="stock trace", constraint=false];
+}

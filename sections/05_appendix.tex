@@ -1,0 +1,336 @@
+﻿\appendix
+\section{Phụ lục}
+
+\subsection{Lý do lựa chọn kiến trúc và hồ sơ quyết định kiến trúc}
+
+Phụ lục này tổng hợp phần biện minh cho lựa chọn kiến trúc của IRMS dưới dạng
+\textbf{so sánh phương án} và \textbf{hồ sơ quyết định kiến trúc}
+(\emph{Architecture Decision Records -- ADR}).
+Mục tiêu của phần này không phải chỉ để nêu kiến trúc nào được chọn,
+mà còn để làm rõ \textbf{bối cảnh ra quyết định},
+\textbf{các phương án đã cân nhắc},
+\textbf{lập luận loại trừ}
+và \textbf{hệ quả thiết kế} của phương án cuối cùng.
+Cách trình bày này giúp phụ lục đóng vai trò như một hồ sơ giải thích quyết định,
+thay vì chỉ là phần bổ sung hình thức cho báo cáo chính.
+
+\subsubsection{So sánh các kiểu kiến trúc ứng viên}
+
+\begin{table}[H]
+\centering
+\caption{So sánh các kiểu kiến trúc ứng viên cho IRMS}
+\begin{tabularx}{\textwidth}{|p{3.3cm}|p{4.0cm}|X|}
+\hline
+\textbf{Kiểu kiến trúc} & \textbf{Ưu điểm chính} & \textbf{Hạn chế trong bối cảnh IRMS} \\
+\hline
+\textbf{Layered Monolith thuần}
+&
+Dễ khởi tạo ban đầu, ít thành phần triển khai, đơn giản cho giao dịch nội bộ, thuận lợi nếu phạm vi hệ thống còn nhỏ.
+&
+Dễ trượt thành một khối lớn tổ chức theo tầng kỹ thuật thay vì theo năng lực nghiệp vụ. Trong bối cảnh IRMS, các vùng như gọi món, bếp, thanh toán, tồn kho và báo cáo rất dễ chồng lấn trách nhiệm nếu chỉ bám vào cấu trúc \texttt{controller--service--repository}. Điều này làm giảm khả năng kiểm soát ranh giới mô-đun và gây khó khăn cho bảo trì về sau. \\
+\hline
+\textbf{Service-Based phân tán}
+&
+Cho phép tách các năng lực thành các đơn vị triển khai độc lập hơn; thuận lợi khi cần mở rộng riêng một số chức năng hoặc tích hợp nhiều thành phần ngoài.
+&
+Làm tăng số lượng lời gọi qua mạng, nhu cầu truy vết liên dịch vụ, thử lại, quản lý hợp đồng dữ liệu và chi phí phối hợp triển khai. Với phạm vi của IRMS trong học phần, nhiều năng lực vẫn cần giao dịch gần nhau và cần phản hồi nhanh, nên phương án này tạo thêm độ phức tạp mà chưa mang lại lợi ích tương xứng. \\
+\hline
+\textbf{Microservices}
+&
+Cô lập mạnh về triển khai, thuận lợi khi mỗi năng lực có vòng đời phát hành riêng, đội phụ trách riêng và yêu cầu mở rộng độc lập rõ rệt.
+&
+Là phương án có chi phí vận hành cao nhất. Nó kéo theo các vấn đề khó như giao dịch phân tán, quan sát hệ thống, quản trị hợp đồng dịch vụ, điều phối lỗi và nhất quán dữ liệu. Mức độ phức tạp này không tương xứng với quy mô của một IRMS cỡ vừa trong bối cảnh đồ án học phần. \\
+\hline
+\textbf{Event-Driven thuần}
+&
+Phù hợp với các luồng phát tán sự kiện, xử lý nền, retry, mô hình chiếu và các hệ quả phụ như thông báo, tồn kho hoặc báo cáo.
+&
+Không phù hợp để áp dụng cho toàn bộ hệ thống. Nhiều tương tác lõi của IRMS như tra cứu thực đơn, tạo đơn gọi món, lập hóa đơn và xử lý thanh toán đòi hỏi phản hồi tức thời, trạng thái rõ ràng và ngữ nghĩa lỗi minh bạch. Nếu dùng thuần sự kiện cho toàn hệ thống, tuyến đầu dễ trở nên khó giải thích và khó kiểm soát hơn. \\
+\hline
+\textbf{Kiến trúc lai: Modular Monolith theo năng lực + phân lớp nội bộ + luồng hỗ trợ hướng sự kiện}
+&
+Giữ được ranh giới năng lực nghiệp vụ rõ ràng; đơn giản hơn cho giao dịch lõi; dễ triển khai, kiểm thử và tích hợp trong phạm vi học phần; đồng thời vẫn hỗ trợ tốt các hệ quả phụ qua sự kiện và bộ xử lý nền.
+&
+Đòi hỏi kỷ luật tổ chức mã nguồn để không làm mờ ranh giới mô-đun bên trong. Ngoài ra, khi quy mô tăng lên, một số năng lực có thể cần được tách dần thành đơn vị triển khai độc lập. Tuy nhiên, đây là hạn chế có thể chấp nhận được ở giai đoạn hiện tại. \\
+\hline
+\end{tabularx}
+\end{table}
+
+Từ các góc nhìn mô-đun, thành phần và triển khai đã trình bày trong báo cáo chính,
+phương án phù hợp nhất cho IRMS không phải là một
+\textbf{kiến trúc dịch vụ thuần}
+theo nghĩa mỗi năng lực nghiệp vụ là một tiến trình mạng độc lập,
+mà là một \textbf{kiến trúc lai}.
+Ở mức logic, hệ thống được phân rã rõ theo các năng lực như
+đặt bàn và bàn ăn, thực đơn, gọi món, điều phối bếp, quyết toán,
+tồn kho, báo cáo, IAM và kiểm toán.
+Tuy nhiên, ở mức thực thi hiện tại,
+các năng lực này vẫn được đặt trong một \textbf{backend tập trung}
+để giữ cho giao dịch lõi đơn giản hơn, giảm chi phí triển khai
+và phù hợp với phạm vi của đồ án.
+
+Vì vậy, cách mô tả chính xác hơn là:
+IRMS được tổ chức như một \textbf{modular monolith theo năng lực nghiệp vụ};
+bên trong từng mô-đun áp dụng \textbf{phân lớp nội bộ}
+để tách phần giao diện, điều phối ứng dụng, mô hình miền và truy cập dữ liệu;
+đồng thời hệ thống sử dụng \textbf{luồng hỗ trợ hướng sự kiện}
+cho những xử lý không cần phản hồi đồng bộ ngay lập tức,
+chẳng hạn như gửi thông báo, làm mới mô hình đọc, đồng bộ báo cáo,
+và một phần xử lý tồn kho hoặc cảnh báo.
+Cách kết hợp này cho phép IRMS giữ được sự rõ ràng về kiến trúc
+mà không phải gánh toàn bộ độ phức tạp của một hệ phân tán nặng.
+
+\begin{adrbox}[title={ADR-01: Lựa chọn kiến trúc lai cho IRMS}]
+\begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
+  \item \textbf{Bối cảnh:}
+  IRMS phải đồng thời hỗ trợ nhiều tuyến nghiệp vụ có tính chất rất khác nhau:
+  đặt bàn và xếp bàn, gọi món tại bàn, điều phối bếp, lập hóa đơn,
+  thanh toán, theo dõi tồn kho, báo cáo, quản lý quyền và kiểm toán.
+  Kiến trúc được chọn cần giữ được ranh giới nghiệp vụ đủ rõ để dễ bảo trì,
+  nhưng cũng phải khả thi trong phạm vi một đồ án học phần,
+  nơi chi phí triển khai và vận hành cần được kiểm soát.
+
+  \item \textbf{Quyết định:}
+  Chọn \textbf{kiến trúc lai}
+  gồm:
+  \begin{itemize}
+    \item \textbf{modular monolith theo năng lực} cho phần lõi triển khai;
+    \item \textbf{phân lớp nội bộ} bên trong từng mô-đun;
+    \item \textbf{luồng hỗ trợ hướng sự kiện} cho thông báo,
+    cập nhật mô hình đọc, một phần tồn kho và báo cáo;
+    \item \textbf{luồng đồng bộ} cho các tương tác nghiệp vụ tuyến đầu
+    như gọi món, lập hóa đơn và thanh toán.
+  \end{itemize}
+
+  \item \textbf{Trạng thái:}
+  \textbf{Đã phê duyệt.}
+
+  \item \textbf{Lý do lựa chọn:}
+  Phương án này cân bằng được hai yêu cầu quan trọng.
+  Thứ nhất, nó giữ cho các giao dịch lõi đơn giản hơn so với kiến trúc phân tán,
+  nhờ đó giảm rủi ro giao dịch phân tán, giảm độ phức tạp vận hành
+  và tăng tính khả thi của phần hiện thực.
+  Thứ hai, nó vẫn duy trì được ranh giới mô-đun rõ ràng theo năng lực nghiệp vụ,
+  từ đó hỗ trợ bảo trì, kiểm thử và mở rộng có kiểm soát.
+
+  \item \textbf{Hệ quả kiến trúc:}
+  Ở mức logic, các năng lực được mô tả như các mô-đun độc lập,
+  có ranh giới trách nhiệm và dữ liệu rõ ràng.
+  Ở mức triển khai hiện tại, chúng có thể cùng chạy trong một backend runtime.
+  Nếu tải hệ thống hoặc độ phức tạp vận hành tăng trong tương lai,
+  các năng lực như \texttt{Reporting}, \texttt{Notification}
+  hoặc một phần \texttt{Inventory} là các ứng viên phù hợp để tách ra trước.
+
+  \item \textbf{Các phương án không được chọn:}
+  Layered monolith thuần bị loại vì không giữ được ranh giới năng lực đủ rõ;
+  microservices bị loại vì vượt quá nhu cầu và chi phí của bối cảnh hiện tại;
+  event-driven thuần bị loại vì không phù hợp với các giao dịch cần phản hồi ngay.
+\end{enumerate}
+\end{adrbox}
+
+\begin{adrbox}[title={ADR-02: Sử dụng API Gateway làm điểm vào thống nhất}]
+\begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
+  \item \textbf{Bối cảnh:}
+  IRMS phục vụ nhiều loại ứng dụng khách như máy tính bảng POS,
+  màn hình KDS, thiết bị thu ngân và ứng dụng web cho quản lý.
+  Nếu mỗi ứng dụng khách gọi trực tiếp vào nhiều thành phần phía sau,
+  việc kiểm soát xác thực, định tuyến, giới hạn tốc độ,
+  ghi nhật ký ở biên và quản lý phiên bản API sẽ bị phân tán.
+
+  \item \textbf{Quyết định:}
+  Đặt \textbf{API Gateway}
+  làm điểm vào thống nhất cho mọi ứng dụng khách.
+  Gateway chịu trách nhiệm xác thực,
+  chuyển tiếp yêu cầu, giới hạn tốc độ,
+  ghi log ở biên, chuẩn hóa lỗi phản hồi
+  và áp dụng các chính sách chung trước khi chuyển tiếp vào backend.
+
+  \item \textbf{Trạng thái:}
+  \textbf{Đã phê duyệt.}
+
+  \item \textbf{Lý do lựa chọn:}
+  Cách tổ chức này làm giảm sự phụ thuộc trực tiếp giữa ứng dụng khách
+  và cấu trúc nội bộ của backend.
+  Nó cũng tạo một điểm kiểm soát tập trung cho bảo mật,
+  kiểm toán, quản lý phiên bản giao diện lập trình ứng dụng
+  và quan sát hệ thống.
+
+  \item \textbf{Hệ quả kiến trúc:}
+  Ứng dụng khách không cần biết chi tiết nội bộ của từng mô-đun hoặc từng luồng xử lý.
+  Mọi chính sách chung được chuẩn hóa ở một điểm vào thống nhất.
+  Tuy nhiên, gateway không thay thế logic nghiệp vụ của các mô-đun phía sau;
+  nó chỉ đóng vai trò lớp biên kiểm soát và điều phối truy cập.
+
+  \item \textbf{Lưu ý triển khai:}
+  Trong bối cảnh modular monolith,
+  gateway không hàm ý rằng toàn bộ hệ thống đã là microservices.
+  Nó được hiểu là \textbf{điểm vào thống nhất ở biên hệ thống},
+  giúp kiến trúc rõ ràng hơn ngay cả khi phần lõi vẫn đang chạy tập trung.
+\end{enumerate}
+\end{adrbox}
+
+\begin{adrbox}[title={ADR-03: Kết hợp REST đồng bộ với sự kiện miền bất đồng bộ}]
+\begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
+  \item \textbf{Bối cảnh:}
+  IRMS có hai loại luồng xử lý khác nhau.
+  Một số thao tác cần phản hồi ngay cho người dùng,
+  ví dụ tra cứu thực đơn, tạo đơn gọi món, lập hóa đơn hoặc ghi nhận thanh toán.
+  Trong khi đó, một số hệ quả phụ phù hợp hơn với xử lý nền hoặc xử lý phát tán,
+  chẳng hạn gửi phiếu sang bếp, cập nhật tồn kho, làm mới báo cáo và gửi cảnh báo.
+
+  \item \textbf{Quyết định:}
+  Dùng \textbf{REST đồng bộ}
+  cho các lệnh và truy vấn ở ranh giới người dùng,
+  đồng thời dùng \textbf{sự kiện miền bất đồng bộ}
+  cho các tác vụ phát tán hoặc chỉ cần nhất quán sau cùng.
+
+  \item \textbf{Trạng thái:}
+  \textbf{Đã phê duyệt.}
+
+  \item \textbf{Lý do lựa chọn:}
+  Cách kết hợp này giữ được trải nghiệm tương tác nhanh,
+  trạng thái lỗi rõ ràng và khả năng kiểm soát giao dịch tốt ở tuyến đầu.
+  Đồng thời, nó giúp tách rời những luồng nền có thể retry,
+  xử lý lại, mở rộng hoặc nối thêm bộ xử lý mới mà không làm nặng tuyến giao dịch chính.
+
+  \item \textbf{Hệ quả kiến trúc:}
+  Mô hình xử lý của IRMS không thuần đồng bộ và cũng không thuần sự kiện.
+  Thay vào đó, hệ thống dùng đồng bộ ở nơi người dùng cần phản hồi tức thời,
+  và dùng bất đồng bộ ở nơi ưu tiên khả năng phát tán,
+  giảm ghép nối và chịu lỗi tốt hơn.
+  Điều này kéo theo nhu cầu quản lý idempotency, retry,
+  theo dõi trạng thái xử lý nền và quan sát luồng sự kiện.
+
+  \item \textbf{Ví dụ áp dụng trong IRMS:}
+  \begin{itemize}
+    \item \texttt{CreateOrder}, \texttt{CreateBill}, \texttt{ProcessPayment} đi theo tuyến đồng bộ.
+    \item \texttt{OrderConfirmed}, \texttt{DishReady}, \texttt{StockLow}, \texttt{ReportRefreshRequested}
+    là các ví dụ phù hợp với tuyến bất đồng bộ.
+  \end{itemize}
+\end{enumerate}
+\end{adrbox}
+
+\begin{adrbox}[title={ADR-04: Tách dữ liệu theo miền nghiệp vụ và dùng read model cho báo cáo}]
+\begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
+  \item \textbf{Bối cảnh:}
+  Nếu toàn bộ các vùng như đặt bàn, gọi món, bếp, quyết toán,
+  tồn kho và báo cáo cùng đọc--ghi trực tiếp trên một lược đồ dùng chung,
+  hệ thống sẽ khó kiểm soát khóa, khó tiến hóa cấu trúc dữ liệu
+  và dễ làm cho truy vấn báo cáo tác động ngược lại tuyến giao dịch nóng.
+
+  \item \textbf{Quyết định:}
+  Mỗi mô-đun sở hữu dữ liệu giao dịch theo miền của mình.
+  Phần báo cáo không đọc trực tiếp đường ghi nghiệp vụ,
+  mà sử dụng \textbf{read model} hoặc \textbf{snapshot}
+  được cập nhật từ sự kiện miền hoặc từ một đường đồng bộ nhẹ có kiểm soát.
+
+  \item \textbf{Trạng thái:}
+  \textbf{Đã phê duyệt.}
+
+  \item \textbf{Lý do lựa chọn:}
+  Tách dữ liệu theo miền giúp giảm phụ thuộc chặt,
+  tăng khả năng kiểm soát lược đồ
+  và cho phép cô lập các điểm nóng truy cập.
+  Việc dùng read model cho báo cáo giúp hệ thống vừa cung cấp góc nhìn quản trị phong phú,
+  vừa tránh làm chậm POS hoặc KDS trong giờ cao điểm.
+
+  \item \textbf{Hệ quả kiến trúc:}
+  Dữ liệu giao dịch và dữ liệu phân tích không còn bị trộn lẫn trong cùng một tuyến xử lý.
+  Đổi lại, hệ thống phải chấp nhận một mức \textbf{trễ đồng bộ có kiểm soát}
+  giữa đường ghi nghiệp vụ và mô hình đọc báo cáo.
+  Đây là đánh đổi hợp lý vì báo cáo quản trị thường không cần đồng bộ tuyệt đối theo từng mili giây.
+
+  \item \textbf{Phạm vi áp dụng:}
+  Nguyên tắc này đặc biệt quan trọng đối với các số liệu như
+  doanh thu theo ca, vòng quay bàn, hiệu suất bếp,
+  tiêu hao nguyên liệu và cảnh báo tồn kho.
+\end{enumerate}
+\end{adrbox}
+
+\begin{adrbox}[title={ADR-05: Áp dụng RBAC và nhật ký kiểm toán cho tác vụ nhạy cảm}]
+\begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
+  \item \textbf{Bối cảnh:}
+  IRMS chứa nhiều thao tác nhạy cảm như ghi đè giá, hủy món sau khi gửi bếp,
+  hoàn tiền, điều chỉnh tồn kho, công bố thực đơn
+  và thay đổi vai trò hoặc quyền hạn.
+  Nếu các thao tác này không được kiểm soát và ghi vết đầy đủ,
+  hệ thống sẽ khó đáp ứng nhu cầu vận hành,
+  đối soát và điều tra sau sự cố.
+
+  \item \textbf{Quyết định:}
+  Áp dụng \textbf{RBAC}
+  ở tầng IAM và lớp biên truy cập,
+  đồng thời thực thi thêm \textbf{AuthorizationPolicy}
+  trong miền nghiệp vụ đối với các thao tác nhạy cảm theo ngữ cảnh.
+  Song song với đó, hệ thống ghi \textbf{AuditLog}
+  cho mọi hành động quan trọng,
+  bao gồm người thực hiện, thời điểm, thao tác,
+  thực thể bị tác động và thông tin giải thích cần thiết.
+
+  \item \textbf{Trạng thái:}
+  \textbf{Đã phê duyệt.}
+
+  \item \textbf{Lý do lựa chọn:}
+  RBAC giúp chặn truy cập sai vai trò ở mức tổng quát,
+  nhưng chưa đủ để diễn tả các điều kiện nghiệp vụ tinh hơn
+  như ngưỡng hoàn tiền, yêu cầu lý do ghi đè
+  hoặc phê duyệt khi vượt quyền thông thường.
+  Vì vậy, cần kết hợp kiểm soát theo vai trò với kiểm soát theo chính sách nghiệp vụ.
+  Nhật ký kiểm toán là phần không thể thiếu để đảm bảo khả năng truy vết.
+
+  \item \textbf{Hệ quả kiến trúc:}
+  Kiểm soát truy cập không còn chỉ là một lớp kỹ thuật ở biên,
+  mà trở thành một phần của thiết kế miền.
+  Điều này giúp IRMS phù hợp hơn với môi trường vận hành thực tế,
+  nơi sai lệch về giá, thanh toán, kho và quyền thao tác
+  đều có thể dẫn đến hậu quả nghiệp vụ rõ rệt.
+
+  \item \textbf{Ví dụ áp dụng trong IRMS:}
+  \begin{itemize}
+    \item hoàn tiền vượt ngưỡng cần kiểm tra chính sách và có thể cần phê duyệt;
+    \item xem hoặc xuất audit log cần quyền riêng;
+    \item thay đổi giá bán hoặc phân quyền phải được ghi kiểm toán đầy đủ.
+  \end{itemize}
+\end{enumerate}
+\end{adrbox}
+
+\subsection{Phân công công việc}
+
+Bảng dưới đây tóm tắt \textbf{phạm vi đóng góp chính} của từng thành viên trong nhóm.
+Việc trình bày theo phạm vi chính nhằm phản ánh vai trò nổi bật của mỗi thành viên
+trong quá trình xây dựng báo cáo,
+không hàm ý rằng các phần việc được thực hiện hoàn toàn tách biệt.
+Trong thực tế, nhóm vẫn có hoạt động rà soát chéo, góp ý nội dung
+và hiệu chỉnh để bảo đảm tính nhất quán của tài liệu cuối cùng.
+
+Phần phân công dưới đây được trình bày theo hướng mỗi thành viên phụ trách một mảng chính, đồng thời đều tham gia phối hợp rà soát và hiệu chỉnh để bảo đảm tính liên kết giữa các phần của báo cáo. Cách phân công này phản ánh vai trò chính của từng thành viên nhưng vẫn nhấn mạnh tính cộng tác chung của toàn nhóm trong quá trình hoàn thiện tài liệu.
+
+\begin{table}[H]
+\centering
+\caption{Phân công công việc của Nhóm 8}
+\small
+\begin{tabularx}{\textwidth}{|p{1.9cm}|p{3.2cm}|X|}
+\hline
+\textbf{MSSV} & \textbf{Thành viên} & \textbf{Phạm vi đóng góp chính} \\
+\hline
+2311896 & Đỗ Quang Long &
+Phụ trách tổng hợp bối cảnh nghiệp vụ, hệ thống hóa yêu cầu chức năng và phi chức năng, đồng thời phối hợp rà soát để bảo đảm các yêu cầu được phản ánh nhất quán trong các phần phân tích và thiết kế. \\
+\hline
+2311982 & Lê Hoàng Luân &
+Phụ trách tổ chức cấu trúc tài liệu LaTeX, chuẩn hóa hình thức trình bày và tích hợp các thành phần nội dung, đồng thời phối hợp với các thành viên khác để bảo đảm bố cục báo cáo và hệ thống sơ đồ thống nhất. \\
+\hline
+2310990 & Lê Thúy Hiền &
+Phụ trách xây dựng phần đặc tả use case và mô tả các luồng hoạt động nghiệp vụ chính, đồng thời phối hợp đối chiếu với phần yêu cầu và phần kiến trúc để giữ sự liên thông giữa mô tả nghiệp vụ và giải pháp thiết kế. \\
+\hline
+2213698 & Nguyễn Hải Trung &
+Phụ trách các góc nhìn mô-đun, thành phần và kết nối của hệ thống, đồng thời phối hợp với các phần khác để bảo đảm các quyết định kiến trúc bám sát yêu cầu nghiệp vụ và thống nhất với cấu trúc tổng thể của báo cáo. \\
+\hline
+2211384 & Tô Thế Hưng &
+Phụ trách xây dựng các sơ đồ lớp và rà soát mô hình miền nghiệp vụ, đồng thời phối hợp đối chiếu với phần kiến trúc và phần hành vi để bảo đảm cấu trúc lớp phản ánh đúng các trách nhiệm và điểm mở rộng của hệ thống. \\
+\hline
+2310737 & Trần Nhật Đăng &
+Phụ trách phần triển khai, phân bổ và phản tư kiến trúc, đồng thời phối hợp rà soát cách diễn đạt và mối liên kết giữa các chương để bảo đảm báo cáo có tính nhất quán và hoàn chỉnh ở mức toàn cục. \\
+\hline
+\end{tabularx}
+\normalsize
+\end{table}

@@ -1,0 +1,64 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.4];
+  node [fontname="DejaVu Sans", fontsize=12];
+  edge [fontname="DejaVu Sans", fontsize=11, color="#475569", arrowsize=0.7];
+  subgraph cluster_1 {
+    label="Restaurant Internal Network";
+    color="#94A3B8";
+    style="rounded";
+    "DB" [label="Relational Database Server", shape=cylinder, style="filled", fillcolor="#F1F5F9", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "PRN" [label="Receipt Printer Gateway", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    subgraph cluster_2 {
+      label="Front-of-House Devices";
+      color="#94A3B8";
+      style="rounded";
+      "FOH" [label="Front-of-House Devices", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Host_Tablet" [label="Host Tablet", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Server_Tablet" [label="Server Tablet", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Cashier_Terminal" [label="Cashier Terminal", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    }
+    subgraph cluster_3 {
+      label="Back-of-House Devices";
+      color="#94A3B8";
+      style="rounded";
+      "BOH" [label="Back-of-House Devices", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Kitchen_Display_Station" [label="Kitchen Display Station", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Manager_Console" [label="Manager Console", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    }
+    subgraph cluster_4 {
+      label="Backend IRMS Application Server";
+      color="#94A3B8";
+      style="rounded";
+      "APP" [label="Backend IRMS Application Server", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Web_API_Layer" [label="Web/API Layer", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Application_Services" [label="Application Services", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Domain_Modules" [label="Domain Modules", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "In_Process_Event_Dispatcher" [label="In-Process Event Dispatcher", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Infrastructure_Adapters" [label="Infrastructure Adapters", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    }
+    subgraph cluster_5 {
+      label="Background Worker";
+      color="#94A3B8";
+      style="rounded";
+      "WORKER" [label="Background Worker", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Notification_Jobs" [label="Notification Jobs", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Print_Jobs" [label="Print Jobs", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+      "Projection_Refresh_Jobs" [label="Projection Refresh Jobs", shape=box3d, style="rounded,filled", fillcolor="#FEFCE8", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    }
+  }
+  subgraph cluster_6 {
+    label="External Services";
+    color="#94A3B8";
+    style="rounded";
+    "PG" [label="Payment Gateway", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "NS" [label="Notification Service", shape=folder, style="rounded,filled", fillcolor="#ECFEFF", color="#334155", fontname="DejaVu Sans", fontsize=12];
+  }
+  "FOH" -> "APP" [label="HTTPS"];
+  "BOH" -> "APP" [label="HTTPS / internal API"];
+  "APP" -> "DB" [label="JDBC / SQL"];
+  "APP" -> "WORKER" [label="internal job dispatch"];
+  "WORKER" -> "DB" [label="projection / job state"];
+  "APP" -> "PRN" [label="print connector"];
+  "APP" -> "PG" [label="HTTPS"];
+  "WORKER" -> "NS" [label="HTTPS"];
+}

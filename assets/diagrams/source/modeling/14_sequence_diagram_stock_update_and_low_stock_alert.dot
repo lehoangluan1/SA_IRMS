@@ -1,0 +1,17 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.55, ranksep=0.7, pad=0.35];
+  node [shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=11];
+  edge [color="#475569", arrowsize=0.7, fontname="DejaVu Sans", fontsize=10];
+
+  orderingService [label="Ordering Service"];
+  inventoryService [label="Inventory Service"];
+  lowStockRule [label="LowStockRule"];
+  notificationAdapter [label="Notification Adapter"];
+  managerUI [label="Manager UI"];
+
+  orderingService -> inventoryService [label="1. Phát sự kiện món đã phục vụ"];
+  inventoryService -> inventoryService [label="2. Tạo StockTransaction\nvà cập nhật tồn"];
+  inventoryService -> lowStockRule [label="3. Kiểm tra ngưỡng tồn"];
+  lowStockRule -> notificationAdapter [label="4. Sinh cảnh báo nếu vượt ngưỡng"];
+  notificationAdapter -> managerUI [label="5. Hiển thị cảnh báo mức tồn thấp"];
+}

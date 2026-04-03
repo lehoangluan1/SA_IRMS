@@ -1,0 +1,82 @@
+
+digraph G {
+
+graph [bgcolor="#F3F4F6", pad="0.3", nodesep="0.45", ranksep="0.7", splines=ortho, fontname="Helvetica"];
+node [fontname="Helvetica", shape=box, style="rounded,filled", fillcolor="#F5F8FC", color="#5B6B8C", penwidth=1.2];
+edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+
+labelloc="t";
+label="Deployment Diagram - High Availability and Failure Isolation";
+rankdir=LR;
+nodesep=0.55;
+ranksep=0.9;
+
+subgraph cluster_clients {
+  label="Restaurant Endpoints";
+  color="#9BB5FF"; style="rounded";
+  host [label="Host Tablet"];
+  server [label="Server Tablet"];
+  kitchen [label="Kitchen Display"];
+  cashier [label="Cashier Terminal"];
+  manager [label="Manager Console"];
+}
+
+lb [label="Reverse Proxy / Load Balancer", fillcolor="#E9F1FF"];
+
+subgraph cluster_app {
+  label="Application Tier";
+  color="#9BB5FF"; style="rounded";
+  appA [label="IRMS App Node A\nAPI + app services"];
+  appB [label="IRMS App Node B\nAPI + app services"];
+  workerA [label="Worker Node A\nprojection / notify / print"];
+  workerB [label="Worker Node B\nprojection / notify / print"];
+}
+
+subgraph cluster_state {
+  label="Stateful Tier";
+  color="#9BB5FF"; style="rounded";
+  dbPrimary [label="PostgreSQL Primary"];
+  dbReplica [label="Read Replica / Warm Standby"];
+  queue [label="Outbox / Job Queue"];
+  views [label="Reporting Views"];
+}
+
+subgraph cluster_ext {
+  label="External Systems";
+  color="#9BB5FF"; style="rounded";
+  pay [label="Payment Gateway"];
+  printer [label="Receipt Printer Gateway"];
+  notif [label="Notification Service"];
+}
+
+host -> lb;
+server -> lb;
+kitchen -> lb;
+cashier -> lb;
+manager -> lb;
+
+lb -> appA [label="HTTPS"];
+lb -> appB [label="HTTPS"];
+
+appA -> dbPrimary [label="txn read/write"];
+appB -> dbPrimary [label="txn read/write"];
+dbPrimary -> dbReplica [label="stream replication"];
+appA -> queue [style=dashed, label="publish jobs"];
+appB -> queue [style=dashed, label="publish jobs"];
+workerA -> queue [label="consume"];
+workerB -> queue [label="consume"];
+workerA -> views [label="refresh"];
+workerB -> views [label="refresh"];
+manager -> views [style=dashed, label="dashboards"];
+workerA -> printer [label="print jobs"];
+workerB -> printer [label="print jobs"];
+appA -> pay [label="payment calls"];
+appB -> pay [label="payment calls"];
+workerA -> notif [label="notifications"];
+workerB -> notif [label="notifications"];
+
+appA -> appB [style=dashed, label="stateless failover"];
+workerA -> workerB [style=dashed, label="redundant consumers"];
+queue -> views [style=dashed, label="decouple read refresh"];
+dbReplica -> views [style=dashed, label="query source / refresh source"];
+}

@@ -1,0 +1,94 @@
+
+digraph G {
+
+graph [bgcolor="#F3F4F6", pad="0.3", nodesep="0.45", ranksep="0.7", splines=ortho, fontname="Helvetica"];
+node [fontname="Helvetica", shape=box, style="rounded,filled", fillcolor="#F5F8FC", color="#5B6B8C", penwidth=1.2];
+edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+
+labelloc="t";
+label="Allocation View Overview - Mapping Modules to Runtime, Data and External Systems";
+rankdir=LR;
+nodesep=0.55;
+ranksep=0.85;
+
+subgraph cluster_logic {
+  label="Logical / Module View";
+  color="#9BB5FF"; style="rounded";
+  reserve [label="Table & Reservation"];
+  menu [label="Menu"];
+  order [label="Ordering"];
+  kitchen [label="Kitchen Coordination"];
+  billing [label="Billing & Settlement"];
+  inventory [label="Inventory"];
+  reporting [label="Reporting"];
+  iam [label="IAM"];
+  audit [label="Audit"];
+  notif [label="Notification"];
+}
+
+subgraph cluster_runtime {
+  label="Runtime Allocation";
+  color="#9BB5FF"; style="rounded";
+  api [label="API Node\ncontrollers + app services", fillcolor="#E9F1FF"];
+  worker [label="Background Worker\nprojection, print, notify"];
+  query [label="Reporting Query Service"];
+}
+
+subgraph cluster_data {
+  label="Data Allocation";
+  color="#9BB5FF"; style="rounded";
+  trxdb [label="Operational RDBMS\norders, sessions, billing,\ninventory, IAM"];
+  views [label="Reporting Views / Read Model"];
+  outbox [label="Outbox / Job Queue"];
+}
+
+subgraph cluster_edge {
+  label="Edge / Devices";
+  color="#9BB5FF"; style="rounded";
+  host [label="Host Tablet"];
+  server [label="Server Tablet"];
+  kitchenui [label="Kitchen Display"];
+  cashier [label="Cashier Terminal"];
+  mgr [label="Manager Console"];
+}
+
+subgraph cluster_ext {
+  label="External Systems";
+  color="#9BB5FF"; style="rounded";
+  pay [label="Payment Gateway"];
+  printer [label="Receipt Printer"];
+  nsvc [label="Notification Service"];
+}
+
+host -> api;
+server -> api;
+kitchenui -> api;
+cashier -> api;
+mgr -> api;
+
+reserve -> api;
+menu -> api;
+order -> api;
+kitchen -> api;
+billing -> api;
+inventory -> api;
+iam -> api;
+audit -> api;
+reporting -> query;
+notif -> worker;
+
+api -> trxdb [label="transactional reads/writes"];
+api -> outbox [style=dashed, label="publish jobs/events"];
+worker -> outbox [label="consume"];
+worker -> views [label="refresh projections"];
+query -> views [label="query"];
+worker -> printer [label="print jobs"];
+worker -> nsvc [label="notifications"];
+api -> pay [label="authorize/capture/refund"];
+billing -> pay [style=dashed, label="via adapter"];
+reporting -> views [style=dashed, label="reads"];
+audit -> trxdb [style=dashed, label="audit trail"];
+inventory -> trxdb [style=dashed, label="stock transactions"];
+order -> trxdb [style=dashed, label="orders + modifiers"];
+reserve -> trxdb [style=dashed, label="reservations + tables"];
+}

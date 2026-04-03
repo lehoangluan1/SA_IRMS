@@ -1,0 +1,71 @@
+digraph G {
+  graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
+  node [fontname="DejaVu Sans"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-RES-02 — Nhận khách và sắp bàn";
+
+  subgraph cluster_l1 {
+    style="rounded,filled";
+    fillcolor="#EAF3FF"; color="#BBBBBB";
+    label="Lễ tân";
+    n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n1 [label="Tìm đặt bàn theo mã,\nsố điện thoại hoặc tên khách", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n4 [label="Xác nhận khách đến và\nsố khách thực tế", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Cần đổi bàn hoặc\nghép bàn?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n6 [label="Chọn bàn hoặc nhóm bàn\nthay thế", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n0 -> n1 -> n4 -> n5 -> n6 [style=invis, weight=20];
+  }
+
+  subgraph cluster_l2 {
+    style="rounded,filled";
+    fillcolor="#FFF8DB"; color="#BBBBBB";
+    label="Hệ thống IRMS";
+    n2 [label="Tra cứu trạng thái đặt bàn,\nthời gian giữ chỗ và bàn gợi ý", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Đặt bàn còn hiệu lực\nhoặc còn bàn trống?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n7 [label="Kiểm tra sức chứa,\ntrạng thái dọn bàn và tránh gán trùng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="Bàn mới hợp lệ?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n9 [label="Mở TableSession,\ncập nhật trạng thái bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Phân công khu vực\nphục vụ phụ trách", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n11 [label="Chuyển khách sang danh sách chờ\nhoặc đề xuất bàn khác", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n14 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n2 -> n3 -> n7 -> n8 -> n9 -> n10 -> n11 -> n14 [style=invis, weight=20];
+  }
+
+  subgraph cluster_l3 {
+    style="rounded,filled";
+    fillcolor="#FDECEC"; color="#BBBBBB";
+    label="Quản lý";
+    n12 [label="Phê duyệt phục hồi đặt bàn\nđã quá giờ giữ chỗ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n13 [label="Phê duyệt?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n12 -> n13 [style=invis, weight=20];
+  }
+
+  subgraph cluster_l4 {
+    style="rounded,filled";
+    fillcolor="#EAFBF1"; color="#BBBBBB";
+    label="Phục vụ";
+    n15 [label="Nhận thông báo có bàn mới\nvà chuẩn bị tiếp nhận gọi món", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n16 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
+    n15 -> n16 [style=invis, weight=20];
+  }
+
+  n0 -> n1;
+  n1 -> n2;
+  n2 -> n3;
+  n3 -> n4 [xlabel="Có"];
+  n3 -> n12 [xlabel="Không hoặc quá giờ"];
+  n12 -> n13;
+  n13 -> n4 [xlabel="Có"];
+  n13 -> n11 [xlabel="Không"];
+  n4 -> n5;
+  n5 -> n6 [xlabel="Có"];
+  n5 -> n9 [xlabel="Không"];
+  n6 -> n7;
+  n7 -> n8;
+  n8 -> n9 [xlabel="Có"];
+  n8 -> n11 [xlabel="Không"];
+  n9 -> n10;
+  n10 -> n15;
+  n15 -> n16;
+  n11 -> n14;
+}

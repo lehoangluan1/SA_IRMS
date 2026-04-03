@@ -1,0 +1,40 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.4];
+  node [fontname="DejaVu Sans", fontsize=12];
+  edge [fontname="DejaVu Sans", fontsize=11, color="#475569", arrowsize=0.7];
+  subgraph cluster_1 {
+    label="IRMS Modules";
+    color="#94A3B8";
+    style="rounded";
+    "Table_Reservation" [label="Table & Reservation", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Menu" [label="Menu", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Ordering" [label="Ordering", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Kitchen_Coordination" [label="Kitchen Coordination", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Billing_Payment" [label="Billing & Payment", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Inventory" [label="Inventory", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Reporting" [label="Reporting", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Notification" [label="Notification", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Identity_Access_Control" [label="Identity & Access Control", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+    "Audit_Log" [label="Audit Log", shape=box, style="rounded,filled", fillcolor="#F8FAFC", color="#334155", fontname="DejaVu Sans", fontsize=12];
+  }
+  "Ordering" -> "Table_Reservation" [label="table / session context"];
+  "Ordering" -> "Menu" [label="item validation and pricing"];
+  "Ordering" -> "Kitchen_Coordination" [label="confirmed order items"];
+  "Billing_Payment" -> "Ordering" [label="order snapshot"];
+  "Billing_Payment" -> "Table_Reservation" [label="release session"];
+  "Inventory" -> "Ordering" [label="subscribe order events", style="dashed"];
+  "Inventory" -> "Billing_Payment" [label="subscribe payment events", style="dashed"];
+  "Reporting" -> "Ordering" [];
+  "Reporting" -> "Billing_Payment" [];
+  "Reporting" -> "Inventory" [];
+  "Reporting" -> "Audit_Log" [];
+  "Notification" -> "Table_Reservation" [label="reservation events", style="dashed"];
+  "Notification" -> "Billing_Payment" [label="receipt events", style="dashed"];
+  "Notification" -> "Inventory" [label="low stock alerts", style="dashed"];
+  "Identity_Access_Control" -> "Ordering" [style="dashed"];
+  "Identity_Access_Control" -> "Billing_Payment" [style="dashed"];
+  "Identity_Access_Control" -> "Reporting" [style="dashed"];
+  "Audit_Log" -> "Ordering" [style="dashed"];
+  "Audit_Log" -> "Billing_Payment" [style="dashed"];
+  "Audit_Log" -> "Identity_Access_Control" [style="dashed"];
+}
