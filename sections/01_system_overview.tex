@@ -57,20 +57,58 @@ IRMS bao phủ các nhóm chức năng sau:
 \toprule
 Bên liên quan & Vai trò & Mối quan tâm chính \\
 \midrule
-Khách hàng & Người dùng/đơn vị vận hành & Tạo/cập nhật đặt bàn, nhận xác nhận, thanh toán và nhận biên lai điện tử. \\
-Lễ tân & Người dùng/đơn vị vận hành & Quản lý đặt bàn, danh sách chờ, tiếp nhận khách và tối ưu sơ đồ bàn. \\
-Phục vụ & Người dùng/đơn vị vận hành & Tạo đơn gọi món, ghi chú tuỳ biến, theo dõi món, phục vụ tại bàn và hỗ trợ tính tiền. \\
-Nhân viên bếp & Người dùng/đơn vị vận hành & Nhận phiếu bếp, cập nhật tiến độ chế biến và phát hiện nghẽn vận hành. \\
-Thu ngân & Người dùng/đơn vị vận hành & Tạo hoá đơn, tách hóa đơn, xử lý thanh toán, in hoặc gửi biên lai và hoàn tiền theo quyền. \\
-Quản lý & Người dùng/đơn vị vận hành & Quản lý menu, giá, khuyến mãi, ca làm, báo cáo và xử lý ngoại lệ nghiệp vụ. \\
-Quản trị viên & Người dùng/đơn vị vận hành & Quản lý tài khoản, vai trò, phân quyền và nhật ký kiểm toán toàn hệ thống. \\
+Khách hàng & Người dùng/đơn vị vận hành & \begin{itemize}
+  \item Đặt bàn trước
+  \item Nhận thông báo xác nhận và nhắc nhở
+  \item Thanh toán đa phương thức, nhận hóa đơn
+  \item Gọi món, yêu cầu tùy chỉnh, ghi chú dị ứng khi order
+\end{itemize} \\
+Lễ tân & Người dùng/đơn vị vận hành & \begin{itemize}
+  \item Quản lý sơ đồ bàn, theo dõi trạng thái trống/bận
+  \item Xử lý đặt bàn trước và danh sách chờ
+  \item Gửi thông báo xác nhận/nhắc nhở cho khách hàng
+  \item Ước tính thời gian chờ, phân bổ bàn hợp lý
+\end{itemize} \\
+Phục vụ & Người dùng/đơn vị vận hành & \begin{itemize}
+  \item Tạo đơn gọi món, nhận order từ khách
+  \item Theo dõi đơn, thời gian phục vụ và tình trạng thanh toán theo từng bàn
+\end{itemize} \\
+Nhân viên bếp & Người dùng/đơn vị vận hành & \begin{itemize}
+  \item Cập nhật trạng thái món: Đã bắt đầu, Đang nấu, Sẵn sàng phục vụ
+  \item Phản hồi cảnh báo khi món sắp trễ
+  \item Cập nhật nguyên liệu đã sử dụng sau khi chế biến
+\end{itemize} \\
+Thu ngân & Người dùng/đơn vị vận hành & \begin{itemize}
+  \item Lập hóa đơn tổng hợp (đồ ăn, đồ uống, dịch vụ)
+  \item Xử lý thanh toán: tiền mặt, ví điện tử
+  \item Tách bill và quản lý tip
+  \item Thực hiện hoàn tiền khi cần và ghi vào audit log
+\end{itemize} \\
+Quản lý & Người dùng/đơn vị vận hành & \begin{itemize}
+  \item Xem báo cáo: doanh thu, giờ cao điểm, món bán chạy
+  \item Giám sát tồn kho, nhận cảnh báo ngưỡng tối thiểu
+  \item Cấu hình menu, giá và chương trình khuyến mãi
+  \item Xuất báo cáo cho kế toán, đánh giá hiệu suất
+  \item Theo dõi hiệu quả nhân viên và điểm nghẽn bếp
+\end{itemize} \\
+Quản trị viên & Người dùng/đơn vị vận hành & \begin{itemize}
+  \item Phân quyền truy cập theo vai trò
+  \item Xem và quản lý audit log toàn hệ thống
+  \item Xử lý sự cố kỹ thuật, đảm bảo uptime
+  \item Cấu hình và bảo trì hệ thống POS
+\end{itemize} \\
+Cổng thanh toán & Hệ thống ngoài & \begin{itemize}
+  \item Xử lý giao dịch thẻ tín dụng/ghi nợ an toàn
+  \item Hỗ trợ ví điện tử (MoMo, ZaloPay, Apple Pay, …)
+  \item Trả về kết quả giao dịch (thành công/thất bại) cho POS
+\end{itemize} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 
 \subsubsection{Cơ sở đo tải và ràng buộc dự án}
-Để các yêu cầu phi chức năng không bị mô tả chung chung, báo cáo dùng \textbf{hai điều kiện vận hành chuẩn} làm mốc đánh giá. Đây là giả định thiết kế cho một nhà hàng tầm trung, được dùng thống nhất ở toàn bộ báo cáo khi nói về hiệu năng, độ tin cậy và khả năng mở rộng.
+Đây là giả định thiết kế cho một nhà hàng tầm trung, được dùng thống nhất ở toàn bộ báo cáo khi nói về hiệu năng, độ tin cậy và khả năng mở rộng.
 
 \begin{table}[H]
 \centering
@@ -88,7 +126,7 @@ Quản trị viên & Người dùng/đơn vị vận hành & Quản lý tài kho
 
 Trong hai điều kiện trên, dự án chịu các ràng buộc thực tế sau:
 \begin{itemize}
-    \item \textbf{Ràng buộc phạm vi}: phiên bản hiện tại phục vụ một nhà hàng đơn lẻ, chưa tối ưu cho vận hành nhiều chi nhánh ở quy mô đầy đủ, nhưng kiến trúc phải chừa điểm mở cho mở rộng về sau.
+    \item \textbf{Ràng buộc phạm vi}: phiên bản hiện tại phục vụ một nhà hàng đơn lẻ, chưa tối ưu cho vận hành nhiều chi nhánh ở quy mô đầy đủ, nhưng kiến trúc vẫn chừa điểm mở cho mở rộng về sau.
     \item \textbf{Ràng buộc thiết bị}: nhân viên thao tác qua máy tính bảng gọi món, màn hình bếp, thiết bị thu ngân hoặc giao diện web nội bộ; trải nghiệm phải ưu tiên thao tác nhanh, ít bước và dễ học theo ca.
     \item \textbf{Ràng buộc mạng}: mạng nội bộ có thể chập chờn ngắn hạn trong phạm vi dưới 60 giây; hệ thống được phép thử lại nhưng không được làm mất đơn gọi món đã xác nhận hoặc tạo phiếu trùng.
     \item \textbf{Ràng buộc thanh toán}: thanh toán điện tử luôn đi qua cổng đối tác ngoài; IRMS không lưu dữ liệu thẻ thô mà chỉ lưu kết quả giao dịch và mã tham chiếu.
