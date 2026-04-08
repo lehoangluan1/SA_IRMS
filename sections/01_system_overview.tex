@@ -1,19 +1,38 @@
 ﻿\section{Tổng quan hệ thống}
 
 \subsubsection{Bối cảnh nghiệp vụ}
-IRMS được thiết kế cho môi trường vận hành nhà hàng có phục vụ tại bàn, khu bếp, quầy thanh toán và hoạt động điều phối theo ca. Trong bối cảnh thực tế, các sai sót thường xuất hiện đúng vào giờ cao điểm: đơn gọi món ghi nhầm món, ghi chú dị ứng bị bỏ sót, trạng thái bàn thay đổi nhưng không được cập nhật kịp, hóa đơn bị lệch khi có tách hóa đơn hoặc áp dụng khuyến mãi, và tồn kho cuối ngày không phản ánh đúng mức tiêu hao thực tế.
 
-Bài toán vì vậy không chỉ là ``ghi đơn gọi món trên màn hình''. IRMS phải đóng vai trò như một nền tảng số trung tâm liên kết khu vực phục vụ phía trước, khu vực bếp và khu vực quản trị: đặt bàn, xếp bàn, gọi món, điều phối bếp, lập hóa đơn, thanh toán, tồn kho, báo cáo, kiểm soát truy cập, nhật ký kiểm toán và các tích hợp bên ngoài. Đây là một hệ thống nghiệp vụ hoàn chỉnh, có đường xử lý lõi rõ ràng, có luồng hỗ trợ bất đồng bộ và có yêu cầu mở rộng về sau.
+Hệ thống \textbf{Intelligent Restaurant Management System (IRMS)} được thiết kế nhằm tối ưu hóa hoạt động vận hành của nhà hàng, bao gồm phục vụ tại bàn, khu vực bếp, quầy thanh toán và các hoạt động điều phối theo ca. Trong thực tế, nhiều sai sót thường xảy ra vào các giờ cao điểm, chẳng hạn như đơn gọi món bị ghi nhầm, ghi chú dị ứng không được lưu, trạng thái bàn không cập nhật kịp thời, hóa đơn bị lệch khi tách hóa đơn hoặc áp dụng khuyến mãi, cũng như tồn kho cuối ngày không phản ánh đúng mức tiêu hao thực tế. Những vấn đề này ảnh hưởng trực tiếp đến chất lượng phục vụ, trải nghiệm khách hàng và hiệu quả vận hành của nhà hàng.
 
+Vì vậy, IRMS không chỉ đơn thuần là một ứng dụng ghi nhận đơn gọi món trên màn hình mà phải đóng vai trò như một \textbf{nền tảng số trung tâm}, liên kết chặt chẽ các khu vực phục vụ phía trước, khu bếp và bộ phận quản trị. Hệ thống cần đảm bảo các chức năng nghiệp vụ toàn diện, bao gồm quản lý đặt bàn và xếp bàn, tiếp nhận và điều phối đơn gọi món, quản lý tiến trình chế biến trong bếp, lập và thanh toán hóa đơn, theo dõi tồn kho, cung cấp báo cáo và phân tích hiệu suất vận hành, kiểm soát truy cập dựa trên vai trò, ghi nhận nhật ký kiểm toán, đồng thời có khả năng tích hợp với các hệ thống bên ngoài khi cần thiết.  
+
+IRMS được xây dựng như một hệ thống nghiệp vụ hoàn chỉnh với luồng xử lý lõi rõ ràng, hỗ trợ các quy trình bất đồng bộ, đồng thời đảm bảo khả năng mở rộng linh hoạt để đáp ứng nhu cầu vận hành phức tạp và đa dạng trong môi trường nhà hàng hiện đại.
 \subsubsection{Mục tiêu của hệ thống}
-Các mục tiêu thiết kế chính của IRMS không chỉ dừng ở mức \enquote{có đủ chức năng}, mà còn phải chuyển thành kết quả vận hành có thể kiểm chứng trong phạm vi một dự án phần mềm cho nhà hàng quy mô trung bình. Vì vậy, báo cáo đặt ra các mục tiêu sau:
+Hệ thống \textit{Intelligent Restaurant Management System (IRMS)} được xây dựng nhằm hỗ trợ số hóa và tối ưu hóa các hoạt động vận hành trong nhà hàng. Thông qua việc tích hợp các chức năng quản lý đơn hàng, điều phối bếp, quản lý bàn, thanh toán và theo dõi tồn kho, hệ thống hướng tới việc nâng cao hiệu quả làm việc của nhân viên cũng như cải thiện trải nghiệm phục vụ khách hàng. Các mục tiêu chính của hệ thống bao gồm:
+
 \begin{enumerate}
-    \item \textbf{Giảm sai sót nghiệp vụ trên tuyến gọi món}: mục tiêu là giữ tỷ lệ đơn gọi món bị sửa do nhập sai dưới 2\% tổng số đơn đã xác nhận trong một ca, thông qua thực đơn số hóa, tùy chọn món có ràng buộc, cảnh báo ghi chú dị ứng và bước xác nhận trước khi gửi bếp.
-    \item \textbf{Rút ngắn độ trễ từ phục vụ xuống bếp}: phiếu món phải xuất hiện trên màn hình bếp trong vòng tối đa 2 giây ở điều kiện thường và không quá 3 giây ở giờ cao điểm, để tránh việc phục vụ phải gọi miệng hoặc ghi tay .
-    \item \textbf{Đồng bộ trạng thái vận hành theo thời gian gần thực}: trạng thái bàn, đơn gọi món, phiếu bếp, hóa đơn và thanh toán phải phản ánh trên các màn hình liên quan với độ trễ quan sát được không vượt quá 5 giây đối với các thay đổi quan trọng.
-    \item \textbf{Rút ngắn thời gian đóng phiên phục vụ}: với một bàn tiêu chuẩn không có tách hóa đơn phức tạp, thời gian từ lúc yêu cầu thanh toán đến lúc phát hành biên lai nên dưới 2 phút; với tách hóa đơn tiêu chuẩn cho 2--4 người, mục tiêu là dưới 4 phút.
-    \item \textbf{Tăng khả năng kiểm soát và truy vết}: 100\% thao tác nhạy cảm như hoàn tiền, hủy đơn đã gửi bếp, ghi đè giá, mở lại hóa đơn hoặc đổi trạng thái thanh toán phải được ghi nhận đầy đủ người thực hiện, thời điểm và lý do.
-    \item \textbf{Tạo nền tảng mở rộng về sau}: khi cần thêm phương thức thanh toán, kênh gửi thông báo, thiết bị tự phục vụ hoặc mở rộng sang nhiều chi nhánh, kiến trúc phải cho phép mở rộng qua các giao diện và bộ kết nối phù hợp mà không buộc sửa chéo logic lõi của toàn bộ hệ thống.
+
+\item \textbf{Giảm sai sót trong quá trình gọi món và xử lý đơn hàng} \\
+Hệ thống sử dụng thực đơn số hóa và giao diện nhập liệu có cấu trúc để giúp nhân viên phục vụ tạo đơn nhanh chóng và chính xác. Các tùy chọn như ghi chú món ăn, yêu cầu đặc biệt hoặc cảnh báo dị ứng giúp hạn chế nhầm lẫn trong quá trình phục vụ và chế biến.
+
+\item \textbf{Tăng hiệu quả phối hợp giữa bộ phận phục vụ và bếp} \\
+Khi đơn hàng được xác nhận, hệ thống sẽ tự động chuyển thông tin đến màn hình hiển thị bếp (\textit{Kitchen Display System -- KDS}). Điều này giúp đầu bếp nắm bắt yêu cầu món ăn kịp thời, giảm thời gian chờ và hạn chế việc truyền đạt thông tin thủ công.
+
+\item \textbf{Đảm bảo cập nhật và đồng bộ trạng thái hoạt động theo thời gian gần thực} \\
+Các thông tin quan trọng như trạng thái bàn, tiến độ chế biến món ăn, trạng thái đơn hàng và thanh toán cần được cập nhật liên tục trên các giao diện liên quan. Điều này giúp các bộ phận trong nhà hàng có cùng nguồn dữ liệu và phối hợp làm việc hiệu quả hơn.
+
+\item \textbf{Hỗ trợ quản lý bàn và tối ưu hóa quy trình phục vụ khách hàng} \\
+Hệ thống giúp nhân viên theo dõi tình trạng bàn, quản lý đặt bàn và ước lượng thời gian chờ của khách. Nhờ đó, nhà hàng có thể sắp xếp khách hợp lý và nâng cao chất lượng dịch vụ.
+
+\item \textbf{Tăng hiệu quả quản lý tài chính và thanh toán} \\
+IRMS hỗ trợ tạo hóa đơn tự động, tính toán tổng chi phí bao gồm món ăn, dịch vụ và khuyến mãi. Hệ thống cho phép nhiều phương thức thanh toán khác nhau, đồng thời hỗ trợ tách hóa đơn khi cần thiết.
+
+\item \textbf{Hỗ trợ theo dõi tồn kho và cung cấp dữ liệu phân tích cho quản lý} \\
+Hệ thống ghi nhận việc sử dụng nguyên liệu và cung cấp cảnh báo khi tồn kho xuống thấp. Ngoài ra, các báo cáo bán hàng và phân tích hoạt động giúp nhà quản lý đánh giá hiệu suất kinh doanh và đưa ra quyết định phù hợp.
+
+\item \textbf{Tạo nền tảng hệ thống linh hoạt và có khả năng mở rộng} \\
+Kiến trúc của IRMS được thiết kế theo hướng mô-đun và tuân theo các nguyên tắc thiết kế phần mềm như \textit{SOLID}, cho phép dễ dàng mở rộng thêm chức năng mới hoặc tích hợp với các hệ thống khác trong tương lai.
+
 \end{enumerate}
 
 \subsubsection{Phạm vi hệ thống}
