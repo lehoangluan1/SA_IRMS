@@ -1,13 +1,13 @@
 ﻿\section{Tổng quan hệ thống}
 
-\subsubsection{Bối cảnh nghiệp vụ}
+\subsection{Bối cảnh nghiệp vụ}
 
 Hệ thống \textbf{Intelligent Restaurant Management System (IRMS)} được thiết kế nhằm tối ưu hóa hoạt động vận hành của nhà hàng, bao gồm phục vụ tại bàn, khu vực bếp, quầy thanh toán và các hoạt động điều phối theo ca. Trong thực tế, nhiều sai sót thường xảy ra vào các giờ cao điểm, chẳng hạn như đơn gọi món bị ghi nhầm, ghi chú dị ứng không được lưu, trạng thái bàn không cập nhật kịp thời, hóa đơn bị lệch khi tách hóa đơn hoặc áp dụng khuyến mãi, cũng như tồn kho cuối ngày không phản ánh đúng mức tiêu hao thực tế. Những vấn đề này ảnh hưởng trực tiếp đến chất lượng phục vụ, trải nghiệm khách hàng và hiệu quả vận hành của nhà hàng.
 
 Vì vậy, IRMS không chỉ đơn thuần là một ứng dụng ghi nhận đơn gọi món trên màn hình mà phải đóng vai trò như một \textbf{nền tảng số trung tâm}, liên kết chặt chẽ các khu vực phục vụ phía trước, khu bếp và bộ phận quản trị. Hệ thống cần đảm bảo các chức năng nghiệp vụ toàn diện, bao gồm quản lý đặt bàn và xếp bàn, tiếp nhận và điều phối đơn gọi món, quản lý tiến trình chế biến trong bếp, lập và thanh toán hóa đơn, theo dõi tồn kho, cung cấp báo cáo và phân tích hiệu suất vận hành, kiểm soát truy cập dựa trên vai trò, ghi nhận nhật ký kiểm toán, đồng thời có khả năng tích hợp với các hệ thống bên ngoài khi cần thiết.  
 
 IRMS được xây dựng như một hệ thống nghiệp vụ hoàn chỉnh với luồng xử lý lõi rõ ràng, hỗ trợ các quy trình bất đồng bộ, đồng thời đảm bảo khả năng mở rộng linh hoạt để đáp ứng nhu cầu vận hành phức tạp và đa dạng trong môi trường nhà hàng hiện đại.
-\subsubsection{Mục tiêu của hệ thống}
+\subsection{Mục tiêu của hệ thống}
 Hệ thống \textit{Intelligent Restaurant Management System (IRMS)} được xây dựng nhằm hỗ trợ số hóa và tối ưu hóa các hoạt động vận hành trong nhà hàng. Thông qua việc tích hợp các chức năng quản lý đơn hàng, điều phối bếp, quản lý bàn, thanh toán và theo dõi tồn kho, hệ thống hướng tới việc nâng cao hiệu quả làm việc của nhân viên cũng như cải thiện trải nghiệm phục vụ khách hàng. Các mục tiêu chính của hệ thống bao gồm:
 
 \begin{enumerate}
@@ -35,7 +35,7 @@ Kiến trúc của IRMS được thiết kế theo hướng mô-đun và tuân t
 
 \end{enumerate}
 
-\subsubsection{Phạm vi hệ thống (IRMS)}
+\subsection{Phạm vi hệ thống (IRMS)}
 Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ quy trình vận hành của một nhà hàng, từ khâu tiếp đón khách hàng, chế biến tại bếp đến quản lý kho và phân tích kinh doanh. Xét theo hướng service-based, các nhóm chức năng này là cơ sở để phân rã thành các domain service như \texttt{Table \& Reservation}, \texttt{Order}, \texttt{Kitchen Workflow}, \texttt{Billing \& Payment}, \texttt{Inventory}, \texttt{Reporting \& Analytics} và \texttt{Admin \& Access Control}. Cụ thể, hệ thống bao gồm các nhóm chức năng chính sau:
 
 \begin{itemize}
