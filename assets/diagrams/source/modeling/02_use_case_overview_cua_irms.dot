@@ -4,89 +4,115 @@ digraph G {
     splines=polyline,
     outputorder=nodesfirst,
     bgcolor="white",
-    pad=0.32,
+    pad=0.34,
     fontname="DejaVu Sans",
     labelloc="t",
     label="UML Use-Case Diagram - IRMS Overview",
     imagepath="C:/Users/LUAN/Downloads/SA_BTL/assets/images/misc"
   ];
 
-  node [fontname="DejaVu Sans", fontsize=9.1, color="#475569", penwidth=1.0, pin=true];
-  edge [fontname="DejaVu Sans", fontsize=8.0, color="#64748B", penwidth=0.9, arrowhead=none];
+  node [fontname="DejaVu Sans", fontsize=9.0, color="#475569", penwidth=1.0, pin=true];
+  edge [fontname="DejaVu Sans", fontsize=7.7, color="#64748B", penwidth=0.9, arrowhead=none];
 
-  system_boundary [shape=box, style="rounded,filled", fillcolor="#EFF6FF", color="#60A5FA", penwidth=1.25, label="", width=13.6, height=8.9, fixedsize=true, pos="830,470!"];
-  system_title [shape=plaintext, label="<<system>> IRMS", pos="830,960!"];
+  system_boundary [shape=box, style="rounded,filled", fillcolor="#EFF6FF", color="#60A5FA", penwidth=1.25, label="", width=18.8, height=10.8, fixedsize=true, pos="830,520!"];
+  system_title [shape=plaintext, label="<<system>> IRMS", pos="830,1115!"];
 
-  reservation_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=3.7, height=3.4, fixedsize=true, pos="470,680!"];
-  reservation_title [shape=plaintext, label="Reservation and Seating", pos="470,860!"];
-  dining_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=4.4, height=3.8, fixedsize=true, pos="470,250!"];
-  dining_title [shape=plaintext, label="Ordering and Kitchen", pos="470,470!"];
-  operations_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=4.4, height=3.6, fixedsize=true, pos="1120,700!"];
-  operations_title [shape=plaintext, label="Operations and Governance", pos="1120,900!"];
-  billing_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=3.8, height=3.2, fixedsize=true, pos="1120,250!"];
-  billing_title [shape=plaintext, label="Billing and Settlement", pos="1120,450!"];
+  reservation_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=4.0, height=3.6, fixedsize=true, pos="410,760!"];
+  reservation_title [shape=plaintext, label="Reservation and Seating", pos="410,955!"];
+  ordering_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=4.5, height=4.1, fixedsize=true, pos="420,350!"];
+  ordering_title [shape=plaintext, label="Ordering and Kitchen", pos="420,595!"];
+  inventory_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=3.5, height=2.5, fixedsize=true, pos="830,760!"];
+  inventory_title [shape=plaintext, label="Inventory and Replenishment", pos="830,905!"];
+  operations_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=4.2, height=3.6, fixedsize=true, pos="1240,760!"];
+  operations_title [shape=plaintext, label="Operations and Governance", pos="1240,955!"];
+  billing_box [shape=box, style="rounded,dashed", color="#BFDBFE", label="", width=4.2, height=3.3, fixedsize=true, pos="1110,300!"];
+  billing_title [shape=plaintext, label="Billing and Settlement", pos="1110,490!"];
 
-  customer [shape=none, image="actor_stickman.png", label="Customer", labelloc=b, imagepos=tc, imagescale=true, pos="20,760!"];
-  host [shape=none, image="actor_stickman.png", label="Host", labelloc=b, imagepos=tc, imagescale=true, pos="20,620!"];
-  server [shape=none, image="actor_stickman.png", label="Server", labelloc=b, imagepos=tc, imagescale=true, pos="20,320!"];
-  chef [shape=none, image="actor_stickman.png", label="Chef", labelloc=b, imagepos=tc, imagescale=true, pos="20,180!"];
+  customer [shape=none, image="actor_stickman.png", label="Customer", labelloc=b, imagepos=tc, imagescale=true, pos="20,860!"];
+  host [shape=none, image="actor_stickman.png", label="Host", labelloc=b, imagepos=tc, imagescale=true, pos="20,700!"];
+  server [shape=none, image="actor_stickman.png", label="Server", labelloc=b, imagepos=tc, imagescale=true, pos="20,410!"];
+  chef [shape=none, image="actor_stickman.png", label="Chef", labelloc=b, imagepos=tc, imagescale=true, pos="20,210!"];
   cashier [shape=none, image="actor_stickman.png", label="Cashier", labelloc=b, imagepos=tc, imagescale=true, pos="20,60!"];
 
-  manager [shape=none, image="actor_stickman.png", label="Manager", labelloc=b, imagepos=tc, imagescale=true, pos="1640,780!"];
-  admin [shape=none, image="actor_stickman.png", label="Administrator", labelloc=b, imagepos=tc, imagescale=true, pos="1640,620!"];
-  payment_gateway [shape=none, image="actor_stickman.png", label="Payment Gateway", labelloc=b, imagepos=tc, imagescale=true, pos="1640,180!"];
-  notification_service [shape=none, image="actor_stickman.png", label="Notification Service", labelloc=b, imagepos=tc, imagescale=true, pos="1640,520!"];
-  receipt_printer [shape=none, image="actor_stickman.png", label="Receipt Printer", labelloc=b, imagepos=tc, imagescale=true, pos="1640,300!"];
+  manager [shape=none, image="actor_stickman.png", label="Manager", labelloc=b, imagepos=tc, imagescale=true, pos="1640,860!"];
+  admin [shape=none, image="actor_stickman.png", label="Administrator", labelloc=b, imagepos=tc, imagescale=true, pos="1640,670!"];
+  notification_service [shape=none, image="actor_stickman.png", label="Notification Service", labelloc=b, imagepos=tc, imagescale=true, pos="1640,500!"];
+  receipt_printer [shape=none, image="actor_stickman.png", label="Receipt Printer", labelloc=b, imagepos=tc, imagescale=true, pos="1640,320!"];
+  payment_gateway [shape=none, image="actor_stickman.png", label="Payment Gateway", labelloc=b, imagepos=tc, imagescale=true, pos="1640,140!"];
 
-  node [shape=ellipse, style="filled", fillcolor="#FFFFFF", color="#94A3B8", fontsize=8.5, margin="0.06,0.03", pin=true];
+  node [shape=ellipse, style="filled", fillcolor="#FFFFFF", color="#94A3B8", fontsize=8.2, margin="0.06,0.03", pin=true];
 
-  uc_reserve [label="Create Reservation", pos="470,790!"];
-  uc_checkin [label="Check In and Seat Guest", pos="470,700!"];
-  uc_waitlist [label="Manage Waitlist", pos="470,610!"];
-  uc_notify [label="Send Reservation Update", pos="470,520!"];
+  uc_reserve [label="Create Reservation", pos="340,860!"];
+  uc_checkin [label="Check In and Seat Guest", pos="340,770!"];
+  uc_waitlist [label="Manage Waitlist", pos="340,680!"];
+  uc_table_status [label="Update Table Status", pos="560,770!"];
+  uc_notify [label="Send Reservation Update", pos="560,680!"];
 
-  uc_order [label="Create Table Order", pos="360,360!"];
-  uc_adjust [label="Adjust Order Item", pos="360,270!"];
-  uc_dispatch [label="Dispatch Order to Kitchen", pos="360,180!"];
-  uc_progress [label="Update Kitchen Status", pos="580,270!"];
-  uc_serve [label="Mark Dish as Served", pos="580,180!"];
+  uc_order [label="Create Table Order", pos="320,490!"];
+  uc_customize [label="Capture Item Customization\\nand Allergy Note", pos="320,390!"];
+  uc_adjust [label="Adjust Order Item", pos="320,290!"];
+  uc_dispatch [label="Dispatch Order to Kitchen", pos="520,490!"];
+  uc_queue [label="Prioritize Kitchen Queue", pos="520,390!"];
+  uc_progress [label="Update Kitchen Status", pos="520,290!"];
+  uc_serve [label="Mark Dish as Served", pos="520,190!"];
 
-  uc_menu [label="Manage Menu and Pricing", pos="980,800!"];
-  uc_stock [label="Review Inventory Alerts", pos="980,710!"];
-  uc_report [label="View Operations Report", pos="980,620!"];
-  uc_roles [label="Manage Roles and Permissions", pos="1260,800!"];
-  uc_audit [label="Review Audit Log", pos="1260,710!"];
+  uc_stock_consumption [label="Record Stock Consumption", pos="720,800!"];
+  uc_stock_alert [label="Review Inventory Alerts", pos="830,720!"];
+  uc_reorder [label="Analyze Consumption and\\nReorder Support", pos="940,800!"];
 
-  uc_bill [label="Create Bill", pos="1020,340!"];
-  uc_payment [label="Process Payment", pos="1020,250!"];
-  uc_receipt [label="Issue Receipt", pos="1240,250!"];
-  uc_refund [label="Process Refund", pos="1020,160!"];
+  uc_menu [label="Manage Menu and Pricing", pos="1110,860!"];
+  uc_report [label="View Operations Report", pos="1110,770!"];
+  uc_shift [label="Manage Staff Shifts", pos="1110,680!"];
+  uc_roles [label="Manage Roles and Permissions", pos="1310,860!"];
+  uc_audit [label="Review Audit Log", pos="1310,770!"];
+
+  uc_bill [label="Create Bill", pos="980,390!"];
+  uc_split [label="Split Bill and Apply Tip", pos="980,290!"];
+  uc_payment [label="Process Payment", pos="1230,390!"];
+  uc_receipt [label="Issue Receipt", pos="1230,290!"];
+  uc_refund [label="Process Refund", pos="980,190!"];
 
   customer -> uc_reserve;
   host -> uc_checkin;
   host -> uc_waitlist;
+  host -> uc_table_status;
   server -> uc_order;
+  server -> uc_customize;
   server -> uc_adjust;
-  server -> uc_dispatch;
+  server -> uc_serve;
+  chef -> uc_queue;
   chef -> uc_progress;
-  chef -> uc_serve;
   cashier -> uc_bill;
+  cashier -> uc_split;
   cashier -> uc_payment;
   cashier -> uc_refund;
 
   manager -> uc_menu;
-  manager -> uc_stock;
+  manager -> uc_stock_alert;
+  manager -> uc_reorder;
   manager -> uc_report;
+  manager -> uc_shift;
+  manager -> uc_audit;
   admin -> uc_roles;
   admin -> uc_audit;
-  payment_gateway -> uc_payment;
-  payment_gateway -> uc_refund;
   notification_service -> uc_notify;
   receipt_printer -> uc_receipt;
+  payment_gateway -> uc_payment;
+  payment_gateway -> uc_refund;
 
-  edge [style=dashed, arrowhead=open, fontsize=7.8];
+  edge [style=dashed, arrowhead=open, fontsize=7.3];
   uc_reserve -> uc_notify [label="<<include>>"];
+  uc_waitlist -> uc_notify [label="<<include>>"];
+  uc_checkin -> uc_table_status [label="<<include>>"];
+  uc_customize -> uc_order [label="<<extend>>"];
   uc_order -> uc_dispatch [label="<<include>>"];
+  uc_adjust -> uc_dispatch [label="<<include>>"];
+  uc_queue -> uc_progress [label="<<extend>>"];
+  uc_serve -> uc_stock_consumption [label="<<include>>"];
+  uc_stock_consumption -> uc_stock_alert [label="<<extend>>"];
+  uc_stock_alert -> uc_reorder [label="<<extend>>"];
+  uc_bill -> uc_split [label="<<extend>>"];
   uc_payment -> uc_receipt [label="<<include>>"];
-  uc_serve -> uc_stock [label="<<include>>"];
+  uc_refund -> uc_audit [label="<<include>>"];
+  uc_roles -> uc_audit [label="<<include>>"];
 }
