@@ -85,7 +85,7 @@ Nhóm quản trị, kiểm toán và phân tích & UC-REP-01, UC-ADM-01, UC-ADM-
 Năm ca sử dụng giữ vai trò khóa kín phạm vi ở phần này là \texttt{UC-RES-04}, \texttt{UC-RES-05}, \texttt{UC-KIT-03}, \texttt{UC-INV-03} và \texttt{UC-ADM-03}. Chúng làm rõ các mắt xích dễ bị xem nhẹ khi mô tả hệ thống nhà hàng ở mức khái quát: kết thúc vòng đời bàn sau thanh toán, giao tiếp chủ động với khách hàng, điều phối ưu tiên trong bếp, hỗ trợ quyết định nhập hàng từ dữ liệu tiêu hao lịch sử và truy vết thao tác nhạy cảm ở tầng quản trị.
 
 \subsection{Góc nhìn sử dụng}
-Góc nhìn sử dụng được dùng như bộ kịch bản kiểm chứng kiến trúc. Một phương án phân rã có thể trông hợp lý trên logic view nhưng vẫn thất bại trong vận hành nếu chuỗi tương tác quá dài, phụ thuộc vào hệ ngoài ở sai vị trí, hoặc không làm rõ ranh giới giao dịch. Bốn kịch bản dưới đây được chọn vì lần lượt chạm vào bốn mối quan tâm kiến trúc lớn nhất của IRMS: tính đúng đắn khi gán bàn, độ đáp ứng của luồng gọi món, độ tin cậy của thanh toán, và khả năng cô lập các luồng hỗ trợ như tồn kho và cảnh báo. Đồng thời, đây cũng là bốn kịch bản thể hiện rõ nhất chỗ nào nên đi theo API đồng bộ và chỗ nào nên phối hợp theo sự kiện nội bộ.
+Góc nhìn sử dụng được dùng như bộ kịch bản kiểm chứng kiến trúc. Trong các tình huống chuỗi tương tác logic quá dài sẽ gây ra tình huống khó quản lý, vận hành. Bốn kịch bản dưới đây được chọn vì chạm vào bốn mối quan tâm kiến trúc lớn của IRMS: tính đúng đắn khi gán bàn, độ đáp ứng của luồng gọi món, độ tin cậy của thanh toán, và khả năng cô lập các luồng hỗ trợ như tồn kho và cảnh báo. Đồng thời, đây cũng là bốn kịch bản thể hiện rõ nhất điểm nào nên sử dụng API đồng bộ và điểm nào nên phối hợp theo sự kiện nội bộ.
 
 \subsubsection{Kịch bản 1: Từ đặt bàn đến tiếp nhận và xếp bàn}
 \begin{enumerate}
@@ -101,7 +101,7 @@ Góc nhìn sử dụng được dùng như bộ kịch bản kiểm chứng ki�
   \item \texttt{Order Service} xác nhận đơn gọi món và phát \texttt{OrderPlaced}.
   \item \texttt{Kitchen Workflow Service} nhận order, tách phiếu theo trạm bếp và hiển thị lên \texttt{Kitchen Display UI}.
   \item Bếp cập nhật trạng thái từng dòng phiếu qua các mốc như \texttt{OrderItemStarted} và \texttt{OrderReady}; màn hình gọi món nhận lại trạng thái sẵn sàng.
-  \item Phục vụ giao món và đánh dấu đã phục vụ; \texttt{Inventory Service} nhận sự kiện liên quan để ghi nhận tiêu hao và cập nhật tồn.
+  \item Phục vụ giao món và đánh dấu đã phục vụ; \texttt{Inventory Service} nhận sự kiện liên quan để ghi nhận tiêu hao và cập nhật kho.
 \end{enumerate}
 
 \subsubsection{Kịch bản 3: Từ hóa đơn đến thanh toán và biên lai}
@@ -112,9 +112,9 @@ Góc nhìn sử dụng được dùng như bộ kịch bản kiểm chứng ki�
   \item Khi thanh toán đủ, hệ thống ghi nhận \texttt{PaymentCompleted}, phát hành biên lai và chuyển \texttt{TableSession} sang chuẩn bị đóng.
 \end{enumerate}
 
-\subsubsection{Kịch bản 4: Từ cảnh báo mức tồn thấp đến quyết định của quản lý}
+\subsubsection{Kịch bản 4: Từ cảnh báo tồn kho thấp đến quyết định của quản lý}
 \begin{enumerate}
-  \item \texttt{Inventory Service} cập nhật lượng tồn thực tế sau mỗi món đã phục vụ hoặc sau mỗi lần điều chỉnh thủ công.
+  \item \texttt{Inventory Service} cập nhật lượng tồn kho thực tế sau mỗi món đã phục vụ hoặc sau mỗi lần điều chỉnh thủ công.
   \item Nếu xuống dưới ngưỡng, hệ thống phát \texttt{StockLow}.
   \item \texttt{Manager Console} nhận cảnh báo, hiển thị nguyên liệu bị ảnh hưởng và món có nguy cơ hết hàng.
   \item Quản lý quyết định nhập thêm hàng hoặc tạm ẩn món trong menu.
@@ -150,7 +150,7 @@ Hình~\ref{fig:irms-usage-reservation} được chọn để kiểm tra một qu
 \paragraph{Các điểm kiến trúc đọc được từ sơ đồ.}
 \begin{itemize}
   \item \textbf{\texttt{Host UI} và \texttt{Table \& Reservation Service}} chịu trách nhiệm kiểm tra khả dụng, giữ chỗ và xác nhận tiếp nhận khách.
-  \item \textbf{\texttt{Table \& Reservation Service}} là ranh giới nghiệp vụ nơi bàn được chuyển từ trạng thái chờ sang trạng thái đang phục vụ thông qua \texttt{TableSession}.
+  \item \textbf{\texttt{Table \& Reservation Service}} là ranh giới nơi bàn được chuyển từ trạng thái chờ sang trạng thái đang phục vụ thông qua \texttt{TableSession}.
   \item \textbf{\texttt{Notification Service} và \texttt{Server POS UI}} chỉ được kích hoạt sau khi phiên bàn đã được mở thành công, tránh để tuyến phục vụ nhìn thấy trạng thái nửa chừng.
 \end{itemize}
 
@@ -180,20 +180,20 @@ Hình~\ref{fig:irms-usage-reservation} được chọn để kiểm tra một qu
 
 Hình~\ref{fig:irms-usage-order-kitchen} là kịch bản quan trọng nhất để kiểm chứng \textbf{khả năng đáp ứng} của IRMS. Nguyên tắc chủ đạo ở đây là \emph{xác nhận đơn thành công trước, rồi mới lan truyền sang bếp và các luồng hỗ trợ}. Cách tổ chức này rút ngắn thời gian phản hồi tại màn hình gọi món và bảo vệ đơn đã chốt khi một thành phần phía sau như KDS hoặc đồng bộ trạng thái gặp trục trặc tạm thời.
 
-Đổi lại, hệ thống phải chấp nhận và quản lý các trạng thái trung gian có kiểm soát: đơn đã xác nhận nhưng phiếu chưa hiện ngay trên màn hình bếp; bếp đã cập nhật trạng thái nhưng POS chưa nhận bản sao mới nhất; tiêu hao nguyên liệu được ghi nhận sau sự kiện món đã phục vụ. Vì vậy, kịch bản này là nơi biện minh rõ nhất cho việc dùng nhất quán trễ ở những đoạn không trực tiếp quyết định trải nghiệm đặt món trước mặt khách hàng.
+Đổi lại, hệ thống phải chấp nhận và quản lý các trạng thái trung gian có kiểm soát: đơn đã xác nhận nhưng phiếu chưa hiện ngay trên màn hình bếp; bếp đã cập nhật trạng thái nhưng POS chưa nhận bản sao mới nhất; tiêu hao nguyên liệu được ghi nhận sau sự kiện món đã phục vụ. Kịch bản này giúp chứng minh cho việc dùng nhất quán trễ ở những đoạn không trực tiếp quyết định trải nghiệm đặt món trước mặt khách hàng.
 
 \paragraph{Các điểm kiến trúc đọc được từ sơ đồ.}
 \begin{itemize}
   \item \textbf{\texttt{Order Service}} là ranh giới chốt giao dịch gọi món; đây là nơi không được làm mất đơn đã xác nhận.
   \item \textbf{\texttt{Kitchen Workflow Service} và \texttt{Kitchen Display UI}} xử lý phần lan truyền vận hành sau giao dịch, bao gồm định tuyến phiếu và phản hồi trạng thái chế biến.
-  \item \textbf{\texttt{Menu Service}} tham gia để chụp lại ảnh trạng thái khả dụng và giá tại thời điểm xác nhận đơn, giúp tránh nhập nhằng khi menu thay đổi sau đó.
+  \item \textbf{\texttt{Menu Service}} lưu giữ trạng thái khả dụng và giá tại thời điểm xác nhận đơn, giúp tránh nhập nhằng khi menu thay đổi sau đó.
   \item \textbf{\texttt{Inventory Service}} chỉ tham gia ở nhánh hỗ trợ, không nên chặn bước xác nhận đơn ở tuyến đầu.
 \end{itemize}
 
 \paragraph{Hàm ý đối với kiến trúc.}
 \begin{itemize}
   \item Đơn gọi món, phiếu bếp và cập nhật trạng thái không nên bị ràng buộc trong cùng một bước đồng bộ dài.
-  \item Cơ chế chống lặp, correlation id và khả năng thử lại là bắt buộc nếu kiến trúc muốn vừa nhanh vừa không làm mất dữ liệu đơn.
+  \item Cơ chế chống lặp, correlation ID và khả năng thử lại là bắt buộc nếu kiến trúc muốn vừa nhanh vừa không làm mất dữ liệu đơn.
 \end{itemize}
 
 \begin{landscape}
@@ -214,9 +214,9 @@ Hình~\ref{fig:irms-usage-order-kitchen} là kịch bản quan trọng nhất đ
 \end{landscape}
 
 
-Hình~\ref{fig:irms-usage-payment} là kịch bản mà kiến trúc phải ưu tiên \textbf{độ tin cậy và tính toàn vẹn giao dịch}. Ở đây, \texttt{Billing \& Payment Service} không chỉ tính tổng cuối cùng mà còn điều phối khuyến mãi, tách hóa đơn, chọn phương thức thanh toán, gọi cổng thanh toán, phát hành biên lai và đóng phiên bàn. Sai sót ở luồng này kéo theo hậu quả nghiệp vụ lớn nhất: ghi nhận thanh toán trùng, đóng sai hóa đơn hoặc giải phóng bàn khi giao dịch chưa hoàn tất.
+Hình~\ref{fig:irms-usage-payment} là kịch bản mà kiến trúc phải ưu tiên \textbf{độ tin cậy và tính toàn vẹn giao dịch}. Ở đây, \texttt{Billing \& Payment Service} không chỉ tính tổng cuối cùng mà còn điều phối khuyến mãi, tách hóa đơn, chọn phương thức thanh toán, gọi cổng thanh toán, phát hành biên lai và đóng phiên bàn. Sai sót ở luồng này kéo theo các hậu quả: ghi nhận thanh toán trùng, đóng sai hóa đơn hoặc thay đổi trạng thái bàn khi giao dịch chưa hoàn tất.
 
-Vì vậy, thanh toán cần được giữ trong một tuyến đồng bộ đủ ngắn nhưng đủ dứt khoát để hệ thống có thể trả lời rõ ràng giao dịch đã thành công hay chưa. Đánh đổi là luồng này trở nên nhạy cảm với độ trễ và lỗi của hệ ngoài; do đó, nó cần timeout rõ ràng, chống xử lý lặp, ghi vết kiểm toán và tách riêng adapter tích hợp để cô lập rủi ro.
+Vì vậy, thanh toán cần được giữ trong một tuyến đồng bộ đủ ngắn để hệ thống có thể trả lời rõ ràng giao dịch đã thành công hay chưa. Đánh đổi là luồng này trở nên nhạy cảm với độ trễ và lỗi của hệ ngoài; do đó, nó cần timeout rõ ràng, chống xử lý lặp, ghi vết kiểm toán và tách riêng adapter tích hợp để cô lập rủi ro.
 
 \paragraph{Các điểm kiến trúc đọc được từ sơ đồ.}
 \begin{itemize}
@@ -249,21 +249,21 @@ Vì vậy, thanh toán cần được giữ trong một tuyến đồng bộ đ�
 \end{landscape}
 
 
-Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và phát cảnh báo phải được đặt trên một tuyến hỗ trợ thay vì chen trực tiếp vào đường giao dịch nóng. Trong kịch bản này, \texttt{Kitchen Workflow Service} phát sinh dữ kiện món đã phục vụ, \texttt{Inventory Service} ghi nhận tiêu hao, \texttt{Stock Policy Service} đánh giá ngưỡng và \texttt{Notification Service} chuyển cảnh báo đến quản lý. Cách tách này giúp thay đổi công thức món, ngưỡng cảnh báo hay chính sách ẩn món mà không làm nặng thêm tuyến gọi món và thanh toán.
+Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và phát cảnh báo phải được đặt trên một tuyến hỗ trợ thay vì đặt trực tiếp vào đường giao dịch nóng. Trong kịch bản này, \texttt{Kitchen Workflow Service} phát sinh dữ kiện món đã phục vụ, \texttt{Inventory Service} ghi nhận tiêu hao, \texttt{Stock Policy Service} đánh giá ngưỡng và \texttt{Notification Service} chuyển cảnh báo đến quản lý. Cách tách này giúp thay đổi công thức món, ngưỡng cảnh báo hay chính sách ẩn món mà không làm nặng thêm tuyến gọi món và thanh toán.
 
-Đánh đổi là trạng thái tồn kho và cảnh báo quản trị có thể đến chậm hơn giao dịch mới nhất nếu luồng nền đang thử lại hoặc xử lý dồn hàng. Độ trễ này chấp nhận được trong phạm vi IRMS, miễn là nó không bị nhầm với các quyết định cần phản hồi tức thời như xác nhận đơn hay xác nhận thanh toán.
+Đánh đổi là trạng thái tồn kho và cảnh báo quản trị có thể đến chậm hơn giao dịch mới nhất nếu luồng nền đang thử lại hoặc xử lý dồn hàng. Độ trễ này chấp nhận được, miễn là nó không đi cùng với các quyết định cần phản hồi tức thời như xác nhận đơn hay xác nhận thanh toán.
 
 \paragraph{Các điểm kiến trúc đọc được từ sơ đồ.}
 \begin{itemize}
-  \item \textbf{\texttt{Kitchen Workflow Service}} là nguồn phát sinh dữ kiện phục vụ dùng để suy diễn tiêu hao.
-  \item \textbf{\texttt{Inventory Service} và \texttt{Stock Policy Service}} chịu trách nhiệm cập nhật tồn và đánh giá ngưỡng cảnh báo theo chính sách vận hành.
+  \item \textbf{\texttt{Kitchen Workflow Service}} là nguồn phát sinh dữ kiện phục vụ dùng để đưa ra tiêu hao.
+  \item \textbf{\texttt{Inventory Service} và \texttt{Stock Policy Service}} chịu trách nhiệm cập nhật tồn kho và đánh giá ngưỡng cảnh báo.
   \item \textbf{\texttt{Notification Service}, \texttt{Manager Console} và \texttt{Menu Service}} tạo thành tuyến phản ứng quản trị sau khi cảnh báo đã được phát ra.
 \end{itemize}
 
 \paragraph{Hàm ý đối với kiến trúc.}
 \begin{itemize}
   \item Tồn kho và cảnh báo là đúng đắn về vận hành, nhưng không nên được ép vào cùng một bước phản hồi thời gian thực với gọi món hoặc thanh toán.
-  \item Việc tách riêng tầng chính sách và tầng thông báo làm tăng khả năng thay đổi mà không buộc sửa chéo toàn bộ tuyến giao dịch lõi.
+  \item Việc tách riêng tầng chính sách và tầng thông báo làm tăng khả năng thay đổi.
 \end{itemize}
 
 \subsection{Đặc tả ca sử dụng}
