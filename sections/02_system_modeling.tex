@@ -269,601 +269,885 @@ Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và p
 \subsection{Đặc tả ca sử dụng}
 
 
-    \begin{usecasebox}[title={UC-RES-01 --- Tạo đặt bàn}]
-    \textbf{Tác nhân chính:} Khách hàng, Lễ tân\\
-    \textbf{Mục tiêu:} Tạo một đặt bàn hợp lệ cho ngày, giờ và số lượng khách cụ thể.\\
-    \textbf{Kích hoạt:} Khách hàng gửi yêu cầu đặt bàn qua quầy lễ tân, điện thoại hoặc web/app.
+\usepackage{longtable}
+\usepackage{enumitem}
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
+\renewcommand{\arraystretch}{1.3}
+
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-RES-01 \\ \hline
+\textbf{Use Case Name} & Tạo đặt bàn \\ \hline
+\textbf{Primary Actors} & Khách hàng, Lễ tân \\ \hline
+
+\textbf{Description} & Tạo một đặt bàn hợp lệ cho ngày, giờ và số lượng khách cụ thể. \\ \hline
+
+\textbf{Trigger} & Khách hàng gửi yêu cầu đặt bàn qua quầy lễ tân, điện thoại hoặc web/app. \\ \hline
+
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
   \item Nhà hàng có mở nhận đặt bàn trong khung giờ yêu cầu.
-  \item Thông tin liên hệ của khách hàng được cung cấp tối thiểu gồm tên và số điện thoại.
-  \item Sơ đồ bàn và năng lực phục vụ của nhà hàng đã được cấu hình.
-\end{itemize}
+  \item Có tối thiểu tên và số điện thoại khách hàng.
+  \item Sơ đồ bàn và năng lực phục vụ đã được cấu hình.
+\end{itemize} \\ \hline
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một bản ghi đặt bàn được tạo ở trạng thái \texttt{Pending} hoặc \texttt{Confirmed}.
-  \item Hệ thống giữ chỗ sơ bộ hoặc gợi ý danh sách bàn phù hợp cho lễ tân.
-  \item Khách hàng nhận được mã đặt bàn và thông báo xác nhận.
-\end{itemize}
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Tạo đặt bàn với trạng thái \texttt{Pending} hoặc \texttt{Confirmed}.
+  \item Hệ thống giữ chỗ hoặc gợi ý bàn phù hợp.
+  \item Khách nhận mã đặt bàn và thông báo xác nhận.
+\end{itemize} \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Lễ tân mở màn hình đặt bàn và nhập thời gian, số khách, tên khách, số điện thoại.
-  \item Hệ thống kiểm tra năng lực tiếp nhận theo ca phục vụ và bàn còn trống.
-  \item Hệ thống gợi ý bàn hoặc nhóm bàn đáp ứng sức chứa.
-  \item Lễ tân xác nhận lựa chọn bàn và các ghi chú đặc biệt của khách.
-  \item Hệ thống tạo đặt bàn, sinh mã đặt bàn và lưu lịch sử thao tác.
-  \item Hệ thống gửi thông báo xác nhận qua SMS/email hoặc in phiếu xác nhận.
-\end{enumerate}
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
+  \item Lễ tân nhập thời gian, số khách, tên và số điện thoại.
+  \item Hệ thống kiểm tra và validate dữ liệu đầu vào.
+  \item Hệ thống kiểm tra sức chứa, bàn trống và xung đột đặt bàn.
+  \item Hệ thống gợi ý bàn hoặc nhóm bàn phù hợp.
+  \item Lễ tân chọn bàn và nhập ghi chú nếu có.
+  \item Hệ thống tạo đặt bàn và sinh mã đặt bàn.
+  \item Hệ thống gửi thông báo xác nhận cho khách.
+\end{enumerate} \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Nếu chưa thể gán ngay một bàn cụ thể, hệ thống tạo đặt bàn ở chế độ giữ chỗ theo khoảng sức chứa.
-  \item Nếu khách yêu cầu khu vực riêng, tầng riêng hoặc bàn gần cửa sổ, lễ tân lọc danh sách gợi ý theo thuộc tính bàn.
-\end{itemize}
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\textbf{A1. Không đủ sức chứa (từ bước 3)} \\
+3.1 Hệ thống đề xuất khung giờ khác hoặc đưa khách vào danh sách chờ.
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Không còn sức chứa phù hợp: hệ thống đề xuất khung giờ khác hoặc mời vào danh sách chờ.
-  \item Thông tin khách không hợp lệ: hệ thống yêu cầu cập nhật số điện thoại hoặc tên liên hệ.
-  \item Lỗi đồng bộ sơ đồ bàn: hệ thống khóa thao tác xác nhận và yêu cầu tải lại dữ liệu mới nhất.
-\end{itemize}
+\vspace{0.5em}
+\textbf{A2. Yêu cầu đặc biệt (từ bước 4)} \\
+4.1 Lễ tân lọc danh sách bàn theo khu vực hoặc thuộc tính yêu cầu.
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Không cho phép nhận đặt bàn vượt quá sức chứa tối đa của nhóm bàn.
-  \item Đặt bàn cho nhóm lớn hơn ngưỡng cấu hình phải được lễ tân hoặc quản lý xác nhận.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.5em}
+\textbf{A3. Không gán được bàn (từ bước 5)} \\
+5.1 Hệ thống tạo đặt bàn trạng thái \texttt{Pending} và giữ chỗ theo số lượng khách.
+\end{minipage} \\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\textbf{E1. Dữ liệu không hợp lệ (từ bước 2)} \\
+2.1 Hệ thống yêu cầu nhập lại thông tin khách.
+
+\vspace{0.5em}
+\textbf{E2. Lỗi đồng bộ sơ đồ bàn (từ bước 3)} \\
+3.2 Hệ thống khóa thao tác và yêu cầu tải lại dữ liệu.
+\end{minipage} \\ \hline
+
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Không vượt quá sức chứa tối đa của bàn hoặc nhóm bàn.
+  \item Nhóm khách lớn phải được xác nhận bởi lễ tân hoặc quản lý.
+\end{itemize} \\ \hline
+
+\end{longtable}
 
 
 
-    \begin{usecasebox}[title={UC-RES-02 --- Nhận khách và sắp bàn}]
-    \textbf{Tác nhân chính:} Lễ tân, Phục vụ\\
-    \textbf{Mục tiêu:} Tiếp nhận khách đến nhà hàng và gán khách vào bàn hoặc nhóm bàn phù hợp.\\
-    \textbf{Kích hoạt:} Khách đến quầy lễ tân hoặc được gọi từ danh sách chờ.
+   \renewcommand{\arraystretch}{1.3}
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-RES-02 \\ \hline
+\textbf{Use Case Name} & Nhận khách và sắp bàn \\ \hline
+\textbf{Primary Actors} & Lễ tân, Phục vụ \\ \hline
+
+\textbf{Description} & Tiếp nhận khách đến nhà hàng và gán khách vào bàn hoặc nhóm bàn phù hợp. \\ \hline
+
+\textbf{Trigger} & Khách đến quầy lễ tân hoặc được gọi từ danh sách chờ. \\ \hline
+
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
   \item Khách có đặt bàn hoặc có thể được xếp chỗ tại chỗ.
-  \item Sơ đồ bàn và trạng thái bàn đang được đồng bộ theo thời gian thực.
-\end{itemize}
+  \item Sơ đồ bàn và trạng thái bàn được đồng bộ theo thời gian thực.
+\end{itemize} \\ \hline
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
   \item Một phiên phục vụ bàn (\texttt{TableSession}) được mở.
   \item Bàn được chuyển sang trạng thái \texttt{Occupied} hoặc \texttt{Reserved-Arrived}.
-  \item Phục vụ phụ trách khu vực nhận được thông báo tiếp nhận bàn mới.
-\end{itemize}
+  \item Phục vụ nhận được thông báo tiếp nhận bàn mới.
+\end{itemize} \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
   \item Lễ tân tìm đặt bàn theo mã, số điện thoại hoặc tên khách.
-  \item Hệ thống hiển thị trạng thái đặt bàn, thời điểm đến và bàn gợi ý.
+  \item Hệ thống hiển thị thông tin đặt bàn, trạng thái, thời điểm đến và bàn gợi ý.
   \item Lễ tân xác nhận khách đến, số khách thực tế và thời gian check-in.
-  \item Nếu cần, lễ tân điều chỉnh bàn hoặc ghép bàn theo số khách thực tế.
-  \item Hệ thống mở phiên phục vụ bàn và phân công bàn cho phục vụ khu vực.
-  \item Phục vụ nhận thông báo và chuẩn bị tiếp nhận đơn gọi món đầu tiên.
-\end{enumerate}
+  \item Hệ thống kiểm tra hiệu lực đặt bàn và trạng thái bàn.
+  \item Lễ tân điều chỉnh hoặc ghép bàn nếu số lượng khách thay đổi.
+  \item Hệ thống mở phiên phục vụ (\texttt{TableSession}).
+  \item Hệ thống cập nhật trạng thái bàn thành \texttt{Occupied} hoặc \texttt{Reserved-Arrived}.
+  \item Hệ thống phân công bàn cho phục vụ theo khu vực.
+  \item Phục vụ nhận thông báo và chuẩn bị phục vụ.
+\end{enumerate} \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Khách vãng lai không đặt trước: lễ tân chọn chức năng xếp bàn trực tiếp và hệ thống gợi ý bàn còn trống.
-  \item Khách đến thiếu người hoặc tăng số lượng khách: lễ tân cập nhật lại sức chứa trước khi mở phiên phục vụ.
-\end{itemize}
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Bàn dự kiến chưa sẵn sàng: hệ thống chuyển khách sang danh sách chờ hoặc gợi ý bàn thay thế.
-  \item Đặt bàn đã hết hiệu lực vì quá giờ giữ chỗ: hệ thống yêu cầu quản lý xác nhận phục hồi.
-  \item Mất kết nối màn hình sơ đồ bàn: thao tác check-in tạm ngừng để tránh gán trùng bàn.
-\end{itemize}
+\textbf{A1. Khách vãng lai (từ bước 1)} \\
+1.1 Lễ tân chọn chức năng xếp bàn trực tiếp. \\
+1.2 Hệ thống gợi ý bàn trống phù hợp. \\
+1.3 Lễ tân chọn bàn và tiếp tục từ bước 5.
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Chỉ một phiên phục vụ được phép hoạt động trên một bàn tại cùng thời điểm.
-  \item Thời gian giữ chỗ tối đa sau giờ đặt được cấu hình theo ca phục vụ.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.5em}
+\textbf{A2. Thay đổi số lượng khách (từ bước 3)} \\
+3.1 Lễ tân cập nhật số khách thực tế. \\
+3.2 Hệ thống gợi ý lại bàn phù hợp hoặc yêu cầu ghép bàn.
+
+\end{minipage} \\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{E1. Bàn chưa sẵn sàng (từ bước 4)} \\
+4.1 Hệ thống đề xuất bàn thay thế hoặc đưa khách vào danh sách chờ.
+
+\vspace{0.5em}
+\textbf{E2. Đặt bàn hết hiệu lực (từ bước 4)} \\
+4.2 Hệ thống yêu cầu xác nhận phục hồi từ lễ tân hoặc quản lý.
+
+\vspace{0.5em}
+\textbf{E3. Lỗi đồng bộ sơ đồ bàn (từ bước 4)} \\
+4.3 Hệ thống tạm dừng thao tác và yêu cầu tải lại dữ liệu.
+
+\end{minipage} \\ \hline
+
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Mỗi bàn chỉ có một \texttt{TableSession} hoạt động tại một thời điểm.
+  \item Không được gán bàn nếu bàn đang được sử dụng.
+  \item Thời gian giữ chỗ tối đa được cấu hình theo ca phục vụ.
+\end{itemize} \\ \hline
+
+\end{longtable}
 
 
 
-    \begin{usecasebox}[title={UC-RES-03 --- Quản lý danh sách chờ}]
-    \textbf{Tác nhân chính:} Lễ tân\\
-    \textbf{Mục tiêu:} Ghi nhận khách chờ bàn và chủ động điều phối khi có bàn phù hợp.\\
-    \textbf{Kích hoạt:} Nhà hàng hết bàn phù hợp cho khách đến trực tiếp hoặc khách đặt bàn bị trì hoãn.
+    \renewcommand{\arraystretch}{1.3}
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Lễ tân có quyền truy cập màn hình danh sách chờ.
-  \item Hệ thống đã ghi nhận thời gian chờ ước tính theo tải hiện tại.
-\end{itemize}
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-RES-03 \\ \hline
+\textbf{Use Case Name} & Quản lý danh sách chờ \\ \hline
+\textbf{Primary Actors} & Lễ tân \\ \hline
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Khách hàng được thêm vào danh sách chờ với thời gian chờ dự kiến.
-  \item Khi có bàn phù hợp, khách được gọi theo mức ưu tiên và thời gian vào hàng.
-\end{itemize}
+\textbf{Description} & Ghi nhận khách chờ bàn và điều phối khách khi có bàn phù hợp. \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
+\textbf{Trigger} & Nhà hàng hết bàn phù hợp hoặc khách bị trì hoãn. \\ \hline
+
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Lễ tân có quyền truy cập danh sách chờ.
+  \item Hệ thống có khả năng ước tính thời gian chờ.
+\end{itemize} \\ \hline
+
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Khách được thêm vào danh sách chờ với trạng thái \texttt{Waiting}.
+  \item Khách được gọi theo thứ tự ưu tiên khi có bàn phù hợp.
+\end{itemize} \\ \hline
+
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
   \item Lễ tân nhập thông tin khách, số lượng khách và kênh liên hệ.
-  \item Hệ thống ước tính thời gian chờ dựa trên vòng quay bàn và loại bàn yêu cầu.
+  \item Hệ thống ước tính thời gian chờ dựa trên tình trạng bàn.
   \item Lễ tân xác nhận thêm khách vào danh sách chờ.
-  \item Khi một bàn được giải phóng, hệ thống dò các bản ghi phù hợp theo sức chứa và ưu tiên.
-  \item Lễ tân chọn khách để gọi, hệ thống gửi thông báo và đặt trạng thái \texttt{Called}.
-  \item Sau khi khách xác nhận, lễ tân chuyển khách sang ca sử dụng Nhận khách và sắp bàn.
-\end{enumerate}
+  \item Khi có bàn trống, hệ thống tìm khách phù hợp theo sức chứa và ưu tiên.
+  \item Lễ tân chọn khách để gọi.
+  \item Hệ thống gửi thông báo và cập nhật trạng thái \texttt{Called}.
+  \item Lễ tân xác nhận khách đến và chuyển sang use case Nhận khách và sắp bàn.
+\end{enumerate} \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Lễ tân có thể ưu tiên khách thành viên hạng cao hoặc khách đã đặt trước nhưng đến muộn.
-  \item Khách có thể được cập nhật số điện thoại, thay đổi số người hoặc hủy yêu cầu trong lúc chờ.
-\end{itemize}
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Khách không phản hồi trong thời gian giữ lượt gọi: hệ thống chuyển trạng thái sang \texttt{Skipped}.
-  \item Thời gian chờ tăng đột biến do cao điểm: hệ thống yêu cầu lễ tân xác nhận lại ước tính trước khi gửi thông báo.
-\end{itemize}
+\textbf{A1. Ưu tiên khách (từ bước 4)} \\
+4.1 Lễ tân chọn khách có ưu tiên cao hơn (VIP, đặt trước) thay vì theo FIFO.
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Ưu tiên danh sách chờ mặc định là FIFO trong cùng một nhóm sức chứa.
-  \item Chỉ bàn đáp ứng sức chứa tối thiểu và phạm vi khu vực yêu cầu mới được dùng để gọi khách.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.5em}
+\textbf{A2. Cập nhật thông tin (từ bước 3)} \\
+3.1 Lễ tân cập nhật số điện thoại, số lượng khách hoặc hủy yêu cầu.
 
+\end{minipage} \\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
 
-    \begin{usecasebox}[title={UC-RES-04 --- Cập nhật trạng thái bàn và giải phóng bàn}]
-    \textbf{Tác nhân chính:} Lễ tân, Phục vụ, Thu ngân\\
-    \textbf{Mục tiêu:} Cập nhật đúng trạng thái vận hành của bàn, đóng phiên phục vụ khi đủ điều kiện và giải phóng bàn cho lượt khách tiếp theo.\\
-    \textbf{Kích hoạt:} Bàn hoàn tất phục vụ, khách đã rời bàn, bàn cần chuyển sang dọn dẹp, mở lại hoặc tạm khóa.
+\textbf{E1. Khách không phản hồi (từ bước 6)} \\
+6.1 Nếu khách không phản hồi trong thời gian quy định, hệ thống chuyển trạng thái sang \texttt{Skipped}.
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Bàn tồn tại trong sơ đồ bàn của nhà hàng.
-  \item Người thao tác có quyền cập nhật trạng thái bàn theo vai trò.
-  \item Nếu đang có \texttt{TableSession}, hệ thống phải truy xuất được trạng thái hóa đơn liên quan.
-\end{itemize}
+\vspace{0.5em}
+\textbf{E2. Thời gian chờ thay đổi (từ bước 2)} \\
+2.1 Nếu thời gian chờ tăng đột biến, hệ thống yêu cầu lễ tân xác nhận lại trước khi hiển thị.
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Trạng thái bàn được cập nhật nhất quán trên sơ đồ vận hành.
-  \item Nếu đủ điều kiện, \texttt{TableSession} được đóng và bàn chuyển sang \texttt{Cleaning} hoặc \texttt{Available}.
-  \item Lịch sử thay đổi trạng thái bàn được ghi nhận để phục vụ audit và phân tích vòng quay bàn.
-\end{itemize}
+\end{minipage} \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Người dùng chọn bàn cần cập nhật trên sơ đồ bàn.
-  \item Hệ thống hiển thị trạng thái hiện tại của bàn, phiên phục vụ đang hoạt động và công nợ liên quan nếu có.
-  \item Người dùng chọn trạng thái đích như \texttt{Cleaning}, \texttt{Available} hoặc \texttt{OutOfService}.
-  \item Nếu mục tiêu là giải phóng bàn, hệ thống kiểm tra các hóa đơn hoặc split còn mở.
-  \item Nếu mọi nghĩa vụ thanh toán đã hoàn tất, hệ thống đóng \texttt{TableSession} và chuyển bàn sang \texttt{Cleaning}.
-  \item Sau khi nhân viên xác nhận dọn bàn xong, hệ thống chuyển bàn sang \texttt{Available}.
-  \item Nếu có khách chờ phù hợp, hệ thống làm mới ước tính chờ hoặc gợi ý gọi khách tiếp theo.
-\end{enumerate}
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Thứ tự mặc định là FIFO trong cùng nhóm sức chứa.
+  \item Có thể override thứ tự theo ưu tiên.
+  \item Chỉ gọi khách khi có bàn phù hợp với số lượng và yêu cầu.
+  \item Thời gian giữ lượt gọi được cấu hình (timeout).
+\end{itemize} \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Bàn có thể được chuyển sang \texttt{OutOfService} khi bảo trì, ghép bàn hoặc khóa khu vực.
-  \item Nếu khách được chuyển sang bàn khác trong lúc phục vụ, hệ thống cập nhật ánh xạ bàn mới mà vẫn giữ nguyên phiên phục vụ.
-\end{itemize}
-
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Hóa đơn hoặc split còn chưa tất toán: hệ thống từ chối giải phóng bàn và yêu cầu xử lý phần công nợ trước.
-  \item Có cập nhật đồng thời từ thiết bị khác: hệ thống phát hiện xung đột trạng thái và yêu cầu tải lại sơ đồ bàn.
-  \item Vai trò hiện tại không đủ quyền đổi sang trạng thái đặc biệt như \texttt{OutOfService}: hệ thống chặn thao tác.
-\end{itemize}
-
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một bàn chỉ được chuyển sang \texttt{Available} khi không còn \texttt{TableSession} đang hoạt động và không còn hóa đơn mở.
-  \item Mọi thao tác giải phóng bàn, khóa bàn hoặc mở lại bàn phải được ghi nhận thời điểm và người thực hiện.
-\end{itemize}
-    \end{usecasebox}
+\end{longtable}
 
 
 
-    \begin{usecasebox}[title={UC-RES-05 --- Gửi thông báo cho khách hàng}]
-    \textbf{Tác nhân chính:} Hệ thống, Lễ tân\\
-    \textbf{Mục tiêu:} Gửi thông báo nhất quán cho khách hàng khi đặt bàn được xác nhận, thay đổi, đến lượt chờ hoặc khi có sự kiện cần phản hồi.\\
-    \textbf{Kích hoạt:} Phát sinh sự kiện như tạo đặt bàn mới, đổi giờ, xác nhận danh sách chờ, nhắc giờ đến hoặc thông báo bàn đã sẵn sàng.
+    \renewcommand{\arraystretch}{1.3}
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Bản ghi đặt bàn hoặc danh sách chờ có thông tin liên hệ hợp lệ.
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-RES-04 \\ \hline
+\textbf{Use Case Name} & Cập nhật trạng thái bàn và giải phóng bàn \\ \hline
+\textbf{Primary Actors} & Lễ tân, Phục vụ, Thu ngân \\ \hline
+
+\textbf{Description} & Cập nhật trạng thái bàn, đóng phiên phục vụ và giải phóng bàn cho lượt khách tiếp theo. \\ \hline
+
+\textbf{Trigger} & Khách rời bàn, hoàn tất phục vụ hoặc cần thay đổi trạng thái bàn. \\ \hline
+
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Bàn tồn tại trong hệ thống.
+  \item Người thao tác có quyền cập nhật trạng thái.
+  \item Nếu có \texttt{TableSession}, hệ thống truy xuất được trạng thái hóa đơn.
+\end{itemize} \\ \hline
+
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Trạng thái bàn được cập nhật nhất quán.
+  \item \texttt{TableSession} được đóng nếu đủ điều kiện.
+  \item Lịch sử thay đổi được ghi nhận.
+\end{itemize} \\ \hline
+
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
+  \item Người dùng chọn bàn trên sơ đồ bàn.
+  \item Hệ thống hiển thị trạng thái bàn, phiên phục vụ và hóa đơn liên quan.
+  \item Người dùng chọn trạng thái đích (\texttt{Cleaning}, \texttt{Available}, \texttt{OutOfService}).
+  \item Nếu chuyển sang trạng thái giải phóng, hệ thống kiểm tra hóa đơn hoặc split còn mở.
+  \item Nếu tất cả hóa đơn đã hoàn tất, hệ thống đóng \texttt{TableSession} và chuyển bàn sang \texttt{Cleaning}.
+  \item Phục vụ xác nhận đã dọn bàn xong.
+  \item Hệ thống chuyển bàn sang trạng thái \texttt{Available}.
+  \item Hệ thống cập nhật danh sách chờ và gợi ý khách tiếp theo nếu có.
+\end{enumerate} \\ \hline
+
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{A1. Chuyển sang OutOfService (từ bước 3)} \\
+3.1 Người dùng chuyển bàn sang trạng thái \texttt{OutOfService} để bảo trì hoặc khóa khu vực.
+
+\vspace{0.5em}
+\textbf{A2. Chuyển bàn trong khi phục vụ (từ bước 3)} \\
+3.2 Nếu khách đổi bàn, hệ thống cập nhật bàn mới nhưng giữ nguyên \texttt{TableSession}.
+
+\end{minipage} \\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{E1. Chưa thanh toán (từ bước 4)} \\
+4.1 Hệ thống từ chối giải phóng bàn và yêu cầu hoàn tất thanh toán.
+
+\vspace{0.5em}
+\textbf{E2. Xung đột cập nhật (từ bước 2)} \\
+2.1 Hệ thống phát hiện cập nhật đồng thời và yêu cầu tải lại dữ liệu.
+
+\vspace{0.5em}
+\textbf{E3. Không đủ quyền (từ bước 3)} \\
+3.3 Hệ thống chặn thao tác nếu người dùng không có quyền.
+
+\end{minipage} \\ \hline
+
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Chỉ chuyển sang \texttt{Available} khi không còn \texttt{TableSession} và hóa đơn mở.
+  \item Mọi thay đổi trạng thái phải được ghi log (thời gian, người thực hiện).
+  \item Không được giải phóng bàn khi còn công nợ.
+\end{itemize} \\ \hline
+
+\end{longtable}
+
+
+
+    \renewcommand{\arraystretch}{1.3}
+
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-RES-05 \\ \hline
+\textbf{Use Case Name} & Gửi thông báo cho khách hàng \\ \hline
+\textbf{Primary Actors} & Hệ thống, Lễ tân \\ \hline
+
+\textbf{Description} & Gửi thông báo cho khách hàng khi có sự kiện như đặt bàn, thay đổi hoặc đến lượt chờ. \\ \hline
+
+\textbf{Trigger} & Sự kiện nghiệp vụ phát sinh hoặc lễ tân kích hoạt gửi thủ công. \\ \hline
+
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Có thông tin liên hệ hợp lệ.
   \item Mẫu thông báo và kênh gửi đã được cấu hình.
-  \item Hệ thống có khả năng kết nối tới dịch vụ gửi thông báo hoặc hàng đợi retry.
-\end{itemize}
+  \item Hệ thống kết nối được dịch vụ gửi thông báo.
+\end{itemize} \\ \hline
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một bản ghi \texttt{NotificationMessage} được tạo với trạng thái đã gửi, đã xếp hàng hoặc cần xử lý thủ công.
-  \item Khách hàng nhận được thông tin cần thiết qua SMS, email hoặc kênh đã chọn.
-  \item Lịch sử gửi thông báo được lưu để tránh gửi trùng và để hỗ trợ truy vết.
-\end{itemize}
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Tạo bản ghi \texttt{NotificationMessage}.
+  \item Thông báo được gửi hoặc đưa vào hàng chờ.
+  \item Lịch sử gửi được lưu lại.
+\end{itemize} \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Hệ thống nhận một sự kiện nghiệp vụ cần thông báo cho khách.
-  \item Hệ thống xác định loại thông báo, mẫu nội dung và thời điểm gửi phù hợp.
-  \item Hệ thống kiểm tra thông tin liên hệ của khách hàng và kênh gửi ưu tiên.
-  \item Hệ thống cá nhân hóa nội dung bằng mã đặt bàn, thời gian, khu vực hoặc thông tin chờ.
-  \item Hệ thống tạo \texttt{NotificationMessage} và gửi thông báo qua kênh đã chọn.
-  \item Hệ thống ghi nhận kết quả gửi và cập nhật trạng thái của thông báo.
-\end{enumerate}
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
+  \item Hệ thống nhận sự kiện cần gửi thông báo.
+  \item Hệ thống xác định loại thông báo và chọn mẫu nội dung phù hợp.
+  \item Hệ thống kiểm tra thông tin liên hệ và kênh gửi ưu tiên.
+  \item Hệ thống cá nhân hóa nội dung thông báo.
+  \item Hệ thống tạo \texttt{NotificationMessage} và gửi qua kênh đã chọn.
+  \item Hệ thống ghi nhận kết quả và cập nhật trạng thái gửi.
+\end{enumerate} \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Lễ tân có thể kích hoạt gửi lại thủ công nếu khách yêu cầu hoặc nếu cần xác nhận lại.
-  \item Nếu SMS lỗi nhưng email khả dụng, hệ thống có thể chuyển sang kênh dự phòng theo cấu hình.
-\end{itemize}
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Thiếu số điện thoại hoặc email hợp lệ: hệ thống đánh dấu cần liên hệ thủ công.
-  \item Dịch vụ thông báo ngoài không phản hồi: hệ thống đưa thông báo vào hàng chờ retry và cảnh báo cho lễ tân khi cần.
-  \item Thông báo bị chặn vì vượt ngưỡng chống spam: hệ thống bỏ qua bản gửi trùng và lưu lý do.
-\end{itemize}
+\textbf{A1. Gửi thủ công (từ bước 1)} \\
+1.1 Lễ tân kích hoạt gửi lại thông báo cho khách.
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Mỗi thông báo phải tham chiếu tới một thực thể nghiệp vụ nguồn như \texttt{Reservation} hoặc \texttt{WaitlistEntry}.
-  \item Các thông báo có tính thời điểm như gọi khách từ danh sách chờ phải kèm khung thời gian phản hồi rõ ràng.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.5em}
+\textbf{A2. Chuyển kênh gửi (từ bước 3)} \\
+3.1 Nếu kênh chính không khả dụng, hệ thống chuyển sang kênh dự phòng.
+
+\end{minipage} \\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{E1. Thiếu thông tin liên hệ (từ bước 3)} \\
+3.2 Hệ thống đánh dấu cần xử lý thủ công.
+
+\vspace{0.5em}
+\textbf{E2. Lỗi dịch vụ gửi (từ bước 5)} \\
+5.1 Hệ thống đưa thông báo vào hàng chờ retry.
+
+\vspace{0.5em}
+\textbf{E3. Bị chặn spam (từ bước 5)} \\
+5.2 Hệ thống bỏ qua gửi trùng và ghi nhận lý do.
+
+\end{minipage} \\ \hline
+
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Mỗi thông báo phải liên kết với \texttt{Reservation} hoặc \texttt{WaitlistEntry}.
+  \item Thông báo có thời hạn phải kèm thời gian phản hồi rõ ràng.
+  \item Không gửi trùng thông báo trong khoảng thời gian cấu hình.
+\end{itemize} \\ \hline
+
+\end{longtable}
 
 
 
-    \begin{usecasebox}[title={UC-ORD-01 --- Tạo đơn gọi món tại bàn}]
-    \textbf{Tác nhân chính:} Phục vụ\\
-    \textbf{Mục tiêu:} Tạo đơn gọi món cho một bàn đang phục vụ, bao gồm món, số lượng và ghi chú.\\
-    \textbf{Kích hoạt:} Phục vụ nhấn \enquote{Tạo đơn gọi món} trên màn hình bàn đang mở phiên phục vụ.
+\renewcommand{\arraystretch}{1.3}
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Phiên phục vụ bàn đã được mở.
-  \item Phục vụ có quyền thao tác trên khu vực phụ trách.
-\end{itemize}
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-ORD-01 \\ \hline
+\textbf{Use Case Name} & Tạo đơn gọi món tại bàn \\ \hline
+\textbf{Primary Actors} & Phục vụ \\ \hline
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Đơn gọi món được lưu ở trạng thái \texttt{Draft} hoặc \texttt{Confirmed}.
-  \item Các dòng món được gắn với bàn và phiên phục vụ tương ứng.
-\end{itemize}
+\textbf{Description} & Tạo đơn gọi món cho một bàn đang phục vụ, bao gồm món, số lượng và ghi chú. \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Phục vụ mở phiên bàn và chọn chức năng tạo đơn gọi món.
-  \item Hệ thống hiển thị thực đơn, các món gợi ý và danh sách combo.
-  \item Phục vụ chọn món, số lượng, ghi chú đặc biệt và xác nhận từng dòng món.
+\textbf{Trigger} & Phục vụ chọn chức năng tạo đơn gọi món trên bàn đang hoạt động. \\ \hline
+
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item \texttt{TableSession} đang hoạt động.
+  \item Phục vụ có quyền thao tác trên khu vực.
+\end{itemize} \\ \hline
+
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Đơn gọi món được lưu với trạng thái \texttt{Draft} hoặc \texttt{Confirmed}.
+  \item Các dòng món được liên kết với phiên phục vụ.
+\end{itemize} \\ \hline
+
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
+  \item Phục vụ mở bàn và chọn chức năng tạo đơn gọi món.
+  \item Hệ thống kiểm tra trạng thái \texttt{TableSession}.
+  \item Hệ thống hiển thị thực đơn và danh sách món.
+  \item Phục vụ chọn món, số lượng và ghi chú cho từng dòng món.
   \item Hệ thống tính tạm tính theo giá hiện hành.
-  \item Phục vụ lưu đơn gọi món nháp hoặc xác nhận gửi bếp ngay.
-\end{enumerate}
+  \item Phục vụ lưu đơn ở trạng thái \texttt{Draft} hoặc xác nhận gửi bếp.
+  \item Hệ thống lưu đơn gọi món và cập nhật trạng thái.
+\end{enumerate} \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Phục vụ có thể tạo nhiều đơn gọi món nối tiếp cho cùng một bàn trong suốt phiên phục vụ.
-  \item Phục vụ có thể dùng mẫu đơn gọi món thường gặp cho bàn đoàn hoặc thực đơn theo set.
-\end{itemize}
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Món vừa chuyển sang hết hàng: hệ thống chặn thêm món và yêu cầu chọn thay thế.
-  \item Bàn đã đóng phiên phục vụ: hệ thống từ chối tạo đơn gọi món mới và yêu cầu mở lại bàn nếu được phép.
-\end{itemize}
+\textbf{A1. Tạo nhiều đơn (từ bước 1)} \\
+1.1 Phục vụ tạo nhiều đơn gọi món liên tiếp trong cùng một phiên phục vụ.
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Mỗi đơn gọi món phải gắn đúng một phiên phục vụ bàn.
-  \item Giá của dòng món được chụp tại thời điểm xác nhận đơn gọi món.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.5em}
+\textbf{A2. Dùng mẫu đơn (từ bước 3)} \\
+3.1 Phục vụ chọn mẫu đơn có sẵn cho bàn đoàn hoặc combo.
 
+\end{minipage} \\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
 
-    \begin{usecasebox}[title={UC-ORD-02 --- Tùy biến món và ghi chú dị ứng}]
-    \textbf{Tác nhân chính:} Phục vụ, Bếp\\
-    \textbf{Mục tiêu:} Ghi nhận các lựa chọn tùy chọn món, mức độ chế biến và cảnh báo dị ứng cho từng món.\\
-    \textbf{Kích hoạt:} Phục vụ chọn một món đã thêm vào đơn gọi món để cấu hình chi tiết.
+\textbf{E1. Món hết hàng (từ bước 4)} \\
+4.1 Hệ thống từ chối thêm món và yêu cầu chọn món thay thế.
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Món ăn hỗ trợ nhóm tùy chọn hoặc cho phép nhập ghi chú.
-  \item Danh sách tùy chọn và quy tắc chọn đã được cấu hình.
-\end{itemize}
+\vspace{0.5em}
+\textbf{E2. Phiên bàn không hợp lệ (từ bước 2)} \\
+2.1 Hệ thống từ chối tạo đơn nếu \texttt{TableSession} đã đóng.
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Các tùy chọn được lưu thành \texttt{OrderItemModifier} và hiển thị trên phiếu bếp.
-  \item Cảnh báo dị ứng hoặc yêu cầu đặc biệt đi kèm từng món.
-\end{itemize}
+\end{minipage} \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Phục vụ mở chi tiết dòng món đã chọn.
-  \item Hệ thống hiển thị các nhóm modifier bắt buộc/tùy chọn và giới hạn chọn.
-  \item Phục vụ chọn các tùy biến như không cay, thêm phô mai, không hành hoặc mức chín.
-  \item Phục vụ nhập ghi chú dị ứng hoặc hướng dẫn riêng cho bếp.
-  \item Hệ thống kiểm tra số lượng lựa chọn tối thiểu/tối đa và lưu cấu hình.
-  \item Khi đơn gọi món được gửi bếp, toàn bộ ghi chú xuất hiện trên phiếu bếp.
-\end{enumerate}
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Mỗi đơn phải thuộc một \texttt{TableSession}.
+  \item Giá món được cố định tại thời điểm xác nhận đơn.
+  \item Một bàn có thể có nhiều đơn trong cùng phiên phục vụ.
+\end{itemize} \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Nếu nhà hàng dùng cấu hình chuẩn, phục vụ có thể chọn nhanh một cấu hình có sẵn.
-  \item Một số ghi chú nhạy cảm như dị ứng đậu phộng được hệ thống tự gắn cờ màu nổi bật.
-\end{itemize}
-
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Vi phạm quy tắc chọn tùy chọn: hệ thống yêu cầu bổ sung hoặc bỏ bớt lựa chọn.
-  \item Ghi chú vượt quá độ dài cho phép: hệ thống yêu cầu rút gọn hoặc chuyển thành ghi chú nội bộ.
-\end{itemize}
-
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Ghi chú dị ứng phải được gửi đến bếp dưới định dạng không thể bị ẩn khỏi phiếu bếp.
-  \item Một tùy chọn có thể làm thay đổi đơn giá của dòng món.
-\end{itemize}
-    \end{usecasebox}
+\end{longtable}
 
 
+   \renewcommand{\arraystretch}{1.3}
 
-    \begin{usecasebox}[title={UC-ORD-03 --- Gửi đơn gọi món sang bếp}]
-    \textbf{Tác nhân chính:} Phục vụ, Bếp\\
-    \textbf{Mục tiêu:} Chuyển đơn gọi món đã xác nhận từ thiết bị phục vụ sang các trạm bếp phù hợp để chế biến.\\
-    \textbf{Kích hoạt:} Phục vụ nhấn \enquote{Gửi bếp} hoặc đơn gọi món đạt điều kiện gửi tự động.
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-ORD-02 \\ \hline
+\textbf{Use Case Name} & Tùy biến món và ghi chú dị ứng \\ \hline
+\textbf{Primary Actors} & Phục vụ, Bếp \\ \hline
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Đơn gọi món có ít nhất một dòng món hợp lệ.
-  \item Kênh kết nối tới hệ thống điều phối bếp khả dụng.
-\end{itemize}
+\textbf{Description} & Ghi nhận tùy chọn món, mức chế biến và ghi chú dị ứng cho từng dòng món. \\ \hline
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một hoặc nhiều \texttt{KitchenTicket} được tạo theo trạm bếp.
-  \item Trạng thái đơn gọi món chuyển sang \texttt{Confirmed/Queued}.
-\end{itemize}
+\textbf{Trigger} & Phục vụ chọn chỉnh sửa chi tiết một dòng món trong đơn gọi món. \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Món hỗ trợ tùy chọn hoặc ghi chú.
+  \item Đơn gọi món ở trạng thái \texttt{Draft} hoặc chưa gửi bếp.
+  \item Cấu hình modifier đã được thiết lập.
+\end{itemize} \\ \hline
+
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Tùy chọn được lưu dưới dạng \texttt{OrderItemModifier}.
+  \item Ghi chú dị ứng được gắn vào dòng món.
+\end{itemize} \\ \hline
+
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
+  \item Phục vụ mở chi tiết dòng món.
+  \item Hệ thống hiển thị các nhóm tùy chọn và giới hạn chọn.
+  \item Phục vụ chọn các tùy biến cho món.
+  \item Phục vụ nhập ghi chú dị ứng hoặc yêu cầu đặc biệt.
+  \item Hệ thống kiểm tra quy tắc chọn (min/max).
+  \item Hệ thống lưu cấu hình tùy chọn vào dòng món.
+  \item Khi đơn được gửi bếp, thông tin tùy biến và ghi chú được hiển thị.
+\end{enumerate} \\ \hline
+
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{A1. Dùng cấu hình mẫu (từ bước 2)} \\
+2.1 Phục vụ chọn nhanh cấu hình có sẵn cho món.
+
+\vspace{0.5em}
+\textbf{A2. Gắn cờ dị ứng (từ bước 4)} \\
+4.1 Hệ thống tự động đánh dấu nổi bật các ghi chú dị ứng quan trọng.
+
+\end{minipage} \\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{E1. Vi phạm quy tắc chọn (từ bước 5)} \\
+5.1 Hệ thống yêu cầu điều chỉnh số lượng lựa chọn.
+
+\vspace{0.5em}
+\textbf{E2. Ghi chú quá dài (từ bước 4)} \\
+4.2 Hệ thống yêu cầu rút gọn hoặc chuyển sang ghi chú nội bộ.
+
+\vspace{0.5em}
+\textbf{E3. Đơn đã gửi bếp (từ bước 1)} \\
+1.1 Hệ thống từ chối chỉnh sửa nếu đơn đã được xác nhận.
+
+\end{minipage} \\ \hline
+
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Ghi chú dị ứng phải hiển thị rõ ràng trên phiếu bếp.
+  \item Modifier có thể thay đổi giá món.
+  \item Không cho phép chỉnh sửa sau khi gửi bếp.
+\end{itemize} \\ \hline
+
+\end{longtable}
+
+
+
+   \renewcommand{\arraystretch}{1.3}
+
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-ORD-03 \\ \hline
+\textbf{Use Case Name} & Gửi đơn gọi món sang bếp \\ \hline
+\textbf{Primary Actors} & Phục vụ, Bếp \\ \hline
+
+\textbf{Description} & Chuyển đơn gọi món đã xác nhận đến các trạm bếp để chế biến. \\ \hline
+
+\textbf{Trigger} & Phục vụ nhấn gửi bếp hoặc hệ thống tự động gửi. \\ \hline
+
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Đơn có ít nhất một dòng món hợp lệ.
+  \item Đơn ở trạng thái \texttt{Draft}.
+  \item Kết nối tới hệ thống bếp khả dụng.
+\end{itemize} \\ \hline
+
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Tạo một hoặc nhiều \texttt{KitchenTicket}.
+  \item Đơn chuyển sang trạng thái \texttt{Confirmed/Queued}.
+\end{itemize} \\ \hline
+
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
   \item Phục vụ xác nhận các dòng món cần gửi.
-  \item Hệ thống kiểm tra trạng thái món, tồn kho logic và quy tắc định tuyến trạm bếp.
-  \item Hệ thống tách phiếu bếp theo loại trạm như bếp nướng, bếp chiên, tráng miệng hoặc quầy đồ uống.
-  \item Phiếu bếp được xếp hàng theo độ ưu tiên, thời gian đến và hạn phục vụ.
-  \item Màn hình bếp hiển thị phiếu bếp mới và phát cảnh báo âm thanh hoặc màu sắc.
-\end{enumerate}
+  \item Hệ thống kiểm tra trạng thái món, modifier và tồn kho logic.
+  \item Hệ thống xác định trạm bếp cho từng dòng món.
+  \item Hệ thống tách đơn thành các \texttt{KitchenTicket} theo trạm bếp.
+  \item Hệ thống xếp hàng phiếu bếp theo ưu tiên và thời gian.
+  \item Hệ thống cập nhật trạng thái đơn thành \texttt{Confirmed/Queued}.
+  \item Màn hình bếp hiển thị phiếu và phát tín hiệu thông báo.
+\end{enumerate} \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Nếu đơn gọi món có món phục vụ sau, phục vụ có thể đánh dấu chế độ gửi sau.
-  \item Nếu cùng một bàn có nhiều đơn gọi món sát nhau, hệ thống có thể gộp phiếu bếp trong cùng khoảng thời gian cấu hình.
-\end{itemize}
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Không xác định được trạm bếp cho món: hệ thống chặn gửi và tạo cảnh báo cho quản lý menu.
-  \item Mất kết nối với màn hình bếp: hệ thống lưu hàng đợi gửi lại và cảnh báo cho phục vụ.
-\end{itemize}
+\textbf{A1. Gửi món sau (từ bước 1)} \\
+1.1 Phục vụ đánh dấu một số món để gửi sau.
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Mỗi dòng món phải được định tuyến đến ít nhất một trạm bếp chịu trách nhiệm.
-  \item Chỉ các dòng món ở trạng thái hợp lệ mới được gửi bếp.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.5em}
+\textbf{A2. Gộp phiếu bếp (từ bước 4)} \\
+4.1 Hệ thống gộp các phiếu bếp gần nhau theo cấu hình thời gian.
 
+\end{minipage} \\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
 
-    \begin{usecasebox}[title={UC-KIT-01 --- Cập nhật tiến độ chế biến}]
-    \textbf{Tác nhân chính:} Bếp\\
-    \textbf{Mục tiêu:} Theo dõi và cập nhật trạng thái món từ lúc nhận phiếu bếp đến khi sẵn sàng phục vụ.\\
-    \textbf{Kích hoạt:} Đầu bếp chọn một phiếu bếp trên màn hình bếp.
+\textbf{E1. Không có trạm bếp (từ bước 3)} \\
+3.1 Hệ thống chặn gửi và cảnh báo lỗi cấu hình menu.
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Ticket đã được tạo và gán cho đúng trạm bếp.
-  \item Nhân viên bếp đã đăng nhập vào trạm làm việc.
-\end{itemize}
+\vspace{0.5em}
+\textbf{E2. Mất kết nối bếp (từ bước 5)} \\
+5.1 Hệ thống đưa phiếu vào hàng đợi và retry sau.
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Trạng thái phiếu bếp và từng món phản ánh đúng thực tế chế biến.
-  \item Phục vụ nhìn thấy tiến độ mới nhất trên POS.
-\end{itemize}
+\end{minipage} \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Nhân viên bếp mở phiếu bếp đang chờ.
-  \item Bếp đánh dấu từng món \texttt{Started}, \texttt{Cooking}, \texttt{Ready}.
-  \item Hệ thống tính thời gian chuẩn bị thực tế và so sánh với SLA nội bộ.
-  \item Khi toàn bộ món của phiếu bếp sẵn sàng, hệ thống đánh dấu phiếu bếp ở trạng thái \texttt{Ready}.
-  \item POS của phục vụ nhận thông báo để ra món.
-\end{enumerate}
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Mỗi dòng món phải được định tuyến đến ít nhất một trạm bếp.
+  \item Chỉ dòng món hợp lệ mới được gửi.
+  \item Không cho phép gửi lại các dòng đã được gửi trước đó.
+\end{itemize} \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Bếp có thể ưu tiên phiếu bếp khẩn do khách VIP hoặc yêu cầu ra trước món khai vị.
-  \item Nếu món cần chờ đồng bộ với món khác, bếp có thể đánh dấu \texttt{Hold for service}.
-\end{itemize}
-
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Món bị thiếu nguyên liệu trong lúc chế biến: bếp đánh dấu \texttt{Blocked} và gửi yêu cầu thay món.
-  \item Màn hình KDS mất kết nối: hệ thống chuyển sang chế độ hàng đợi cục bộ và tự đồng bộ lại khi có mạng.
-\end{itemize}
-
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Chỉ bếp thuộc đúng trạm mới được đổi trạng thái phiếu bếp của trạm đó.
-  \item Thời gian chuyển trạng thái phải được ghi vào nhật ký kiểm toán vận hành.
-\end{itemize}
-    \end{usecasebox}
+\end{longtable}
 
 
 
-    \begin{usecasebox}[title={UC-KIT-02 --- Ra món cho bàn}]
-    \textbf{Tác nhân chính:} Phục vụ\\
-    \textbf{Mục tiêu:} Nhận món đã hoàn tất từ bếp và giao đúng bàn, đúng thứ tự phục vụ.\\
-    \textbf{Kích hoạt:} Hệ thống thông báo phiếu bếp hoặc món đã ở trạng thái \texttt{Ready}.
+    \renewcommand{\arraystretch}{1.3}
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Món đã được bếp hoàn tất.
-  \item Phiên bàn vẫn đang mở.
-\end{itemize}
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-KIT-01 \\ \hline
+\textbf{Use Case Name} & Cập nhật tiến độ chế biến \\ \hline
+\textbf{Primary Actors} & Bếp \\ \hline
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Dòng món được đánh dấu \texttt{Served}.
-  \item Thời điểm ra món được ghi nhận cho phân tích SLA phục vụ.
-\end{itemize}
+\textbf{Description} & Theo dõi và cập nhật trạng thái món từ khi nhận phiếu bếp đến khi sẵn sàng phục vụ. \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Phục vụ mở danh sách món sẵn sàng và xác nhận nhận món.
-  \item Hệ thống hiển thị bàn, seat number và ghi chú phục vụ liên quan.
-  \item Phục vụ giao món cho khách tại bàn.
-  \item Phục vụ nhấn \enquote{Đã phục vụ}; hệ thống cập nhật trạng thái từng dòng món.
-  \item Nếu toàn bộ món đã ra đủ, hệ thống cập nhật nhịp phục vụ của bàn.
-\end{enumerate}
+\textbf{Trigger} & Nhân viên bếp chọn một phiếu bếp trên màn hình KDS. \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Nhà hàng có thể chọn chế độ xác nhận theo từng món hoặc theo toàn bộ phiếu bếp.
-  \item Nếu cần đồng bộ ra món theo course, phục vụ có thể giữ món sẵn sàng và phát lệnh ra sau.
-\end{itemize}
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item \texttt{KitchenTicket} đã được tạo và gán trạm bếp.
+  \item Nhân viên đã đăng nhập vào hệ thống bếp.
+\end{itemize} \\ \hline
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Phục vụ phát hiện món sai bàn hoặc sai tùy biến: hệ thống cho phép trả lại bếp với lý do.
-  \item Ticket đã sẵn sàng nhưng bàn tạm vắng: phục vụ đánh dấu trì hoãn phục vụ.
-\end{itemize}
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Trạng thái món và phiếu bếp được cập nhật.
+  \item POS nhận được tiến độ mới nhất.
+\end{itemize} \\ \hline
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Mọi thao tác trả món hoặc phục vụ lại phải có lý do để phục vụ báo cáo vận hành.
-  \item Không được đánh dấu \texttt{Served} khi món chưa đạt trạng thái \texttt{Ready}.
-\end{itemize}
-    \end{usecasebox}
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
+  \item Nhân viên bếp mở phiếu bếp ở trạng thái \texttt{Queued}.
+  \item Nhân viên cập nhật trạng thái từng món (\texttt{Started}, \texttt{Cooking}, \texttt{Ready}).
+  \item Hệ thống ghi nhận thời gian cho từng trạng thái.
+  \item Hệ thống so sánh thời gian chế biến với SLA.
+  \item Khi tất cả món hoàn tất, hệ thống chuyển phiếu sang \texttt{Ready}.
+  \item Hệ thống gửi thông báo đến POS để phục vụ ra món.
+\end{enumerate} \\ \hline
 
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
 
+\textbf{A1. Ưu tiên phiếu (từ bước 1)} \\
+1.1 Nhân viên bếp ưu tiên xử lý phiếu VIP hoặc món cần ra trước.
 
-    \begin{usecasebox}[title={UC-KIT-03 --- Ưu tiên hàng chờ bếp và xử lý món gấp}]
-    \textbf{Tác nhân chính:} Bếp, Quản lý\\
-    \textbf{Mục tiêu:} Điều chỉnh mức ưu tiên của ticket hoặc dòng món để giảm nguy cơ trễ hạn, xử lý món gấp và điều phối tốt hơn trong giờ cao điểm.\\
-    \textbf{Kích hoạt:} Ticket gần vượt SLA, có yêu cầu phục vụ gấp, khách VIP, hoặc quản lý cần can thiệp vào thứ tự hàng chờ.
+\vspace{0.5em}
+\textbf{A2. Giữ món (từ bước 2)} \\
+2.1 Nhân viên đánh dấu \texttt{Hold for service} để chờ đồng bộ với món khác.
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item \texttt{KitchenTicket} hoặc \texttt{KitchenTicketItem} đã tồn tại trên hàng chờ của trạm bếp.
-  \item Hệ thống có dữ liệu về độ trễ, thứ tự đến và chính sách ưu tiên.
-  \item Người thao tác có quyền thay đổi mức ưu tiên hoặc có thể yêu cầu quản lý xác nhận.
-\end{itemize}
+\end{minipage} \\ \hline
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Mức ưu tiên của ticket hoặc item được cập nhật và phản ánh trên KDS.
-  \item Lý do ưu tiên được ghi nhận để phục vụ audit vận hành.
-  \item Hàng chờ của trạm bếp được sắp xếp lại theo chính sách mới.
-\end{itemize}
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Nhân viên bếp hoặc quản lý mở hàng chờ của trạm chế biến.
-  \item Hệ thống hiển thị độ trễ hiện tại, thời hạn phục vụ và các ticket có nguy cơ trễ hạn.
-  \item Người thao tác chọn ticket hoặc dòng món cần ưu tiên.
-  \item Hệ thống áp dụng chính sách ưu tiên dựa trên SLA, loại món, phụ thuộc giữa các course và cấu hình VIP nếu có.
-  \item Người thao tác nhập lý do ưu tiên hoặc xác nhận đề xuất tự động của hệ thống.
-  \item Hệ thống cập nhật mức ưu tiên, sắp xếp lại hàng chờ và làm nổi bật ticket gấp trên KDS.
-\end{enumerate}
+\textbf{E1. Thiếu nguyên liệu (từ bước 2)} \\
+2.2 Nhân viên đánh dấu \texttt{Blocked} và gửi yêu cầu thay món.
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Hệ thống có thể tự động đẩy mức ưu tiên nếu ticket sắp vượt ngưỡng thời gian phục vụ.
-  \item Chỉ một phần của ticket, ví dụ món khai vị hoặc món cần ra cùng course, có thể được ưu tiên riêng.
-\end{itemize}
+\vspace{0.5em}
+\textbf{E2. Mất kết nối KDS (từ bước 3)} \\
+3.1 Hệ thống chuyển sang hàng đợi cục bộ và đồng bộ lại sau.
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Người thao tác không đủ quyền đổi ưu tiên: hệ thống yêu cầu xác nhận của quản lý hoặc giữ nguyên thứ tự cũ.
-  \item Trạm bếp đang bị quá tải nghiêm trọng: hệ thống cảnh báo rủi ro và gợi ý điều phối sang trạm hỗ trợ nếu mô hình bếp cho phép.
-  \item Dữ liệu thời gian phục vụ không khả dụng: hệ thống chỉ cho phép ưu tiên thủ công có lý do.
-\end{itemize}
+\end{minipage} \\ \hline
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Mọi hành động expedite phải có lý do chuẩn hóa hoặc ghi chú giải thích.
-  \item Chính sách ưu tiên không được làm một ticket cũ bị trì hoãn vô hạn nếu không có phê duyệt vận hành phù hợp.
-\end{itemize}
-    \end{usecasebox}
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Chỉ trạm bếp được phân công mới được cập nhật trạng thái.
+  \item Mọi thay đổi trạng thái phải được ghi log.
+  \item Trạng thái phiếu phụ thuộc vào trạng thái tất cả món.
+\end{itemize} \\ \hline
+
+\end{longtable}
 
 
 
-    \begin{usecasebox}[title={UC-ORD-04 --- Sửa hoặc hủy dòng món}]
-    \textbf{Tác nhân chính:} Phục vụ, Quản lý\\
-    \textbf{Mục tiêu:} Điều chỉnh đơn gọi món khi khách đổi ý, món hết hàng hoặc phát sinh sai sót.\\
-    \textbf{Kích hoạt:} Phục vụ mở chi tiết đơn gọi món và chọn dòng món cần sửa/hủy.
+    \renewcommand{\arraystretch}{1.3}
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Order đang còn hiệu lực và chưa thanh toán xong.
-  \item Người thực hiện có quyền sửa/hủy theo trạng thái món.
-\end{itemize}
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-KIT-02 \\ \hline
+\textbf{Use Case Name} & Ra món cho bàn \\ \hline
+\textbf{Primary Actors} & Phục vụ \\ \hline
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Dòng món được cập nhật số lượng, ghi chú hoặc trạng thái hủy.
-  \item Nếu món đã gửi bếp, hệ thống tạo thông báo bếp và ghi nhật ký kiểm toán.
-\end{itemize}
+\textbf{Description} & Nhận món từ bếp và phục vụ đúng bàn, đúng thứ tự. \\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Phục vụ chọn dòng món cần sửa.
-  \item Hệ thống hiển thị trạng thái hiện tại của món và mức độ được phép chỉnh sửa.
-  \item Phục vụ chỉnh số lượng, tuỳ biến hoặc chọn hủy dòng món.
-  \item Nếu món đã gửi bếp, hệ thống yêu cầu nhập lý do và có thể cần quản lý phê duyệt.
-  \item Hệ thống cập nhật đơn gọi món, phát sự kiện cho KDS và tính lại tạm tính.
-\end{enumerate}
+\textbf{Trigger} & Hệ thống thông báo món hoặc phiếu bếp ở trạng thái \texttt{Ready}. \\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Trước khi gửi bếp, phục vụ có thể chỉnh sửa tự do không cần phê duyệt.
-  \item Sau khi món đã chế biến xong, hệ thống chỉ cho phép tạo món bù hoặc hủy có phê duyệt.
-\end{itemize}
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Món ở trạng thái \texttt{Ready}.
+  \item \texttt{TableSession} còn hoạt động.
+\end{itemize} \\ \hline
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Bếp đã bắt đầu chế biến và vai trò hiện tại không đủ quyền: hệ thống từ chối thao tác.
-  \item Cập nhật đồng thời từ hai thiết bị POS: hệ thống phát hiện xung đột và yêu cầu tải lại đơn gọi món.
-\end{itemize}
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Dòng món được cập nhật trạng thái \texttt{Served}.
+  \item Thời gian phục vụ được ghi nhận.
+\end{itemize} \\ \hline
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Mọi hủy món sau khi đã gửi bếp phải có lý do và người phê duyệt nếu vượt ngưỡng cấu hình.
-  \item Điều chỉnh đơn gọi món không được làm mất lịch sử giá và trạng thái gốc.
-\end{itemize}
-    \end{usecasebox}
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
+  \item Phục vụ mở danh sách món sẵn sàng.
+  \item Phục vụ xác nhận nhận món từ bếp.
+  \item Hệ thống hiển thị thông tin bàn, vị trí ngồi và ghi chú.
+  \item Phục vụ giao món cho khách.
+  \item Phục vụ xác nhận \enquote{Đã phục vụ}.
+  \item Hệ thống cập nhật trạng thái từng dòng món thành \texttt{Served}.
+  \item Nếu tất cả món đã phục vụ, hệ thống cập nhật trạng thái phục vụ của bàn.
+\end{enumerate} \\ \hline
+
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{A1. Xác nhận theo phiếu (từ bước 1)} \\
+1.1 Phục vụ xác nhận toàn bộ phiếu thay vì từng món.
+
+\vspace{0.5em}
+\textbf{A2. Giữ món theo course (từ bước 3)} \\
+3.1 Phục vụ trì hoãn ra món để đồng bộ theo course.
+
+\end{minipage} \\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{E1. Sai món hoặc sai tùy biến (từ bước 3)} \\
+3.2 Phục vụ trả món về bếp và ghi lý do.
+
+\vspace{0.5em}
+\textbf{E2. Bàn tạm vắng (từ bước 4)} \\
+4.1 Phục vụ đánh dấu trì hoãn phục vụ.
+
+\vspace{0.5em}
+\textbf{E3. Trạng thái không hợp lệ (từ bước 5)} \\
+5.1 Hệ thống từ chối nếu món chưa ở trạng thái \texttt{Ready}.
+
+\end{minipage} \\ \hline
+
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Chỉ món ở trạng thái \texttt{Ready} mới được phục vụ.
+  \item Mọi thao tác trả món phải có lý do.
+  \item Trạng thái phục vụ phải được ghi log để phân tích SLA.
+\end{itemize} \\ \hline
+
+\end{longtable}
+
+
+
+    \renewcommand{\arraystretch}{1.3}
+
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-KIT-03 \\ \hline
+\textbf{Use Case Name} & Ưu tiên hàng chờ bếp và xử lý món gấp \\ \hline
+\textbf{Primary Actors} & Bếp, Quản lý \\ \hline
+
+\textbf{Description} & Điều chỉnh mức ưu tiên của ticket hoặc món để xử lý các trường hợp gấp và giảm trễ hạn. \\ \hline
+
+\textbf{Trigger} & Ticket gần vượt SLA, khách VIP hoặc yêu cầu can thiệp từ quản lý. \\ \hline
+
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item \texttt{KitchenTicket} hoặc item tồn tại trong hàng chờ.
+  \item Có dữ liệu SLA và thứ tự hàng chờ.
+  \item Người thao tác có quyền thay đổi ưu tiên.
+\end{itemize} \\ \hline
+
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Mức ưu tiên được cập nhật.
+  \item Hàng chờ được sắp xếp lại.
+  \item Lý do thay đổi được ghi log.
+\end{itemize} \\ \hline
+
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
+  \item Nhân viên mở hàng chờ của trạm bếp.
+  \item Hệ thống hiển thị độ trễ và các ticket có nguy cơ trễ.
+  \item Người thao tác chọn ticket hoặc món cần ưu tiên.
+  \item Hệ thống áp dụng quy tắc ưu tiên (SLA, VIP, course).
+  \item Người thao tác xác nhận hoặc nhập lý do ưu tiên.
+  \item Hệ thống cập nhật mức ưu tiên.
+  \item Hệ thống sắp xếp lại hàng chờ.
+  \item Hệ thống làm nổi bật ticket ưu tiên trên KDS.
+\end{enumerate} \\ \hline
+
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{A1. Tự động ưu tiên (từ bước 2)} \\
+2.1 Hệ thống tự động tăng ưu tiên nếu ticket gần vượt SLA.
+
+\vspace{0.5em}
+\textbf{A2. Ưu tiên theo món (từ bước 3)} \\
+3.1 Người thao tác chỉ ưu tiên một phần của ticket (ví dụ món khai vị).
+
+\end{minipage} \\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{E1. Không đủ quyền (từ bước 3)} \\
+3.2 Hệ thống yêu cầu xác nhận từ quản lý.
+
+\vspace{0.5em}
+\textbf{E2. Quá tải trạm bếp (từ bước 2)} \\
+2.2 Hệ thống cảnh báo và gợi ý điều phối sang trạm khác.
+
+\vspace{0.5em}
+\textbf{E3. Thiếu dữ liệu SLA (từ bước 4)} \\
+4.1 Hệ thống chỉ cho phép ưu tiên thủ công.
+
+\end{minipage} \\ \hline
+
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Mọi hành động ưu tiên phải có lý do.
+  \item Không được gây trì hoãn vô hạn cho ticket khác (anti-starvation).
+  \item Ưu tiên có thể áp dụng ở mức ticket hoặc item.
+\end{itemize} \\ \hline
+
+\end{longtable}
+
+
+    \renewcommand{\arraystretch}{1.3}
+
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Use Case ID} & UC-ORD-04 \\ \hline
+\textbf{Use Case Name} & Sửa hoặc hủy dòng món \\ \hline
+\textbf{Primary Actors} & Phục vụ, Quản lý \\ \hline
+
+\textbf{Description} & Điều chỉnh hoặc hủy dòng món trong đơn gọi món theo trạng thái và quyền hạn. \\ \hline
+
+\textbf{Trigger} & Phục vụ chọn dòng món để sửa hoặc hủy. \\ \hline
+
+\textbf{Preconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Đơn chưa hoàn tất thanh toán.
+  \item Người dùng có quyền chỉnh sửa theo trạng thái món.
+\end{itemize} \\ \hline
+
+\textbf{Postconditions} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Dòng món được cập nhật hoặc chuyển trạng thái \texttt{Voided}.
+  \item Lịch sử thay đổi được ghi nhận.
+  \item Nếu đã gửi bếp, hệ thống phát thông báo đến KDS.
+\end{itemize} \\ \hline
+
+\textbf{Normal Flow} &
+\begin{enumerate}[leftmargin=*, noitemsep]
+  \item Phục vụ chọn dòng món cần chỉnh sửa.
+  \item Hệ thống hiển thị trạng thái món và quyền chỉnh sửa.
+  \item Phục vụ chọn sửa thông tin hoặc hủy dòng món.
+  \item Nếu món đã gửi bếp, hệ thống yêu cầu nhập lý do.
+  \item Nếu cần, hệ thống yêu cầu phê duyệt từ quản lý.
+  \item Hệ thống cập nhật dữ liệu dòng món.
+  \item Hệ thống phát sự kiện đến KDS và cập nhật tạm tính.
+\end{enumerate} \\ \hline
+
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{A1. Chỉnh sửa trước khi gửi bếp (từ bước 3)} \\
+3.1 Phục vụ chỉnh sửa tự do khi món ở trạng thái \texttt{Draft}.
+
+\vspace{0.5em}
+\textbf{A2. Hủy sau khi chế biến (từ bước 4)} \\
+4.1 Hệ thống yêu cầu phê duyệt bắt buộc khi món đã ở trạng thái \texttt{Cooking} hoặc \texttt{Ready}.
+
+\end{minipage} \\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+
+\textbf{E1. Không đủ quyền (từ bước 5)} \\
+5.1 Hệ thống từ chối thao tác nếu không có quyền.
+
+\vspace{0.5em}
+\textbf{E2. Xung đột cập nhật (từ bước 2)} \\
+2.1 Hệ thống phát hiện chỉnh sửa đồng thời và yêu cầu tải lại.
+
+\end{minipage} \\ \hline
+
+\textbf{Business Rules} &
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Hủy món sau khi gửi bếp phải có lý do.
+  \item Có thể yêu cầu phê duyệt nếu vượt ngưỡng cấu hình.
+  \item Không được mất lịch sử trạng thái và giá ban đầu.
+\end{itemize} \\ \hline
+
+\end{longtable}
 
 
 
