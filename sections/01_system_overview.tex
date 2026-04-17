@@ -1,4 +1,4 @@
-﻿\section{Tổng quan hệ thống}
+\section{Tổng quan hệ thống}
 
 \subsubsection{Bối cảnh nghiệp vụ}
 IRMS được thiết kế cho môi trường vận hành nhà hàng có phục vụ tại bàn, khu bếp, quầy thu ngân và hoạt động điều phối theo ca. Hệ thống dựa trên giao diện số, cơ sở dữ liệu dùng chung và logic điều khiển bằng phần mềm để quản lý xuyên suốt các hoạt động cốt lõi như xem thực đơn, ghi nhận gọi món, điều phối chế biến, theo dõi trạng thái bàn, cập nhật tồn kho và hỗ trợ quyết định quản lý.
@@ -36,7 +36,7 @@ Kiến trúc của IRMS được thiết kế theo hướng mô-đun và tuân t
 \end{enumerate}
 
 \subsubsection{Phạm vi hệ thống (IRMS)}
-Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ quy trình vận hành của một nhà hàng, từ khâu tiếp đón khách hàng, chế biến tại bếp đến quản lý kho và phân tích kinh doanh. Xét theo hướng service-based, các nhóm chức năng này là cơ sở để phân rã thành các domain service như \texttt{Table \& Reservation}, \texttt{Order}, \texttt{Kitchen Workflow}, \texttt{Billing \& Payment}, \texttt{Inventory}, \texttt{Reporting \& Analytics} và \texttt{Admin \& Access Control}. Cụ thể, hệ thống bao gồm các nhóm chức năng chính sau:
+Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ quy trình vận hành của một nhà hàng, từ khâu tiếp đón khách hàng, chế biến tại bếp đến quản lý kho và phân tích kinh doanh. Cụ thể, hệ thống bao gồm các phân hệ chức năng chính sau:
 
 \begin{itemize}
     \item \textbf{Phân hệ Phục vụ và Gọi món (Front-of-House)}
@@ -61,31 +61,20 @@ Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ
 
     \item \textbf{Phân hệ Quản trị và Kho vận}
     \begin{itemize}
-        \item \textbf{Quản lý kho và tiêu hao}: Ghi nhận tiêu hao nguyên liệu theo món đã phục vụ, hỗ trợ điều chỉnh thủ công sau prep/phục vụ và phát cảnh báo khi lượng tồn kho xuống thấp.
+        \item \textbf{Quản lý kho tự động}: Tự động khấu trừ nguyên liệu khi có đơn hàng và phát thông báo cảnh báo khi lượng tồn kho xuống thấp.
         \item \textbf{Báo cáo và Phân tích (Analytics)}: Cung cấp hệ thống dashboard về doanh thu, các món bán chạy, hiệu suất nhân viên và nhận diện các điểm nghẽn trong vận hành.
-        \item \textbf{Kiểm soát và Bảo mật}: Quản lý quyền truy cập dựa trên vai trò (RBAC) và lưu vết lịch sử cho các tác động quan trọng vào hệ thống.
+        \item \textbf{Kiểm soát và Bảo mật}: Quản lý quyền truy cập dựa trên vai trò (RBAC) và lưu vết lịch sử (audit logs) cho các tác động quan trọng vào hệ thống.
     \end{itemize}
 \end{itemize}
 
-\paragraph{Ngoài phạm vi}
-\begin{itemize}
-    \item kế toán doanh nghiệp và đối soát tài chính ở mức tập đoàn;
-    \item hệ quản trị chuỗi nhiều chi nhánh ở mức triển khai đầy đủ;
-    \item học máy nâng cao cho dự báo nhu cầu hoặc định giá động;
-    \item tích hợp nền tảng giao hàng bên thứ ba ở mức hoàn chỉnh;
-    \item hệ quản trị quan hệ khách hàng và nền tảng khách hàng thân thiết mở rộng.
-\end{itemize}
-
-\subsection{Nhóm chức năng trong phạm vi}
-IRMS bao phủ các nhóm chức năng sau. Ở mức giao tiếp, các thao tác cần phản hồi ngay như tra cứu menu, tạo order, lấy trạng thái bàn và thanh toán được thực hiện theo hướng đồng bộ; còn các luồng như điều phối order sang bếp, cập nhật trạng thái món, cảnh báo tồn kho và thông báo được phù hợp hơn với hướng event-driven nội bộ.
-\begin{itemize}
-  \item \textbf{Đặt bàn và xếp bàn}: đặt bàn, tiếp nhận khách, danh sách chờ, sơ đồ bàn, trạng thái bàn và vòng quay bàn.
-  \item \textbf{Gọi món và thực đơn}: tra cứu thực đơn, tạo đơn gọi món, ghi chú dị ứng, tùy chọn món, món kết hợp và quản lý trạng thái món.
-  \item \textbf{Điều phối bếp}: chuyển phiếu đến từng trạm bếp, theo dõi tiến độ chế biến, đồng bộ thông tin món sẵn sàng và món đã phục vụ.
-  \item \textbf{Lập hóa đơn và thanh toán}: tạo hóa đơn, tách hóa đơn, tiền boa, thanh toán nhiều phương thức, biên lai và hoàn tiền.
-  \item \textbf{Theo dõi tồn kho}: ghi nhận tiêu hao theo công thức món, theo dõi mức tồn thấp và hỗ trợ quyết định ẩn món.
-  \item \textbf{Phân tích và quản trị}: báo cáo doanh thu, báo cáo vận hành, quản trị thực đơn, giá, khuyến mãi, vai trò và lịch làm việc.
-\end{itemize}
+% \paragraph{Các thành phần mở rộng (Hợp lý \& Khả thi)}
+% Để hệ thống trở nên hoàn thiện và phù hợp với xu hướng công nghệ hiện nay, phạm vi có thể mở rộng thêm:
+% \begin{itemize}
+%     \item \textbf{Phân hệ Tự phục vụ (Self-Service)}: Cho phép khách hàng quét mã QR tại bàn để tự gọi món và thanh toán, giúp giảm tải cho nhân viên trong giờ cao điểm.
+%     \item \textbf{Tích hợp Đặt món trực tuyến (O2O)}: Kết nối với các nền tảng giao hàng bên thứ ba (GrabFood, ShopeeFood) để quản lý đơn hàng tập trung tại một hệ thống duy nhất.
+%     \item \textbf{Chăm sóc khách hàng thân thiết (Loyalty Program)}: Lưu trữ thông tin khách hàng, quản lý điểm thưởng và gửi thông báo khuyến mãi cá nhân hóa qua email/SMS.
+%     \item \textbf{Chế độ Offline (Graceful Degradation)}: Đảm bảo các thiết bị cầm tay vẫn có thể ghi nhận đơn hàng tạm thời khi mất kết nối internet và đồng bộ lại khi có mạng.
+% \end{itemize}
 
 \subsection{Các bên liên quan}
 \begin{table}[H]
