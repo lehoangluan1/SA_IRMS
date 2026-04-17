@@ -68,7 +68,7 @@ Hình~\ref{fig:irms-activity-end-to-end} mô tả một vòng vận hành điể
 
 \begin{table}[H]
 \centering
-\caption{Danh mục 25 ca sử dụng chính được đặc tả chi tiết}
+\caption{Danh mục 26 ca sử dụng chính được đặc tả chi tiết}
 \begin{tabularx}{\textwidth}{>{\bfseries}p{4.0cm} X}
 \toprule
 Nhóm & Mã ca sử dụng \\
@@ -77,7 +77,7 @@ Nhóm đặt bàn và bàn ăn & UC-RES-01, UC-RES-02, UC-RES-03, UC-RES-04, UC-
 Nhóm gọi món và điều phối bếp & UC-ORD-01, UC-ORD-02, UC-ORD-03, UC-KIT-01, UC-KIT-02, UC-KIT-03, UC-ORD-04 \\
 Nhóm thanh toán & UC-BIL-01, UC-BIL-02, UC-PAY-01, UC-PAY-02, UC-PAY-03 \\
 Nhóm tồn kho, cảnh báo và hỗ trợ nhập hàng & UC-INV-01, UC-INV-02, UC-INV-03 \\
-Nhóm quản trị, kiểm toán và phân tích & UC-REP-01, UC-ADM-01, UC-ADM-02, UC-ADM-03, UC-OPS-01 \\
+Nhóm quản trị, kiểm toán và phân tích & UC-REP-01, UC-ADM-01, UC-ADM-02, UC-ADM-03, UC-ADM-04, UC-OPS-01 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1150,636 +1150,1543 @@ Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và p
 \end{longtable}
 
 
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+\textbf{Use Case ID} & UC-BIL-01 \\ \hline
 
-    \begin{usecasebox}[title={UC-BIL-01 --- Tạo hóa đơn cho bàn}]
-    \textbf{Tác nhân chính:} Phục vụ, Thu ngân\\
-    \textbf{Mục tiêu:} Tổng hợp các đơn gọi món của bàn thành hóa đơn có thể thanh toán.\\
-    \textbf{Kích hoạt:} Khách yêu cầu tính tiền hoặc phục vụ chọn \enquote{Tạo hóa đơn}.
+\textbf{Use Case Name} & Lập hóa đơn \\ \hline
 
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Phiên bàn đang mở và có ít nhất một đơn gọi món hợp lệ.
-  \item Các món cần tính tiền đã ở trạng thái cho phép xuất hóa đơn.
+\textbf{Primary Actor} & Thu ngân \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này cho phép thu ngân tạo hóa đơn thanh toán cho bàn.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Bàn đã có đơn gọi món.
+\item Các món đã được ghi nhận trong hệ thống.
+\item Thu ngân đã đăng nhập vào hệ thống.
 \end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một hóa đơn được tạo với tổng tiền, phí, giảm giá và trạng thái thanh toán ban đầu.
-  \item Bàn có thể được chuyển sang trạng thái chờ thanh toán.
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Hóa đơn được tạo và lưu trong hệ thống.
+\item Tổng số tiền cần thanh toán được tính toán và hiển thị.
+\item Hóa đơn ở trạng thái chờ thanh toán.
 \end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Phục vụ chọn bàn cần tính tiền.
-  \item Hệ thống gom toàn bộ đơn gọi món chưa được quyết toán của bàn.
-  \item Hệ thống tính subtotal, phụ phí, thuế, khuyến mãi và tổng thanh toán.
-  \item Phục vụ/thu ngân xem trước hóa đơn và xác nhận phát hành.
-  \item Hệ thống tạo bản ghi \texttt{Bill} và danh sách phân bổ thanh toán mặc định.
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Thu ngân chọn bàn cần thanh toán trong hệ thống.
+\item Hệ thống hiển thị danh sách các món ăn, đồ uống và dịch vụ đã được gọi cho bàn đó.
+\item Thu ngân kiểm tra thông tin hóa đơn và nhấn tiếp theo.
+\item Hệ thống tính tổng tiền bao gồm các khoản phí và thuế (nếu có).
+\item Thu ngân xác nhận lập hóa đơn.
+\item Hệ thống tạo hóa đơn và hiển thị thông tin chi tiết.
+\item Thu ngân tiến hành bước thanh toán.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Nhà hàng có thể tạo hóa đơn tạm thời để khách kiểm tra trước khi thanh toán.
-  \item Có thể tạo nhiều hóa đơn con nếu bàn yêu cầu tách theo ghế hoặc theo nhóm món.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Điều chỉnh món trong hóa đơn:} Tại bước 3, nếu thu ngân phát hiện sai sót trong danh sách món.
+
+\begin{itemize}
+\item 3a. Thu ngân yêu cầu điều chỉnh món (thay đổi số lượng hoặc hủy món).
+\item 3b. Hệ thống cập nhật lại danh sách món.
+\item 3c. Hệ thống quay lại bước 3 của luồng chính.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một đơn gọi món vừa bị hủy hoặc điều chỉnh trong lúc tạo hóa đơn: hệ thống yêu cầu tính lại.
-  \item Chưa có cấu hình thuế hoặc phí cho nhà hàng: hệ thống chặn phát hành hóa đơn.
+\textbf{A2. Hủy thao tác lập hóa đơn:} Tại bước 5, nếu thu ngân quyết định không tiếp tục lập hóa đơn.
+
+\begin{itemize}
+\item 5a. Thu ngân chọn hủy thao tác.
+\item 5b. Hệ thống hủy quá trình lập hóa đơn và quay lại màn hình quản lý bàn.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một đơn gọi món không được gắn vào hơn một hóa đơn đang mở cùng lúc.
-  \item Công thức tính phí và thuế phải được chụp lại tại thời điểm tạo hóa đơn.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
 
+\textbf{E1. Lỗi hệ thống khi tạo hóa đơn:}
 
-    \begin{usecasebox}[title={UC-BIL-02 --- Tách hóa đơn và thêm tiền boa}]
-    \textbf{Tác nhân chính:} Thu ngân, Phục vụ\\
-    \textbf{Mục tiêu:} Chia hóa đơn thành nhiều phần thanh toán và ghi nhận tiền boa.\\
-    \textbf{Kích hoạt:} Khách yêu cầu thanh toán riêng theo đầu người, theo món hoặc theo số tiền.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Hóa đơn đã được tạo.
-  \item Hóa đơn chưa đóng hoàn toàn.
+\begin{itemize}
+\item 5a. Hệ thống không thể tạo hóa đơn do lỗi kỹ thuật.
+\item 5b. Hệ thống hiển thị thông báo: ``Không thể tạo hóa đơn. Vui lòng thử lại sau.''
+\item 5c. Use case kết thúc.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Các phần thanh toán (\texttt{BillSplit}) được tạo và sẵn sàng nhận giao dịch thanh toán.
-  \item Tiền boa được phân bổ theo chính sách nhà hàng.
+\textbf{E2. Không tìm thấy dữ liệu đơn món:}
+
+\begin{itemize}
+\item 2a. Hệ thống không tìm thấy dữ liệu đơn món của bàn đã chọn.
+\item 2b. Hệ thống hiển thị thông báo: ``Không có dữ liệu để lập hóa đơn.''
+\item 2c. Hệ thống quay lại màn hình quản lý bàn.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Thu ngân mở hóa đơn cần tách.
-  \item Hệ thống hiển thị các món, số ghế, subtotal và các quy tắc chia hóa đơn.
-  \item Thu ngân chọn kiểu chia: đều, theo món, theo ghế, theo số tiền hoặc kết hợp.
-  \item Thu ngân nhập tiền boa hoặc chọn mức tiền boa gợi ý.
-  \item Hệ thống tính lại số tiền của từng phần thanh toán và hiển thị chênh lệch nếu có.
-  \item Thu ngân xác nhận cấu hình tách hóa đơn.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+\textbf{Use Case ID} & UC-BIL-02 \\ \hline
+
+\textbf{Use Case Name} & Tách hóa đơn và thêm tiền boa \\ \hline
+
+\textbf{Primary Actor} & Thu ngân, Phục vụ \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này cho phép nhân viên tách hóa đơn thành nhiều phần thanh toán
+và ghi nhận tiền boa theo yêu cầu của khách.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Khách yêu cầu thanh toán riêng theo đầu người, theo món, hoặc theo số tiền.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Hóa đơn đã được tạo trong hệ thống.
+\item Hóa đơn chưa hoàn tất thanh toán.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Các phần thanh toán (Bill Split) được tạo trong hệ thống.
+\item Mỗi phần hóa đơn sẵn sàng để thực hiện thanh toán.
+\item Tiền boa được ghi nhận theo cấu hình của nhân viên.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Thu ngân mở hóa đơn cần tách.
+\item Hệ thống hiển thị danh sách món, số ghế và tổng tiền của hóa đơn.
+\item Thu ngân chọn phương thức chia hóa đơn (chia đều, theo món, theo ghế, theo số tiền hoặc kết hợp).
+\item Thu ngân chọn mức tiền boa gợi ý.
+\item Hệ thống tính lại số tiền của từng phần thanh toán.
+\item Hệ thống hiển thị tổng tiền của từng phần và chênh lệch (nếu có).
+\item Thu ngân xác nhận cấu hình tách hóa đơn.
+\item Hệ thống tạo các phần hóa đơn tương ứng.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Khách có thể chỉ tách một phần món ra thanh toán trước, phần còn lại giữ nguyên hóa đơn gốc.
-  \item Tiền boa có thể áp dụng cho toàn bộ hóa đơn hoặc gắn riêng từng split.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Tách một phần món ra thanh toán trước:} Tại bước 3.
+
+\begin{itemize}
+\item 3a. Thu ngân chọn các món cần tách ra thanh toán.
+\item 3b. Hệ thống tạo một phần hóa đơn mới cho các món đã chọn.
+\item 3c. Phần còn lại vẫn giữ trong hóa đơn gốc.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Tổng các split không khớp tổng hóa đơn: hệ thống từ chối lưu và yêu cầu cân bằng lại.
-  \item Một split đã thanh toán không được phép thay đổi phạm vi món trừ khi hoàn tiền/phê duyệt.
+\textbf{A2. Áp dụng tiền boa cho từng phần hóa đơn:} Tại bước 4.
+
+\begin{itemize}
+\item 4a. Thu ngân nhập tiền boa cho từng phần thanh toán.
+\item 4b. Hệ thống cập nhật tổng tiền của từng phần hóa đơn.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Tổng các split cộng tiền boa phải khớp với công thức tiền của hóa đơn.
-  \item Tiền boa có thể bị giới hạn tối đa theo chính sách địa phương hoặc hệ thống POS.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
 
+\textbf{E1. Tổng tiền các phần không khớp}
 
-    \begin{usecasebox}[title={UC-PAY-01 --- Xử lý thanh toán}]
-    \textbf{Tác nhân chính:} Thu ngân\\
-    \textbf{Mục tiêu:} Thu tiền cho một hóa đơn hoặc một split bằng tiền mặt, thẻ hoặc ví điện tử.\\
-    \textbf{Kích hoạt:} Thu ngân chọn \enquote{Thanh toán} trên hóa đơn hoặc split cụ thể.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Hóa đơn/split ở trạng thái chờ thanh toán.
-  \item Cổng thanh toán và cấu hình máy POS khả dụng đối với phương thức không tiền mặt.
+\begin{itemize}
+\item 7a. Hệ thống phát hiện tổng các phần thanh toán không khớp với tổng hóa đơn.
+\item 7b. Hệ thống hiển thị thông báo yêu cầu điều chỉnh lại cấu hình tách hóa đơn.
+\item 7c. Hệ thống quay lại bước 3.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một bản ghi \texttt{Payment} được tạo với trạng thái thành công, thất bại hoặc chờ xác nhận.
-  \item Nếu đã thanh toán đủ, hóa đơn được đóng.
+\textbf{E2. Phần hóa đơn đã thanh toán}
+
+\begin{itemize}
+\item 3a. Hệ thống phát hiện một phần hóa đơn đã được thanh toán.
+\item 3b. Hệ thống không cho phép thay đổi phạm vi món trong phần đó.
+\item 3c. Hệ thống yêu cầu hoàn tiền hoặc có phê duyệt trước khi chỉnh sửa.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Thu ngân chọn split cần thanh toán và phương thức thanh toán.
-  \item Hệ thống hiển thị số tiền phải thu và các bước xác nhận.
-  \item Nếu thanh toán điện tử, hệ thống gọi \texttt{PaymentGateway} để ủy quyền và ghi nhận giao dịch.
-  \item Nếu thanh toán tiền mặt, thu ngân nhập số tiền khách đưa và hệ thống tính tiền thối.
-  \item Hệ thống lưu kết quả thanh toán, cập nhật số dư còn lại và trạng thái hóa đơn.
-  \item Nếu hóa đơn đã được thanh toán đủ, hệ thống đóng hóa đơn và mở bước phát hành biên lai.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+\textbf{Use Case ID} & UC-PAY-01 \\ \hline
+
+\textbf{Use Case Name} & Xử lý thanh toán \\ \hline
+
+\textbf{Primary Actor} & Thu ngân \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này cho phép thu ngân thực hiện thanh toán cho hóa đơn
+hoặc từng phần hóa đơn bằng các phương thức như tiền mặt, thẻ
+hoặc ví điện tử.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Thu ngân chọn chức năng thanh toán trên một hóa đơn
+hoặc một phần hóa đơn trong hệ thống.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Hóa đơn hoặc phần hóa đơn đã được tạo trong hệ thống.
+\item Hóa đơn chưa hoàn tất thanh toán.
+\item Thu ngân đã đăng nhập vào hệ thống.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Một bản ghi thanh toán được lưu trong hệ thống.
+\item Số tiền đã thanh toán của hóa đơn được cập nhật.
+\item Nếu tổng tiền đã thanh toán đủ, hóa đơn được đánh dấu hoàn tất.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Thu ngân chọn hóa đơn hoặc phần hóa đơn cần thanh toán.
+\item Hệ thống hiển thị tổng số tiền cần thanh toán.
+\item Thu ngân chọn phương thức thanh toán.
+\item Nếu thanh toán điện tử, hệ thống gửi yêu cầu xử lý giao dịch.
+\item Nếu thanh toán tiền mặt, thu ngân nhập số tiền khách đưa.
+\item Hệ thống tính tiền thối (nếu có).
+\item Hệ thống ghi nhận giao dịch thanh toán và cập nhật số tiền còn lại của hóa đơn.
+\item Nếu hóa đơn chưa thanh toán đủ, hệ thống cho phép tiếp tục thực hiện thanh toán.
+\item Nếu hóa đơn đã thanh toán đủ, hệ thống đóng hóa đơn và hiển thị biên lai.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một hóa đơn có thể được thanh toán bằng nhiều phương thức trong nhiều lần khác nhau.
-  \item Nhà hàng có thể cho phép đặt cọc trước và trừ vào tổng hóa đơn khi check-out.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Sử dụng tiền đặt cọc}
+
+Tại bước 2 của Main Flow.
+
+\begin{itemize}
+\item 2a. Hệ thống phát hiện hóa đơn có tiền đặt cọc từ trước.
+\item 2b. Hệ thống hiển thị số tiền đặt cọc và số tiền còn lại cần thanh toán.
+\item 2c. Hệ thống tự động trừ tiền đặt cọc vào tổng hóa đơn.
+\item 2d. Thu ngân tiếp tục thanh toán phần tiền còn lại.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Cổng thanh toán trả về thất bại hoặc quá thời gian chờ: hệ thống ghi nhận trạng thái \texttt{Failed/Pending Review}.
-  \item Thiết bị thanh toán ngoại vi không phản hồi: hệ thống cho phép chuyển phương thức khác.
-  \item Số tiền thanh toán vượt mức còn lại: hệ thống yêu cầu xác nhận hoặc tự giới hạn theo cấu hình.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{E1. Thanh toán điện tử thất bại}
+
+\begin{itemize}
+\item 4a. Hệ thống nhận phản hồi giao dịch thất bại.
+\item 4b. Hệ thống hiển thị thông báo lỗi thanh toán.
+\item 4c. Thu ngân chọn phương thức thanh toán khác hoặc thử lại.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Mọi thanh toán điện tử phải lưu mã tham chiếu giao dịch.
-  \item Hóa đơn chỉ đóng khi tổng thanh toán hợp lệ lớn hơn hoặc bằng tổng phải thu.
-\end{itemize}
-    \end{usecasebox}
+\textbf{E2. Thiết bị thanh toán không phản hồi}
 
-
-
-    \begin{usecasebox}[title={UC-PAY-02 --- Phát hành biên lai}]
-    \textbf{Tác nhân chính:} Thu ngân, Khách hàng\\
-    \textbf{Mục tiêu:} Tạo và gửi biên lai sau khi thanh toán thành công.\\
-    \textbf{Kích hoạt:} Một hóa đơn hoặc split được thanh toán thành công.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Thanh toán đã được ghi nhận hợp lệ.
-  \item Kênh phát hành biên lai (in giấy, email, SMS) đã được cấu hình.
+\begin{itemize}
+\item 4a. Hệ thống không nhận được phản hồi từ thiết bị thanh toán.
+\item 4b. Hệ thống hiển thị thông báo lỗi.
+\item 4c. Thu ngân chuyển sang phương thức thanh toán khác.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một \texttt{Receipt} được tạo và liên kết với hóa đơn/thanh toán.
-  \item Khách hàng nhận biên lai theo kênh đã chọn.
-\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Hệ thống tạo nội dung biên lai gồm món, giảm giá, phí, phương thức thanh toán và thời gian.
-  \item Thu ngân chọn in giấy hoặc gửi điện tử.
-  \item Hệ thống phát hành biên lai và cập nhật trạng thái thành công.
-  \item Nếu cần, hệ thống gửi bản sao tới email khách hàng hoặc số điện thoại đã lưu.
+\end{longtable}
+
+\renewcommand{\arraystretch}{1.2}
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+
+\textbf{Use Case ID} & UC-PAY-02 \\ \hline
+
+\textbf{Use Case Name} & Phát hành biên lai \\ \hline
+
+\textbf{Primary Actor} & Thu ngân, Khách hàng \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này cho phép hệ thống tạo và phát hành biên lai cho khách hàng sau khi thanh toán được ghi nhận thành công.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Thanh toán của hóa đơn hoặc split bill được xác nhận thành công.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Thanh toán đã được ghi nhận hợp lệ trong hệ thống.
+\item Hệ thống đã cấu hình kênh phát hành biên lai (in giấy, email hoặc SMS).
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Biên lai (Receipt) được tạo và lưu trong hệ thống.
+\item Biên lai được liên kết với hóa đơn và giao dịch thanh toán.
+\item Khách hàng nhận được biên lai theo kênh đã chọn.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Hệ thống tạo nội dung biên lai gồm danh sách món, giảm giá, phí, phương thức thanh toán và thời gian.
+\item Thu ngân chọn phương thức phát hành biên lai (in giấy hoặc gửi điện tử).
+\item Hệ thống phát hành biên lai theo lựa chọn.
+\item Hệ thống lưu biên lai và đánh dấu trạng thái phát hành thành công.
+\item Nếu có thông tin khách hàng, hệ thống gửi bản sao biên lai qua email hoặc SMS.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Khách có thể yêu cầu xuất biên lai rút gọn hoặc chi tiết theo chính sách nhà hàng.
-  \item Trong trường hợp split bill, mỗi split có thể có biên lai riêng.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Xuất biên lai rút gọn hoặc chi tiết}
+\begin{itemize}
+\item 2a. Thu ngân chọn loại biên lai (rút gọn hoặc chi tiết).
+\item 2b. Hệ thống tạo biên lai theo định dạng tương ứng.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Máy in lỗi hoặc hết giấy: hệ thống gợi ý chuyển sang gửi điện tử hoặc in lại sau.
-  \item Email/SMS không gửi được: hệ thống vẫn lưu biên lai và cho phép gửi lại thủ công.
+\vspace{0.3mm}
+
+\textbf{A2. Biên lai theo split bill}
+\begin{itemize}
+\item 2a. Hệ thống phát hiện giao dịch thuộc split bill.
+\item 2b. Mỗi split được tạo một biên lai riêng tương ứng.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Biên lai phải tham chiếu tới ít nhất một thanh toán thành công.
-  \item Việc phát hành lại biên lai không được tạo thêm thanh toán mới.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
 
-
-    \begin{usecasebox}[title={UC-PAY-03 --- Hoàn tiền}]
-    \textbf{Tác nhân chính:} Thu ngân, Quản lý\\
-    \textbf{Mục tiêu:} Thực hiện hoàn tiền một phần hoặc toàn phần cho giao dịch đã thanh toán.\\
-    \textbf{Kích hoạt:} Khách khiếu nại, hủy món sau thanh toán hoặc cần điều chỉnh hóa đơn.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Đã tồn tại thanh toán thành công cần hoàn.
-  \item Người thao tác có quyền hoàn tiền hoặc được quản lý phê duyệt.
+\textbf{E1. Máy in lỗi hoặc hết giấy}
+\begin{itemize}
+\item 3a. Hệ thống không thể in biên lai.
+\item 3b. Hệ thống hiển thị thông báo lỗi và gợi ý gửi điện tử hoặc in lại.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một bản ghi \texttt{Refund} được tạo và liên kết với giao dịch thanh toán gốc.
-  \item Sổ audit ghi nhận người hoàn, lý do và số tiền hoàn.
+\vspace{0.3mm}
+
+\textbf{E2. Email/SMS không gửi được}
+\begin{itemize}
+\item 5a. Hệ thống gửi biên lai điện tử thất bại.
+\item 5b. Hệ thống vẫn lưu biên lai và đánh dấu “chưa gửi”.
+\item 5c. Thu ngân có thể gửi lại thủ công sau.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Thu ngân chọn giao dịch thanh toán cần hoàn.
-  \item Hệ thống hiển thị số tiền đã thanh toán, số tiền đã hoàn trước đó và mức hoàn còn khả dụng.
-  \item Thu ngân nhập số tiền hoàn và lý do.
-  \item Nếu vượt ngưỡng cho phép, hệ thống yêu cầu quản lý xác nhận.
-  \item Hệ thống gửi yêu cầu hoàn tiền tới gateway hoặc ghi nhận hoàn tiền mặt.
-  \item Hệ thống cập nhật trạng thái hoàn tiền, số dư hóa đơn và nhật ký kiểm toán.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+
+\textbf{Use Case ID} & UC-PAY-03 \\ \hline
+
+\textbf{Use Case Name} & Hoàn tiền \\ \hline
+
+\textbf{Primary Actor} & Thu ngân, Quản lý \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này cho phép hệ thống thực hiện hoàn tiền một phần hoặc toàn phần cho giao dịch thanh toán đã được ghi nhận trước đó.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Khách yêu cầu hoàn tiền do hủy món, khiếu nại hoặc điều chỉnh hóa đơn sau thanh toán.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Tồn tại giao dịch thanh toán thành công cần hoàn tiền.
+\item Người thực hiện có quyền hoàn tiền hoặc được quản lý phê duyệt.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Một bản ghi hoàn tiền (Refund) được tạo và liên kết với giao dịch gốc.
+\item Hệ thống cập nhật lại số dư hóa đơn và trạng thái thanh toán.
+\item Nhật ký kiểm toán ghi nhận người thực hiện, lý do và số tiền hoàn.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Thu ngân chọn giao dịch thanh toán cần hoàn tiền.
+\item Hệ thống hiển thị số tiền đã thanh toán và số tiền còn có thể hoàn.
+\item Thu ngân nhập số tiền hoàn và lý do hoàn tiền.
+\item Nếu vượt ngưỡng cho phép, hệ thống yêu cầu quản lý xác nhận.
+\item Hệ thống xử lý hoàn tiền qua cổng thanh toán hoặc ghi nhận hoàn tiền mặt.
+\item Hệ thống cập nhật trạng thái hoàn tiền và số dư hóa đơn.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Có thể hoàn tiền một phần cho riêng món bị lỗi mà không đóng lại toàn bộ hóa đơn.
-  \item Quản lý có thể chuyển hoàn tiền thành tín dụng khách hàng nếu nhà hàng áp dụng chính sách ví nội bộ.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Hoàn tiền một phần theo món}
+\begin{itemize}
+\item 3a. Thu ngân chọn các món cần hoàn tiền.
+\item 3b. Hệ thống tính lại số tiền tương ứng.
+\item 3c. Tiếp tục luồng hoàn tiền như bình thường.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Gateway từ chối hoàn tiền: hệ thống giữ trạng thái \texttt{Pending Review} và cảnh báo kế toán.
-  \item Số tiền hoàn vượt mức thanh toán ròng còn lại: hệ thống chặn thao tác.
-  \item Giao dịch thanh toán gốc không cho phép hoàn tiền sau thời hạn quy định: hệ thống yêu cầu xử lý ngoại lệ.
+\vspace{0.3mm}
+
+\textbf{A2. Chuyển hoàn tiền thành tín dụng khách hàng}
+\begin{itemize}
+\item 4a. Quản lý chọn phương án không hoàn tiền trực tiếp.
+\item 4b. Hệ thống ghi nhận số tiền vào ví nội bộ của khách hàng.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Mỗi khoản hoàn tiền phải tham chiếu tới giao dịch thanh toán gốc và lý do hoàn tiền chuẩn hóa.
-  \item Refund vượt ngưỡng cấu hình phải có phê duyệt của quản lý.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
 
-
-    \begin{usecasebox}[title={UC-INV-01 --- Cập nhật tiêu hao tồn kho sau phục vụ}]
-    \textbf{Tác nhân chính:} Hệ thống, Quản lý kho\\
-    \textbf{Mục tiêu:} Khấu trừ tồn kho theo món đã bán hoặc điều chỉnh thủ công khi cần.\\
-    \textbf{Kích hoạt:} Dòng món được xác nhận đã phục vụ hoặc quản lý kho tạo giao dịch điều chỉnh.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Món ăn đã được ánh xạ công thức nguyên liệu qua \texttt{RecipeLine}.
-  \item Tồn kho của nhà hàng đang hoạt động.
+\textbf{E1. Cổng thanh toán từ chối hoàn tiền}
+\begin{itemize}
+\item 5a. Hệ thống gửi yêu cầu hoàn tiền thất bại.
+\item 5b. Hệ thống ghi nhận trạng thái “Pending Review”.
+\item 5c. Thông báo cho kế toán hoặc quản lý xử lý.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Các giao dịch kho (\texttt{StockTransaction}) được ghi nhận.
-  \item Số lượng tồn (\texttt{onHand}) của nguyên liệu được cập nhật.
+\vspace{0.3mm}
+
+\textbf{E2. Số tiền hoàn vượt giới hạn}
+\begin{itemize}
+\item 3a. Hệ thống phát hiện số tiền hoàn lớn hơn mức còn lại.
+\item 3b. Hệ thống chặn thao tác và yêu cầu nhập lại.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Khi món được phục vụ, hệ thống tra công thức nguyên liệu tương ứng.
-  \item Hệ thống tính tổng định mức theo số lượng món đã ra.
-  \item Hệ thống tạo các giao dịch kho trừ tồn cho từng nguyên liệu.
-  \item Nếu có điều chỉnh thủ công, quản lý kho nhập số lượng và lý do điều chỉnh.
-  \item Hệ thống cập nhật tồn kho hiện tại và lịch sử giao dịch.
+\vspace{0.3mm}
+
+\textbf{E3. Giao dịch không còn đủ điều kiện hoàn tiền}
+\begin{itemize}
+\item 2a. Hệ thống kiểm tra giao dịch đã vượt quá thời hạn hoàn tiền được cấu hình (refund\_window\_hours, mặc định 24 giờ).
+\item 2b. Hệ thống hiển thị thông báo và yêu cầu xử lý ngoại lệ.
+\end{itemize}
+
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+\renewcommand{\arraystretch}{1.2}
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+
+\textbf{Use Case ID} & UC-INV-01 \\ \hline
+
+\textbf{Use Case Name} & Cập nhật tiêu hao tồn kho sau phục vụ \\ \hline
+
+\textbf{Primary Actor} & Hệ thống, Quản lý kho \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này mô tả việc hệ thống tự động khấu trừ tồn kho dựa trên món đã phục vụ, đồng thời cho phép quản lý kho thực hiện điều chỉnh thủ công khi cần thiết.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Một món ăn được xác nhận đã phục vụ hoặc quản lý kho tạo giao dịch điều chỉnh tồn kho.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Món ăn đã được ánh xạ công thức nguyên liệu (RecipeLine).
+\item Hệ thống tồn kho đang hoạt động bình thường.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Giao dịch kho (StockTransaction) được ghi nhận.
+\item Số lượng tồn kho của nguyên liệu được cập nhật chính xác.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Hệ thống ghi nhận món ăn được phục vụ thành công.
+\item Hệ thống tra cứu công thức nguyên liệu (RecipeLine) của món.
+\item Hệ thống tính toán lượng nguyên liệu cần trừ theo số lượng món.
+\item Hệ thống tạo giao dịch kho để khấu trừ tồn kho.
+\item Quản lý kho có thể tạo giao dịch điều chỉnh thủ công nếu cần.
+\item Hệ thống cập nhật số lượng tồn kho và lưu lịch sử giao dịch.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Nhà hàng có thể cấu hình khấu trừ khi gửi bếp thay vì khi phục vụ để phản ánh thực tế chế biến.
-  \item Các nguyên liệu hao hụt do prep đầu ca được ghi nhận bằng giao dịch riêng.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Khấu trừ tồn kho khi gửi bếp}
+\begin{itemize}
+\item 2a. Hệ thống được cấu hình khấu trừ tại thời điểm gửi bếp thay vì phục vụ.
+\item 2b. Tồn kho được trừ ngay khi món được chuyển sang bếp chế biến.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Thiếu ánh xạ công thức: hệ thống không tự trừ tồn và tạo cảnh báo cho quản lý menu/kho.
-  \item Cập nhật đồng thời dẫn đến âm kho bất thường: hệ thống chặn hoặc đưa vào hàng chờ rà soát.
+\vspace{0.3mm}
+
+\textbf{A2. Ghi nhận hao hụt nguyên liệu đầu ca}
+\begin{itemize}
+\item 5a. Quản lý kho tạo giao dịch prep/waste đầu ca.
+\item 5b. Hệ thống cập nhật tồn kho tương ứng.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Mọi điều chỉnh thủ công phải có lý do chuẩn hóa như waste, spoilage, recount, prep.
-  \item Tồn kho và lịch sử giao dịch phải được tách theo kho, loại giao dịch và thời điểm vận hành.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
 
-
-    \begin{usecasebox}[title={UC-INV-02 --- Nhận cảnh báo sắp hết hàng}]
-    \textbf{Tác nhân chính:} Quản lý, Bếp, Hệ thống\\
-    \textbf{Mục tiêu:} Phát hiện nguyên liệu xuống dưới ngưỡng và gửi cảnh báo vận hành kịp thời.\\
-    \textbf{Kích hoạt:} Tồn kho sau cập nhật nhỏ hơn ngưỡng trong \texttt{LowStockRule}.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Ngưỡng cảnh báo tồn kho đã được cấu hình cho từng nguyên liệu của nhà hàng.
-  \item Kênh gửi cảnh báo nội bộ hoạt động.
+\textbf{E1. Thiếu công thức nguyên liệu}
+\begin{itemize}
+\item 2a. Hệ thống không tìm thấy RecipeLine của món.
+\item 2b. Hệ thống không thực hiện khấu trừ và tạo cảnh báo cho quản lý.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Cảnh báo sắp hết hàng được gửi đến đúng vai trò chịu trách nhiệm.
-  \item Người dùng có thể xem danh sách nguyên liệu cần  hoặc khóa bán món liên quan.
+\vspace{0.3mm}
+
+\textbf{E2. Xung đột cập nhật tồn kho}
+\begin{itemize}
+\item 4a. Hệ thống phát hiện đồng thời nhiều giao dịch gây sai lệch tồn kho.
+\item 4b. Hệ thống tạm khóa cập nhật hoặc đưa vào hàng chờ xử lý.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Sau mỗi lần cập nhật tồn, hệ thống kiểm tra điều kiện sắp hết hàng.
-  \item Khi vượt ngưỡng cảnh báo, hệ thống tạo sự kiện và thông báo nội bộ.
-  \item Quản lý mở danh sách cảnh báo, xem nguyên liệu ảnh hưởng và các món liên quan.
-  \item Quản lý quyết định đặt hàng , điều chỉnh ngưỡng hoặc tạm ẩn món phụ thuộc.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+\renewcommand{\arraystretch}{1.2}
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+
+\textbf{Use Case ID} & UC-INV-02 \\ \hline
+
+\textbf{Use Case Name} & Nhận cảnh báo sắp hết hàng \\ \hline
+
+\textbf{Primary Actor} & Hệ thống, Quản lý, Bếp \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này mô tả việc hệ thống tự động phát hiện nguyên liệu sắp hết khi tồn kho giảm xuống dưới ngưỡng cấu hình và gửi cảnh báo đến các bộ phận liên quan.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Số lượng tồn kho của nguyên liệu giảm xuống thấp hơn ngưỡng cảnh báo (LowStockRule).
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Ngưỡng cảnh báo tồn kho đã được cấu hình cho từng nguyên liệu.
+\item Hệ thống thông báo nội bộ đang hoạt động.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Cảnh báo sắp hết hàng được tạo và gửi đến các vai trò liên quan.
+\item Danh sách nguyên liệu cần bổ sung được cập nhật trong hệ thống.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Hệ thống kiểm tra tồn kho sau mỗi lần cập nhật.
+\item Nếu tồn kho của nguyên liệu thấp hơn ngưỡng cấu hình, hệ thống tạo cảnh báo.
+\item Hệ thống gửi thông báo đến Quản lý và Bếp.
+\item Quản lý xem danh sách nguyên liệu sắp hết và các món liên quan.
+\item Quản lý quyết định đặt hàng bổ sung hoặc điều chỉnh kế hoạch sử dụng.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Nếu nhà hàng dùng tích hợp nhà cung cấp, hệ thống có thể gợi ý lượng đặt hàng theo lịch sử tiêu thụ.
-  \item Cảnh báo có thể được gom theo ca hoặc gửi ngay lập tức với nguyên liệu trọng yếu.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Gợi ý đặt hàng tự động}
+\begin{itemize}
+\item 3a. Hệ thống phân tích lịch sử tiêu thụ nguyên liệu.
+\item 3b. Hệ thống đề xuất số lượng đặt hàng phù hợp.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Ngưỡng cấu hình thiếu hoặc sai đơn vị: hệ thống ghi cảnh báo cấu hình thay vì gửi cảnh báo vận hành.
-  \item Kênh thông báo lỗi: hệ thống lưu thông báo chờ gửi lại để thực hiện lại sau.
+\vspace{0.3mm}
+
+\textbf{A2. Gom cảnh báo theo ca}
+\begin{itemize}
+\item 2a. Hệ thống gom nhiều cảnh báo trong một khoảng thời gian.
+\item 2b. Hệ thống gửi một thông báo tổng hợp thay vì gửi riêng lẻ.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một cảnh báo đang mở không được gửi lặp lại quá thường xuyên trong cùng khoảng thời gian chống spam.
-  \item Nguyên liệu trọng yếu có thể kích hoạt tự động ẩn món phụ thuộc theo chính sách vận hành hiện hành.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
 
-
-    \begin{usecasebox}[title={UC-INV-03 --- Phân tích tiêu hao và đề xuất nhập hàng}]
-    \textbf{Tác nhân chính:} Quản lý, Quản lý kho\\
-    \textbf{Mục tiêu:} Phân tích lịch sử tiêu hao, hao hụt và cảnh báo tồn để đề xuất lượng nhập hàng phù hợp cho kỳ tiếp theo.\\
-    \textbf{Kích hoạt:} Quản lý mở màn hình phân tích nhập hàng theo ngày, tuần hoặc kỳ vận hành.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Hệ thống đã lưu lịch sử \texttt{StockTransaction}, cảnh báo sắp hết hàng và số liệu tiêu hao của nhà hàng.
-  \item Quy tắc đặt lại hàng như lead time, mức an toàn hoặc min-max đã được cấu hình ở mức tối thiểu.
-  \item Người dùng có quyền xem dữ liệu tồn kho và báo cáo vận hành.
+\textbf{E1. Cấu hình ngưỡng không hợp lệ}
+\begin{itemize}
+\item 1a. Hệ thống phát hiện ngưỡng cảnh báo thiếu hoặc sai định dạng.
+\item 1b. Hệ thống bỏ qua việc tạo cảnh báo và ghi nhận lỗi cấu hình.
+\item 1c. Quản lý được thông báo để cập nhật lại cấu hình.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một tập đề xuất nhập hàng được sinh ra với lượng khuyến nghị và giải thích cơ sở tính toán.
-  \item Quản lý có thể lưu snapshot, xuất báo cáo hoặc dùng kết quả để lập kế hoạch đặt hàng.
-  \item Các nguyên liệu rủi ro cao, tiêu hao bất thường hoặc hao hụt lớn được làm nổi bật.
+\vspace{0.3mm}
+
+\textbf{E2. Lỗi kênh thông báo}
+\begin{itemize}
+\item 3a. Hệ thống không gửi được thông báo đến người dùng.
+\item 3b. Hệ thống lưu cảnh báo vào hàng đợi để gửi lại sau.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Quản lý chọn kỳ phân tích và nhóm nguyên liệu cần xem.
-  \item Hệ thống tải lịch sử tiêu hao, cảnh báo sắp hết hàng, dữ liệu hao hụt và thời gian cung ứng.
-  \item Hệ thống tính mức tiêu hao bình quân, độ biến động theo ca và mức tồn mục tiêu cho kỳ kế tiếp.
-  \item Hệ thống sinh lượng tồn mục tiêu, điểm đặt lại hàng và lượng nhập khuyến nghị.
-  \item Quản lý rà soát các đề xuất, điều chỉnh nếu cần và lưu hoặc xuất báo cáo.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+
+\textbf{Use Case ID} & UC-INV-03 \\ \hline
+
+\textbf{Use Case Name} & Phân tích tiêu hao và đề xuất nhập hàng \\ \hline
+
+\textbf{Primary Actor} & Quản lý, Quản lý kho \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này mô tả việc hệ thống phân tích dữ liệu tiêu hao, tồn kho và cảnh báo để đề xuất số lượng nhập hàng phù hợp cho kỳ vận hành tiếp theo.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Quản lý mở chức năng phân tích nhập hàng theo ngày, tuần hoặc kỳ vận hành.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Hệ thống đã có dữ liệu tồn kho và lịch sử tiêu hao (StockTransaction).
+\item Có cấu hình mức tồn an toàn hoặc min-max.
+\item Người dùng có quyền xem dữ liệu kho và báo cáo.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Hệ thống tạo danh sách đề xuất nhập hàng cho từng nguyên liệu.
+\item Quản lý có thể lưu hoặc xuất báo cáo đề xuất.
+\item Các nguyên liệu có rủi ro được đánh dấu cảnh báo.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Quản lý chọn kỳ phân tích và nhóm nguyên liệu.
+\item Hệ thống tải dữ liệu tiêu hao và tồn kho liên quan.
+\item Hệ thống tính mức tiêu hao trung bình theo kỳ.
+\item Hệ thống xác định mức tồn mục tiêu và điểm đặt hàng lại.
+\item Hệ thống tạo đề xuất số lượng nhập cho từng nguyên liệu.
+\item Quản lý xem và điều chỉnh đề xuất nếu cần.
+\item Quản lý lưu hoặc xuất báo cáo.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Nếu dữ liệu lịch sử chưa đủ dày, hệ thống chuyển sang quy tắc min-max và mức an toàn mặc định.
-  \item Quản lý có thể so sánh nhiều kỳ như cuối tuần, ngày lễ hoặc giờ cao điểm để chọn phương án nhập hàng.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Thiếu dữ liệu lịch sử}
+\begin{itemize}
+\item 3a. Hệ thống phát hiện dữ liệu không đủ để phân tích.
+\item 3b. Hệ thống chuyển sang phương pháp min-max hoặc safety stock.
+\item 3c. Đề xuất vẫn được tạo nhưng gắn nhãn độ tin cậy thấp.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Dữ liệu đơn vị tính không nhất quán hoặc thiếu ánh xạ nguyên liệu: hệ thống đánh dấu cần rà soát thủ công.
-  \item Lịch sử giao dịch quá ít: hệ thống vẫn cho phép tạo đề xuất nhưng phải gắn cảnh báo mức tin cậy thấp.
+\vspace{0.3mm}
+
+\textbf{A2. So sánh nhiều kỳ}
+\begin{itemize}
+\item 1a. Quản lý chọn nhiều kỳ (cuối tuần, lễ, cao điểm).
+\item 1b. Hệ thống tính và so sánh mức tiêu hao giữa các kỳ.
+\item 1c. Hiển thị đề xuất theo từng kịch bản.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Đề xuất nhập hàng là khuyến nghị ra quyết định, không tự động sinh giao dịch mua hàng.
-  \item Việc tính lượng nhập phải xét theo nhu cầu thực tế, lead time và mức hao hụt của nhà hàng trong từng giai đoạn vận hành.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
 
-
-    \begin{usecasebox}[title={UC-REP-01 --- Xem báo cáo doanh thu và vận hành}]
-    \textbf{Tác nhân chính:} Quản lý\\
-    \textbf{Mục tiêu:} Theo dõi doanh thu, giờ cao điểm, món bán chạy, độ trễ bếp và hiệu suất phục vụ.\\
-    \textbf{Kích hoạt:} Quản lý mở bảng điều khiển phân tích hoặc yêu cầu xuất báo cáo.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Dữ liệu giao dịch, gọi món, bếp và tồn kho đã được tổng hợp vào mô hình đọc báo cáo.
-  \item Người dùng có quyền xem báo cáo.
+\textbf{E1. Dữ liệu không đồng nhất}
+\begin{itemize}
+\item 2a. Hệ thống phát hiện sai đơn vị hoặc thiếu ánh xạ nguyên liệu.
+\item 2b. Hệ thống không tạo đề xuất cho nguyên liệu đó.
+\item 2c. Ghi nhận cần xử lý thủ công.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Quản lý có được ảnh chụp báo cáo hiện tại hoặc tệp xuất PDF/CSV.
-  \item Các chỉ số dùng cho họp vận hành được chuẩn hóa.
+\vspace{0.3mm}
+
+\textbf{E2. Lỗi hệ thống}
+\begin{itemize}
+\item 2a. Hệ thống không truy xuất được dữ liệu kho.
+\item 2b. Hiển thị thông báo lỗi và yêu cầu thử lại.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Quản lý chọn khoảng thời gian và bộ lọc báo cáo.
-  \item Hệ thống truy xuất \texttt{ReportSnapshot} hoặc tính toán số liệu mới nhất.
-  \item Hệ thống hiển thị doanh thu, số bàn quay vòng, món bán chạy, phiếu bếp chậm, tỷ lệ hủy món và hiệu suất nhân viên.
-  \item Quản lý phân tích biểu đồ, đi sâu theo ca, trạm bếp hoặc khu vực.
-  \item Nếu cần, quản lý chọn xuất báo cáo sang PDF/CSV.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+
+\textbf{Use Case ID} & UC-REP-01 \\ \hline
+
+\textbf{Use Case Name} & Xem báo cáo doanh thu và vận hành \\ \hline
+
+\textbf{Primary Actor} & Quản lý \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này mô tả việc hệ thống cung cấp báo cáo tổng hợp về doanh thu, hiệu suất phục vụ, hoạt động bếp và các chỉ số vận hành của nhà hàng.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Quản lý mở dashboard báo cáo hoặc yêu cầu xuất báo cáo theo khoảng thời gian.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Dữ liệu giao dịch, gọi món, bếp và tồn kho đã được tổng hợp vào hệ thống báo cáo.
+\item Người dùng có quyền truy cập chức năng báo cáo.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Hệ thống hiển thị dashboard báo cáo hoặc file xuất (PDF/CSV).
+\item Các chỉ số vận hành được tổng hợp theo bộ lọc đã chọn.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Quản lý chọn khoảng thời gian và bộ lọc báo cáo.
+\item Hệ thống truy xuất dữ liệu báo cáo từ read model.
+\item Hệ thống hiển thị doanh thu, món bán chạy, giờ cao điểm và hiệu suất phục vụ.
+\item Quản lý xem chi tiết theo ca, khu vực hoặc bếp.
+\item Quản lý chọn xuất báo cáo nếu cần.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Bảng điều khiển có thể hiển thị cảnh báo bất thường như thời gian ra món tăng mạnh hoặc hoàn tiền tăng đột biến.
-  \item Quản lý có thể lưu bộ lọc ưa thích để dùng lại.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Lọc và cập nhật báo cáo}
+\begin{itemize}
+\item 1a. Quản lý thay đổi bộ lọc (thời gian, khu vực, ca làm).
+\item 1b. Hệ thống truy vấn lại dữ liệu và cập nhật dashboard.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Read model báo cáo chưa được làm mới: hệ thống hiển thị thời điểm đồng bộ cuối cùng.
-  \item Khối lượng dữ liệu quá lớn: hệ thống chuyển truy vấn sang chế độ bất đồng bộ và thông báo khi hoàn tất.
+\vspace{0.3mm}
+
+\textbf{A2. Xuất báo cáo}
+\begin{itemize}
+\item 5a. Quản lý chọn định dạng xuất (PDF/CSV).
+\item 5b. Hệ thống tạo file và cung cấp cho người dùng tải về.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Báo cáo phân tích dùng dữ liệu tổng hợp, không truy cập trực tiếp vào luồng ghi giao dịch thời gian thực.
-  \item Mỗi lần xuất báo cáo phải lưu dấu vết ai xuất và thời điểm xuất.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.3mm}
 
-
-
-    \begin{usecasebox}[title={UC-ADM-01 --- Quản lý menu và giá bán}]
-    \textbf{Tác nhân chính:} Quản lý\\
-    \textbf{Mục tiêu:} Tạo, cập nhật, tạm ẩn món, thay đổi giá và chương trình khuyến mãi.\\
-    \textbf{Kích hoạt:} Quản lý mở màn hình cấu hình menu.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Người dùng có quyền quản trị menu.
-  \item Nhà hàng đang được cấu hình và có danh mục món cơ sở.
+\textbf{A3. Hiển thị cảnh báo bất thường}
+\begin{itemize}
+\item 3a. Hệ thống phát hiện chỉ số bất thường (ví dụ: hoàn tiền tăng đột biến).
+\item 3b. Hệ thống hiển thị cảnh báo trên dashboard.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Thực đơn mới hoặc thay đổi giá được lưu và có thể công bố theo lịch hiệu lực.
-  \item Những món liên quan đến đơn gọi món đang mở vẫn giữ giá đã được chụp lại trước đó.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{E1. Dữ liệu báo cáo chưa cập nhật}
+\begin{itemize}
+\item 2a. Hệ thống hiển thị thời điểm đồng bộ gần nhất.
+\item 2b. Báo cáo có thể bị giới hạn độ mới của dữ liệu.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Quản lý chọn danh mục món hoặc món cụ thể.
-  \item Hệ thống hiển thị thông tin giá, tình trạng bán, modifier và món liên quan.
-  \item Quản lý chỉnh sửa tên, giá, tình trạng bán, hình thức khuyến mãi hoặc thuộc tính món.
-  \item Quản lý lưu thay đổi và chọn công bố ngay hoặc theo lịch.
-  \item Hệ thống kiểm tra tác động tới POS/KDS và phát hành bản menu mới.
+\vspace{0.3mm}
+
+\textbf{E2. Lỗi truy xuất dữ liệu}
+\begin{itemize}
+\item 2a. Hệ thống không truy xuất được dữ liệu báo cáo.
+\item 2b. Hiển thị thông báo lỗi và yêu cầu thử lại.
+\end{itemize}
+
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+
+\textbf{Use Case ID} & UC-ADM-01 \\ \hline
+
+\textbf{Use Case Name} & Quản lý menu và giá bán \\ \hline
+
+\textbf{Primary Actor} & Quản lý \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này mô tả việc quản lý cập nhật món ăn, điều chỉnh giá bán, khuyến mãi và trạng thái hiển thị của thực đơn trong hệ thống.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Quản lý mở màn hình cấu hình thực đơn trong hệ thống.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Người dùng có quyền quản trị thực đơn.
+\item Hệ thống đã có danh mục món cơ sở.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Thực đơn hoặc thay đổi giá được lưu trong hệ thống.
+\item Các thay đổi được áp dụng theo thời điểm công bố.
+\item Các đơn hàng đang mở giữ nguyên giá đã ghi nhận trước đó.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Quản lý chọn món hoặc danh mục món cần chỉnh sửa.
+\item Hệ thống hiển thị thông tin chi tiết (giá, trạng thái, khuyến mãi).
+\item Quản lý chỉnh sửa thông tin món (tên, giá, trạng thái, khuyến mãi).
+\item Quản lý lưu thay đổi và chọn công bố ngay hoặc lên lịch.
+\item Hệ thống kiểm tra dữ liệu và cập nhật phiên bản thực đơn mới.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Có thể công bố theo ca sáng, ca tối hoặc theo ngày lễ.
-  \item Khuyến mãi có thể áp dụng theo món, danh mục hoặc mức hóa đơn.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Công bố theo lịch}
+\begin{itemize}
+\item 4a. Quản lý chọn thời gian áp dụng (ca sáng, ca tối, ngày lễ).
+\item 4b. Hệ thống lưu phiên bản và kích hoạt theo thời gian đã đặt.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Dữ liệu cấu hình thiếu bắt buộc, ví dụ chưa gán trạm bếp hoặc thiếu thuế suất: hệ thống không cho công bố.
-  \item Xung đột lịch hiệu lực giữa nhiều chương trình giá: hệ thống yêu cầu người dùng giải quyết.
+\vspace{0.3mm}
+
+\textbf{A2. Áp dụng khuyến mãi}
+\begin{itemize}
+\item 3a. Quản lý áp dụng khuyến mãi theo món, danh mục hoặc hóa đơn.
+\item 3b. Hệ thống cập nhật chính sách giá tương ứng.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Không được thay đổi trực tiếp giá của đơn gọi món đã xác nhận.
-  \item Mọi lần công bố thực đơn phải được ghi vào nhật ký kiểm toán và có phiên bản.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
 
-
-    \begin{usecasebox}[title={UC-ADM-02 --- Quản lý vai trò và phân quyền}]
-    \textbf{Tác nhân chính:} Quản trị viên, Quản lý\\
-    \textbf{Mục tiêu:} Gán vai trò và quyền thao tác cho lễ tân, phục vụ, bếp, thu ngân và quản lý.\\
-    \textbf{Kích hoạt:} Quản trị viên mở màn hình quản lý người dùng.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Tài khoản người dùng đã tồn tại hoặc đang được tạo mới.
-  \item Chính sách RBAC và danh mục quyền đã được định nghĩa.
+\textbf{E1. Thiếu dữ liệu cấu hình}
+\begin{itemize}
+\item 5a. Hệ thống phát hiện thiếu thông tin bắt buộc (ví dụ: trạm bếp hoặc thuế).
+\item 5b. Hệ thống không cho phép công bố thực đơn.
+\item 5c. Yêu cầu người dùng bổ sung thông tin.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Tài khoản người dùng được gán đúng vai trò và phạm vi quyền.
-  \item Các thao tác nhạy cảm bị kiểm soát bởi \texttt{AuthorizationPolicy}.
+\vspace{0.3mm}
+
+\textbf{E2. Xung đột lịch hiệu lực}
+\begin{itemize}
+\item 4a. Hệ thống phát hiện trùng lịch áp dụng giá hoặc khuyến mãi.
+\item 4b. Hệ thống yêu cầu người dùng điều chỉnh trước khi lưu.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Quản trị viên tìm người dùng cần cập nhật.
-  \item Hệ thống hiển thị vai trò hiện tại và phạm vi quyền.
-  \item Quản trị viên thêm/bỏ vai trò hoặc gán quyền  theo chính sách.
-  \item Hệ thống lưu thay đổi và yêu cầu người dùng đăng nhập lại nếu cần.
-  \item Audit log ghi nhận toàn bộ thay đổi quyền.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+
+\textbf{Use Case ID} & UC-ADM-02 \\ \hline
+
+\textbf{Use Case Name} & Quản lý vai trò và phân quyền \\ \hline
+
+\textbf{Primary Actor} & Quản trị viên, Quản lý \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này mô tả việc gán vai trò và phân quyền cho người dùng trong hệ thống nhằm kiểm soát các thao tác theo cơ chế RBAC.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Quản trị viên mở màn hình quản lý người dùng hoặc phân quyền hệ thống.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Tài khoản người dùng đã tồn tại hoặc đang được tạo mới.
+\item Chính sách RBAC và danh mục quyền đã được định nghĩa.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Người dùng được gán vai trò và quyền truy cập phù hợp.
+\item Hệ thống cập nhật AuthorizationPolicy cho các thao tác liên quan.
+\item Thay đổi quyền được ghi nhận trong audit log.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Quản trị viên tìm kiếm người dùng cần cập nhật.
+\item Hệ thống hiển thị vai trò và quyền hiện tại.
+\item Quản trị viên gán hoặc thay đổi vai trò/quyền theo chính sách.
+\item Hệ thống lưu thay đổi phân quyền.
+\item Hệ thống yêu cầu người dùng đăng nhập lại.
+\item Hệ thống ghi nhận thay đổi vào audit log.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Có thể gán vai trò tạm thời cho ca làm việc hoặc theo khoảng thời gian hiệu lực.
-  \item Quyền có thể được giới hạn theo khu vực vận hành như sảnh, bếp hoặc quầy thu ngân.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Gán vai trò tạm thời}
+\begin{itemize}
+\item 3a. Quản trị viên chọn vai trò có thời hạn.
+\item 3b. Hệ thống gán vai trò theo khoảng thời gian hiệu lực.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Người dùng đang tự gỡ quyền quản trị cuối cùng của hệ thống: thao tác bị chặn.
-  \item Vai trò xung đột với chính sách hiện hành: hệ thống yêu cầu xác nhận hoặc điều chỉnh.
+\textbf{A2. Giới hạn theo khu vực}
+\begin{itemize}
+\item 3a. Quản trị viên giới hạn quyền theo khu vực (bếp, sảnh, quầy).
+\item 3b. Hệ thống áp dụng phạm vi quyền tương ứng.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Nguyên tắc tối thiểu quyền được áp dụng mặc định.
-  \item Hoàn tiền, ghi đè giá và điều chỉnh tồn kho là các quyền nhạy cảm phải được kiểm soát riêng.
-\end{itemize}
-    \end{usecasebox}
+\end{minipage}
+\\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
 
-
-    \begin{usecasebox}[title={UC-ADM-03 --- Xem nhật ký kiểm toán và truy vết thao tác nhạy cảm}]
-    \textbf{Tác nhân chính:} Quản lý, Quản trị viên\\
-    \textbf{Mục tiêu:} Tra cứu, đối chiếu và truy vết các hành động nhạy cảm như hoàn tiền, hủy món, ghi đè giá, đổi quyền hoặc mở lại hóa đơn.\\
-    \textbf{Kích hoạt:} Người có thẩm quyền mở màn hình kiểm toán để điều tra sự cố, rà soát cuối ca hoặc phục vụ kiểm tra nội bộ.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Hệ thống đang ghi nhận \texttt{AuditLog} cho các hành động nhạy cảm.
-  \item Người dùng có quyền xem nhật ký kiểm toán ở phạm vi được phân quyền hoặc toàn hệ thống theo vai trò.
-  \item Dữ liệu correlation id, thời gian và đối tượng bị tác động có thể truy xuất được.
+\textbf{E1. Gỡ quyền quản trị cuối cùng}
+\begin{itemize}
+\item 3a. Hệ thống phát hiện đây là quyền quản trị cuối cùng.
+\item 3b. Hệ thống chặn thao tác để tránh mất quyền hệ thống.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Người dùng xem được chuỗi hành động liên quan đến một giao dịch hoặc một người thao tác.
-  \item Hệ thống lưu lại dấu vết việc xem hoặc xuất audit log nếu chính sách yêu cầu.
-  \item Có thể tạo báo cáo hoặc gắn cờ theo dõi cho bản ghi cần điều tra thêm.
+\textbf{E2. Xung đột chính sách quyền}
+\begin{itemize}
+\item 3a. Hệ thống phát hiện vai trò xung đột chính sách RBAC.
+\item 3b. Yêu cầu quản trị viên điều chỉnh trước khi lưu.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Người dùng mở màn hình nhật ký kiểm toán.
-  \item Hệ thống kiểm tra quyền truy cập vào dữ liệu kiểm toán nhạy cảm.
-  \item Người dùng nhập bộ lọc như khoảng thời gian, người thao tác, thực thể, loại hành động hoặc mã liên kết.
-  \item Hệ thống truy vấn các bản ghi audit bất biến và hiển thị danh sách kết quả phù hợp.
-  \item Người dùng mở chi tiết một bản ghi để xem giá trị trước, giá trị sau, lý do, correlation id và ngữ cảnh liên quan.
-  \item Nếu cần, người dùng xuất báo cáo hoặc đánh dấu follow-up để tiếp tục điều tra.
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+
+\textbf{Use Case ID} & UC-ADM-03 \\ \hline
+
+\textbf{Use Case Name} & Xem nhật ký kiểm toán và truy vết thao tác nhạy cảm \\ \hline
+
+\textbf{Primary Actor} & Quản lý, Quản trị viên \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này mô tả việc tra cứu và truy vết các hành động nhạy cảm như hoàn tiền, hủy món, ghi đè giá, thay đổi quyền hoặc mở lại hóa đơn.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Người dùng có thẩm quyền mở màn hình kiểm toán để điều tra, rà soát hoặc kiểm tra nội bộ.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Hệ thống đã ghi nhận AuditLog cho các thao tác nhạy cảm.
+\item Người dùng có quyền truy cập nhật ký kiểm toán.
+\item Dữ liệu giao dịch và correlation id có thể truy xuất.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Hệ thống hiển thị chuỗi hành động liên quan đến truy vấn.
+\item Có thể xuất báo cáo hoặc đánh dấu bản ghi cần theo dõi.
+\item Hành vi truy cập audit log được ghi lại.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Người dùng mở màn hình nhật ký kiểm toán.
+\item Hệ thống kiểm tra quyền truy cập.
+\item Người dùng nhập bộ lọc tìm kiếm (thời gian, người thao tác, loại hành động, mã liên kết).
+\item Hệ thống truy vấn và hiển thị danh sách audit log.
+\item Người dùng chọn một bản ghi để xem chi tiết (giá trị trước, sau, lý do, ngữ cảnh).
+\item Người dùng xuất báo cáo hoặc gắn cờ theo dõi nếu cần.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Người dùng có thể đi từ một hóa đơn, payment hoặc order cụ thể sang chuỗi audit liên quan.
-  \item Các trường nhạy cảm như thông tin liên hệ hoặc dữ liệu thanh toán tham chiếu có thể được làm mờ theo quyền.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Truy vết từ giao dịch}
+\begin{itemize}
+\item 3a. Người dùng truy xuất audit log từ hóa đơn/ payment/order.
+\item 3b. Hệ thống hiển thị toàn bộ chuỗi liên quan.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Người dùng không đủ quyền xem chi tiết audit log: hệ thống từ chối truy cập hoặc chỉ cho xem bản rút gọn.
-  \item Không có bản ghi phù hợp với bộ lọc: hệ thống thông báo không có kết quả và cho phép điều chỉnh bộ lọc.
-  \item Kho audit tạm thời chậm hoặc không sẵn sàng: hệ thống chuyển sang chế độ chỉ đọc hạn chế và cảnh báo quản trị.
+\textbf{A2. Che dữ liệu theo quyền}
+\begin{itemize}
+\item 4a. Hệ thống ẩn thông tin nhạy cảm nếu không đủ quyền.
+\item 4b. Chỉ hiển thị dữ liệu rút gọn.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Bản ghi kiểm toán đã phát sinh không được phép sửa nội dung theo cách làm mất dấu vết gốc.
-  \item Việc xem hoặc xuất audit log mức nhạy cảm cao cũng phải được ghi nhận vào audit log.
-\end{itemize}
-    \end{usecasebox}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
 
-
-    \begin{usecasebox}[title={UC-OPS-01 --- Quản lý ca làm nhân viên}]
-    \textbf{Tác nhân chính:} Quản lý\\
-    \textbf{Mục tiêu:} Phân công nhân sự cho từng khu vực và ca làm việc.\\
-    \textbf{Kích hoạt:} Quản lý mở lịch làm việc và tạo/cập nhật ca.
-
-    \medskip
-    \textbf{Tiền điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Tài khoản nhân viên đã tồn tại.
-  \item Mẫu ca làm và cấu hình khu vực phục vụ đã được tạo.
+\textbf{E1. Không đủ quyền truy cập}
+\begin{itemize}
+\item 2a. Hệ thống từ chối truy cập hoặc hiển thị bản rút gọn.
 \end{itemize}
 
-    \textbf{Hậu điều kiện}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một hoặc nhiều \texttt{ShiftAssignment} được tạo hoặc cập nhật.
-  \item Nhân viên nhìn thấy ca được phân trong lịch làm việc.
+\textbf{E2. Không có dữ liệu phù hợp}
+\begin{itemize}
+\item 4a. Hệ thống thông báo không tìm thấy kết quả.
+\item 4b. Người dùng điều chỉnh bộ lọc tìm kiếm.
 \end{itemize}
 
-    \textbf{Luồng chính}
-    \begin{enumerate}[leftmargin=1.8em]
-  \item Quản lý chọn ngày, khu vực và loại ca.
-  \item Hệ thống hiển thị danh sách nhân viên khả dụng cùng kỹ năng/vai trò.
-  \item Quản lý gán nhân viên cho ca và khu vực phụ trách.
-  \item Hệ thống kiểm tra trùng ca, thiếu vị trí bắt buộc và giới hạn giờ làm.
-  \item Quản lý lưu lịch; hệ thống gửi thông báo cho nhân viên.
+\textbf{E3. Hệ thống audit chậm}
+\begin{itemize}
+\item 4a. Hệ thống chuyển sang chế độ đọc hạn chế.
+\item 4b. Thông báo tình trạng cho quản trị viên.
+\end{itemize}
+
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+
+
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+\textbf{Use Case ID} & UC-ADM-04 \\ \hline
+
+\textbf{Use Case Name} & Tạo món mới \\ \hline
+
+\textbf{Primary Actor} & Quản lý \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này mô tả việc quản lý tạo mới một món ăn trong thực đơn và khai báo thông tin nguyên liệu để phục vụ bán hàng và quản lý tồn kho.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Quản lý chọn chức năng tạo món mới trong màn hình quản lý menu.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Người dùng có quyền quản trị menu.
+\item Hệ thống đã có danh mục nguyên liệu trong kho.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Món mới được tạo và lưu trong hệ thống menu.
+\item Công thức nguyên liệu (recipe) được liên kết với món.
+\item Món có thể được sử dụng trong gọi món và trừ kho tự động.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Quản lý chọn chức năng tạo món mới.
+\item Hệ thống hiển thị form nhập thông tin món.
+\item Quản lý nhập thông tin món (tên, giá, mô tả, danh mục, trạng thái bán).
+\item Quản lý khai báo danh sách nguyên liệu và định lượng.
+\item Quản lý lưu thông tin món.
+\item Hệ thống kiểm tra dữ liệu hợp lệ.
+\item Hệ thống lưu món và công thức nguyên liệu vào hệ thống.
 \end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
 
-    \textbf{Luồng thay thế}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Quản lý có thể sao chép lịch từ tuần trước rồi tinh chỉnh.
-  \item Ca thiếu người có thể được đánh dấu chờ xác nhận hoặc mở đăng ký tự nguyện.
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Thiếu thông tin bắt buộc}
+\begin{itemize}
+\item 3a. Hệ thống phát hiện thiếu tên món hoặc giá.
+\item 3b. Hệ thống hiển thị thông báo lỗi.
+\item 3c. Quay lại bước 3.
 \end{itemize}
 
-    \textbf{Ngoại lệ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Nhân viên bị phân ca trùng thời gian hoặc vượt giới hạn giờ làm: hệ thống chặn lưu.
-  \item Người dùng không thuộc phạm vi phân công được chọn: hệ thống yêu cầu thay đổi phạm vi gán.
+\textbf{A2. Thiếu nguyên liệu}
+\begin{itemize}
+\item 4a. Hệ thống phát hiện chưa khai báo nguyên liệu.
+\item 4b. Hệ thống yêu cầu bổ sung nguyên liệu trước khi lưu.
 \end{itemize}
 
-    \textbf{Quy tắc nghiệp vụ}
-    \begin{itemize}[leftmargin=1.8em]
-  \item Một nhân viên không được có hai ca chồng lấn ở cùng thời điểm.
-  \item Ca bếp, ca thu ngân và ca quản lý phải đáp ứng số lượng tối thiểu theo chính sách vận hành.
+\end{minipage}
+\\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{E1. Lỗi hệ thống khi lưu}
+\begin{itemize}
+\item 5a. Hệ thống không thể lưu món mới.
+\item 5b. Hệ thống hiển thị thông báo lỗi và yêu cầu thử lại.
 \end{itemize}
-    \end{usecasebox}
+
+\end{minipage}
+\\ \hline
+
+\end{longtable}
+\begin{longtable}{|p{4cm}|p{11cm}|}
+\hline
+
+\textbf{Use Case ID} & UC-OPS-01 \\ \hline
+
+\textbf{Use Case Name} & Quản lý ca làm nhân viên \\ \hline
+
+\textbf{Primary Actor} & Quản lý \\ \hline
+
+\textbf{Description} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Use case này mô tả việc phân công nhân sự cho từng khu vực và ca làm việc trong nhà hàng.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Trigger} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+Quản lý mở lịch làm việc và tạo hoặc cập nhật ca làm.
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Preconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Tài khoản nhân viên đã tồn tại.
+\item Mẫu ca làm và cấu hình khu vực đã được thiết lập.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Postconditions} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{itemize}
+\item Ca làm (ShiftAssignment) được tạo hoặc cập nhật.
+\item Nhân viên nhận được lịch làm việc mới.
+\end{itemize}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Main Flow} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+\begin{enumerate}
+\item Quản lý chọn ngày, khu vực và loại ca.
+\item Hệ thống hiển thị danh sách nhân viên khả dụng theo vai trò và kỹ năng.
+\item Quản lý gán nhân viên vào ca và khu vực.
+\item Hệ thống kiểm tra trùng ca, thiếu nhân sự và giới hạn giờ làm.
+\item Quản lý lưu lịch làm việc.
+\item Hệ thống gửi thông báo cho nhân viên liên quan.
+\end{enumerate}
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Alternative Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{A1. Sao chép lịch tuần trước}
+\begin{itemize}
+\item 1a. Quản lý chọn sao chép lịch từ tuần trước.
+\item 1b. Hệ thống tạo lịch mới và cho phép chỉnh sửa.
+\end{itemize}
+
+\textbf{A2. Ca thiếu nhân sự}
+\begin{itemize}
+\item 3a. Hệ thống đánh dấu ca chưa đủ người.
+\item 3b. Ca được đưa vào trạng thái chờ xác nhận hoặc tuyển bổ sung.
+\end{itemize}
+
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\textbf{Exception Flows} &
+\begin{minipage}[t]{\linewidth}
+\vspace{0.3mm}
+
+\textbf{E1. Trùng ca hoặc vượt giờ làm}
+\begin{itemize}
+\item 4a. Hệ thống phát hiện xung đột lịch làm.
+\item 4b. Chặn lưu và yêu cầu điều chỉnh.
+\end{itemize}
+
+\textbf{E2. Sai phạm vi phân công}
+\begin{itemize}
+\item 3a. Nhân viên không thuộc phạm vi khu vực được chọn.
+\item 3b. Hệ thống yêu cầu thay đổi phân công.
+\end{itemize}
+
+\vspace{0.3mm}
+\end{minipage}
+\\ \hline
+
+\end{longtable}
 
 \section{Kiến trúc phần mềm}
