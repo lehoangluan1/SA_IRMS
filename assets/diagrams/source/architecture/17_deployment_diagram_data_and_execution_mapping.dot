@@ -17,31 +17,33 @@ digraph G {
   edge [fontname="DejaVu Sans", fontsize=9.4, color="#64748B", penwidth=1.0, arrowsize=0.72];
 
   subgraph cluster_appserver {
-    label="Backend Application Node";
+    label="Business Service Node";
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#EFF6FF";
     apphost [shape=box3d, fillcolor="#ECFEFF", label="«device»
 Backend IRMS Application Server"];
     apprt [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
-IRMS Runtime"];
+Service Runtime"];
 
     reservation [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Reservation & Seating Module"];
+Reservation & Seating Service"];
     ordering    [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Ordering Module"];
+Ordering & Menu Service"];
     kitchen     [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Kitchen Coordination Module"];
+Kitchen Coordination Service"];
     billing     [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Billing & Settlement Module"];
+Billing & Settlement Service"];
     inventory   [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Inventory Monitoring Module"];
+Inventory Monitoring Service"];
     reporting   [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Reporting Module"];
+Reporting Service"];
     iam         [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Identity & Access Module"];
+IAM & Audit Service
+(access control)"];
     audit       [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Audit Module"];
+IAM & Audit Service
+(audit trail)"];
 
     apphost -> apprt [arrowhead=none, color="#94A3B8"];
     apprt -> reservation [arrowhead=none, color="#94A3B8"];
@@ -55,14 +57,14 @@ Audit Module"];
   }
 
   subgraph cluster_worker {
-    label="Asynchronous Worker Node";
+    label="Event-Driven Worker Node";
     color="#C4B5FD";
     style="rounded,filled";
     fillcolor="#F5F3FF";
     workerh [shape=box3d, fillcolor="#ECFEFF", label="«device»
 Background Worker Host"];
     workrt [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
-Worker Runtime"];
+Background Worker Runtime"];
     notifyj [shape=note, fillcolor="#FFFFFF", label="«artifact»
 Notification Job Handler"];
     receiptj[shape=note, fillcolor="#FFFFFF", label="«artifact»
@@ -125,12 +127,12 @@ Notification Service"];
   iam         -> schema_iam    [label="access control"];
   audit       -> schema_iam    [label="audit trail"];
 
-  apprt -> workrt [style=dashed, label="async jobs"];
-  projj -> rv [label="refresh read model"];
+  apprt -> workrt [style=dashed, label="publish outbox events"];
+  projj -> rv [label="refresh reporting views"];
   workrt -> notify [label="notification adapter"];
-  workrt -> printer [label="print adapter"];
-  billing -> payment [label="payment adapter"];
-  kitchen -> kds [label="ticket stream / poll API"];
+  workrt -> printer [label="receipt printer adapter"];
+  billing -> payment [label="payment adapter API"];
+  kitchen -> kds [label="KitchenTicketCreated / poll API"];
 
   apphost -> workerh [style=invis, weight=8];
   workerh -> dbhost [style=invis, weight=8];

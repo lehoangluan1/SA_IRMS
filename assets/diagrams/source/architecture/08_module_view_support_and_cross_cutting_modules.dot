@@ -10,7 +10,7 @@ digraph G {
     splines=polyline,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="UML Package Diagram - Supporting and Cross-Cutting Modules of IRMS"
+    label="UML Package Diagram - Supporting and Cross-Cutting Services of IRMS"
   ];
 
   node [
@@ -34,43 +34,43 @@ digraph G {
   ];
 
   subgraph cluster_model {
-    label="<<model>> Module View";
+    label="<<model>> Service Decomposition View";
     color="#94A3B8";
     penwidth=1.1;
     style="rounded";
 
     subgraph cluster_sources {
-      label="<<package>> Operational Source Packages";
+      label="<<package>> Operational Service Sources";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
 
-      reservation_source [label="Reservation Source\nreservation events,\nwaitlist state,\nseating updates"];
-      ordering_source [label="Ordering Source\norder events,\nmodifier updates,\nstate transitions"];
-      kitchen_source [label="Kitchen Source\ndish-ready events,\nserve events,\nstation updates"];
-      billing_source [label="Billing Source\npayment events,\nrefund trace,\nreceipt state"];
+      reservation_source [label="Reservation & Seating Service\nReservationConfirmed,\nwaitlist state,\nTableSessionOpened"];
+      ordering_source [label="Ordering & Menu Service\nOrderConfirmed,\nmodifier updates,\nstate transitions"];
+      kitchen_source [label="Kitchen Coordination Service\nKitchenTicketCreated,\nOrderItemPrepared,\nstation updates"];
+      billing_source [label="Billing & Settlement Service\nBillIssued,\nPaymentCaptured,\nRefundRequested"];
     }
 
     subgraph cluster_support {
-      label="<<package>> Support Packages";
+      label="<<package>> Supporting Services";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
 
-      contracts [label="Shared Event Contracts\nreservation event,\norder fact,\nserve fact,\npayment fact"];
-      inventory_support [label="Inventory Package\nstock projection,\nrecipe usage,\nthreshold policy"];
-      reporting_support [label="Reporting Package\nread-model projection,\nKPI query,\ntrend analysis"];
-      notification_support [label="Notification Package\nreservation message,\nlow-stock alert,\ne-receipt orchestration"];
+      contracts [label="Shared Event Contracts\nReservationConfirmed,\nOrderConfirmed,\nOrderItemPrepared,\nPaymentCaptured"];
+      inventory_support [label="Inventory Monitoring Service\nstock projection,\nrecipe usage,\nthreshold policy"];
+      reporting_support [label="Reporting Service\nread-model projection,\nKPI query,\ntrend analysis"];
+      notification_support [label="Notification Service\nreservation message,\nInventoryLow alert,\nreceipt delivery"];
     }
 
     subgraph cluster_governance {
-      label="<<package>> Cross-Cutting Governance Packages";
+      label="<<package>> Governance and Control Services";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
 
-      iam_package [label="IAM Package\nrole resolution,\nauthorization policy,\naccess decision"];
-      audit_package [label="Audit Package\naudit recorder,\ntrace enrichment,\ncompliance query"];
+      iam_package [label="IAM & Audit Service\naccess policy,\nauthorization decision,\naudit trigger"];
+      audit_package [label="Audit Trail Projection\ntrace enrichment,\ncompliance query"];
     }
 
     subgraph cluster_boundary {
@@ -85,22 +85,22 @@ digraph G {
     }
   }
 
-  reservation_source -> contracts [label="publish"];
-  ordering_source -> contracts [label="publish"];
-  kitchen_source -> contracts [label="publish"];
-  billing_source -> contracts [label="publish"];
+  reservation_source -> contracts [label="publish domain event"];
+  ordering_source -> contracts [label="publish domain event"];
+  kitchen_source -> contracts [label="publish domain event"];
+  billing_source -> contracts [label="publish domain event"];
 
-  contracts -> inventory_support [label="consume"];
-  contracts -> reporting_support [label="consume"];
-  contracts -> notification_support [label="consume"];
-  contracts -> audit_package [label="consume"];
+  contracts -> inventory_support [label="consume event"];
+  contracts -> reporting_support [label="consume event"];
+  contracts -> notification_support [label="consume event"];
+  contracts -> audit_package [label="consume event"];
 
   iam_package -> reservation_source [label="authorize"];
   iam_package -> ordering_source [label="authorize"];
   iam_package -> kitchen_source [label="authorize"];
   iam_package -> billing_source [label="authorize"];
 
-  billing_source -> payment_adapter [label="capture and refund"];
-  billing_source -> receipt_adapter [label="issue receipt"];
-  notification_support -> notification_adapter [label="dispatch"];
+  billing_source -> payment_adapter [label="capture / refund API"];
+  billing_source -> receipt_adapter [label="print receipt"];
+  notification_support -> notification_adapter [label="dispatch notification"];
 }

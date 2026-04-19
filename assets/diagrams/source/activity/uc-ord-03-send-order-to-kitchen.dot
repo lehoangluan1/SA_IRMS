@@ -2,32 +2,32 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
   node [fontname="DejaVu Sans"];
   edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-ORD-03 — Gửi đơn gọi món sang bếp";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-ORD-03 -- Send Order to Kitchen";
 
   subgraph cluster_l1 {
     style="rounded,filled";
     fillcolor="#EAF3FF"; color="#BBBBBB";
-    label="Phục vụ";
+    label="Server";
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    n1 [label="Chọn các dòng món cần gửi\nxuống bếp", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n2 [label="Đánh dấu món phục vụ sau\nnếu có", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n1 [label="Select order lines to send\nto the kitchen", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n2 [label="Mark items for later service\nif needed", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n0 -> n1 -> n2 [style=invis, weight=20];
   }
 
   subgraph cluster_l2 {
     style="rounded,filled";
     fillcolor="#FFF8DB"; color="#BBBBBB";
-    label="Hệ thống IRMS";
-    n3 [label="Kiểm tra trạng thái đơn gọi món,\ndòng món chưa gửi và quyền gửi", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n4 [label="Có dòng món hợp lệ để gửi?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n5 [label="Tách nhóm gửi ngay và nhóm\nphục vụ sau", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n6 [label="Kiểm tra quy tắc định tuyến\ntrạm bếp của từng món", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n7 [label="Định tuyến hợp lệ?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n8 [label="Màn hình bếp khả dụng?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n9 [label="Tạo KitchenTicket theo trạm,\nưu tiên và hạn phục vụ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n10 [label="Lưu dấu thời gian gửi và cập nhật\ntrạng thái đơn gọi món", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n11 [label="Đưa yêu cầu vào hàng chờ gửi lại\nvà cảnh báo phục vụ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n12 [label="Chặn gửi và báo lỗi cấu hình\nthực đơn hoặc trạm bếp", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="IRMS";
+    n3 [label="Check order status,\nunsent lines, and send permission", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n4 [label="Valid lines available to send?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n5 [label="Split immediate items and\nlater-service items", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n6 [label="Check station routing rules\nfor each item", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n7 [label="Valid station routing?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n8 [label="Kitchen display available?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n9 [label="Create kitchen tickets by station,\npriority, and service target", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Mark order lines as sent and\npublish KitchenTicketCreated", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n11 [label="Queue retry request and\nalert the server", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n12 [label="Block send and report\nmenu or station configuration error", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n13 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n3 -> n4 -> n5 -> n6 -> n7 -> n8 -> n9 -> n10 -> n11 -> n12 -> n13 [style=invis, weight=20];
   }
@@ -35,8 +35,8 @@ digraph G {
   subgraph cluster_l3 {
     style="rounded,filled";
     fillcolor="#EAFBF1"; color="#BBBBBB";
-    label="Màn hình bếp";
-    n14 [label="Hiển thị phiếu mới,\nphát cảnh báo và xếp hàng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="Kitchen Display";
+    n14 [label="Show new kitchen ticket,\nraise alert, and queue it", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n15 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n14 -> n15 [style=invis, weight=20];
   }
@@ -45,14 +45,14 @@ digraph G {
   n1 -> n2;
   n2 -> n3;
   n3 -> n4;
-  n4 -> n5 [xlabel="Có"];
-  n4 -> n13 [xlabel="Không"];
+  n4 -> n5 [xlabel="Yes"];
+  n4 -> n13 [xlabel="No"];
   n5 -> n6;
   n6 -> n7;
-  n7 -> n8 [xlabel="Có"];
-  n7 -> n12 [xlabel="Không"];
-  n8 -> n9 [xlabel="Có"];
-  n8 -> n11 [xlabel="Không"];
+  n7 -> n8 [xlabel="Yes"];
+  n7 -> n12 [xlabel="No"];
+  n8 -> n9 [xlabel="Yes"];
+  n8 -> n11 [xlabel="No"];
   n9 -> n10;
   n10 -> n14;
   n14 -> n15;

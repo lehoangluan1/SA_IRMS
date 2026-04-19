@@ -2,51 +2,47 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
   node [fontname="DejaVu Sans"];
   edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-PAY-02 — Phát hành biên lai";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-PAY-02 -- Issue Receipt";
   subgraph cluster_l1 {
     style="rounded,filled";
     fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
-    label="Thu ngân / Khách hàng"; fontsize=14; labelloc="t"; labeljust="l";
+    label="Cashier / Customer"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n2 [label="Chọn in giấy hoặc
-gửi điện tử", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n3 [label="In giấy?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n2 [label="Choose paper print or\ndigital delivery", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n3 [label="Paper print?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
     n2 -> n3 [style=invis, weight=20];
   }
   subgraph cluster_l2 {
     style="rounded,filled";
     fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
-    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    label="IRMS"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    n1 [label="Tạo nội dung biên
-lai", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n7 [label="Cập nhật trạng thái
-phát hành", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n8 [label="Lưu biên lai và cho
-phép gửi lại", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n1 [label="Generate receipt content", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n7 [label="Mark receipt as\nissued", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n8 [label="Store receipt and allow\nresend", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n9 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n0 -> n1 -> n7 -> n8 -> n9 [style=invis, weight=20];
   }
   subgraph cluster_l3 {
     style="rounded,filled";
     fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
-    label="Thiết bị in và kênh thông báo"; fontsize=14; labelloc="t"; labeljust="l";
+    label="Printer and Notification Channels"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n4 [label="In biên lai", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n5 [label="Gửi email / SMS", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n6 [label="Gửi thành công?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n4 [label="Print receipt", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n5 [label="Send digital receipt", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n6 [label="Sent successfully?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
     n4 -> n5 -> n6 [style=invis, weight=20];
   }
   n0 -> n1;
   n1 -> n2;
   n2 -> n3;
-  n3 -> n4 [xlabel="Có"];
-  n3 -> n5 [xlabel="Không"];
+  n3 -> n4 [xlabel="Yes"];
+  n3 -> n5 [xlabel="No"];
   n4 -> n7;
   n5 -> n6;
-  n6 -> n7 [xlabel="Có"];
-  n6 -> n8 [xlabel="Không"];
+  n6 -> n7 [xlabel="Yes"];
+  n6 -> n8 [xlabel="No"];
   n7 -> n9;
   n8 -> n9;
 }

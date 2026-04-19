@@ -21,9 +21,9 @@ digraph G {
   cashier [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nCashier Terminal"];
   manager [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nManager Console"];
 
-  api_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nAPI Server\n\n<<artifact>> Reservation Module\n<<artifact>> Menu Module\n<<artifact>> Ordering Module\n<<artifact>> Kitchen Module\n<<artifact>> Billing Module\n<<artifact>> Inventory Module\n<<artifact>> IAM Module\n<<artifact>> Audit API"];
-  worker_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nBackground Worker\n\n<<artifact>> Notification Worker\n<<artifact>> Projection Worker\n<<artifact>> Receipt Job Processor"];
-  query_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nReporting Query Node\n\n<<artifact>> Reporting Module"];
+  api_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nAPI Server\n\n<<artifact>> Reservation & Seating Service\n<<artifact>> Ordering & Menu Service\n<<artifact>> Kitchen Coordination Service\n<<artifact>> Billing & Settlement Service\n<<artifact>> Inventory Monitoring Service\n<<artifact>> IAM & Audit Service"];
+  worker_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nBackground Worker\n\n<<artifact>> Outbox Dispatcher\n<<artifact>> Notification Worker\n<<artifact>> Projection Worker\n<<artifact>> Receipt Job Processor"];
+  query_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nReporting Query Node\n\n<<artifact>> Reporting Service"];
 
   operational_db [shape=cylinder, fillcolor="#F8FBFF", label="<<database>>\nOperational RDBMS\nreservations, orders,\nbills, stock, users, audit"];
   read_model [shape=cylinder, fillcolor="#F8FBFF", label="<<database>>\nReporting Read Model"];
@@ -44,12 +44,12 @@ digraph G {
   manager -> api_node [label="HTTPS"];
 
   api_node -> operational_db [label="transactional read and write"];
-  api_node -> outbox [label="publish jobs and events"];
-  worker_node -> outbox [label="consume jobs"];
-  worker_node -> read_model [label="refresh projections"];
+  api_node -> outbox [label="write outbox events"];
+  worker_node -> outbox [label="consume events and jobs"];
+  worker_node -> read_model [label="refresh reporting projections"];
   query_node -> read_model [label="query reports"];
 
-  api_node -> payment_gateway [label="authorize, capture, refund"];
-  worker_node -> receipt_printer [label="print job"];
-  worker_node -> notification_service [label="send message"];
+  api_node -> payment_gateway [label="payment adapter API"];
+  worker_node -> receipt_printer [label="receipt printer adapter"];
+  worker_node -> notification_service [label="notification adapter"];
 }

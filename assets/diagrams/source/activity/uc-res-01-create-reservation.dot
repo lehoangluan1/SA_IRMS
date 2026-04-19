@@ -3,50 +3,50 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.68, pad=0.25, dpi=170, bgcolor="white", fontname="Arial"];
   node [fontname="Arial"];
   edge [fontname="Arial", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="Arial"; label="UC-RES-01 -- Tạo đặt bàn";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="Arial"; label="UC-RES-01 -- Create Reservation";
 
   subgraph cluster_l1 {
     style="rounded,filled"; fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
-    label="Khách hàng / Lễ tân"; fontsize=14; labelloc="t"; labeljust="l";
+    label="Customer / Host"; fontsize=14; labelloc="t"; labeljust="l";
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    n1 [label="Nhập thời gian, số khách,\ntên khách và số điện thoại", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n7 [label="Xác nhận bàn,\nghi chú và yêu cầu đặc biệt", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n1 [label="Enter time, party size,\ncustomer name, and phone number", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n7 [label="Review seating option,\nnotes, and special requests", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
   }
 
   subgraph cluster_l2 {
     style="rounded,filled"; fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
-    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
-    n2 [label="Kiểm tra dữ liệu liên hệ tối thiểu", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n3 [label="Thông tin hợp lệ?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n4 [label="Kiểm tra sức chứa,\nkhung giờ và năng lực bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n5 [label="Còn chỗ phù hợp?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n6 [label="Gợi ý bàn hoặc nhóm bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n8 [label="Gán được bàn cụ thể?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n9 [label="Tạo reservation,\nsinh mã và lưu lịch sử", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n10 [label="Tạo reservation Pending\ntheo nhóm sức chứa", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n11 [label="Yêu cầu cập nhật\nthông tin liên hệ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n12 [label="Đề xuất giờ khác hoặc\nmời vào danh sách chờ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    n2 [label="Validate minimum contact details", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Information valid?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n4 [label="Check capacity,\ntime slot, and table availability", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Suitable capacity available?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n6 [label="Recommend a table or table group", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="Specific table assigned?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n9 [label="Confirm reservation,\ngenerate code, and store record", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Create pending reservation\nby capacity group", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n11 [label="Request contact detail\ncorrection", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n12 [label="Suggest another time or\nadd to the waitlist", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
   }
 
   subgraph cluster_l3 {
     style="rounded,filled"; fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
-    label="Dịch vụ thông báo"; fontsize=14; labelloc="t"; labeljust="l";
-    n13 [label="Gửi xác nhận qua SMS/email\nhoặc tạo bản ghi gửi sau", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="Notification Service"; fontsize=14; labelloc="t"; labeljust="l";
+    n13 [label="Publish ReservationConfirmed\nand queue confirmation notice", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n14 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
   }
 
   n0 -> n1;
   n1 -> n2;
   n2 -> n3;
-  n3 -> n4 [xlabel="Có"];
-  n3 -> n11 [xlabel="Không"];
+  n3 -> n4 [xlabel="Yes"];
+  n3 -> n11 [xlabel="No"];
   n4 -> n5;
-  n5 -> n6 [xlabel="Có"];
-  n5 -> n12 [xlabel="Không"];
+  n5 -> n6 [xlabel="Yes"];
+  n5 -> n12 [xlabel="No"];
   n6 -> n7;
   n7 -> n8;
-  n8 -> n9 [xlabel="Có"];
-  n8 -> n10 [xlabel="Không"];
+  n8 -> n9 [xlabel="Yes"];
+  n8 -> n10 [xlabel="No"];
   n9 -> n13;
   n10 -> n13;
   n11 -> n14;

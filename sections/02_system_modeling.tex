@@ -1,7 +1,7 @@
-﻿\section{Mô hình hóa hệ thống}
+\section{Mô hình hóa hệ thống}
 
 \subsection{Danh mục ca sử dụng}\label{sec:system-modeling-overview}
-Phần mô hình hóa này đóng vai trò cầu nối giữa Chương 1 và chương kiến trúc. Mục tiêu không chỉ là liệt kê chức năng, mà là khóa ba vấn đề tiền kiến trúc của IRMS: \textbf{biên hệ thống nằm ở đâu}, \textbf{những năng lực nghiệp vụ nào sẽ trở thành các miền trách nhiệm chính}, và \textbf{những luồng đầu-cuối nào phải được bảo vệ khi lựa chọn cấu trúc phần mềm}. Với hướng đọc service-based, ba mô hình mở đầu được dùng để chốt ranh giới hệ thống, chốt các nhóm use case sẽ ánh xạ thành domain service, và chốt các điểm cần phối hợp đồng bộ hay bất đồng bộ. Việc đọc ba hình này cũng giúp phần đặc tả ca sử dụng phía sau bám sát toàn hệ thống thay vì bị nhìn như các kịch bản rời rạc; phần định vị và biện minh tương ứng được nối trực tiếp về Bảng~\ref{tab:appendix-traceability} và Bảng~\ref{tab:appendix-view-rationale} trong Phụ lục~\ref{appendix:traceability} và Phụ lục~\ref{appendix:view-rationale}.
+Phần mô hình hóa này đóng vai trò cầu nối giữa Chương 1 và chương kiến trúc. Mục tiêu không chỉ là liệt kê chức năng, mà là khóa ba vấn đề tiền kiến trúc của IRMS: \textbf{biên hệ thống nằm ở đâu}, \textbf{những năng lực nghiệp vụ nào sẽ trở thành các service chính}, và \textbf{những luồng đầu-cuối nào phải được bảo vệ khi lựa chọn cấu trúc phần mềm}. Với hướng đọc dịch vụ, ba mô hình mở đầu được dùng để chốt ranh giới hệ thống, chốt các nhóm use case sẽ ánh xạ thành service theo năng lực nghiệp vụ, và chốt các điểm cần phối hợp đồng bộ hay bất đồng bộ. Việc đọc ba hình này cũng giúp phần đặc tả ca sử dụng phía sau bám sát toàn hệ thống thay vì bị nhìn như các kịch bản rời rạc; phần định vị và biện minh tương ứng được nối trực tiếp về Bảng~\ref{tab:appendix-traceability} và Bảng~\ref{tab:appendix-view-rationale} trong Phụ lục~\ref{appendix:traceability} và Phụ lục~\ref{appendix:view-rationale}.
 
 \begin{figure}[H]
 \centering
@@ -11,7 +11,7 @@ Phần mô hình hóa này đóng vai trò cầu nối giữa Chương 1 và ch�
 \end{figure}
 
 
-Hình~\ref{fig:irms-context-overview} khóa rõ biên hệ thống theo đúng tinh thần \emph{context/process diagram}: IRMS được đặt ở trung tâm như một hệ thống điều phối vận hành, còn các vai trò con người và hệ thống đối tác đều nằm ngoài ranh giới này. Giá trị của hình không nằm ở việc liệt kê actor, mà ở việc chỉ rõ các hợp đồng trao đổi dữ liệu giữa IRMS với thế giới bên ngoài trước khi bàn đến cấu trúc bên trong. Từ ranh giới này, phần bên trong mới có thể được phân rã theo hướng \texttt{Table \& Reservation}, \texttt{Order}, \texttt{Kitchen Workflow}, \texttt{Billing \& Payment}, \texttt{Inventory}, \texttt{Reporting \& Analytics} và \texttt{Admin \& Access Control}.
+Hình~\ref{fig:irms-context-overview} khóa rõ biên hệ thống theo đúng tinh thần \emph{context/process diagram}: IRMS được đặt ở trung tâm như một hệ thống điều phối vận hành, còn các vai trò con người và hệ thống đối tác đều nằm ngoài ranh giới này. Giá trị của hình không nằm ở việc liệt kê actor, mà ở việc chỉ rõ các hợp đồng trao đổi dữ liệu giữa IRMS với thế giới bên ngoài trước khi bàn đến cấu trúc bên trong. Từ ranh giới này, phần bên trong mới có thể được phân rã theo hướng \texttt{Reservation \& Seating Service}, \texttt{Ordering \& Menu Service}, \texttt{Kitchen Coordination Service}, \texttt{Billing \& Settlement Service}, \texttt{Inventory Monitoring Service}, \texttt{Reporting Service}, \texttt{IAM \& Audit Service}, \texttt{Notification Service} và các adapter tích hợp ngoài.
 
 \paragraph{Các điểm cần đọc từ sơ đồ ngữ cảnh.}
 \begin{itemize}
@@ -31,20 +31,20 @@ Vì vậy, sơ đồ ngữ cảnh là nền cho mọi quyết định kiến tr�
 \end{figure}
 
 
-Hình~\ref{fig:irms-usecase-overview} trình bày tập ca sử dụng ở mức bao quát. Để giữ sơ đồ đủ khả năng đọc nhưng vẫn bám sát đặc tả use case, các use case được gom theo các cụm lớn bám theo dòng giá trị nghiệp vụ thay vì triển khai toàn bộ chi tiết mức đặc tả. Ở mức overview, hình nhấn mạnh các khối \texttt{Reservation and Seating}, \texttt{Ordering and Kitchen}, \texttt{Billing and Settlement}, \texttt{Inventory and Replenishment Support} và \texttt{Operations and Governance}. Cách nhóm này cũng là cơ sở trực tiếp để ánh xạ sang các domain service ở chương kiến trúc.
+Hình~\ref{fig:irms-usecase-overview} trình bày tập ca sử dụng ở mức bao quát. Để giữ sơ đồ đủ khả năng đọc nhưng vẫn bám sát đặc tả use case, các use case được gom theo các cụm lớn bám theo dòng giá trị nghiệp vụ thay vì triển khai toàn bộ chi tiết mức đặc tả. Ở mức overview, hình nhấn mạnh các khối \texttt{Reservation and Seating}, \texttt{Ordering and Kitchen}, \texttt{Billing and Settlement}, \texttt{Inventory and Replenishment Support} và \texttt{Operations and Governance}. Cách nhóm này cũng là cơ sở trực tiếp để ánh xạ sang các service theo năng lực nghiệp vụ ở chương kiến trúc.
 
-Nhìn dưới góc độ kiến trúc, sơ đồ tổng quan ca sử dụng không chỉ trả lời \enquote{hệ thống có những chức năng gì}, mà còn chỉ ra \enquote{chức năng nào thuộc một miền dịch vụ riêng}, \enquote{chức năng nào nằm trên đường giao dịch nóng}, và \enquote{chức năng nào phù hợp hơn với luồng phản ứng theo sự kiện}. Đây là bước trung gian quan trọng trước khi ánh xạ các năng lực này sang logic view, module view và component-and-connector view ở chương sau.
+Nhìn dưới góc độ kiến trúc, sơ đồ tổng quan ca sử dụng không chỉ trả lời \enquote{hệ thống có những chức năng gì}, mà còn chỉ ra \enquote{chức năng nào thuộc một miền dịch vụ riêng}, \enquote{chức năng nào nằm trên đường giao dịch nóng}, và \enquote{chức năng nào phù hợp hơn với luồng phản ứng theo sự kiện}. Đây là bước trung gian quan trọng trước khi ánh xạ các năng lực này sang góc nhìn logic, góc nhìn phân rã dịch vụ và góc nhìn thành phần--kết nối ở chương sau.
 
 \paragraph{Các cụm năng lực cần đọc từ sơ đồ.}
 \begin{itemize}
-  \item \textbf{Reservation and Seating}: bao phủ đặt bàn, tiếp nhận khách, danh sách chờ, giữ chỗ và mở phiên phục vụ tại bàn; đây là nền cho \texttt{Table \& Reservation Service}.
-  \item \textbf{Ordering and Kitchen}: bao phủ tạo đơn, điều phối phiếu bếp, cập nhật tiến độ chế biến, xử lý ưu tiên và xác nhận món đã phục vụ; đây là phần use case trung tâm của \texttt{Order Service} và \texttt{Kitchen Workflow Service}.
-  \item \textbf{Billing and Settlement}: bao phủ tạo hóa đơn, tách hóa đơn, xử lý thanh toán, hoàn tiền và phát hành biên lai; đây là phạm vi của \texttt{Billing \& Payment Service}.
-  \item \textbf{Inventory and Replenishment Support}: bao phủ ghi nhận tiêu hao, cảnh báo mức tồn thấp và hỗ trợ quyết định nhập thêm nguyên liệu từ dữ liệu lịch sử; đây là phạm vi của \texttt{Inventory Service}.
-  \item \textbf{Governance and Analytics}: bao phủ quản trị thực đơn, phân quyền, kiểm toán, báo cáo và điều hành vận hành; đây là phạm vi của \texttt{Reporting \& Analytics Service} và \texttt{Admin \& Access Control Service}.
+  \item \textbf{Reservation and Seating}: bao phủ đặt bàn, tiếp nhận khách, danh sách chờ, giữ chỗ và mở phiên phục vụ tại bàn; đây là nền cho \texttt{Reservation \& Seating Service}.
+  \item \textbf{Ordering and Kitchen}: bao phủ tạo đơn, điều phối phiếu bếp, cập nhật tiến độ chế biến, xử lý ưu tiên và xác nhận món đã phục vụ; đây là phần use case trung tâm của \texttt{Ordering \& Menu Service} và \texttt{Kitchen Coordination Service}.
+  \item \textbf{Billing and Settlement}: bao phủ tạo hóa đơn, tách hóa đơn, xử lý thanh toán, hoàn tiền và phát hành biên lai; đây là phạm vi của \texttt{Billing \& Settlement Service}.
+  \item \textbf{Inventory and Replenishment Support}: bao phủ ghi nhận tiêu hao, cảnh báo mức tồn thấp và hỗ trợ quyết định nhập thêm nguyên liệu từ dữ liệu lịch sử; đây là phạm vi của \texttt{Inventory Monitoring Service}.
+  \item \textbf{Governance and Analytics}: bao phủ quản trị thực đơn, phân quyền, kiểm toán, báo cáo và điều hành vận hành; đây là phạm vi của \texttt{Reporting Service} và \texttt{IAM \& Audit Service}.
 \end{itemize}
 
-Việc gom theo cụm ở mức tổng quan giúp hình giữ được khả năng đọc, còn phần chi tiết của từng mã ca sử dụng được triển khai ngay sau đó. Cách trình bày này cũng tạo nhịp chuyển trực tiếp sang các góc nhìn logic và mô-đun, nơi các cụm nghiệp vụ này được dùng như ranh giới trách nhiệm của từng service.
+Việc gom theo cụm ở mức tổng quan giúp hình giữ được khả năng đọc, còn phần chi tiết của từng mã ca sử dụng được triển khai ngay sau đó. Cách trình bày này cũng tạo nhịp chuyển trực tiếp sang các góc nhìn logic và phân rã dịch vụ, nơi các cụm nghiệp vụ này được dùng như ranh giới trách nhiệm của từng service.
 
 \begin{figure}[H]
 \centering
@@ -63,7 +63,7 @@ Hình~\ref{fig:irms-activity-end-to-end} mô tả một vòng vận hành điể
   \item \textbf{Điểm bàn giao giữa các khu vực}: lễ tân mở phiên bàn, phục vụ xác nhận đơn, bếp cập nhật trạng thái, thu ngân quyết toán; mỗi điểm bàn giao đều gắn với một thay đổi trạng thái có hậu quả nghiệp vụ.
   \item \textbf{Điểm đồng bộ bắt buộc}: mở \texttt{TableSession}, xác nhận đơn, đánh dấu món sẵn sàng, ghi nhận thanh toán và giải phóng bàn không được nhập nhằng về trạng thái.
   \item \textbf{Điểm bất đồng bộ chấp nhận được}: thông báo, báo cáo và cảnh báo mức tồn thấp có thể được đẩy ra sau với điều kiện không làm sai các trạng thái phục vụ cốt lõi.
-  \item \textbf{Điểm nối sang chương kiến trúc}: hình này là cơ sở để kiểm tra xem các sơ đồ logic, mô-đun, thành phần và triển khai ở chương sau có thật sự bảo vệ được luồng vận hành đầu-cuối hay không.
+  \item \textbf{Điểm nối sang chương kiến trúc}: hình này là cơ sở để kiểm tra xem các sơ đồ logic, phân rã dịch vụ, thành phần và triển khai ở chương sau có thật sự bảo vệ được luồng vận hành đầu-cuối hay không.
 \end{itemize}
 
 \begin{table}[H]
@@ -90,7 +90,7 @@ Góc nhìn sử dụng được dùng như bộ kịch bản kiểm chứng ki�
 \subsubsection{Kịch bản 1: Từ đặt bàn đến tiếp nhận và xếp bàn}
 \begin{enumerate}
   \item Khách hàng hoặc lễ tân tạo đặt bàn.
-  \item \texttt{Table \& Reservation Service} kiểm tra khả dụng, gán bàn hoặc giữ chỗ và ghi nhận \texttt{ReservationCreated} nếu cần phát thông báo.
+  \item \texttt{Reservation \& Seating Service} kiểm tra khả dụng, gán bàn hoặc giữ chỗ và ghi nhận \texttt{ReservationCreated} nếu cần phát thông báo.
   \item Khi khách đến, \texttt{Host UI} xác nhận tiếp nhận và mở \texttt{TableSession}.
   \item Trạng thái bàn được cập nhật qua \texttt{TableStatusChanged} để tuyến phục vụ nhìn thấy bàn sẵn sàng nhận order.
 \end{enumerate}
@@ -98,23 +98,23 @@ Góc nhìn sử dụng được dùng như bộ kịch bản kiểm chứng ki�
 \subsubsection{Kịch bản 2: Từ gọi món đến điều phối bếp và phục vụ}
 \begin{enumerate}
   \item Phục vụ tạo đơn gọi món và cấu hình tùy chọn món hoặc gợi ý dị ứng trên \texttt{Server POS UI}.
-  \item \texttt{Order Service} xác nhận đơn gọi món và phát \texttt{OrderPlaced}.
-  \item \texttt{Kitchen Workflow Service} nhận order, tách phiếu theo trạm bếp và hiển thị lên \texttt{Kitchen Display UI}.
+  \item \texttt{Ordering \& Menu Service} xác nhận đơn gọi món và phát \texttt{OrderPlaced}.
+  \item \texttt{Kitchen Coordination Service} nhận order, tách phiếu theo trạm bếp và hiển thị lên \texttt{Kitchen Display UI}.
   \item Bếp cập nhật trạng thái từng dòng phiếu qua các mốc như \texttt{OrderItemStarted} và \texttt{OrderReady}; màn hình gọi món nhận lại trạng thái sẵn sàng.
-  \item Phục vụ giao món và đánh dấu đã phục vụ; \texttt{Inventory Service} nhận sự kiện liên quan để ghi nhận tiêu hao và cập nhật kho.
+  \item Phục vụ giao món và đánh dấu đã phục vụ; \texttt{Inventory Monitoring Service} nhận sự kiện liên quan để ghi nhận tiêu hao và cập nhật kho.
 \end{enumerate}
 
 \subsubsection{Kịch bản 3: Từ hóa đơn đến thanh toán và biên lai}
 \begin{enumerate}
   \item Thu ngân hoặc phục vụ gom các đơn gọi món của bàn thành hóa đơn.
-  \item \texttt{Billing \& Payment Service} áp dụng khuyến mãi, tiền boa và tách hóa đơn nếu cần.
+  \item \texttt{Billing \& Settlement Service} áp dụng khuyến mãi, tiền boa và tách hóa đơn nếu cần.
   \item Thanh toán được thực hiện qua tiền mặt hoặc cổng thanh toán điện tử.
   \item Khi thanh toán đủ, hệ thống ghi nhận \texttt{PaymentCompleted}, phát hành biên lai và chuyển \texttt{TableSession} sang chuẩn bị đóng.
 \end{enumerate}
 
 \subsubsection{Kịch bản 4: Từ cảnh báo tồn kho thấp đến quyết định của quản lý}
 \begin{enumerate}
-  \item \texttt{Inventory Service} cập nhật lượng tồn kho thực tế sau mỗi món đã phục vụ hoặc sau mỗi lần điều chỉnh thủ công.
+  \item \texttt{Inventory Monitoring Service} cập nhật lượng tồn kho thực tế sau mỗi món đã phục vụ hoặc sau mỗi lần điều chỉnh thủ công.
   \item Nếu xuống dưới ngưỡng, hệ thống phát \texttt{StockLow}.
   \item \texttt{Manager Console} nhận cảnh báo, hiển thị nguyên liệu bị ảnh hưởng và món có nguy cơ hết hàng.
   \item Quản lý quyết định nhập thêm hàng hoặc tạm ẩn món trong menu.
@@ -149,8 +149,8 @@ Hình~\ref{fig:irms-usage-reservation} được chọn để kiểm tra một qu
 
 \paragraph{Các điểm kiến trúc đọc được từ sơ đồ.}
 \begin{itemize}
-  \item \textbf{\texttt{Host UI} và \texttt{Table \& Reservation Service}} chịu trách nhiệm kiểm tra khả dụng, giữ chỗ và xác nhận tiếp nhận khách.
-  \item \textbf{\texttt{Table \& Reservation Service}} là ranh giới nơi bàn được chuyển từ trạng thái chờ sang trạng thái đang phục vụ thông qua \texttt{TableSession}.
+  \item \textbf{\texttt{Host UI} và \texttt{Reservation \& Seating Service}} chịu trách nhiệm kiểm tra khả dụng, giữ chỗ và xác nhận tiếp nhận khách.
+  \item \textbf{\texttt{Reservation \& Seating Service}} là ranh giới nơi bàn được chuyển từ trạng thái chờ sang trạng thái đang phục vụ thông qua \texttt{TableSession}.
   \item \textbf{\texttt{Notification Service} và \texttt{Server POS UI}} chỉ được kích hoạt sau khi phiên bàn đã được mở thành công, tránh để tuyến phục vụ nhìn thấy trạng thái nửa chừng.
 \end{itemize}
 
@@ -184,10 +184,10 @@ Hình~\ref{fig:irms-usage-order-kitchen} là kịch bản quan trọng nhất đ
 
 \paragraph{Các điểm kiến trúc đọc được từ sơ đồ.}
 \begin{itemize}
-  \item \textbf{\texttt{Order Service}} là ranh giới chốt giao dịch gọi món; đây là nơi không được làm mất đơn đã xác nhận.
-  \item \textbf{\texttt{Kitchen Workflow Service} và \texttt{Kitchen Display UI}} xử lý phần lan truyền vận hành sau giao dịch, bao gồm định tuyến phiếu và phản hồi trạng thái chế biến.
+  \item \textbf{\texttt{Ordering \& Menu Service}} là ranh giới chốt giao dịch gọi món; đây là nơi không được làm mất đơn đã xác nhận.
+  \item \textbf{\texttt{Kitchen Coordination Service} và \texttt{Kitchen Display UI}} xử lý phần lan truyền vận hành sau giao dịch, bao gồm định tuyến phiếu và phản hồi trạng thái chế biến.
   \item \textbf{\texttt{Menu Service}} lưu giữ trạng thái khả dụng và giá tại thời điểm xác nhận đơn, giúp tránh nhập nhằng khi menu thay đổi sau đó.
-  \item \textbf{\texttt{Inventory Service}} chỉ tham gia ở nhánh hỗ trợ, không nên chặn bước xác nhận đơn ở tuyến đầu.
+  \item \textbf{\texttt{Inventory Monitoring Service}} chỉ tham gia ở nhánh hỗ trợ, không nên chặn bước xác nhận đơn ở tuyến đầu.
 \end{itemize}
 
 \paragraph{Hàm ý đối với kiến trúc.}
@@ -214,13 +214,13 @@ Hình~\ref{fig:irms-usage-order-kitchen} là kịch bản quan trọng nhất đ
 \end{landscape}
 
 
-Hình~\ref{fig:irms-usage-payment} là kịch bản mà kiến trúc phải ưu tiên \textbf{độ tin cậy và tính toàn vẹn giao dịch}. Ở đây, \texttt{Billing \& Payment Service} không chỉ tính tổng cuối cùng mà còn điều phối khuyến mãi, tách hóa đơn, chọn phương thức thanh toán, gọi cổng thanh toán, phát hành biên lai và đóng phiên bàn. Sai sót ở luồng này kéo theo các hậu quả: ghi nhận thanh toán trùng, đóng sai hóa đơn hoặc thay đổi trạng thái bàn khi giao dịch chưa hoàn tất.
+Hình~\ref{fig:irms-usage-payment} là kịch bản mà kiến trúc phải ưu tiên \textbf{độ tin cậy và tính toàn vẹn giao dịch}. Ở đây, \texttt{Billing \& Settlement Service} không chỉ tính tổng cuối cùng mà còn điều phối khuyến mãi, tách hóa đơn, chọn phương thức thanh toán, gọi cổng thanh toán, phát hành biên lai và đóng phiên bàn. Sai sót ở luồng này kéo theo các hậu quả: ghi nhận thanh toán trùng, đóng sai hóa đơn hoặc thay đổi trạng thái bàn khi giao dịch chưa hoàn tất.
 
 Vì vậy, thanh toán cần được giữ trong một tuyến đồng bộ đủ ngắn để hệ thống có thể trả lời rõ ràng giao dịch đã thành công hay chưa. Đánh đổi là luồng này trở nên nhạy cảm với độ trễ và lỗi của hệ ngoài; do đó, nó cần timeout rõ ràng, chống xử lý lặp, ghi vết kiểm toán và tách riêng adapter tích hợp để cô lập rủi ro.
 
 \paragraph{Các điểm kiến trúc đọc được từ sơ đồ.}
 \begin{itemize}
-  \item \textbf{\texttt{Billing \& Payment Service}} giữ vai trò bộ điều phối của tuyến quyết toán và là nơi phải đảm bảo idempotency cho các thao tác nhạy cảm.
+  \item \textbf{\texttt{Billing \& Settlement Service}} giữ vai trò bộ điều phối của tuyến quyết toán và là nơi phải đảm bảo idempotency cho các thao tác nhạy cảm.
   \item \textbf{\texttt{Payment Gateway Adapter}} đại diện cho phụ thuộc ngoài hệ thống cần được cô lập khỏi logic quyết toán lõi.
   \item \textbf{\texttt{Receipt Printer Adapter}, \texttt{Notification Service} và \texttt{TableSession}} chỉ được kích hoạt sau khi kết quả thanh toán đã rõ ràng.
 \end{itemize}
@@ -249,14 +249,14 @@ Vì vậy, thanh toán cần được giữ trong một tuyến đồng bộ đ�
 \end{landscape}
 
 
-Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và phát cảnh báo phải được đặt trên một tuyến hỗ trợ thay vì đặt trực tiếp vào đường giao dịch nóng. Trong kịch bản này, \texttt{Kitchen Workflow Service} phát sinh dữ kiện món đã phục vụ, \texttt{Inventory Service} ghi nhận tiêu hao, \texttt{Stock Policy Service} đánh giá ngưỡng và \texttt{Notification Service} chuyển cảnh báo đến quản lý. Cách tách này giúp thay đổi công thức món, ngưỡng cảnh báo hay chính sách ẩn món mà không làm nặng thêm tuyến gọi món và thanh toán.
+Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và phát cảnh báo phải được đặt trên một tuyến hỗ trợ thay vì đặt trực tiếp vào đường giao dịch nóng. Trong kịch bản này, \texttt{Kitchen Coordination Service} phát sinh dữ kiện món đã phục vụ, \texttt{Inventory Monitoring Service} ghi nhận tiêu hao, \texttt{Stock Policy Service} đánh giá ngưỡng và \texttt{Notification Service} chuyển cảnh báo đến quản lý. Cách tách này giúp thay đổi công thức món, ngưỡng cảnh báo hay chính sách ẩn món mà không làm nặng thêm tuyến gọi món và thanh toán.
 
 Đánh đổi là trạng thái tồn kho và cảnh báo quản trị có thể đến chậm hơn giao dịch mới nhất nếu luồng nền đang thử lại hoặc xử lý dồn hàng. Độ trễ này chấp nhận được, miễn là nó không đi cùng với các quyết định cần phản hồi tức thời như xác nhận đơn hay xác nhận thanh toán.
 
 \paragraph{Các điểm kiến trúc đọc được từ sơ đồ.}
 \begin{itemize}
-  \item \textbf{\texttt{Kitchen Workflow Service}} là nguồn phát sinh dữ kiện phục vụ dùng để đưa ra tiêu hao.
-  \item \textbf{\texttt{Inventory Service} và \texttt{Stock Policy Service}} chịu trách nhiệm cập nhật tồn kho và đánh giá ngưỡng cảnh báo.
+  \item \textbf{\texttt{Kitchen Coordination Service}} là nguồn phát sinh dữ kiện phục vụ dùng để đưa ra tiêu hao.
+  \item \textbf{\texttt{Inventory Monitoring Service} và \texttt{Stock Policy Service}} chịu trách nhiệm cập nhật tồn kho và đánh giá ngưỡng cảnh báo.
   \item \textbf{\texttt{Notification Service}, \texttt{Manager Console} và \texttt{Menu Service}} tạo thành tuyến phản ứng quản trị sau khi cảnh báo đã được phát ra.
 \end{itemize}
 
@@ -267,10 +267,6 @@ Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và p
 \end{itemize}
 
 \subsection{Đặc tả ca sử dụng}
-
-
-\usepackage{longtable}
-\usepackage{enumitem}
 
 \renewcommand{\arraystretch}{1.3}
 

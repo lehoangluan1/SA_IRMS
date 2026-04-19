@@ -2,28 +2,28 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
   node [fontname="DejaVu Sans"];
   edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-PAY-03 — Hoàn tiền";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-PAY-03 -- Request Refund";
 
   subgraph cluster_l1 {
     style="rounded,filled";
     fillcolor="#EAF3FF"; color="#BBBBBB";
-    label="Thu ngân";
+    label="Cashier";
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    n1 [label="Chọn giao dịch thanh toán gốc", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n3 [label="Nhập số tiền hoàn và lý do", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n6 [label="Hoàn tiền điện tử?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n1 [label="Select original payment transaction", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Enter refund amount and reason", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n6 [label="Electronic refund?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
     n0 -> n1 -> n3 -> n6 [style=invis, weight=20];
   }
 
   subgraph cluster_l2 {
     style="rounded,filled";
     fillcolor="#FFF8DB"; color="#BBBBBB";
-    label="Hệ thống IRMS";
-    n2 [label="Hiển thị số tiền còn được hoàn,\nthời hạn và chính sách áp dụng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n4 [label="Số tiền và thời hạn hoàn\ncòn hợp lệ?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n5 [label="Vượt ngưỡng phê duyệt?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n11 [label="Ghi Refund, cập nhật số dư,\nnhật ký kiểm toán", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n12 [label="Đánh dấu chờ rà soát hoặc\ntừ chối hoàn tiền", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="IRMS";
+    n2 [label="Show refundable amount,\nwindow, and policy", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n4 [label="Refund amount and window\nstill valid?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n5 [label="Above approval threshold?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n11 [label="Record refund, update balance,\nand write audit trail", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n12 [label="Mark pending review or\nreject refund", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n13 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n2 -> n4 -> n5 -> n11 -> n12 -> n13 [style=invis, weight=20];
   }
@@ -31,18 +31,18 @@ digraph G {
   subgraph cluster_l3 {
     style="rounded,filled";
     fillcolor="#FDECEC"; color="#BBBBBB";
-    label="Quản lý";
-    n7 [label="Xem yêu cầu hoàn tiền\nvà mức vượt ngưỡng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n8 [label="Phê duyệt?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    label="Manager";
+    n7 [label="Review refund request\nand threshold overrun", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="Approve?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
     n7 -> n8 [style=invis, weight=20];
   }
 
   subgraph cluster_l4 {
     style="rounded,filled";
     fillcolor="#EAFBF1"; color="#BBBBBB";
-    label="Payment Gateway";
-    n9 [label="Gửi yêu cầu hoàn tiền\nđiện tử", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n10 [label="Gateway chấp nhận?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    label="Payment Adapter";
+    n9 [label="Send electronic refund request", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Gateway accepted?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
     n9 -> n10 [style=invis, weight=20];
   }
 
@@ -50,18 +50,18 @@ digraph G {
   n1 -> n2;
   n2 -> n3;
   n3 -> n4;
-  n4 -> n5 [xlabel="Có"];
-  n4 -> n12 [xlabel="Không"];
-  n5 -> n7 [xlabel="Có"];
-  n5 -> n6 [xlabel="Không"];
+  n4 -> n5 [xlabel="Yes"];
+  n4 -> n12 [xlabel="No"];
+  n5 -> n7 [xlabel="Yes"];
+  n5 -> n6 [xlabel="No"];
   n7 -> n8;
-  n8 -> n6 [xlabel="Có"];
-  n8 -> n12 [xlabel="Không"];
-  n6 -> n9 [xlabel="Có"];
-  n6 -> n11 [xlabel="Không"];
+  n8 -> n6 [xlabel="Yes"];
+  n8 -> n12 [xlabel="No"];
+  n6 -> n9 [xlabel="Yes"];
+  n6 -> n11 [xlabel="No"];
   n9 -> n10;
-  n10 -> n11 [xlabel="Có"];
-  n10 -> n12 [xlabel="Không"];
+  n10 -> n11 [xlabel="Yes"];
+  n10 -> n12 [xlabel="No"];
   n11 -> n13;
   n12 -> n13;
 }

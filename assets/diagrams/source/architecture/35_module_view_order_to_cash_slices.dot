@@ -10,20 +10,20 @@ digraph G {
     splines=ortho,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="UML Package Diagram - Order-to-Cash Module Slices of IRMS"
+    label="UML Package Diagram - Reservation-to-Settlement Service Slices of IRMS"
   ];
 
   node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.3, margin="0.14,0.08"];
   edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.0];
 
   subgraph cluster_model {
-    label="<<model>> Module View";
+    label="<<model>> Service Decomposition View";
     color="#94A3B8";
     penwidth=1.1;
     style="rounded";
 
     subgraph cluster_reservation {
-      label="<<package>> Reservation Slice";
+      label="<<package>> Reservation & Seating Service Slice";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
@@ -33,7 +33,7 @@ digraph G {
     }
 
     subgraph cluster_ordering {
-      label="<<package>> Ordering Slice";
+      label="<<package>> Ordering & Menu Service Slice";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
@@ -43,7 +43,7 @@ digraph G {
     }
 
     subgraph cluster_kitchen {
-      label="<<package>> Kitchen Slice";
+      label="<<package>> Kitchen Coordination Service Slice";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
@@ -53,7 +53,7 @@ digraph G {
     }
 
     subgraph cluster_billing {
-      label="<<package>> Billing Slice";
+      label="<<package>> Billing & Settlement Service Slice";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
@@ -63,16 +63,16 @@ digraph G {
     }
 
     subgraph cluster_shared {
-      label="<<package>> Shared Contracts and Downstream Modules";
+      label="<<package>> Shared Event Contracts and Downstream Services";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
       outbox [label="Outbox and Event Contracts"];
       inventory [label="Inventory Projection"];
       reporting [label="Reporting Projection"];
-      notification [label="Notification Module"];
-      payment [label="Payment Gateway Port"];
-      audit [label="Audit Trail Module"];
+      notification [label="Notification Service"];
+      payment [label="Payment Adapter"];
+      audit [label="IAM & Audit Service"];
     }
   }
 
@@ -86,19 +86,19 @@ digraph G {
   b_domain -> b_infra [label="persist"];
 
   r_app -> o_app [label="table context"];
-  o_app -> k_app [label="confirmed order"];
-  o_app -> b_app [label="billable snapshot"];
-  k_app -> b_app [label="served facts"];
-  b_app -> r_app [label="session closure"];
+  o_app -> k_app [label="OrderConfirmed"];
+  o_app -> b_app [label="billable snapshot API"];
+  k_app -> b_app [label="OrderItemPrepared"];
+  b_app -> r_app [label="close table session"];
 
-  r_infra -> outbox [label="publish event"];
-  o_infra -> outbox [label="publish event"];
-  k_infra -> outbox [label="publish event"];
-  b_infra -> outbox [label="publish event"];
+  r_infra -> outbox [label="publish domain event"];
+  o_infra -> outbox [label="publish domain event"];
+  k_infra -> outbox [label="publish domain event"];
+  b_infra -> outbox [label="publish domain event"];
 
   outbox -> inventory [label="stock projection"];
   outbox -> reporting [label="reporting projection"];
   outbox -> notification [label="notification job"];
-  outbox -> audit [label="audit feed"];
-  b_app -> payment [label="authorize, capture, refund"];
+  outbox -> audit [label="write audit trail"];
+  b_app -> payment [label="authorize / capture / refund API"];
 }

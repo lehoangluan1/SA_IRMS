@@ -6,7 +6,7 @@ node [fontname="Helvetica", shape=plaintext];
 edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
 
 labelloc="t";
-label="UML Class Diagram - Ordering and Menu Module";
+label="UML Class Diagram - Ordering & Menu Service";
 rankdir=TB;
 MenuCategory [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">

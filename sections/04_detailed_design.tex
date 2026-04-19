@@ -1,4 +1,4 @@
-﻿\subsection{Góc nhìn lớp}
+\subsection{Góc nhìn lớp}
 \label{sec:detailed-design-class-view}
 \subsubsection{Phạm vi bao phủ của sơ đồ lớp}
 Sơ đồ lớp được tổ chức theo năm hướng chính nhằm bao phủ đầy đủ miền nghiệp vụ của IRMS:
@@ -50,7 +50,7 @@ Hình~\ref{fig:irms-class-core} là sơ đồ lớp ở mức nhìn toàn hệ t
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
 \begin{itemize}
-  \item Sơ đồ tổng thể được đặt ở mức đủ rộng để người đọc nhận ra ranh giới giữa các miền nghiệp vụ, nhưng chưa đi quá sâu vào chi tiết cài đặt của từng mô-đun.
+  \item Sơ đồ tổng thể được đặt ở mức đủ rộng để người đọc nhận ra ranh giới giữa các miền nghiệp vụ, nhưng chưa đi quá sâu vào chi tiết cài đặt bên trong từng service.
   \item Các quan hệ được lựa chọn theo tiêu chí nghiệp vụ, nghĩa là chỉ thể hiện những liên kết có ý nghĩa vận hành rõ ràng như đặt bàn gắn với bàn ăn, phiên bàn sinh đơn gọi món, đơn gọi món sinh phiếu bếp, và hóa đơn quyết toán phiên bàn.
   \item Các điểm mở rộng như \texttt{PaymentGateway}, \texttt{NotificationSender} và \texttt{AuthorizationPolicy} được đưa vào ngay trong sơ đồ tổng thể để nhấn mạnh rằng mô hình lớp không chỉ mô tả dữ liệu, mà còn chỉ ra \textbf{ranh giới mở rộng và kiểm soát}.
 \end{itemize}
@@ -129,7 +129,7 @@ Hình~\ref{fig:irms-class-billing-inventory} tập trung vào vùng nhạy cảm
 
 \subsection{Giải thích theo từng cụm lớp}\label{sec:detailed-design-clusters}
 
-Phần này được trình bày theo trình tự \emph{quan sát sơ đồ} $\rightarrow$ \emph{xác định cụm trách nhiệm} $\rightarrow$ \emph{làm rõ lý do mô hình hóa}. Cách trình bày này giúp phần sơ đồ lớp không dừng lại ở mức liệt kê lớp, mà làm rõ vai trò trong miền, ranh giới trách nhiệm và quyết định thiết kế của từng mô-đun.
+Phần này được trình bày theo trình tự \emph{quan sát sơ đồ} $\rightarrow$ \emph{xác định cụm trách nhiệm} $\rightarrow$ \emph{làm rõ lý do mô hình hóa}. Cách trình bày này giúp phần sơ đồ lớp không dừng lại ở mức liệt kê lớp, mà làm rõ vai trò trong miền, ranh giới trách nhiệm và quyết định thiết kế của từng service.
 
 \begin{landscape}
 \begin{figure}[H]
@@ -143,12 +143,12 @@ Phần này được trình bày theo trình tự \emph{quan sát sơ đồ} $\r
     \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{26\_uml\_class\_diagram\_reservation\_and\_seating\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp chi tiết cho module Reservation \& Seating}
+\caption{Sơ đồ lớp chi tiết cho \texttt{Reservation \& Seating Service}}
 \label{fig:irms-class-reservation-module}
 \end{figure}
 \end{landscape}
 
-Hình~\ref{fig:irms-class-reservation-module} đi vào module Reservation \& Seating ở mức chi tiết và đúng tinh thần mô hình miền. Trọng tâm của module này không chỉ là \enquote{quản lý danh sách bàn}, mà là quản lý \textbf{năng lực phục vụ theo thời gian}: ai đến trước, ai có cam kết trước, bàn nào phù hợp, khi nào được mở phiên, và trên cơ sở nào quyết định gán bàn được đưa ra. Vì vậy, sơ đồ được tổ chức quanh ba trục: \textbf{nguồn nhu cầu} (\texttt{Reservation}, \texttt{WaitlistEntry}), \textbf{tài nguyên phục vụ} (\texttt{DiningTable}, \texttt{TableSession}) và \textbf{quy tắc điều phối} (\texttt{TableAssignment}, \texttt{SeatingPolicy}, \texttt{SeatingPreference}).
+Hình~\ref{fig:irms-class-reservation-module} đi vào \texttt{Reservation \& Seating Service} ở mức chi tiết và đúng tinh thần mô hình miền. Trọng tâm của service này không chỉ là \enquote{quản lý danh sách bàn}, mà là quản lý \textbf{năng lực phục vụ theo thời gian}: ai đến trước, ai có cam kết trước, bàn nào phù hợp, khi nào được mở phiên, và trên cơ sở nào quyết định gán bàn được đưa ra. Vì vậy, sơ đồ được tổ chức quanh ba trục: \textbf{nguồn nhu cầu} (\texttt{Reservation}, \texttt{WaitlistEntry}), \textbf{tài nguyên phục vụ} (\texttt{DiningTable}, \texttt{TableSession}) và \textbf{quy tắc điều phối} (\texttt{TableAssignment}, \texttt{SeatingPolicy}, \texttt{SeatingPreference}).
 
 \paragraph{Các cụm lớp và trách nhiệm thể hiện trong hình.}
 \begin{itemize}
@@ -160,7 +160,7 @@ Hình~\ref{fig:irms-class-reservation-module} đi vào module Reservation \& Sea
 
 \paragraph{Giải thích chi tiết theo từng cụm lớp.}
 \begin{itemize}
-  \item \textbf{Reservation không đồng nhất với TableSession.} Một reservation có thể bị hủy, no-show hoặc dời giờ mà không sinh phiên phục vụ. Ngược lại, một table session có thể được mở cho khách walk-in mà không có reservation. Việc tách hai lớp này là quyết định mô hình hóa quan trọng nhất của module.
+  \item \textbf{Reservation không đồng nhất với TableSession.} Một reservation có thể bị hủy, no-show hoặc dời giờ mà không sinh phiên phục vụ. Ngược lại, một table session có thể được mở cho khách walk-in mà không có reservation. Việc tách hai lớp này là quyết định mô hình hóa quan trọng nhất của \texttt{Reservation \& Seating Service}.
   \item \textbf{WaitlistEntry là đối tượng hạng nhất của miền.} Nếu chỉ xem waitlist là một trạng thái phụ của reservation, hệ thống sẽ khó diễn tả đúng khách vãng lai, khách chưa chắc ngồi, khách đổi ý hoặc khách chấp nhận vùng bàn khác sau một khoảng chờ.
   \item \textbf{TableAssignment giữ lịch sử quyết định gán bàn.} Điều này hữu ích cho giải thích vận hành, tái gán bàn, và về sau có thể nối với audit hoặc analytics để đo hiệu quả xếp bàn theo giờ cao điểm.
   \item \textbf{SeatingPolicy là nơi đặt rule thay vì hard-code trong controller.} Các rule như thời gian giữ chỗ, ưu tiên walk-in hay reservation, giới hạn mở session và năng lực gộp bàn nên được gom vào chính sách có tên gọi rõ ràng.
@@ -184,11 +184,11 @@ Hình~\ref{fig:irms-class-reservation-module} đi vào module Reservation \& Sea
     \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{27\_uml\_class\_diagram\_ordering\_and\_menu\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp chi tiết cho module Ordering \& Menu}
+\caption{Sơ đồ lớp chi tiết cho \texttt{Ordering \& Menu Service}}
 \label{fig:irms-class-ordering-module}
 \end{figure}
 
-Hình~\ref{fig:irms-class-ordering-module} mô tả mô-đun có cường độ vận hành cao nhất của toàn hệ thống. Về mặt miền, mô-đun này phải giải quyết mâu thuẫn giữa \textbf{thực đơn biến đổi liên tục} và \textbf{giao dịch cần được cố định}. Thực đơn có thể thay đổi thường xuyên: ẩn món, đổi giá, thêm tùy chọn món hoặc đổi giờ phục vụ. Trong khi đó, đơn gọi món đã xác nhận phải giữ nguyên đúng tên món, giá, tùy chọn và điều kiện áp dụng tại thời điểm xác nhận. Vì vậy, sơ đồ tách rõ hai nhóm đối tượng: \texttt{Menu*} là phần cấu hình có thể thay đổi, còn \texttt{Order*} là phần giao dịch đã được chốt.
+Hình~\ref{fig:irms-class-ordering-module} mô tả \texttt{Ordering \& Menu Service}, service có cường độ vận hành cao nhất của toàn hệ thống. Về mặt miền, service này phải giải quyết mâu thuẫn giữa \textbf{thực đơn biến đổi liên tục} và \textbf{giao dịch cần được cố định}. Thực đơn có thể thay đổi thường xuyên: ẩn món, đổi giá, thêm tùy chọn món hoặc đổi giờ phục vụ. Trong khi đó, đơn gọi món đã xác nhận phải giữ nguyên đúng tên món, giá, tùy chọn và điều kiện áp dụng tại thời điểm xác nhận. Vì vậy, sơ đồ tách rõ hai nhóm đối tượng: \texttt{Menu*} là phần cấu hình có thể thay đổi, còn \texttt{Order*} là phần giao dịch đã được chốt.
 
 \paragraph{Các cụm lớp và trách nhiệm thể hiện trong hình.}
 \begin{itemize}
@@ -202,13 +202,13 @@ Hình~\ref{fig:irms-class-ordering-module} mô tả mô-đun có cường độ 
 \begin{itemize}
   \item \textbf{MenuItem không nên được dùng trực tiếp như OrderItem.} Nếu dùng trực tiếp, chỉ cần đổi tên hoặc giá món sau đó là lịch sử giao dịch và hóa đơn sẽ bị biến dạng.
   \item \textbf{ModifierGroup và ModifierOption là cấu trúc mang quy tắc.} Chúng không chỉ là dữ liệu hiển thị; chúng còn quyết định số lựa chọn bắt buộc, số lượng tối đa và phần cộng giá thêm.
-  \item \textbf{PricingPolicy nên tách khỏi MenuItem.} Giá của một món không chỉ là \texttt{basePrice}; nó còn phụ thuộc khung giờ, phí phục vụ, chương trình áp dụng hoặc logic định giá theo bối cảnh. Tách chính sách này giúp mô-đun tuân thủ trách nhiệm đơn nhất và dễ mở rộng hơn.
+  \item \textbf{PricingPolicy nên tách khỏi MenuItem.} Giá của một món không chỉ là \texttt{basePrice}; nó còn phụ thuộc khung giờ, phí phục vụ, chương trình áp dụng hoặc logic định giá theo bối cảnh. Tách chính sách này giúp \texttt{Ordering \& Menu Service} tuân thủ trách nhiệm đơn nhất và dễ mở rộng hơn.
   \item \textbf{OrderSnapshot khóa ngữ nghĩa tại thời điểm xác nhận.} Đây là điểm rất quan trọng khi cần kiểm toán, đối soát hóa đơn hoặc tái hiện đơn hàng trong trường hợp tranh chấp.
 \end{itemize}
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
 \begin{itemize}
-  \item Việc tách rule và data giúp module vừa linh hoạt cho quản trị menu, vừa chắc chắn cho tuyến giao dịch.
+  \item Việc tách rule và data giúp \texttt{Ordering \& Menu Service} vừa linh hoạt cho quản trị thực đơn, vừa chắc chắn cho tuyến giao dịch.
   \item Đặt \texttt{AvailabilityRule} và \texttt{PricingPolicy} trong cùng sơ đồ để nhấn mạnh rằng validate và price phải là một phần của domain model, chứ không chỉ là service logic.
   \item Duy trì \texttt{OrderItemModifier} như thực thể riêng để ghi nhận modifier thực tế đã chọn thay vì chỉ giữ quan hệ tham chiếu tới modifier cấu hình.
 \end{itemize}
@@ -224,11 +224,11 @@ Hình~\ref{fig:irms-class-ordering-module} mô tả mô-đun có cường độ 
     \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{28\_uml\_class\_diagram\_kitchen\_coordination\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp chi tiết cho module Kitchen Coordination}
+\caption{Sơ đồ lớp chi tiết cho \texttt{Kitchen Coordination Service}}
 \label{fig:irms-class-kitchen-module}
 \end{figure}
 
-Hình~\ref{fig:irms-class-kitchen-module} làm rõ rằng điều phối bếp là một miền riêng, chứ không chỉ là một trạng thái phụ của đơn gọi món. Khi đơn gọi món đã được xác nhận, hệ thống bắt đầu giải quyết một bài toán khác: chia việc theo trạm, xếp hàng đợi, điều chỉnh mức ưu tiên, theo dõi tiến độ và bàn giao món đã hoàn tất cho tuyến phục vụ. Nếu dồn toàn bộ logic này vào \texttt{Order} hoặc \texttt{OrderItem}, mô hình sẽ nhanh chóng lẫn lộn giữa góc nhìn bán hàng và góc nhìn chế biến.
+Hình~\ref{fig:irms-class-kitchen-module} làm rõ rằng \texttt{Kitchen Coordination Service} là một service nghiệp vụ riêng, chứ không chỉ là một trạng thái phụ của đơn gọi món. Khi đơn gọi món đã được xác nhận, hệ thống bắt đầu giải quyết một bài toán khác: chia việc theo trạm, xếp hàng đợi, điều chỉnh mức ưu tiên, theo dõi tiến độ và bàn giao món đã hoàn tất cho tuyến phục vụ. Nếu dồn toàn bộ logic này vào \texttt{Order} hoặc \texttt{OrderItem}, mô hình sẽ nhanh chóng lẫn lộn giữa góc nhìn bán hàng và góc nhìn chế biến.
 
 \paragraph{Các cụm lớp và trách nhiệm thể hiện trong hình.}
 \begin{itemize}
@@ -248,7 +248,7 @@ Hình~\ref{fig:irms-class-kitchen-module} làm rõ rằng điều phối bếp l
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
 \begin{itemize}
-  \item Tách miền bếp thành một module có lớp riêng giúp hệ thống mở rộng thuận lợi hơn khi cần nhiều station hoặc nhiều màn hình bếp khác nhau.
+  \item Tách miền bếp thành \texttt{Kitchen Coordination Service} giúp hệ thống mở rộng thuận lợi hơn khi cần nhiều station hoặc nhiều màn hình bếp khác nhau.
   \item Dùng lớp sự kiện \texttt{DishStatusEvent} để cho phép mô hình đọc, thông báo hoặc phân tích tiến độ mà không chạm trực tiếp vào aggregate bếp.
   \item Mô hình này cũng làm rõ vì sao góc nhìn thành phần cần \texttt{KitchenTicketFactory} và \texttt{KitchenApplicationService} riêng.
 \end{itemize}
@@ -265,7 +265,7 @@ Hình~\ref{fig:irms-class-kitchen-module} làm rõ rằng điều phối bếp l
     \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{29\_uml\_class\_diagram\_billing\_and\_settlement\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp chi tiết cho module Billing \& Settlement}
+\caption{Sơ đồ lớp chi tiết cho \texttt{Billing \& Settlement Service}}
 \label{fig:irms-class-billing-module}
 \end{figure}
 \end{landscape}
@@ -306,7 +306,7 @@ Hình~\ref{fig:irms-class-billing-module} trình bày vùng quyết toán với 
     \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{30\_uml\_class\_diagram\_inventory\_and\_notification\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp chi tiết cho module Inventory \& Notification}
+\caption{Sơ đồ lớp chi tiết cho \texttt{Inventory Monitoring Service} và \texttt{Notification Service}}
 \label{fig:irms-class-inventory-module}
 \end{figure}
 
@@ -331,7 +331,7 @@ Hình~\ref{fig:irms-class-inventory-module} mở rộng phần tồn kho theo h�
 \paragraph{Lý do thiết kế của sơ đồ này.}
 \begin{itemize}
   \item Mô hình tách được tồn kho khỏi kênh thông báo nhưng vẫn giữ liên hệ chặt thông qua \texttt{LowStockAlert}.
-  \item Nó hỗ trợ tốt cho sơ đồ thành phần bất đồng bộ, nơi bộ xử lý nền có thể gửi cảnh báo sau khi mô-đun tồn kho phát hiện vượt ngưỡng.
+  \item Nó hỗ trợ tốt cho sơ đồ thành phần bất đồng bộ, nơi bộ xử lý nền có thể gửi cảnh báo sau khi service tồn kho phát hiện vượt ngưỡng.
   \item Nó cũng tạo điểm nối dữ liệu sạch hơn cho phần báo cáo doanh thu--tồn kho ở giai đoạn sau.
 \end{itemize}
 
@@ -346,7 +346,7 @@ Hình~\ref{fig:irms-class-inventory-module} mở rộng phần tồn kho theo h�
     \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{31\_uml\_class\_diagram\_identity\_audit\_and\_reporting\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp chi tiết cho module Identity, Audit \& Reporting}
+\caption{Sơ đồ lớp chi tiết cho \texttt{IAM \& Audit Service} và \texttt{Reporting Service}}
 \label{fig:irms-class-governance-module}
 \end{figure}
 
@@ -370,7 +370,7 @@ Hình~\ref{fig:irms-class-governance-module} trình bày phần governance ở m
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
 \begin{itemize}
-  \item Module governance được biểu diễn chi tiết giúp phần bảo mật, kiểm toán và báo cáo giữ đúng vai trò kiến trúc, thay vì bị xem như lớp chức năng phụ.
+  \item Vùng governance được biểu diễn chi tiết giúp phần bảo mật, kiểm toán và báo cáo giữ đúng vai trò kiến trúc, thay vì bị xem như lớp chức năng phụ.
   \item Nó tạo điểm nối rõ ràng giữa sơ đồ lớp với góc nhìn thành phần hỗ trợ và quản trị đã trình bày ở phần trước.
   \item Nó cũng hỗ trợ tốt cho phần biện minh nguyên lý SOLID, đặc biệt là SRP, OCP và DIP ở vùng policy, audit và reporting.
 \end{itemize}
@@ -505,14 +505,14 @@ Sơ đồ cũng nhấn mạnh rằng việc xem audit log nhạy cảm bản th�
 \activitydiagramfigure{uc-ops-01-manage-staff-shifts}{Sơ đồ hoạt động cho UC-OPS-01 -- Quản lý ca làm nhân viên}{fig:activity-uc-ops-01-manage-staff-shifts}
 
 \subsection{Phản tư về toàn bộ báo cáo và định hướng hiện thực}
-Điểm mạnh lớn nhất của báo cáo là đã duy trì được một đường chỉ đỏ tương đối nhất quán từ bối cảnh nghiệp vụ, yêu cầu phi chức năng, ca sử dụng, kiến trúc, sơ đồ lớp cho tới phần hành vi. Tài liệu không đặt các sơ đồ như những hình minh họa rời rạc, mà dùng mỗi góc nhìn để làm rõ một lớp quyết định riêng của cùng một hệ thống. Nhờ vậy, người đọc có thể lần theo một logic liên tục: từ áp lực vận hành của nhà hàng, sang nhu cầu tách miền nghiệp vụ, sang cách tổ chức mô-đun, thành phần, dữ liệu và các cơ chế xử lý nền.
+Điểm mạnh lớn nhất của báo cáo là đã duy trì được một đường chỉ đỏ tương đối nhất quán từ bối cảnh nghiệp vụ, yêu cầu phi chức năng, ca sử dụng, kiến trúc, sơ đồ lớp cho tới phần hành vi. Tài liệu không đặt các sơ đồ như những hình minh họa rời rạc, mà dùng mỗi góc nhìn để làm rõ một lớp quyết định riêng của cùng một hệ thống. Nhờ vậy, người đọc có thể lần theo một logic liên tục: từ áp lực vận hành của nhà hàng, sang nhu cầu tách miền nghiệp vụ, sang cách tổ chức service, thành phần, dữ liệu và các cơ chế xử lý nền.
 
-Điểm mạnh thứ hai nằm ở việc báo cáo đưa \textbf{ranh giới năng lực nghiệp vụ} vào vị trí trung tâm. Các phần đặt bàn, gọi món, bếp, quyết toán, tồn kho, báo cáo, phân quyền và kiểm toán đều được mô tả như những miền có trách nhiệm riêng thay vì bị hòa thành một khối xử lý chung. Nhờ đó, góc nhìn mô-đun, góc nhìn thành phần và góc nhìn lớp hỗ trợ lẫn nhau khá chặt chẽ. Khi xuất hiện mô-đun \texttt{Billing \& Settlement} trong phần mô-đun, người đọc cũng thấy cụm lớp tương ứng trong phần lớp và thấy tuyến xử lý tương ứng trong phần thành phần. Sự nhất quán này làm cho lập luận kiến trúc có sức nặng hơn nhiều so với cách trình bày chỉ dừng ở danh sách chức năng.
+Điểm mạnh thứ hai nằm ở việc báo cáo đưa \textbf{ranh giới năng lực nghiệp vụ} vào vị trí trung tâm. Các phần đặt bàn, gọi món, bếp, quyết toán, tồn kho, báo cáo, phân quyền và kiểm toán đều được mô tả như các service có trách nhiệm riêng thay vì bị hòa thành một khối xử lý chung. Nhờ đó, góc nhìn phân rã dịch vụ, góc nhìn thành phần và góc nhìn lớp hỗ trợ lẫn nhau khá chặt chẽ. Khi xuất hiện service \texttt{Billing \& Settlement} trong phần service, người đọc cũng thấy cụm lớp tương ứng trong phần lớp và thấy tuyến xử lý tương ứng trong phần thành phần. Sự nhất quán này làm cho lập luận kiến trúc có sức nặng hơn nhiều so với cách trình bày chỉ dừng ở danh sách chức năng.
 
-Một kết quả tích cực khác là các nguyên lý \textbf{SOLID} không bị trình bày như một phần lý thuyết tách rời. \textbf{SRP} thể hiện ở việc mỗi mô-đun và mỗi lớp điều phối giữ một phạm vi trách nhiệm rõ ràng. \textbf{OCP} xuất hiện ở các điểm mở rộng như \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{ReceiptPrinter} và các chính sách định giá, phân quyền. \textbf{LSP} được phản ánh qua yêu cầu mọi bộ kết nối cùng một vai trò phải giữ hợp đồng hành vi nhất quán. \textbf{ISP} thể hiện ở việc tránh tạo các giao diện lớn ôm mọi tích hợp ngoài. \textbf{DIP} là nguyên lý giúp giữ ổn định phần lõi khi các chi tiết công nghệ như cổng thanh toán, kênh thông báo hay cách lưu trữ thay đổi. Nhờ được gắn vào cấu trúc mô-đun, thành phần và lớp, SOLID ở đây mang ý nghĩa kiến trúc thực sự thay vì chỉ là phần diễn giải bổ sung.
+Một kết quả tích cực khác là các nguyên lý \textbf{SOLID} không bị trình bày như một phần lý thuyết tách rời. \textbf{SRP} thể hiện ở việc mỗi service và mỗi lớp điều phối giữ một phạm vi trách nhiệm rõ ràng. \textbf{OCP} xuất hiện ở các điểm mở rộng như \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{ReceiptPrinter} và các chính sách định giá, phân quyền. \textbf{LSP} được phản ánh qua yêu cầu mọi bộ kết nối cùng một vai trò phải giữ hợp đồng hành vi nhất quán. \textbf{ISP} thể hiện ở việc tránh tạo các giao diện lớn ôm mọi tích hợp ngoài. \textbf{DIP} là nguyên lý giúp giữ ổn định phần lõi khi các chi tiết công nghệ như cổng thanh toán, kênh thông báo hay cách lưu trữ thay đổi. Nhờ được gắn vào cấu trúc service, thành phần và lớp, SOLID ở đây mang ý nghĩa kiến trúc thực sự thay vì chỉ là phần diễn giải bổ sung.
 
-Tuy nhiên, báo cáo cũng có những giới hạn cần được nhìn nhận thẳng thắn. Hệ thống được mô tả khá đầy đủ ở quy mô một nhà hàng hoặc một cụm nhỏ chi nhánh, nên các quyết định như modular monolith, mô hình đọc riêng cho báo cáo và bộ xử lý nền tách biệt là phù hợp. Dù vậy, khi quy mô tăng lên theo hướng nhiều chi nhánh, nhiều thiết bị, nhiều tích hợp thanh toán và nhiều chính sách giá khác nhau, kiến trúc sẽ cần tiến thêm một bước ở vùng triển khai, khả năng quan sát và chiến lược phân tách dữ liệu. Ngoài ra, một số phần như dự báo nhập hàng, điều phối bếp nâng cao hay xử lý sự cố tích hợp mới dừng ở mức kiến trúc và miền nghiệp vụ, chưa đi sâu tới mức thuật toán hoặc chính sách vận hành chi tiết.
+Tuy nhiên, báo cáo cũng có những giới hạn cần được nhìn nhận thẳng thắn. Hệ thống được mô tả khá đầy đủ ở quy mô một nhà hàng hoặc một cụm nhỏ chi nhánh, nên các quyết định như kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện, mô hình đọc riêng cho báo cáo và bộ xử lý nền tách biệt là phù hợp. Dù vậy, khi quy mô tăng lên theo hướng nhiều chi nhánh, nhiều thiết bị, nhiều tích hợp thanh toán và nhiều chính sách giá khác nhau, kiến trúc sẽ cần tiến thêm một bước ở vùng triển khai, khả năng quan sát và chiến lược phân tách dữ liệu. Ngoài ra, một số phần như dự báo nhập hàng, điều phối bếp nâng cao hay xử lý sự cố tích hợp mới dừng ở mức kiến trúc và miền nghiệp vụ, chưa đi sâu tới mức thuật toán hoặc chính sách vận hành chi tiết.
 
-Phần phản tư quan trọng nhất nằm ở kinh nghiệm tổ chức lập luận kiến trúc. Khi bám theo danh sách chức năng, tài liệu rất dễ dừng lại ở việc hệ thống có những gì. Khi chuyển trọng tâm sang giao dịch lõi, hệ quả phụ, biên mô-đun, điểm mở rộng và ranh giới dữ liệu, báo cáo mới bắt đầu thể hiện đúng bản chất của một tài liệu kiến trúc. Từ đó có thể rút ra một nguyên tắc rõ ràng: chất lượng báo cáo không nằm ở số lượng sơ đồ, mà nằm ở việc mỗi sơ đồ có bảo vệ được một quyết định thiết kế cụ thể hay không.
+Phần phản tư quan trọng nhất nằm ở kinh nghiệm tổ chức lập luận kiến trúc. Khi bám theo danh sách chức năng, tài liệu rất dễ dừng lại ở việc hệ thống có những gì. Khi chuyển trọng tâm sang giao dịch lõi, hệ quả phụ, biên service, điểm mở rộng và ranh giới dữ liệu, báo cáo mới bắt đầu thể hiện đúng bản chất của một tài liệu kiến trúc. Từ đó có thể rút ra một nguyên tắc rõ ràng: chất lượng báo cáo không nằm ở số lượng sơ đồ, mà nằm ở việc mỗi sơ đồ có bảo vệ được một quyết định thiết kế cụ thể hay không.
 
-Giá trị lâu dài của tài liệu này là tạo ra một khung quyết định có thể tiếp tục dùng trong giai đoạn hiện thực. Những ranh giới như \texttt{Reservation \& Seating}, \texttt{Ordering}, \texttt{Kitchen Coordination}, \texttt{Billing \& Settlement}, \texttt{Inventory}, \texttt{Reporting} và \texttt{IAM / Audit} đã được neo tương đối rõ; vì vậy, phần mã nguồn về sau có thể dùng chính các ranh giới đó làm chuẩn để tự kiểm tra chất lượng tổ chức mã. Nếu giữ được vai trò này, báo cáo không chỉ là tài liệu trình bày, mà còn là bản thiết kế có khả năng dẫn hướng cho việc phát triển hệ thống.
+Giá trị lâu dài của tài liệu này là tạo ra một khung quyết định có thể tiếp tục dùng trong giai đoạn hiện thực. Những ranh giới như \texttt{Reservation \& Seating Service}, \texttt{Ordering \& Menu Service}, \texttt{Kitchen Coordination Service}, \texttt{Billing \& Settlement Service}, \texttt{Inventory Monitoring Service}, \texttt{Reporting Service} và \texttt{IAM \& Audit Service} đã được neo tương đối rõ; vì vậy, phần mã nguồn về sau có thể dùng chính các ranh giới đó làm chuẩn để tự kiểm tra chất lượng tổ chức mã. Nếu giữ được vai trò này, báo cáo không chỉ là tài liệu trình bày, mà còn là bản thiết kế có khả năng dẫn hướng cho việc phát triển hệ thống.

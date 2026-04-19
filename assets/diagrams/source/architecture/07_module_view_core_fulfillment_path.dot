@@ -10,7 +10,7 @@ digraph G {
     splines=polyline,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="UML Package Diagram - Core Fulfillment Path of IRMS"
+    label="UML Package Diagram - Core Service Fulfillment Path of IRMS"
   ];
 
   node [
@@ -34,37 +34,37 @@ digraph G {
   ];
 
   subgraph cluster_model {
-    label="<<model>> Module View";
+    label="<<model>> Service Decomposition View";
     color="#94A3B8";
     penwidth=1.1;
     style="rounded";
 
     subgraph cluster_context {
-      label="<<package>> Context Packages";
+      label="<<package>> Service Contexts";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
 
-      reservation_context [label="Reservation Context\nsession contract,\nreservation state,\nseating rules"];
-      menu_reference [label="Menu Reference\ncatalog,\nmodifier rules,\npricing policy"];
+      reservation_context [label="Reservation & Seating\nservice context,\nreservation state,\nseating rules"];
+      menu_reference [label="Ordering & Menu\ncatalog,\nmodifier rules,\npricing policy"];
     }
 
     subgraph cluster_execution {
-      label="<<package>> Core Fulfillment Packages";
+      label="<<package>> Core Service Flow";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
 
-      ordering_package [label="Ordering Package\napplication commands,\norder aggregate,\nitem snapshot"];
-      kitchen_package [label="Kitchen Package\nticket routing,\nstation queue,\npreparation state"];
-      billing_package [label="Billing Package\nbill creation,\nsettlement,\nreceipt and closure"];
+      ordering_package [label="Ordering & Menu Service\ncommands,\norder aggregate,\nprice snapshot"];
+      kitchen_package [label="Kitchen Coordination Service\nticket routing,\nstation queue,\npreparation state"];
+      billing_package [label="Billing & Settlement Service\nbill issue,\nsettlement,\nreceipt closure"];
     }
   }
 
   reservation_context -> ordering_package [label="table-session context"];
   menu_reference -> ordering_package [label="item, modifier and price basis"];
-  ordering_package -> kitchen_package [label="confirmed order snapshot"];
-  ordering_package -> billing_package [label="billable snapshot"];
-  kitchen_package -> billing_package [label="served facts"];
-  billing_package -> reservation_context [label="session close and table release"];
+  ordering_package -> kitchen_package [label="OrderConfirmed"];
+  ordering_package -> billing_package [label="billable snapshot API"];
+  kitchen_package -> billing_package [label="OrderItemPrepared"];
+  billing_package -> reservation_context [label="close table session"];
 }

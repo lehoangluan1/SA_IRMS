@@ -2,31 +2,31 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
   node [fontname="DejaVu Sans"];
   edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-BIL-01 — Tạo hóa đơn cho bàn";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-BIL-01 -- Create Bill";
 
   subgraph cluster_l1 {
     style="rounded,filled";
     fillcolor="#EAF3FF"; color="#BBBBBB";
-    label="Phục vụ hoặc thu ngân";
+    label="Server or Cashier";
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    n1 [label="Chọn bàn cần tính tiền", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n6 [label="Xem trước hóa đơn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n7 [label="Xác nhận phát hành hóa đơn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n1 [label="Select table to bill", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n6 [label="Preview bill", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n7 [label="Confirm issue bill", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n0 -> n1 -> n6 -> n7 [style=invis, weight=20];
   }
 
   subgraph cluster_l2 {
     style="rounded,filled";
     fillcolor="#FFF8DB"; color="#BBBBBB";
-    label="Hệ thống IRMS";
-    n2 [label="Gom các đơn gọi món chưa quyết toán\ntrong phiên bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n3 [label="Có dữ liệu đủ điều kiện\nxuất hóa đơn?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n4 [label="Kiểm tra thay đổi chưa đồng bộ,\ndòng món vừa hủy hoặc sửa", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n5 [label="Tính tiền hàng, thuế,\nphí và khuyến mãi", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n8 [label="Cấu hình thuế và phí hợp lệ?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n9 [label="Tạo Bill và phần thanh toán\nmặc định ban đầu", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n10 [label="Cập nhật phiên bàn sang trạng thái\nchờ thanh toán", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n11 [label="Chặn phát hành và yêu cầu\nlàm mới dữ liệu", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="IRMS";
+    n2 [label="Collect unsettled orders\nfor the table session", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Eligible data available to\nissue a bill?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n4 [label="Check unsynchronized changes,\nrecently edited or canceled items", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Calculate subtotal, tax,\nfees, and promotions", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="Tax and fee configuration valid?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n9 [label="Issue bill and create default\npayment split", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Publish BillIssued and mark\ntable session awaiting settlement", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n11 [label="Block bill issue and request\ndata refresh", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n12 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n2 -> n3 -> n4 -> n5 -> n8 -> n9 -> n10 -> n11 -> n12 [style=invis, weight=20];
   }
@@ -34,14 +34,14 @@ digraph G {
   n0 -> n1;
   n1 -> n2;
   n2 -> n3;
-  n3 -> n4 [xlabel="Có"];
-  n3 -> n11 [xlabel="Không"];
+  n3 -> n4 [xlabel="Yes"];
+  n3 -> n11 [xlabel="No"];
   n4 -> n5;
   n5 -> n6;
   n6 -> n7;
   n7 -> n8;
-  n8 -> n9 [xlabel="Có"];
-  n8 -> n11 [xlabel="Không"];
+  n8 -> n9 [xlabel="Yes"];
+  n8 -> n11 [xlabel="No"];
   n9 -> n10;
   n10 -> n12;
   n11 -> n12;

@@ -1,4 +1,4 @@
-﻿\appendix
+\appendix
 \section{Phụ lục}
 
 \label{appendix:overall}
@@ -26,11 +26,11 @@ Các mục trong phụ lục này không đứng riêng với thân báo cáo. C
 \hline
 \textbf{Kiểu kiến trúc} & \textbf{Ưu điểm chính} & \textbf{Hạn chế trong bối cảnh IRMS} \\
 \hline
-\textbf{Layered Monolith thuần}
+\textbf{Kiến trúc phân lớp tập trung thuần}
 &
 Dễ khởi tạo ban đầu, ít thành phần triển khai, đơn giản cho giao dịch nội bộ, thuận lợi nếu phạm vi hệ thống còn nhỏ.
 &
-Dễ trượt thành một khối lớn tổ chức theo tầng kỹ thuật thay vì theo năng lực nghiệp vụ. Trong bối cảnh IRMS, các vùng như gọi món, bếp, thanh toán, tồn kho và báo cáo rất dễ chồng lấn trách nhiệm nếu chỉ bám vào cấu trúc \texttt{controller--service--repository}. Điều này làm giảm khả năng kiểm soát ranh giới mô-đun và gây khó khăn cho bảo trì về sau. \\
+Dễ trượt thành một khối lớn tổ chức theo tầng kỹ thuật thay vì theo năng lực nghiệp vụ. Trong bối cảnh IRMS, các vùng như gọi món, bếp, thanh toán, tồn kho và báo cáo rất dễ chồng lấn trách nhiệm nếu chỉ bám vào cấu trúc \texttt{controller--service--repository}. Điều này làm giảm khả năng kiểm soát ranh giới service và gây khó khăn cho bảo trì về sau. \\
 \hline
 \textbf{Service-Based phân tán}
 &
@@ -50,40 +50,28 @@ Phù hợp với các luồng phát tán sự kiện, xử lý nền, retry, mô
 &
 Không phù hợp để áp dụng cho toàn bộ hệ thống. Nhiều tương tác lõi của IRMS như tra cứu thực đơn, tạo đơn gọi món, lập hóa đơn và xử lý thanh toán đòi hỏi phản hồi tức thời, trạng thái rõ ràng và ngữ nghĩa lỗi minh bạch. Nếu dùng thuần sự kiện cho toàn hệ thống, tuyến đầu dễ trở nên khó giải thích và khó kiểm soát hơn. \\
 \hline
-\textbf{Kiến trúc lai: Modular Monolith theo năng lực + phân lớp nội bộ + luồng hỗ trợ hướng sự kiện}
+\textbf{Kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện}
 &
 Giữ được ranh giới năng lực nghiệp vụ rõ ràng; đơn giản hơn cho giao dịch lõi; dễ triển khai, kiểm thử và tích hợp trong phạm vi học phần; đồng thời vẫn hỗ trợ tốt các hệ quả phụ qua sự kiện và bộ xử lý nền.
 &
-Đòi hỏi kỷ luật tổ chức mã nguồn để không làm mờ ranh giới mô-đun bên trong. Ngoài ra, khi quy mô tăng lên, một số năng lực có thể cần được tách dần thành đơn vị triển khai độc lập. Tuy nhiên, đây là hạn chế có thể chấp nhận được ở giai đoạn hiện tại. \\
+Đòi hỏi kỷ luật tổ chức mã nguồn để không làm mờ ranh giới service bên trong. Ngoài ra, khi quy mô tăng lên, một số năng lực có thể cần được tách dần thành đơn vị triển khai độc lập. Tuy nhiên, đây là hạn chế có thể chấp nhận được ở giai đoạn hiện tại. \\
 \hline
 \end{tabularx}
 \end{table}
 
-Từ các góc nhìn mô-đun, thành phần và triển khai đã trình bày trong báo cáo chính,
-phương án phù hợp nhất cho IRMS không phải là một
-\textbf{kiến trúc dịch vụ thuần}
-theo nghĩa mỗi năng lực nghiệp vụ là một tiến trình mạng độc lập,
-mà là một \textbf{kiến trúc lai}.
+Từ các góc nhìn phân rã dịch vụ, thành phần và triển khai đã trình bày trong báo cáo chính,
+phương án phù hợp nhất cho IRMS là một
+\textbf{kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện}.
+Cách tổ chức này không đồng nhất với microservices thuần, đồng thời không xem IRMS như một khối xử lý tập trung được chia nhỏ theo tên gọi hình thức.
 Ở mức logic, hệ thống được phân rã rõ theo các năng lực như
 đặt bàn và bàn ăn, thực đơn, gọi món, điều phối bếp, quyết toán,
 tồn kho, báo cáo, IAM và kiểm toán.
-Tuy nhiên, ở mức thực thi hiện tại,
-các năng lực này vẫn được đặt trong một \textbf{backend tập trung}
-để giữ cho giao dịch lõi đơn giản hơn, giảm chi phí triển khai
-và phù hợp với phạm vi của đồ án.
+Các năng lực này được biểu diễn như các service có ranh giới trách nhiệm rõ ràng, có hợp đồng API cho thao tác cần phản hồi ngay và có hợp đồng event cho hệ quả sau giao dịch.
 
 Vì vậy, cách mô tả chính xác hơn là:
-IRMS được tổ chức như một \textbf{modular monolith theo năng lực nghiệp vụ};
-bên trong từng mô-đun áp dụng \textbf{phân lớp nội bộ}
-để tách phần giao diện, điều phối ứng dụng, mô hình miền và truy cập dữ liệu;
-đồng thời hệ thống sử dụng \textbf{luồng hỗ trợ hướng sự kiện}
-cho những xử lý không cần phản hồi đồng bộ ngay lập tức,
-chẳng hạn như gửi thông báo, làm mới mô hình đọc, đồng bộ báo cáo,
-và một phần xử lý tồn kho hoặc cảnh báo.
-Cách kết hợp này cho phép IRMS giữ được sự rõ ràng về kiến trúc
-mà không phải gánh toàn bộ độ phức tạp của một hệ phân tán nặng.
+IRMS được tổ chức thành các service như \texttt{Reservation \& Seating Service}, \texttt{Ordering \& Menu Service}, \texttt{Kitchen Coordination Service}, \texttt{Billing \& Settlement Service}, \texttt{Inventory Monitoring Service}, \texttt{Reporting Service}, \texttt{IAM \& Audit Service} và \texttt{Notification Service}. API đồng bộ được dùng cho xác nhận đặt bàn, gửi món, lập hóa đơn và thanh toán; event bất đồng bộ được dùng cho cập nhật bếp, trừ tồn kho, gửi thông báo, tạo dữ liệu báo cáo, ghi audit và in biên lai. Cách kết hợp này cho phép IRMS giữ được sự rõ ràng về kiến trúc mà không phải buộc mọi hệ quả phụ nằm trong tuyến giao dịch chính.
 
-\begin{adrbox}[title={ADR-01: Lựa chọn kiến trúc lai cho IRMS}]
+\begin{adrbox}[title={ADR-01: Lựa chọn kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện cho IRMS}]
 \begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
   \item \textbf{Bối cảnh:}
   IRMS phải đồng thời hỗ trợ nhiều tuyến nghiệp vụ có tính chất rất khác nhau:
@@ -97,12 +85,10 @@ mà không phải gánh toàn bộ độ phức tạp của một hệ phân tá
   Chọn \textbf{kiến trúc lai}
   gồm:
   \begin{itemize}
-    \item \textbf{modular monolith theo năng lực} cho phần lõi triển khai;
-    \item \textbf{phân lớp nội bộ} bên trong từng mô-đun;
-    \item \textbf{luồng hỗ trợ hướng sự kiện} cho thông báo,
-    cập nhật mô hình đọc, một phần tồn kho và báo cáo;
-    \item \textbf{luồng đồng bộ} cho các tương tác nghiệp vụ tuyến đầu
-    như gọi món, lập hóa đơn và thanh toán.
+    \item \textbf{service theo năng lực nghiệp vụ} cho các vùng đặt bàn, gọi món, bếp, quyết toán, tồn kho, báo cáo, thông báo và kiểm toán;
+    \item \textbf{API đồng bộ} cho các tương tác nghiệp vụ tuyến đầu như xác nhận đặt bàn, gọi món, lập hóa đơn và thanh toán;
+    \item \textbf{event bất đồng bộ} cho các hệ quả sau giao dịch như thông báo, cập nhật mô hình đọc, tồn kho, báo cáo, audit và in biên lai;
+    \item \textbf{adapter tích hợp ngoài} để cô lập cổng thanh toán, máy in biên lai và kênh gửi thông báo khỏi miền nghiệp vụ.
   \end{itemize}
 
   \item \textbf{Trạng thái:}
@@ -113,19 +99,19 @@ mà không phải gánh toàn bộ độ phức tạp của một hệ phân tá
   Thứ nhất, nó giữ cho các giao dịch lõi đơn giản hơn so với kiến trúc phân tán,
   nhờ đó giảm rủi ro giao dịch phân tán, giảm độ phức tạp vận hành
   và tăng tính khả thi của phần hiện thực.
-  Thứ hai, nó vẫn duy trì được ranh giới mô-đun rõ ràng theo năng lực nghiệp vụ,
+  Thứ hai, nó vẫn duy trì được ranh giới service rõ ràng theo năng lực nghiệp vụ,
   từ đó hỗ trợ bảo trì, kiểm thử và mở rộng có kiểm soát.
 
   \item \textbf{Hệ quả kiến trúc:}
-  Ở mức logic, các năng lực được mô tả như các mô-đun độc lập,
+  Ở mức logic, các năng lực được mô tả như các service độc lập về trách nhiệm,
   có ranh giới trách nhiệm và dữ liệu rõ ràng.
-  Ở mức triển khai hiện tại, chúng có thể cùng chạy trong một backend runtime.
+  Mỗi service cần công bố API cho thao tác trực tiếp và event cho hệ quả sau giao dịch.
   Nếu tải hệ thống hoặc độ phức tạp vận hành tăng trong tương lai,
   các năng lực như \texttt{Reporting}, \texttt{Notification}
   hoặc một phần \texttt{Inventory} là các ứng viên phù hợp để tách ra trước.
 
   \item \textbf{Các phương án không được chọn:}
-  Layered monolith thuần bị loại vì không giữ được ranh giới năng lực đủ rõ;
+  Kiến trúc phân lớp tập trung thuần bị loại vì không giữ được ranh giới năng lực đủ rõ;
   microservices bị loại vì vượt quá nhu cầu và chi phí của bối cảnh hiện tại;
   event-driven thuần bị loại vì không phù hợp với các giao dịch cần phản hồi ngay.
 \end{enumerate}
@@ -146,26 +132,26 @@ mà không phải gánh toàn bộ độ phức tạp của một hệ phân tá
   Gateway chịu trách nhiệm xác thực,
   chuyển tiếp yêu cầu, giới hạn tốc độ,
   ghi log ở biên, chuẩn hóa lỗi phản hồi
-  và áp dụng các chính sách chung trước khi chuyển tiếp vào backend.
+  và áp dụng các chính sách chung trước khi chuyển tiếp vào service đích.
 
   \item \textbf{Trạng thái:}
   \textbf{Đã phê duyệt.}
 
   \item \textbf{Lý do lựa chọn:}
   Cách tổ chức này làm giảm sự phụ thuộc trực tiếp giữa ứng dụng khách
-  và cấu trúc nội bộ của backend.
+  và cấu trúc service phía sau.
   Nó cũng tạo một điểm kiểm soát tập trung cho bảo mật,
   kiểm toán, quản lý phiên bản giao diện lập trình ứng dụng
   và quan sát hệ thống.
 
   \item \textbf{Hệ quả kiến trúc:}
-  Ứng dụng khách không cần biết chi tiết nội bộ của từng mô-đun hoặc từng luồng xử lý.
+  Ứng dụng khách không cần biết chi tiết nội bộ của từng service hoặc từng luồng xử lý.
   Mọi chính sách chung được chuẩn hóa ở một điểm vào thống nhất.
-  Tuy nhiên, gateway không thay thế logic nghiệp vụ của các mô-đun phía sau;
+  Tuy nhiên, gateway không thay thế logic nghiệp vụ của các service phía sau;
   nó chỉ đóng vai trò lớp biên kiểm soát và điều phối truy cập.
 
   \item \textbf{Lưu ý triển khai:}
-  Trong bối cảnh modular monolith,
+  Trong bối cảnh kiến trúc hướng dịch vụ,
   gateway không hàm ý rằng toàn bộ hệ thống đã là microservices.
   Nó được hiểu là \textbf{điểm vào thống nhất ở biên hệ thống},
   giúp kiến trúc rõ ràng hơn ngay cả khi phần lõi vẫn đang chạy tập trung.
@@ -179,12 +165,12 @@ mà không phải gánh toàn bộ độ phức tạp của một hệ phân tá
   Một số thao tác cần phản hồi ngay cho người dùng,
   ví dụ tra cứu thực đơn, tạo đơn gọi món, lập hóa đơn hoặc ghi nhận thanh toán.
   Trong khi đó, một số hệ quả phụ phù hợp hơn với xử lý nền hoặc xử lý phát tán,
-  chẳng hạn gửi phiếu sang bếp, cập nhật tồn kho, làm mới báo cáo và gửi cảnh báo.
+  chẳng hạn tạo phiếu bếp, cập nhật tồn kho, làm mới báo cáo, gửi cảnh báo, ghi audit và in biên lai.
 
   \item \textbf{Quyết định:}
-  Dùng \textbf{REST đồng bộ}
+  Dùng \textbf{API đồng bộ}
   cho các lệnh và truy vấn ở ranh giới người dùng,
-  đồng thời dùng \textbf{sự kiện miền bất đồng bộ}
+  đồng thời dùng \textbf{event bất đồng bộ}
   cho các tác vụ phát tán hoặc chỉ cần nhất quán sau cùng.
 
   \item \textbf{Trạng thái:}
@@ -206,8 +192,8 @@ mà không phải gánh toàn bộ độ phức tạp của một hệ phân tá
 
   \item \textbf{Ví dụ áp dụng trong IRMS:}
   \begin{itemize}
-    \item \texttt{CreateOrder}, \texttt{CreateBill}, \texttt{ProcessPayment} đi theo tuyến đồng bộ.
-    \item \texttt{OrderConfirmed}, \texttt{DishReady}, \texttt{DishServed}, \texttt{LowStockDetected}, \texttt{ReportRefreshRequested}
+    \item \texttt{ConfirmReservation}, \texttt{ConfirmOrder}, \texttt{IssueBill}, \texttt{CapturePayment} đi theo tuyến API đồng bộ.
+    \item \texttt{ReservationConfirmed}, \texttt{TableSessionOpened}, \texttt{OrderConfirmed}, \texttt{KitchenTicketCreated}, \texttt{OrderItemPrepared}, \texttt{BillIssued}, \texttt{PaymentCaptured}, \texttt{InventoryLow}, \texttt{ReportSnapshotRequested}
     là các ví dụ phù hợp với tuyến bất đồng bộ.
   \end{itemize}
 \end{enumerate}
@@ -222,10 +208,10 @@ mà không phải gánh toàn bộ độ phức tạp của một hệ phân tá
   và dễ làm cho truy vấn báo cáo tác động ngược lại tuyến giao dịch nóng.
 
   \item \textbf{Quyết định:}
-  Mỗi mô-đun sở hữu dữ liệu giao dịch theo miền tương ứng.
+  Mỗi service sở hữu dữ liệu giao dịch theo miền tương ứng.
   Phần báo cáo không đọc trực tiếp đường ghi nghiệp vụ,
   mà sử dụng \textbf{read model} hoặc \textbf{snapshot}
-  được cập nhật từ sự kiện miền hoặc từ một đường đồng bộ nhẹ có kiểm soát.
+  được cập nhật từ event nghiệp vụ hoặc từ một đường đồng bộ nhẹ có kiểm soát.
 
   \item \textbf{Trạng thái:}
   \textbf{Đã phê duyệt.}
@@ -311,9 +297,9 @@ Phần này cho thấy mỗi phụ lục kỹ thuật được dùng để đọ
 \hline
 Mục~\ref{sec:system-modeling-overview} & Vì sao phần mô hình hóa mở đầu bằng sơ đồ ngữ cảnh, sơ đồ tổng quan ca sử dụng và sơ đồ hoạt động đầu-cuối thay vì đi thẳng vào đặc tả chi tiết. & Phụ lục~\ref{appendix:view-rationale} giải thích giá trị của từng loại sơ đồ; Phụ lục~\ref{appendix:architecture-rationale} cho thấy các sơ đồ này là nền để đọc kiến trúc, không phải hình minh họa rời rạc. \\
 \hline
-Mục~\ref{sec:architecture-overview} & Vì sao IRMS được mô tả như modular monolith theo năng lực, có lớp biên web, tuyến nền và mô hình đọc tách riêng. & Phụ lục~\ref{appendix:architecture-rationale} chứa các ADR về kiểu kiến trúc, điểm vào, kiểu kết nối và dữ liệu đọc; Phụ lục~\ref{appendix:component-rationale} giải thích vì sao dùng các thành phần nền tương ứng. \\
+Mục~\ref{sec:architecture-overview} & Vì sao IRMS được mô tả như kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện, có lớp biên web, tuyến nền và mô hình đọc tách riêng. & Phụ lục~\ref{appendix:architecture-rationale} chứa các ADR về kiểu kiến trúc, điểm vào, kiểu kết nối và dữ liệu đọc; Phụ lục~\ref{appendix:component-rationale} giải thích vì sao dùng các thành phần nền tương ứng. \\
 \hline
-Mục~\ref{sec:architecture-views} và Mục~\ref{sec:architecture-principles} & Vì sao báo cáo đồng thời dùng góc nhìn logic, mô-đun, thành phần, triển khai và nguyên tắc thiết kế. & Phụ lục~\ref{appendix:view-rationale} giải thích vai trò của từng góc nhìn; Phụ lục~\ref{appendix:traceability} giúp nối mỗi góc nhìn với đúng phần giải thích tương ứng. \\
+Mục~\ref{sec:architecture-views} và Mục~\ref{sec:architecture-principles} & Vì sao báo cáo đồng thời dùng góc nhìn logic, service, thành phần, triển khai và nguyên tắc thiết kế. & Phụ lục~\ref{appendix:view-rationale} giải thích vai trò của từng góc nhìn; Phụ lục~\ref{appendix:traceability} giúp nối mỗi góc nhìn với đúng phần giải thích tương ứng. \\
 \hline
 Mục~\ref{sec:detailed-design-class-view} và Mục~\ref{sec:detailed-design-clusters} & Vì sao phần thiết kế chi tiết dùng sơ đồ lớp ở mức aggregate, điểm mở rộng và hành vi thay vì chỉ mô tả dữ liệu; vì sao các sơ đồ hoạt động chi tiết đi theo từng cụm nghiệp vụ. & Phụ lục~\ref{appendix:view-rationale} giải thích lý do chọn góc nhìn lớp và hoạt động; Phụ lục~\ref{appendix:component-rationale} giải thích vì sao các điểm mở rộng như thanh toán, thông báo, phân quyền được đưa vào mô hình chi tiết. \\
 \hline
@@ -322,7 +308,7 @@ Mục~\ref{sec:detailed-design-class-view} và Mục~\ref{sec:detailed-design-cl
 \end{table}
 
 \subsection{Lý do chọn các góc nhìn và loại sơ đồ}\label{appendix:view-rationale}
-Mỗi loại sơ đồ trong báo cáo trả lời một câu hỏi kiến trúc riêng: ranh giới hệ thống ở đâu, phạm vi ca sử dụng được gom như thế nào, luồng nóng đi qua những mắt xích nào, ranh giới mô-đun nào cần giữ ổn định và mô hình lớp nào phản ánh đúng hành vi miền nghiệp vụ.
+Mỗi loại sơ đồ trong báo cáo trả lời một câu hỏi kiến trúc riêng: ranh giới hệ thống ở đâu, phạm vi ca sử dụng được gom như thế nào, luồng nóng đi qua những mắt xích nào, ranh giới service nào cần giữ ổn định và mô hình lớp nào phản ánh đúng hành vi miền nghiệp vụ.
 
 \begin{table}[H]
 \centering
@@ -333,7 +319,7 @@ Mỗi loại sơ đồ trong báo cáo trả lời một câu hỏi kiến trúc
 \hline
 \textbf{Loại sơ đồ / góc nhìn} & \textbf{Dùng ở phần nào} & \textbf{Lý do chọn} \\
 \hline
-Sơ đồ ngữ cảnh & Mục~\ref{sec:system-modeling-overview} & Dùng để chốt ranh giới hệ thống, các vai trò vận hành và các tích hợp ngoài trước khi đi sâu vào kiến trúc. Nếu không có hình này, các mô-đun ở chương kiến trúc dễ bị đọc như cấu trúc kỹ thuật nội bộ thay vì phản ánh bối cảnh thật của IRMS. \\
+Sơ đồ ngữ cảnh & Mục~\ref{sec:system-modeling-overview} & Dùng để chốt ranh giới hệ thống, các vai trò vận hành và các tích hợp ngoài trước khi đi sâu vào kiến trúc. Nếu không có hình này, các service ở chương kiến trúc dễ bị đọc như cấu trúc kỹ thuật nội bộ thay vì phản ánh bối cảnh thật của IRMS. \\
 \hline
 Sơ đồ tổng quan ca sử dụng & Mục~\ref{sec:system-modeling-overview} & Dùng để gom 25 ca sử dụng thành các gói nghiệp vụ lớn, nhờ đó người đọc nhìn ra phạm vi bắt buộc và các tuyến chức năng nóng trước khi đi vào đặc tả từng mã. Đây là lớp nối giữa yêu cầu chức năng và phân rã kiến trúc. \\
 \hline
@@ -341,9 +327,9 @@ Sơ đồ hoạt động đầu-cuối & Mục~\ref{sec:system-modeling-overview
 \hline
 Góc nhìn logic & Mục~\ref{sec:architecture-views} & Dùng để ánh xạ hệ thống thành các năng lực nghiệp vụ, qua đó kiểm tra xem kiến trúc có phản ánh đúng vận hành nhà hàng hay chưa. Đây là góc nhìn phù hợp để nói về kết tụ, phụ thuộc và ranh giới quyết định ở mức khái niệm. \\
 \hline
-Góc nhìn mô-đun và thành phần & Mục~\ref{sec:architecture-views} & Dùng để chuyển từ bản đồ năng lực sang cấu trúc thực thi bên trong runtime: mô-đun nào giữ trách nhiệm nào, hợp đồng nào đi qua bộ kết nối, luồng nào nên đồng bộ và luồng nào nên phát tán qua sự kiện. \\
+Góc nhìn phân rã dịch vụ và thành phần & Mục~\ref{sec:architecture-views} & Dùng để chuyển từ bản đồ năng lực sang cấu trúc thực thi bên trong môi trường thực thi: service nào giữ trách nhiệm nào, hợp đồng nào đi qua bộ kết nối, luồng nào nên đồng bộ và luồng nào nên phát tán qua sự kiện. \\
 \hline
-Góc nhìn triển khai và phân bổ & Mục~\ref{sec:architecture-views} & Dùng để trả lời hệ thống chạy ở đâu, tuyến dữ liệu và tuyến nền đi qua đâu, và cách cô lập lỗi hoặc mở rộng tải được thực hiện như thế nào. Đây là phần giúp nối quyết định mô-đun với hạ tầng thực thi. \\
+Góc nhìn triển khai và phân bổ & Mục~\ref{sec:architecture-views} & Dùng để trả lời hệ thống chạy ở đâu, tuyến dữ liệu và tuyến nền đi qua đâu, và cách cô lập lỗi hoặc mở rộng tải được thực hiện như thế nào. Đây là phần giúp nối quyết định service với hạ tầng thực thi. \\
 \hline
 Sơ đồ lớp & Mục~\ref{sec:detailed-design-class-view} & Dùng để thể hiện aggregate, hành vi miền nghiệp vụ và các điểm mở rộng như \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{AuthorizationPolicy}; vì vậy nó phù hợp hơn ERD thuần dữ liệu trong bối cảnh báo cáo kiến trúc. \\
 \hline
@@ -354,7 +340,7 @@ Sơ đồ hoạt động chi tiết & Mục~\ref{sec:detailed-design-clusters} &
 \end{table}
 
 \subsection{Lý do chọn các thành phần và loại hình kiến trúc nền}\label{appendix:component-rationale}
-Phần này tổng hợp cơ sở giải thích cho các thành phần và kiểu tổ chức xuất hiện trong sơ đồ tổng quan, mô-đun, thành phần và triển khai; đồng thời nối từng lựa chọn với yêu cầu vận hành của IRMS.
+Phần này tổng hợp cơ sở giải thích cho các thành phần và kiểu tổ chức xuất hiện trong sơ đồ tổng quan, service, thành phần và triển khai; đồng thời nối từng lựa chọn với yêu cầu vận hành của IRMS.
 
 \begin{table}[H]
 \centering
@@ -369,9 +355,9 @@ Phần này tổng hợp cơ sở giải thích cho các thành phần và kiể
 \hline
 \texttt{Nginx} / API edge boundary & Tạo biên truy cập rõ ràng, gom xác thực sơ bộ, định tuyến, chuẩn hóa phản hồi và che giấu cấu trúc nội bộ khỏi client. & Biện minh cho ADR-02 trong Phụ lục~\ref{appendix:architecture-rationale} và xuất hiện trực tiếp trong sơ đồ tổng quan kiến trúc. \\
 \hline
-Modular monolith theo năng lực & Phù hợp với IRMS vì các giao dịch lõi như gọi món, bếp và thanh toán cần gần nhau, nhưng vẫn phải tách ranh giới mô-đun để dễ bảo trì và mở rộng có kiểm soát. & Là trục chính của ADR-01; được thể hiện xuyên suốt ở Mục~\ref{sec:architecture-overview} và Mục~\ref{sec:architecture-views}. \\
+Kiến trúc hướng dịch vụ kết hợp event-driven & Phù hợp với IRMS vì các giao dịch lõi như gọi món, bếp và thanh toán cần phản hồi rõ ràng qua API, trong khi thông báo, báo cáo, audit, in biên lai và tồn kho phù hợp với event bất đồng bộ. & Là trục chính của ADR-01; được thể hiện xuyên suốt ở Mục~\ref{sec:architecture-overview} và Mục~\ref{sec:architecture-views}. \\
 \hline
-Outbox / background worker & Tách các hệ quả phụ như làm mới read model, gửi thông báo, in biên lai và phát cảnh báo khỏi tuyến giao dịch nóng; hỗ trợ retry và giảm ghép nối. & Biện minh cho ADR-03 và xuất hiện trong sơ đồ tổng quan, mô-đun, thành phần và triển khai. \\
+Outbox / background worker & Tách các hệ quả phụ như làm mới read model, gửi thông báo, in biên lai và phát cảnh báo khỏi tuyến giao dịch nóng; hỗ trợ retry và giảm ghép nối. & Biện minh cho ADR-03 và xuất hiện trong sơ đồ tổng quan, service, thành phần và triển khai. \\
 \hline
 \texttt{PostgreSQL} giao dịch & Phù hợp để neo giữ tính nhất quán của các quyết định có hậu quả nghiệp vụ cao như xác nhận đơn, đóng hóa đơn, hoàn tiền và truy vết kiểm toán. & Gắn với ADR-04 và các sơ đồ dữ liệu / triển khai trong Mục~\ref{sec:architecture-views}. \\
 \hline
@@ -408,7 +394,7 @@ Phụ trách tổ chức cấu trúc tài liệu LaTeX, chuẩn hóa hình thứ
 Phụ trách xây dựng phần đặc tả use case và mô tả các luồng hoạt động nghiệp vụ chính, đồng thời phối hợp đối chiếu với phần yêu cầu và phần kiến trúc để giữ sự liên thông giữa mô tả nghiệp vụ và giải pháp thiết kế. \\
 \hline
 2213698 & Nguyễn Hải Trung &
-Phụ trách các góc nhìn mô-đun, thành phần và kết nối của hệ thống, đồng thời phối hợp với các phần khác để bảo đảm các quyết định kiến trúc bám sát yêu cầu nghiệp vụ và thống nhất với cấu trúc tổng thể của báo cáo. \\
+Phụ trách các góc nhìn phân rã dịch vụ, thành phần và kết nối của hệ thống, đồng thời phối hợp với các phần khác để bảo đảm các quyết định kiến trúc bám sát yêu cầu nghiệp vụ và thống nhất với cấu trúc tổng thể của báo cáo. \\
 \hline
 2211384 & Tô Thế Hưng &
 Phụ trách xây dựng các sơ đồ lớp và rà soát mô hình miền nghiệp vụ, đồng thời phối hợp đối chiếu với phần kiến trúc và phần hành vi để bảo đảm cấu trúc lớp phản ánh đúng các trách nhiệm và điểm mở rộng của hệ thống. \\
