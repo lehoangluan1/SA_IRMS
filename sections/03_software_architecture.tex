@@ -709,45 +709,85 @@ Phần thứ ba là vai trò của các thành phần quản trị như \textsf{
 \end{itemize}
 
 \subsection{Góc nhìn triển khai}
-Ở góc nhìn triển khai, hệ thống được ánh xạ lên hạ tầng vật lý và hạ tầng chạy chương trình như sau:
+\subsubsection{3.x.1 Tổng quan phân bổ hệ thống (Allocation Overview)}
+
+Ở góc nhìn triển khai, hệ thống được ánh xạ lên hạ tầng vật lý và hạ tầng thực thi nhằm làm rõ cách các thành phần phần mềm được phân bổ trên các nút triển khai (deployment nodes), cách các nút này giao tiếp với nhau và cách hệ thống đáp ứng các yêu cầu phi chức năng như độ trễ, khả năng mở rộng và độ tin cậy.
+
+Hệ thống được tổ chức thành bốn tầng chính như sau:
 
 \begin{enumerate}
-  \item \textbf{Tầng thiết bị đầu cuối}
+
+  \item \textbf{Tầng thiết bị đầu cuối (Client Layer)}
   \begin{itemize}
-    \item Máy tính bảng dành cho nhân viên phục vụ.
-    \item Thiết bị lễ tân hoặc ki-ốt tiếp nhận khách.
-    \item Màn hình bếp tại từng trạm chế biến.
-    \item Máy thu ngân.
-    \item Trình duyệt của quản lý.
+    \item Máy tính bảng dành cho nhân viên phục vụ, hỗ trợ thao tác đặt bàn và gọi món theo thời gian thực.
+    \item Thiết bị lễ tân hoặc ki-ốt tiếp nhận khách, phục vụ việc đăng ký và phân bổ chỗ ngồi.
+    \item Màn hình bếp tại từng trạm chế biến, hiển thị danh sách món cần chuẩn bị với yêu cầu cập nhật gần thời gian thực.
+    \item Máy thu ngân, thực hiện các giao dịch thanh toán với yêu cầu độ trễ thấp và tính nhất quán cao.
+    \item Trình duyệt của quản lý, phục vụ truy vấn báo cáo và giám sát hoạt động hệ thống.
   \end{itemize}
 
-  \item \textbf{Tầng cổng vào và phân phối}
+  Các thiết bị này hoạt động như các client gửi yêu cầu đồng bộ (synchronous request) tới hệ thống thông qua giao thức HTTP/HTTPS. Đặc điểm chung của tầng này là phụ thuộc vào mạng và yêu cầu độ trễ thấp đối với các thao tác nghiệp vụ chính.
+
+  \item \textbf{Tầng cổng vào và phân phối (Gateway \& Delivery Layer)}
   \begin{itemize}
-    \item Bộ đảo ngược lưu lượng hoặc \textbf{API Gateway}.
-    \item Máy chủ phân phối giao diện tĩnh hoặc giao diện phía máy chủ.
+    \item Bộ đảo ngược lưu lượng hoặc \textbf{API Gateway}, đóng vai trò điểm truy cập duy nhất của hệ thống.
+    \item Máy chủ phân phối giao diện tĩnh hoặc giao diện phía máy chủ, chịu trách nhiệm phục vụ nội dung frontend.
   \end{itemize}
 
-  \item \textbf{Tầng ứng dụng}
+  Tầng này chịu trách nhiệm:
   \begin{itemize}
-    \item Khối xử lý phía sau chứa các service đặt bàn, gọi món, điều phối bếp, thanh toán, tồn kho, báo cáo và quản lý truy cập.
-    \item Bộ xử lý nền thực hiện tác vụ sự kiện, hàng đợi thử lại và làm mới ảnh chụp dữ liệu báo cáo.
+    \item Điều phối yêu cầu từ client tới các service tương ứng.
+    \item Thực hiện các kiểm tra kỹ thuật chung như xác thực, phân quyền và ghi nhận nhật ký truy cập.
+    \item Giảm tải cho các service phía sau thông qua việc gom và chuẩn hóa các điểm truy cập.
   \end{itemize}
 
-  \item \textbf{Tầng dữ liệu}
+  Việc sử dụng API Gateway giúp cô lập tầng client với tầng ứng dụng, đồng thời tạo điều kiện thuận lợi cho việc mở rộng và thay đổi cấu trúc backend trong tương lai.
+
+  \item \textbf{Tầng ứng dụng (Application Layer)}
   \begin{itemize}
-    \item Cơ sở dữ liệu giao dịch hoặc lược đồ giao dịch theo từng miền.
-    \item Mô hình đọc và khung nhìn báo cáo.
-    \item Kho lưu trữ đối tượng cho biên lai xuất ra hoặc tài nguyên của thực đơn.
-    \item Hạ tầng nhật ký, số đo và vết thực thi.
+    \item Khối xử lý phía sau bao gồm các service nghiệp vụ chính:
+    \begin{itemize}
+      \item Service đặt bàn và quản lý chỗ ngồi.
+      \item Service gọi món và thực đơn.
+      \item Service điều phối bếp.
+      \item Service thanh toán.
+      \item Service quản lý tồn kho.
+      \item Service báo cáo và quản trị.
+      \item Service quản lý truy cập và kiểm toán.
+    \end{itemize}
+
+    \item Bộ xử lý nền (Background Worker) thực hiện các tác vụ bất đồng bộ:
+    \begin{itemize}
+      \item Xử lý sự kiện phát sinh từ hệ thống (event-driven processing).
+      \item Thực hiện các tác vụ retry khi xảy ra lỗi tạm thời.
+      \item Làm mới các ảnh chụp dữ liệu phục vụ báo cáo (reporting projections).
+    \end{itemize}
   \end{itemize}
+
+  Các service trong tầng này có thể được triển khai trên cùng một cụm máy chủ hoặc container, nhưng được tách biệt về mặt logic theo miền nghiệp vụ. Các giao tiếp giữa service có thể bao gồm:
+  \begin{itemize}
+    \item Giao tiếp đồng bộ (REST API) cho các thao tác nghiệp vụ chính.
+    \item Giao tiếp bất đồng bộ (message queue) cho các tác vụ nền.
+  \end{itemize}
+
+  \item \textbf{Tầng dữ liệu (Data Layer)}
+  \begin{itemize}
+    \item Cơ sở dữ liệu giao dịch, lưu trữ dữ liệu vận hành chính như đơn hàng, thanh toán, tồn kho và người dùng.
+    \item Mô hình đọc và khung nhìn báo cáo, được tối ưu cho truy vấn và phân tích dữ liệu.
+    \item Kho lưu trữ đối tượng (object storage) dùng cho biên lai, hình ảnh thực đơn và các tài nguyên tĩnh.
+    \item Hạ tầng nhật ký, số đo và vết thực thi (logging, metrics, tracing), phục vụ giám sát và vận hành hệ thống.
+  \end{itemize}
+
+  Tầng dữ liệu được thiết kế tách biệt với tầng ứng dụng nhằm đảm bảo tính toàn vẹn dữ liệu, đồng thời hỗ trợ mở rộng theo nhu cầu đọc/ghi. Các thành phần như mô hình đọc và hệ thống logging thường được cập nhật thông qua luồng xử lý bất đồng bộ để giảm tải cho hệ thống giao dịch chính.
+
 \end{enumerate}
 
-\subsubsection{Lý do thiết kế}
+\subsubsection{Giải thích thiết kế triển khai}
 \begin{itemize}
-  \item Thiết bị gọi món và thiết bị bếp phải đặt gần môi trường mạng nội bộ của nhà hàng và có cơ chế kết nối lại tốt vì đây là hai điểm bị ảnh hưởng trực tiếp nhất khi mạng dao động.
-  \item Khối thanh toán và khối gọi món có yêu cầu sẵn sàng cao hơn các khối còn lại, nên cần được ưu tiên về giám sát, sao lưu và khả năng mở rộng.
-  \item Khối báo cáo cần tách khỏi tuyến giao dịch để truy vấn phân tích không cản trở đường xử lý gọi món và thanh toán.
-  \item Các nút dữ liệu phải có sao lưu và chính sách phân quyền riêng; dữ liệu thanh toán, hoàn tiền và nhật ký kiểm toán là nhóm cần ưu tiên bảo vệ cao.
+  \item Thiết bị gọi món và thiết bị bếp phải đặt gần môi trường mạng nội bộ của nhà hàng và có cơ chế kết nối lại tốt vì đây là hai điểm bị ảnh hưởng trực tiếp nhất khi mạng dao động. Việc bố trí này giúp giảm độ trễ thao tác và đảm bảo tính liên tục của hoạt động vận hành ngay cả khi kết nối không ổn định.
+  \item Khối thanh toán và khối gọi món có yêu cầu sẵn sàng cao hơn các khối còn lại, nên cần được ưu tiên về giám sát, sao lưu và khả năng mở rộng. Đây là các điểm chạm trực tiếp với khách hàng, nơi mọi gián đoạn đều ảnh hưởng rõ rệt đến trải nghiệm và doanh thu.
+  \item Khối báo cáo cần tách khỏi tuyến giao dịch để truy vấn phân tích không cản trở đường xử lý gọi món và thanh toán. Việc tách này cho phép hệ thống duy trì thời gian phản hồi thấp cho các thao tác thời gian thực, đồng thời vẫn hỗ trợ các nhu cầu phân tích dữ liệu với khối lượng lớn.
+  \item Các nút dữ liệu phải có sao lưu và chính sách phân quyền riêng; dữ liệu thanh toán, hoàn tiền và nhật ký kiểm toán là nhóm cần ưu tiên bảo vệ cao. Điều này phản ánh yêu cầu về bảo mật và tuân thủ trong môi trường vận hành thực tế.
   \item Việc tách bộ xử lý nền khỏi khối xử lý yêu cầu trực tuyến giúp những tác vụ như gửi thông báo, in biên lai điện tử hoặc cập nhật báo cáo không tranh chấp tài nguyên với thao tác tại quầy.
 \end{itemize}
 
@@ -778,7 +818,17 @@ Hình~\ref{fig:irms-deploy-overall} là sơ đồ triển khai ở mức vật l
 
 Điều quan trọng nhất cần rút ra là IRMS có \textbf{nhiều điểm chạm vật lý nhưng một lõi điều phối tập trung}. Đây là lựa chọn rất phù hợp với phạm vi của bài toán. Nhà hàng cần nhiều thiết bị tại hiện trường để thao tác gần nơi công việc diễn ra nhất, nhưng lại cần một lõi chung để giữ trạng thái thống nhất của bàn, đơn gọi món, bếp và hóa đơn. Nếu đẩy quá nhiều quyết định xuống từng thiết bị cục bộ, hệ thống sẽ rất dễ mất nhất quán khi mạng dao động hoặc khi hai vai trò thao tác chồng thời điểm. Vì vậy, hình này làm rõ rằng thiết bị đầu cuối nên gần người dùng, còn quyết định nghiệp vụ bền vững phải được neo ở khối xử lý trung tâm và hạ tầng dữ liệu.
 
+Một đặc điểm thiết kế quan trọng cần được nhấn mạnh thêm là sự tách biệt giữa hai tuyến xử lý trong hệ thống:
+\begin{itemize}
+  \item \textbf{Tuyến xử lý trực tuyến (synchronous path)} phục vụ các thao tác yêu cầu phản hồi ngay như gọi món, cập nhật trạng thái bếp và thanh toán.
+  \item \textbf{Tuyến xử lý bất đồng bộ (asynchronous path)} xử lý các hệ quả phụ như gửi thông báo, phát hành biên lai, cập nhật báo cáo hoặc đồng bộ dữ liệu thông qua hàng đợi và bộ xử lý nền.
+\end{itemize}
+
+Việc phân tách này giúp hệ thống giữ được nhịp phản hồi ổn định trong các giai đoạn cao điểm, nơi các thao tác trực tuyến cần được ưu tiên tuyệt đối.
+
 Sơ đồ cũng cho thấy vì sao bộ xử lý nền cần đứng riêng. Nhiều tác vụ như gửi thông báo, phát hành biên lai điện tử, làm mới báo cáo hoặc xử lý một số hệ quả phụ không cần tranh tài nguyên trực tiếp với thao tác ở bàn, ở bếp hay ở quầy thu ngân. Khi chúng được tách ra, hệ thống giữ được nhịp phản hồi ổn định hơn ở tuyến trước khách hàng. Đây là lựa chọn triển khai có ý nghĩa thực tế rất lớn, vì giờ cao điểm của nhà hàng thường không cho phép những tác vụ phụ chen vào tuyến chính.
+
+Từ góc độ vận hành, cách bố trí này còn mang lại khả năng \textbf{cô lập lỗi theo thành phần}. Khi một bộ xử lý nền hoặc một tích hợp ngoài gặp sự cố, tuyến xử lý trực tuyến vẫn có thể tiếp tục hoạt động với mức suy giảm tối thiểu, thay vì lan rộng thành lỗi hệ thống.
 
 \paragraph{Các thành phần chính thể hiện trong hình.}
 \begin{itemize}
