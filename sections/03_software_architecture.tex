@@ -943,7 +943,6 @@ Ngoài ra, việc tách mô hình đọc khỏi dữ liệu giao dịch cho phé
 Ưu điểm của kiến trúc này là vừa đảm bảo tính rõ ràng của giao dịch, vừa hỗ trợ mở rộng linh hoạt. Đổi lại, hệ thống cần được thiết kế cẩn thận về hợp đồng API, sự kiện và quyền sở hữu dữ liệu để tránh phụ thuộc chéo giữa các service.
 
 \subsubsection{Sơ đồ triển khai cho tính sẵn sàng cao và cô lập lỗi}
-
 \begin{figure}[H]
 \centering
 \IfFileExists{32_deployment_diagram_high_availability_and_failure_isolation.pdf}{
@@ -959,30 +958,40 @@ Ngoài ra, việc tách mô hình đọc khỏi dữ liệu giao dịch cho phé
 \label{fig:irms-deployment-ha-supplement}
 \end{figure}
 
+Hình~\ref{fig:irms-deployment-ha-supplement} đi sâu vào một câu hỏi quan trọng của góc nhìn triển khai: khi một nút ứng dụng, một bộ xử lý nền hoặc một thành phần tích hợp gặp sự cố, hệ thống còn giữ được điều gì và suy giảm dịch vụ ra sao. Giá trị chính của sơ đồ này là buộc kiến trúc phải trả lời về hành vi khi lỗi xảy ra, thay vì chỉ mô tả trạng thái lý tưởng khi mọi thứ đều hoạt động bình thường.
 
+Điểm đầu tiên cần rút ra là \textbf{tuyến yêu cầu trực tuyến} và \textbf{tuyến xử lý nền} đều có phương án dự phòng. Bộ chuyển tiếp ngược kiêm cân bằng tải đứng trước các nút ứng dụng giúp thiết bị đầu cuối không gắn cứng vào một nút xử lý cụ thể. Khi một nút ứng dụng gặp lỗi, lưu lượng có thể được chuyển sang nút còn lại mà không làm người dùng phải thay đổi điểm truy cập. Tương tự, việc bố trí nhiều bộ xử lý nền giúp các tác vụ bất đồng bộ không bị tắc nghẽn hoàn toàn khi một nút tiêu thụ gặp sự cố.
 
-Hình~\ref{fig:irms-deployment-ha-supplement} đi sâu vào một câu hỏi thường được đặt ra khi đánh giá kiến trúc vận hành: nếu một nút ứng dụng, một bộ xử lý nền hoặc một thành phần tích hợp gặp sự cố, IRMS còn giữ được điều gì và suy giảm dịch vụ ra sao. Đây là sơ đồ rất đáng giá vì nó buộc thiết kế phải trả lời về hành vi khi lỗi xảy ra, thay vì chỉ mô tả trạng thái lý tưởng khi mọi thứ đều hoạt động.
+Điểm thứ hai là sơ đồ làm rõ cách \textbf{dữ liệu giao dịch lõi} được bảo vệ. \textsf{PostgreSQL Primary} kết hợp với \textsf{Read Replica / Warm Standby} cho thấy dữ liệu không chỉ tồn tại ở một nút duy nhất. Cơ chế sao chép dòng dữ liệu từ nút chính sang nút dự phòng giúp hỗ trợ phục hồi nhanh hơn khi xảy ra lỗi, đồng thời tạo nền cho việc tách một phần tải đọc ra khỏi nút giao dịch chính.
 
-Điểm đầu tiên cần rút ra là \textbf{tuyến yêu cầu trực tuyến} và \textbf{tuyến xử lý nền} đều có phương án dự phòng. Bộ chuyển tiếp ngược hoặc bộ cân bằng tải đặt trước các nút ứng dụng giúp ứng dụng khách không gắn cứng vào một nút cụ thể. Nếu một nút ứng dụng lỗi, lưu lượng có thể được đưa sang nút còn lại mà không làm người dùng phải thay đổi điểm truy cập. Tương tự, việc có nhiều nút bộ xử lý nền giúp các tác vụ không bị tắc nghẽn toàn bộ khi một bộ tiêu thụ gặp lỗi.
+Điểm thứ ba là sơ đồ thể hiện rõ việc \textbf{cô lập lỗi giữa giao dịch chính và các hệ quả phụ}. Các nút ứng dụng ghi dữ liệu giao dịch theo tuyến đồng bộ, trong khi các tác vụ như làm mới mô hình đọc, gửi thông báo và in biên lai được tách qua \textsf{Outbox / Job Queue} và các worker. Nhờ vậy, sự cố ở kênh thông báo, cổng in hoặc tiến trình làm mới báo cáo không làm sập ngay tuyến giao dịch. Đây là một dạng cô lập lỗi rất quan trọng trong bối cảnh vận hành nhà hàng: nếu kênh thông báo bị chậm, khách vẫn phải thanh toán được; nếu báo cáo chưa được làm mới kịp thời, bàn vẫn phải mở và món vẫn phải ra đúng.
 
-Điểm thứ hai là sơ đồ làm rõ cách dữ liệu được bảo vệ. \textsf{PostgreSQL Primary} kết hợp với \textsf{Read Replica / Warm Standby} cho thấy dữ liệu giao dịch lõi không nên chỉ có một nơi duy nhất. Đồng thời, phần đọc báo cáo và phần xử lý nền được đi qua hàng đợi hoặc hộp thư ra, nhờ đó sự cố ở bảng điều khiển hoặc một nhiệm vụ nền không làm sập ngay tuyến giao dịch. Đây là một dạng cô lập lỗi rất quan trọng trong nhà hàng: nếu kênh thông báo bị chậm, khách vẫn phải thanh toán được; nếu báo cáo chưa kịp làm mới, bàn vẫn phải mở và món vẫn phải ra đúng.
+Một cách đọc thực tế hơn của sơ đồ là thông qua các kịch bản lỗi cụ thể:
+\begin{itemize}
+  \item Nếu một nút ứng dụng gặp sự cố, bộ cân bằng tải chuyển lưu lượng sang nút còn lại và hệ thống tiếp tục phục vụ các yêu cầu trực tuyến.
+  \item Nếu một worker bị lỗi, các tác vụ chưa hoàn thành vẫn nằm trong hàng đợi và sẽ được nút tiêu thụ còn lại tiếp tục xử lý.
+  \item Nếu dịch vụ bên ngoài như cổng thanh toán, dịch vụ thông báo hoặc cổng in phản hồi chậm, các giao dịch lõi vẫn được ghi nhận; phần tích hợp ngoài sẽ được xử lý theo cơ chế bất đồng bộ hoặc thử lại sau.
+\end{itemize}
 
-Điểm thứ ba là sơ đồ thể hiện rõ \textbf{đường suy giảm dịch vụ chấp nhận được}. Không phải mọi lỗi đều phải dẫn tới dừng toàn hệ thống. Một số lỗi chỉ nên làm chậm phần đọc, làm chậm thông báo hoặc chuyển một số tác vụ sang hàng chờ. Khả năng chấp nhận suy giảm có kiểm soát như vậy mới là dấu hiệu của một hệ thống vận hành trưởng thành.
+Điểm thứ tư là sơ đồ thể hiện rõ \textbf{đường suy giảm dịch vụ chấp nhận được}. Không phải mọi lỗi đều dẫn tới dừng toàn hệ thống. Một số lỗi chỉ nên làm chậm phần đọc, làm chậm thông báo hoặc đưa một số tác vụ sang hàng chờ. Khả năng chấp nhận suy giảm có kiểm soát như vậy là dấu hiệu của một kiến trúc vận hành trưởng thành hơn so với mô hình mà mọi thành phần đều phụ thuộc chặt vào nhau.
 
 \paragraph{Các ý chính cần rút ra từ sơ đồ.}
 \begin{itemize}
-  \item \textbf{Bộ chuyển tiếp ngược / bộ cân bằng tải} tách lớp ứng dụng khách khỏi từng nút ứng dụng riêng lẻ, nên lỗi một nút không đồng nghĩa lỗi toàn bộ điểm vào.
-  \item \textbf{IRMS App Node A/B} cùng \textbf{Worker Node A/B} cho phép dự phòng ở cả tuyến xử lý yêu cầu và tuyến xử lý nền.
-  \item \textbf{PostgreSQL Primary} cùng \textbf{bản sao đọc / nút dự phòng ấm} hỗ trợ tách truy vấn đọc hoặc phục hồi nhanh hơn sau lỗi nút chính.
-  \item \textbf{Outbox / Job Queue} ngăn các tác vụ nền và việc làm mới mô hình chiếu làm nghẽn trực tiếp tuyến giao dịch.
+  \item \textbf{Reverse Proxy / Load Balancer} tách lớp ứng dụng khách khỏi từng nút ứng dụng riêng lẻ, nên lỗi một nút không đồng nghĩa với lỗi toàn bộ điểm vào.
+  \item \textbf{IRMS App Node A/B} và \textbf{Worker Node A/B} tạo dự phòng ở cả tuyến xử lý yêu cầu lẫn tuyến xử lý nền.
+  \item \textbf{PostgreSQL Primary} cùng \textbf{Read Replica / Warm Standby} hỗ trợ sao chép dữ liệu và cải thiện khả năng phục hồi sau lỗi nút chính.
+  \item \textbf{Outbox / Job Queue} ngăn các tác vụ nền và việc làm mới mô hình đọc làm nghẽn trực tiếp tuyến giao dịch.
+  \item \textbf{Reporting Read Model} cho phép tách truy vấn đọc ra khỏi tuyến ghi chính, nhờ đó báo cáo không cản trở giao dịch vận hành.
 \end{itemize}
 
 \paragraph{Vì sao sơ đồ này cần có trong góc nhìn triển khai.}
 \begin{itemize}
-  \item Góc nhìn triển khai không chỉ nên cho thấy hệ thống đặt ở đâu, mà còn phải cho thấy nó phản ứng ra sao khi có lỗi.
-  \item Với IRMS, nếu cổng thanh toán hoặc dịch vụ gửi thông báo chậm, hệ thống vẫn phải giữ đúng giao dịch đã hoàn tất trong lõi; sơ đồ này minh họa chính xác cơ chế tách biệt đó.
-  \item Nó cũng làm rõ hướng mở rộng sau này: có thể tăng số nút ứng dụng, nút bộ xử lý nền hoặc năng lực đọc mà không phải thiết kế lại mô hình miền nghiệp vụ.
+  \item Góc nhìn triển khai không chỉ cần cho thấy hệ thống được đặt ở đâu, mà còn phải cho thấy nó phản ứng ra sao khi có lỗi.
+  \item Với IRMS, các thành phần ngoài như cổng thanh toán, dịch vụ thông báo hay cổng in có thể chậm hoặc lỗi từng phần; sơ đồ này cho thấy cách hệ thống cô lập các lỗi đó khỏi lõi giao dịch.
+  \item Sơ đồ cũng làm rõ hướng mở rộng về sau: có thể tăng số nút ứng dụng, số worker hoặc năng lực đọc mà không phải thiết kế lại mô hình miền nghiệp vụ.
 \end{itemize}
+
+Ngoài khả năng chịu lỗi, sơ đồ này cũng thể hiện rõ hướng mở rộng của hệ thống. Việc bổ sung thêm nút ứng dụng hoặc bộ xử lý nền có thể được thực hiện mà không làm thay đổi cấu trúc tổng thể, nhờ vào tính chất stateless của tầng ứng dụng và cơ chế điều phối thông qua hàng đợi.
 
 \subsection{Nguyên tắc thiết kế}\label{sec:architecture-principles}
 Kiến trúc của IRMS bám theo các nguyên tắc thiết kế sau:
