@@ -1,4 +1,4 @@
-﻿% !TEX program = xelatex
+% !TEX program = xelatex
 
 \documentclass[11pt,a4paper]{article}
 
@@ -210,7 +210,7 @@
       \IfFileExists{#1.png}{%
         \includegraphics[width=\linewidth,height=0.76\textheight,keepaspectratio]{#1.png}%
       }{%
-        \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{#1.(pdf/png)}.}}%
+        \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{#1.(pdf/png)}.}}%
       }%
     }%
     \captionof{figure}{#2}%
