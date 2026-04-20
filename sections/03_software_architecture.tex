@@ -709,7 +709,7 @@ Phần thứ ba là vai trò của các thành phần quản trị như \textsf{
 \end{itemize}
 
 \subsection{Góc nhìn triển khai}
-\subsubsection{3.x.1 Tổng quan phân bổ hệ thống (Allocation Overview)}
+\subsubsection{Tổng quan phân bổ hệ thống}
 
 Ở góc nhìn triển khai, hệ thống được ánh xạ lên hạ tầng vật lý và hạ tầng thực thi nhằm làm rõ cách các thành phần phần mềm được phân bổ trên các nút triển khai (deployment nodes), cách các nút này giao tiếp với nhau và cách hệ thống đáp ứng các yêu cầu phi chức năng như độ trễ, khả năng mở rộng và độ tin cậy.
 
@@ -796,7 +796,6 @@ Hệ thống được tổ chức thành bốn tầng chính như sau:
 Góc nhìn triển khai giúp chứng minh rằng kiến trúc được chọn không chỉ hợp lý trên sơ đồ logic mà còn có thể triển khai thực tế. Với IRMS, bản chất \emph{nhiều điểm chạm vật lý} --- quầy lễ tân, bàn phục vụ, trạm bếp, quầy thu ngân --- làm cho góc nhìn triển khai quan trọng hơn nhiều so với các hệ thống chỉ có một giao diện web thông thường.
 \end{infobox}
 
-
 \begin{figure}[H]
 \centering
 \IfFileExists{15_deployment_diagram_physical_deployment_overview.pdf}{
@@ -812,42 +811,45 @@ Góc nhìn triển khai giúp chứng minh rằng kiến trúc được chọn k
 \label{fig:irms-deploy-overall}
 \end{figure}
 
+Hình~\ref{fig:irms-deploy-overall} mô tả cách hệ thống được triển khai trong môi trường thực tế của nhà hàng. Ở mức này, mục tiêu không còn là mô tả logic nghiệp vụ, mà là trả lời câu hỏi hệ thống hiện diện như thế nào trong không gian vật lý và các thành phần phần mềm được gắn vào những thiết bị cụ thể nào.
 
+Điểm quan trọng nhất cần rút ra là IRMS được tổ chức theo mô hình \textbf{nhiều điểm chạm vật lý nhưng một lõi điều phối tập trung}. Các thiết bị tại hiện trường --- như máy tính bảng phục vụ, thiết bị lễ tân, màn hình bếp và quầy thu ngân --- được đặt gần người dùng để đảm bảo thao tác nhanh và thuận tiện. Tuy nhiên, toàn bộ trạng thái nghiệp vụ cốt lõi vẫn được duy trì tại khối xử lý trung tâm và hạ tầng dữ liệu, thay vì phân tán xuống các thiết bị.
 
-Hình~\ref{fig:irms-deploy-overall} là sơ đồ triển khai ở mức vật lý, tức mức trả lời câu hỏi hệ thống sẽ hiện diện như thế nào trong nhà hàng thật. Giá trị lớn nhất của hình này là nó kéo kiến trúc ra khỏi trạng thái trừu tượng thuần túy. Khi nhìn vào sơ đồ, người đọc không còn thấy các service dưới dạng khái niệm, mà thấy chúng gắn vào máy tính bảng gọi món, thiết bị lễ tân, màn hình bếp, quầy thu ngân, khối xử lý trung tâm, bộ xử lý nền, cơ sở dữ liệu và các hệ thống ngoài.
+Cách bố trí này giúp tránh tình trạng mất nhất quán khi mạng dao động hoặc khi nhiều thao tác xảy ra đồng thời tại các điểm khác nhau. Nó cũng phản ánh một nguyên tắc quan trọng: các thiết bị đầu cuối chỉ nên đóng vai trò tương tác, còn quyết định nghiệp vụ bền vững phải được neo tại backend.
 
-Điều quan trọng nhất cần rút ra là IRMS có \textbf{nhiều điểm chạm vật lý nhưng một lõi điều phối tập trung}. Đây là lựa chọn rất phù hợp với phạm vi của bài toán. Nhà hàng cần nhiều thiết bị tại hiện trường để thao tác gần nơi công việc diễn ra nhất, nhưng lại cần một lõi chung để giữ trạng thái thống nhất của bàn, đơn gọi món, bếp và hóa đơn. Nếu đẩy quá nhiều quyết định xuống từng thiết bị cục bộ, hệ thống sẽ rất dễ mất nhất quán khi mạng dao động hoặc khi hai vai trò thao tác chồng thời điểm. Vì vậy, hình này làm rõ rằng thiết bị đầu cuối nên gần người dùng, còn quyết định nghiệp vụ bền vững phải được neo ở khối xử lý trung tâm và hạ tầng dữ liệu.
+Một đặc điểm thiết kế quan trọng khác là sự tách biệt giữa hai tuyến xử lý:
 
-Một đặc điểm thiết kế quan trọng cần được nhấn mạnh thêm là sự tách biệt giữa hai tuyến xử lý trong hệ thống:
 \begin{itemize}
   \item \textbf{Tuyến xử lý trực tuyến (synchronous path)} phục vụ các thao tác yêu cầu phản hồi ngay như gọi món, cập nhật trạng thái bếp và thanh toán.
-  \item \textbf{Tuyến xử lý bất đồng bộ (asynchronous path)} xử lý các hệ quả phụ như gửi thông báo, phát hành biên lai, cập nhật báo cáo hoặc đồng bộ dữ liệu thông qua hàng đợi và bộ xử lý nền.
+  \item \textbf{Tuyến xử lý bất đồng bộ (asynchronous path)} xử lý các hệ quả phụ thông qua \textbf{Outbox / hàng đợi} và bộ xử lý nền, bao gồm gửi thông báo, phát hành biên lai và cập nhật dữ liệu báo cáo.
 \end{itemize}
 
-Việc phân tách này giúp hệ thống giữ được nhịp phản hồi ổn định trong các giai đoạn cao điểm, nơi các thao tác trực tuyến cần được ưu tiên tuyệt đối.
+Việc phân tách này cho phép hệ thống giữ được thời gian phản hồi ổn định trong giờ cao điểm, khi các thao tác trực tuyến cần được ưu tiên tuyệt đối.
 
-Sơ đồ cũng cho thấy vì sao bộ xử lý nền cần đứng riêng. Nhiều tác vụ như gửi thông báo, phát hành biên lai điện tử, làm mới báo cáo hoặc xử lý một số hệ quả phụ không cần tranh tài nguyên trực tiếp với thao tác ở bàn, ở bếp hay ở quầy thu ngân. Khi chúng được tách ra, hệ thống giữ được nhịp phản hồi ổn định hơn ở tuyến trước khách hàng. Đây là lựa chọn triển khai có ý nghĩa thực tế rất lớn, vì giờ cao điểm của nhà hàng thường không cho phép những tác vụ phụ chen vào tuyến chính.
+Ngoài ra, sơ đồ cũng làm rõ vai trò của các thành phần như bộ xử lý nền và kho lưu trữ đối tượng. Các tác vụ không yêu cầu phản hồi ngay được xử lý tách biệt, trong khi các tài nguyên như biên lai hoặc hình ảnh thực đơn được lưu trữ ở lớp riêng, giúp giảm tải cho hệ thống giao dịch chính.
 
-Từ góc độ vận hành, cách bố trí này còn mang lại khả năng \textbf{cô lập lỗi theo thành phần}. Khi một bộ xử lý nền hoặc một tích hợp ngoài gặp sự cố, tuyến xử lý trực tuyến vẫn có thể tiếp tục hoạt động với mức suy giảm tối thiểu, thay vì lan rộng thành lỗi hệ thống.
+Từ góc độ vận hành, cách bố trí này còn mang lại khả năng \textbf{cô lập lỗi theo thành phần}. Khi một bộ xử lý nền hoặc một tích hợp ngoài gặp sự cố, tuyến xử lý trực tuyến vẫn có thể tiếp tục hoạt động với mức suy giảm tối thiểu.
 
 \paragraph{Các thành phần chính thể hiện trong hình.}
 \begin{itemize}
-  \item \textbf{Thiết bị đầu cuối}: gồm máy tính bảng gọi món, thiết bị lễ tân, màn hình bếp, máy thu ngân và trình duyệt quản lý.
-  \item \textbf{Khối cổng vào}: tiếp nhận yêu cầu từ các thiết bị và chuyển tiếp vào khối xử lý.
-  \item \textbf{Khối xử lý phía sau}: thực hiện các chức năng nghiệp vụ chính của hệ thống.
-  \item \textbf{Bộ xử lý nền}: nhận tác vụ không cần phản hồi ngay như gửi thông báo hoặc cập nhật báo cáo.
-  \item \textbf{Hạ tầng dữ liệu}: lưu trữ dữ liệu giao dịch, dữ liệu báo cáo và tệp đính kèm.
-  \item \textbf{Các hệ thống ngoài}: gồm cổng thanh toán, kênh gửi thông báo và thiết bị hoặc dịch vụ in biên lai.
+  \item \textbf{Thiết bị đầu cuối}: máy tính bảng phục vụ, thiết bị lễ tân, màn hình bếp, máy thu ngân và trình duyệt quản lý.
+  \item \textbf{Khối cổng vào}: tiếp nhận và điều phối yêu cầu từ thiết bị.
+  \item \textbf{Khối xử lý trung tâm}: thực hiện các logic nghiệp vụ chính.
+  \item \textbf{Bộ xử lý nền}: xử lý các tác vụ bất đồng bộ.
+  \item \textbf{Hạ tầng dữ liệu}: bao gồm dữ liệu giao dịch, mô hình đọc và kho lưu trữ đối tượng.
+  \item \textbf{Hệ thống ngoài}: cổng thanh toán, dịch vụ thông báo và hệ thống in biên lai.
 \end{itemize}
 
-\paragraph{Lý do thiết kế của sơ đồ này.}
+\paragraph{Lý do thiết kế.}
 \begin{itemize}
-  \item Bố trí một khối xử lý trung tâm giúp đơn giản hóa triển khai, dễ kiểm thử đầu-cuối và dễ giữ ranh giới giao dịch ngắn gọn.
-  \item Tách bộ xử lý nền khỏi khối tiếp nhận yêu cầu trực tuyến giúp tác vụ phụ không tranh chấp quá mạnh với yêu cầu tại quầy.
-  \item Đặt các hệ thống ngoài ở rìa giúp phân biệt rõ phần lõi của IRMS với phần tích hợp phụ thuộc đối tác.
+  \item Giữ một lõi xử lý trung tâm giúp đảm bảo tính nhất quán và đơn giản hóa triển khai.
+  \item Tách tuyến bất đồng bộ giúp giảm tải cho tuyến trực tuyến.
+  \item Phân lớp lưu trữ giúp hệ thống linh hoạt và dễ mở rộng hơn.
 \end{itemize}
 
-Phương án này mạnh ở chỗ đơn giản và dễ vận hành, rất phù hợp với bài toán một nhà hàng hoặc một nhóm nhỏ chi nhánh. Đổi lại, khối xử lý trung tâm trở thành vùng cần được giám sát và bảo vệ cẩn thận hơn, vì nó là nơi hội tụ của nhiều quyết định nghiệp vụ.
+Phương án này đơn giản và thực dụng, phù hợp với quy mô hệ thống, nhưng cũng đặt áp lực lên khối xử lý trung tâm, đòi hỏi giám sát và mở rộng phù hợp.
+
+% =========================
 
 \begin{figure}[H]
 \centering
@@ -864,30 +866,32 @@ Phương án này mạnh ở chỗ đơn giản và dễ vận hành, rất phù
 \label{fig:irms-deploy-network}
 \end{figure}
 
+Hình~\ref{fig:irms-deploy-network} mở rộng góc nhìn triển khai bằng cách làm rõ \textbf{ranh giới tin cậy} và cách hệ thống được phân chia thành các vùng mạng khác nhau.
 
-Hình~\ref{fig:irms-deploy-network} làm rõ góc nhìn mà sơ đồ vật lý tổng quan mới chỉ chạm tới ở mức khái quát: \textbf{ranh giới tin cậy}. Với một hệ thống như IRMS, bảo mật không chỉ là câu chuyện tài khoản và mật khẩu. Nó còn là câu chuyện thành phần nào được đặt ở vùng mạng nào, ai được phép nói chuyện trực tiếp với ai, và dữ liệu nhạy cảm nằm ở đâu trong toàn bộ mặt bằng triển khai.
+Kiến trúc được chia thành các vùng: vùng thiết bị hiện trường, vùng ứng dụng, vùng dữ liệu và vùng tích hợp ngoài. Mỗi vùng đại diện cho một mức độ tin cậy và quyền truy cập khác nhau.
 
-Việc tách thành vùng phục vụ phía trước, vùng bếp, vùng ứng dụng, vùng dữ liệu và vùng tích hợp ngoài giúp kiến trúc thể hiện rõ những lớp bảo vệ khác nhau. Thiết bị ở hiện trường phải đủ gần nghiệp vụ để thao tác nhanh, nhưng không nên có quyền đi thẳng tới cơ sở dữ liệu. Cơ sở dữ liệu lại phải ở một vùng được bảo vệ hơn, tránh truy cập trực tiếp từ thiết bị đầu cuối hoặc từ các kết nối ngoài. Các hệ thống đối tác như cổng thanh toán hay dịch vụ gửi thông báo nằm ngoài biên tin cậy nội bộ, nên mọi lưu lượng đi qua chúng đều phải được kiểm soát, ghi nhật ký và hạn chế quyền truy cập. Nhờ vậy, sơ đồ này làm nổi bật một nguyên tắc quan trọng: không có \enquote{một vùng an toàn duy nhất}, mà có nhiều lớp biên, mỗi lớp có mức tin cậy khác nhau.
+Nguyên tắc quan trọng nhất là \textbf{không có thành phần nào được phép vượt qua ranh giới mà không qua kiểm soát}. Các thiết bị đầu cuối chỉ giao tiếp với hệ thống thông qua khối cổng vào. Tương tự, các hệ thống bên ngoài không truy cập trực tiếp vào dữ liệu mà phải đi qua tầng ứng dụng.
 
-Sơ đồ còn có giá trị vận hành thực tế. Khi xảy ra sự cố, cách chia vùng giúp khoanh nhanh câu hỏi: lỗi nằm ở lớp thiết bị hiện trường, ở vùng ứng dụng hay ở kết nối với hệ ngoài. Tương tự, khi thiết kế tường lửa, mã hóa đường truyền, nhật ký truy cập hay chính sách cấp quyền mạng, chính sơ đồ vùng mạng là cơ sở để quyết định cái gì phải bị chặn tuyệt đối, cái gì được phép đi qua một cổng duy nhất và cái gì chỉ được mở từ một vùng đã kiểm soát.
+Việc tách riêng vùng dữ liệu giúp bảo vệ dữ liệu nhạy cảm và giảm nguy cơ truy cập trái phép. Đồng thời, việc đặt các tích hợp ngoài ở rìa giúp cô lập lỗi và tăng khả năng kiểm soát lưu lượng.
 
-\paragraph{Các vùng chính thể hiện trong hình.}
+Sơ đồ này cũng hỗ trợ vận hành thực tế: khi xảy ra sự cố, việc phân vùng giúp nhanh chóng xác định lỗi thuộc lớp nào.
+
+\paragraph{Các vùng chính.}
 \begin{itemize}
-  \item \textbf{Vùng phục vụ phía trước}: chứa thiết bị của lễ tân, phục vụ và thu ngân.
-  \item \textbf{Vùng bếp}: chứa màn hình bếp và các thiết bị phục vụ chế biến.
-  \item \textbf{Vùng ứng dụng}: chứa cổng vào, khối xử lý phía sau và bộ xử lý nền.
-  \item \textbf{Vùng dữ liệu}: chứa cơ sở dữ liệu giao dịch, mô hình đọc và kho lưu trữ đối tượng.
-  \item \textbf{Vùng tích hợp ngoài}: chứa cổng thanh toán, dịch vụ gửi thông báo và các hệ thống ngoài khác.
+  \item Vùng thiết bị hiện trường
+  \item Vùng ứng dụng
+  \item Vùng dữ liệu
+  \item Vùng tích hợp ngoài
 \end{itemize}
 
-\paragraph{Lý do thiết kế của sơ đồ này.}
+\paragraph{Lý do thiết kế.}
 \begin{itemize}
-  \item Sơ đồ làm rõ nơi nào là mạng nội bộ hiện trường, nơi nào là vùng ứng dụng, nơi nào là vùng dữ liệu nhạy cảm và nơi nào là thế giới bên ngoài.
-  \item Việc tách vùng dữ liệu thành một lớp riêng giúp giảm nguy cơ truy cập trực tiếp từ thiết bị đầu cuối hoặc từ Internet.
-  \item Mọi tích hợp ngoài đi qua khối ứng dụng giúp tăng khả năng kiểm soát, ghi nhật ký và áp dụng chính sách bảo vệ dữ liệu.
+  \item Tăng cường bảo mật thông qua phân tách vùng
+  \item Kiểm soát luồng truy cập giữa các thành phần
+  \item Hỗ trợ vận hành và xử lý sự cố
 \end{itemize}
 
-Ưu điểm của cách biểu diễn theo vùng là giúp người đọc hiểu được nơi nào là nội bộ nhà hàng, nơi nào là biên kết nối ra ngoài và nơi nào là dữ liệu nhạy cảm. Nó cũng hỗ trợ suy nghĩ về tường lửa, cắt lớp mạng, mã hóa đường truyền, ghi nhật ký và ứng phó sự cố. Nhược điểm là sơ đồ này không diễn tả chi tiết luồng dữ liệu nghiệp vụ như sơ đồ trình tự, nên cần được đọc cùng góc nhìn sử dụng và góc nhìn thành phần.
+% =========================
 
 \begin{figure}[H]
 \centering
@@ -904,31 +908,39 @@ Sơ đồ còn có giá trị vận hành thực tế. Khi xảy ra sự cố, c
 \label{fig:irms-deploy-data}
 \end{figure}
 
+Hình~\ref{fig:irms-deploy-data} làm rõ cách các service, dữ liệu và luồng thực thi được tổ chức trong hệ thống.
 
-Hình~\ref{fig:irms-deploy-data} là sơ đồ có ý nghĩa quyết định khi cần biện minh kiểu kiến trúc được chọn ở mức thực thi. Nó cho thấy các service nghiệp vụ, bộ xử lý nền, dữ liệu giao dịch, mô hình đọc và kho lưu trữ đối tượng được đặt vào các vùng thực thi khác nhau. Nói cách khác, đây là sơ đồ chứng minh IRMS đi theo \textbf{kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện}, chứ không phải một khối xử lý tập trung được chia thành các phần chạy chung.
+Sơ đồ này thể hiện rõ rằng IRMS theo \textbf{kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện}. Các service nghiệp vụ xử lý giao dịch chính thông qua API đồng bộ, trong khi các hệ quả phụ được xử lý thông qua cơ chế bất đồng bộ dựa trên \textbf{Outbox và hàng đợi sự kiện}.
 
-Điểm mạnh nhất của cách bố trí này là giữ được cả hai lợi ích tưởng như khó đi cùng nhau. Một mặt, ranh giới service vẫn rõ nên hệ thống không trượt thành một khối mã hỗn loạn. Mặt khác, các giao dịch lõi như tạo đơn gọi món, cập nhật trạng thái bếp, lập hóa đơn và thanh toán vẫn có API phản hồi trực tiếp, còn các hệ quả như gửi thông báo, in biên lai, cập nhật báo cáo và đồng bộ tồn kho đi qua \textsf{Outbox}, \textsf{Event Bus} hoặc \textsf{Background Worker}. Đây là lựa chọn rất hợp lý cho bối cảnh bài toán và quy mô dự án.
+Luồng xử lý có thể chia thành hai phần:
 
-Sơ đồ cũng làm rõ vai trò của mô hình đọc và kho lưu trữ đối tượng. Mô hình đọc không phải là bản sao tùy hứng của dữ liệu giao dịch, mà là một mặt cắt phục vụ truy vấn quản trị. Kho lưu trữ đối tượng lại là nơi phù hợp cho biên lai, tệp đính kèm hoặc tài nguyên thực đơn khi cần. Nhờ tách như vậy, khối xử lý trực tuyến không phải ôm mọi nhu cầu lưu trữ vào cùng một hình thức.
-
-\paragraph{Các thành phần chính thể hiện trong hình.}
 \begin{itemize}
-  \item \textbf{Lớp service trực tuyến}: chứa các service nghiệp vụ phục vụ yêu cầu thời gian thực.
-  \item \textbf{Bộ xử lý nền}: xử lý các tác vụ chấp nhận độ trễ nhỏ.
-  \item \textbf{Lược đồ giao dịch}: lưu dữ liệu giao dịch cốt lõi của hệ thống.
-  \item \textbf{Mô hình đọc và dữ liệu báo cáo}: tối ưu cho truy vấn quản trị và thống kê.
-  \item \textbf{Kho lưu trữ đối tượng}: giữ biên lai, tệp đính kèm hoặc tài nguyên thực đơn nếu có.
+  \item \textbf{Luồng giao dịch chính}: các service ghi dữ liệu vào cơ sở dữ liệu giao dịch.
+  \item \textbf{Luồng bất đồng bộ}: các sự kiện được ghi vào Outbox, sau đó được bộ xử lý nền tiêu thụ để cập nhật mô hình đọc, gửi thông báo hoặc xử lý các tác vụ phụ.
 \end{itemize}
 
-\paragraph{Lý do thiết kế của sơ đồ này.}
+Cách tổ chức này giúp đảm bảo rằng các giao dịch cốt lõi vẫn rõ ràng và nhất quán, trong khi hệ thống vẫn linh hoạt trong việc xử lý các nhu cầu mở rộng như báo cáo và tích hợp.
+
+Ngoài ra, việc tách mô hình đọc khỏi dữ liệu giao dịch cho phép tối ưu hóa truy vấn mà không ảnh hưởng đến hiệu năng của hệ thống chính.
+
+\paragraph{Các thành phần chính.}
 \begin{itemize}
-  \item Phân bổ service theo năng lực nghiệp vụ giúp giữ giao dịch lõi rõ ràng, trong khi các event cho phép xử lý hệ quả phụ mà không buộc mọi service gọi trực tiếp lẫn nhau.
-  \item Tách mô hình đọc khỏi dữ liệu giao dịch giúp báo cáo phong phú hơn mà không làm nặng tuyến xử lý trực tuyến.
-  \item Giữ bộ xử lý nền ở ngoài khối trực tuyến giúp hệ thống vừa rõ ràng về thực thi, vừa linh hoạt khi sau này cần tách riêng một số năng lực lớn.
+  \item Service nghiệp vụ
+  \item Cơ sở dữ liệu giao dịch
+  \item Outbox / hàng đợi sự kiện
+  \item Bộ xử lý nền
+  \item Mô hình đọc
+  \item Hệ thống ngoài
 \end{itemize}
 
-Ưu điểm của cách tổ chức này là thực dụng, nhất quán và phù hợp với phạm vi đề tài. Đổi lại, kiến trúc phải được bảo vệ bằng kỷ luật hợp đồng API, hợp đồng event và quyền sở hữu dữ liệu theo service; nếu không, các service có thể rơi vào tình trạng phụ thuộc chéo quá mức.
+\paragraph{Lý do thiết kế.}
+\begin{itemize}
+  \item Giữ ranh giới service rõ ràng
+  \item Tách xử lý bất đồng bộ để giảm phụ thuộc
+  \item Tối ưu hóa truy vấn thông qua mô hình đọc
+\end{itemize}
 
+Ưu điểm của kiến trúc này là vừa đảm bảo tính rõ ràng của giao dịch, vừa hỗ trợ mở rộng linh hoạt. Đổi lại, hệ thống cần được thiết kế cẩn thận về hợp đồng API, sự kiện và quyền sở hữu dữ liệu để tránh phụ thuộc chéo giữa các service.
 
 \subsubsection{Sơ đồ triển khai cho tính sẵn sàng cao và cô lập lỗi}
 
