@@ -1,9 +1,5 @@
-
-\subsection{Tổng quan kiến trúc}\label{sec:architecture-overview}
-IRMS được tổ chức theo \textbf{kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện}. Ở lớp biên, \texttt{ReactJS} cung cấp giao diện người dùng cho các vai trò vận hành và \texttt{Nginx} đóng vai trò cổng vào thống nhất. Ở lớp nghiệp vụ, hệ thống được phân rã thành các service theo năng lực như \texttt{Reservation \& Seating Service}, \texttt{Ordering \& Menu Service}, \texttt{Kitchen Coordination Service}, \texttt{Billing \& Settlement Service}, \texttt{Inventory Monitoring Service}, \texttt{Reporting Service}, \texttt{IAM \& Audit Service} và \texttt{Notification Service}. Các service giao tiếp đồng bộ qua API khi thao tác cần phản hồi trực tiếp, đồng thời công bố event cho những hệ quả nghiệp vụ có thể xử lý bất đồng bộ.
-
-Phần biện minh cho lựa chọn kiến trúc, thành phần và kiểu kết nối của sơ đồ tổng quan này được dẫn trực tiếp tại Bảng~\ref{tab:appendix-traceability} và Bảng~\ref{tab:appendix-component-rationale}, đồng thời được giải thích sâu hơn trong Phụ lục~\ref{appendix:architecture-rationale} và Phụ lục~\ref{appendix:component-rationale}.
-
+﻿﻿
+\subsection{Tổng quan kiến trúc}
 \begin{figure}[H]
 \centering
 \IfFileExists{33_architecture_overview_react_nginx_spring_postgresql.pdf}{
@@ -12,141 +8,30 @@ Phần biện minh cho lựa chọn kiến trúc, thành phần và kiểu kết
   \IfFileExists{33_architecture_overview_react_nginx_spring_postgresql.png}{
     \includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{33_architecture_overview_react_nginx_spring_postgresql.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{33\_architecture\_overview\_react\_nginx\_spring\_postgresql.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{33\_architecture\_overview\_react\_nginx\_spring\_postgresql.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ tổng quan kiến trúc của IRMS}
 \label{fig:irms-architecture-overview}
 \end{figure}
 
+IRMS được thiết kế theo hướng service-based architecture kết hợp event-driven processing. Kiến trúc này tổ chức hệ thống thành ba lớp chính: lớp giao diện người dùng, lớp dịch vụ nghiệp vụ và lớp dữ liệu cùng các luồng xử lý nền. Cách tổ chức này cho phép hệ thống phân tách rõ ràng các năng lực nghiệp vụ của nhà hàng, đồng thời sử dụng cơ chế sự kiện để xử lý các hoạt động phụ mà không làm ảnh hưởng đến tuyến giao dịch chính.
 
-Hình~\ref{fig:irms-architecture-overview} là sơ đồ nền tảng để đọc toàn bộ chương kiến trúc. Hình này không chỉ trả lời câu hỏi \enquote{IRMS có những khối nào}, mà còn trả lời ba câu hỏi quan trọng hơn: yêu cầu đi vào hệ thống từ đâu, quyết định nghiệp vụ được giữ ở tầng nào, và đâu là ranh giới giữa phần lõi có thể kiểm soát với phần tích hợp ngoài cần cách ly rủi ro.
+Ở lớp ngoài cùng, ReactJS đóng vai trò là giao diện người dùng thống nhất cho các vai trò vận hành trong nhà hàng như lễ tân, phục vụ, bếp, thu ngân và quản lý. Việc sử dụng một nền giao diện chung giúp các vai trò khác nhau vẫn chia sẻ cùng cơ chế xác thực, điều hướng và đồng bộ trạng thái hệ thống. Những trạng thái quan trọng như tình trạng bàn, đơn gọi món, phiếu bếp hay hóa đơn cần được cập nhật nhất quán giữa các bộ phận để đảm bảo quá trình phục vụ diễn ra liên tục.
 
-Ở lớp ngoài cùng, \texttt{ReactJS} đóng vai trò mặt trước thống nhất cho lễ tân, phục vụ, bếp, thu ngân và quản lý. Việc dùng một nền giao diện thống nhất không có nghĩa mọi vai trò dùng cùng một màn hình, mà có nghĩa mọi vai trò đi qua cùng một cơ chế xác thực, cùng quy tắc điều hướng và cùng cách đồng bộ trạng thái quan trọng như bàn, đơn gọi món, phiếu bếp và hóa đơn. Đây là quyết định quan trọng vì IRMS là hệ thống có nhiều điểm chạm nghiệp vụ nhưng cần một cảm giác vận hành liền mạch. Nếu mỗi vai trò bị tách thành những ứng dụng rời rạc ngay từ đầu, chi phí đồng bộ trạng thái, quản lý phiên làm việc và kiểm soát truy cập sẽ tăng rất nhanh.
+Phía sau lớp giao diện là Nginx, đóng vai trò là cổng tiếp nhận yêu cầu cho toàn bộ hệ thống. Thành phần này không chỉ thực hiện chuyển tiếp yêu cầu đến backend mà còn là nơi đặt các kiểm soát chung như xác thực sơ bộ, giới hạn lưu lượng và ghi nhật ký truy cập. Nhờ có lớp cổng vào này, frontend không cần biết chi tiết cách backend được tổ chức, từ đó giúp hệ thống có thể thay đổi cấu trúc bên trong mà không ảnh hưởng đến ứng dụng phía người dùng.
 
-Ở lớp cổng vào, \texttt{Nginx} được đặt làm điểm tiếp nhận thống nhất. Vai trò của nó không chỉ là chuyển tiếp yêu cầu. Về kiến trúc, đây là nơi phù hợp để đặt các kiểm tra chung như xác thực sơ bộ, giới hạn lưu lượng, ghi nhật ký ở biên, chuẩn hóa tiêu đề yêu cầu và tách ứng dụng khách khỏi cấu trúc service phía sau. Nhờ có lớp này, giao diện người dùng không cần biết trực tiếp service nào đang xử lý yêu cầu, service nào tiêu thụ event hoặc tích hợp ngoài nào được dùng ở rìa hệ thống.
+Lớp backend được xây dựng bằng Spring Boot và được tổ chức thành các service theo miền nghiệp vụ. Mỗi service chịu trách nhiệm cho một phần rõ ràng trong quy trình vận hành của nhà hàng. Ví dụ, Reservation \& Seating Service quản lý đặt bàn và trạng thái bàn; Ordering Service xử lý đơn gọi món; Kitchen Coordination Service điều phối việc chuẩn bị món tại bếp; Billing \& Settlement Service chịu trách nhiệm lập hóa đơn và thanh toán; Inventory Monitoring Service theo dõi tồn kho; trong khi Reporting Service phục vụ các truy vấn đọc cho mục đích quản lý. Bên cạnh đó, IAM / Audit Service đảm nhiệm việc kiểm soát truy cập và ghi nhận các hành động quan trọng trong hệ thống.
 
-Phần quan trọng nhất của hình là lớp xử lý nghiệp vụ phía sau. IRMS không được mô tả như một khối xử lý tập trung được chia nhỏ theo tên gọi hình thức, mà như một tập service có ranh giới trách nhiệm rõ ràng. \texttt{Reservation \& Seating Service} giữ bối cảnh đặt bàn, danh sách chờ và phiên bàn; \texttt{Ordering \& Menu Service} giữ thực đơn, đơn gọi món và ảnh chụp giao dịch tại thời điểm xác nhận; \texttt{Kitchen Coordination Service} quản lý việc chuyển từ đơn gọi món sang thực thi tại bếp; \texttt{Billing \& Settlement Service} chịu trách nhiệm cho lập hóa đơn, tách hóa đơn, thanh toán và hoàn tiền; \texttt{Inventory Monitoring Service} xử lý mức tồn, quy tắc cảnh báo và lịch sử biến động; \texttt{Reporting Service} phục vụ phía đọc quản trị; còn \texttt{IAM \& Audit Service} bảo vệ biên truy cập và truy vết các quyết định nhạy cảm.
+Việc phân chia các service theo miền nghiệp vụ giúp kiến trúc phản ánh cách nhà hàng vận hành trong thực tế. Khi ranh giới trách nhiệm được xác định rõ, các thay đổi ở một miền nghiệp vụ sẽ ít ảnh hưởng đến các phần còn lại của hệ thống.
 
-Lớp dữ liệu trong hình cũng cần được đọc kỹ. \texttt{PostgreSQL} không chỉ là nơi lưu bảng dữ liệu, mà là nơi neo giữ tính nhất quán của những quyết định có hậu quả nghiệp vụ cao như xác nhận đơn gọi món, đổi trạng thái bàn, đóng hóa đơn hay ghi nhận hoàn tiền. Đồng thời, sơ đồ cũng chủ ý cho thấy \textbf{mô hình đọc phục vụ báo cáo} được làm mới qua tuyến nền, thay vì bắt tuyến quản trị truy vấn trực tiếp lên dữ liệu giao dịch nóng. Đây là một quyết định cân bằng rất thực tế: giao diện phục vụ tại bàn, màn hình bếp và giao diện thu ngân phải phản hồi trước; báo cáo chi tiết có thể đi sau vài giây hoặc vài phút miễn là đúng và truy vết được.
+Lớp dữ liệu của IRMS sử dụng PostgreSQL để lưu trữ dữ liệu nghiệp vụ cốt lõi và đảm bảo tính nhất quán của các giao dịch quan trọng như xác nhận đơn gọi món, cập nhật trạng thái bàn hay hoàn tất thanh toán. Bên cạnh dữ liệu giao dịch, hệ thống cũng duy trì một mô hình đọc phục vụ báo cáo, được cập nhật thông qua các luồng xử lý nền thay vì truy vấn trực tiếp lên dữ liệu giao dịch nóng.
 
-Cuối cùng, tuyến \texttt{Outbox / Background Worker} cùng các tích hợp ngoài như cổng thanh toán, kênh gửi thông báo và máy in biên lai được đặt ở rìa hệ thống. Đây là chi tiết kiến trúc rất quan trọng. Những thành phần này có thể chậm, lỗi, thay nhà cung cấp hoặc thay giao thức tích hợp. Nếu chúng chen trực tiếp vào miền nghiệp vụ, mọi thay đổi ngoài hệ thống sẽ lan ngược vào lõi. Khi bị đẩy ra rìa và đi qua tuyến nền hoặc các bộ kết nối trừu tượng, IRMS có thể giữ ổn định phần trung tâm ngay cả khi phải thay đổi cách gửi thông báo, đổi thiết bị in hoặc đổi đối tác thanh toán.
+Ngoài tuyến xử lý chính, kiến trúc còn sử dụng Outbox / Background Worker để xử lý các tác vụ phụ như gửi thông báo, in biên lai hoặc cập nhật mô hình đọc. Các sự kiện phát sinh từ các service nghiệp vụ được ghi nhận và xử lý bất đồng bộ, giúp giảm tải cho các thao tác trực tiếp như gọi món hoặc thanh toán.
 
-\begin{enumerate}
-  \item \textbf{Lớp giao diện người dùng (\texttt{ReactJS}).} Đây là nơi tối ưu cho thao tác nhanh, ít bước và nhất quán giữa nhiều vai trò vận hành. Kiến trúc lựa chọn một nền giao diện chung để giảm chi phí học hệ thống, giữ một mô hình điều hướng thống nhất và đơn giản hóa quản lý phiên làm việc theo ca.
-  \item \textbf{Cổng vào giao diện lập trình ứng dụng (\texttt{Nginx}).} Thành phần này tạo một biên truy cập rõ ràng, là nơi phù hợp để gom các kiểm tra chung trước khi yêu cầu đi sâu vào lõi nghiệp vụ. Nó cũng giúp che giấu cấu trúc bên trong khỏi ứng dụng khách.
-  \item \textbf{Các service nghiệp vụ (\texttt{Spring Boot}).} Các năng lực nghiệp vụ được tổ chức thành service có trách nhiệm rõ ràng, có hợp đồng API và event tương ứng. Cách tổ chức này giúp thay đổi ở vùng gọi món không tự động làm vỡ vùng thanh toán, còn thay đổi ở vùng tồn kho không ép vùng đặt bàn phải sửa theo.
-  \item \textbf{Tuyến nền (\texttt{Outbox / Background Worker}).} Các hệ quả phụ như làm mới mô hình đọc, gửi thông báo, in biên lai hoặc phát cảnh báo được đẩy sang xử lý nền để không làm nghẽn tuyến giao dịch nóng.
-  \item \textbf{Kho dữ liệu và mô hình đọc (\texttt{PostgreSQL}).} Dữ liệu nghiệp vụ cốt lõi và dữ liệu đọc phục vụ báo cáo được tách vai trò rõ ràng. Việc này giúp truy vấn quản trị không làm nặng tuyến giao dịch nóng như gọi món, điều phối bếp và thanh toán.
-  \item \textbf{Các tích hợp ngoài.} Những điểm phụ thuộc đối tác được đặt ở rìa kiến trúc để dễ thay thế, dễ cô lập lỗi và không làm ô nhiễm mô hình miền nghiệp vụ.
-\end{enumerate}
+Cuối cùng, các hệ thống tích hợp bên ngoài như cổng thanh toán, dịch vụ gửi thông báo hoặc thiết bị in được đặt ở rìa kiến trúc. Việc cô lập các tích hợp này giúp hệ thống dễ dàng thay đổi nhà cung cấp hoặc giao thức kết nối mà không ảnh hưởng đến lõi nghiệp vụ của IRMS.
 
-Nhìn tổng thể, sơ đồ này cho thấy IRMS đi theo một tư duy kiến trúc rất thực dụng: giữ tuyến đầu gọn, giữ lõi nghiệp vụ có ranh giới rõ, và đẩy phần dễ biến động ra ngoài biên. Chính vì vậy, các góc nhìn logic, service, thành phần và triển khai ở các mục sau không phải là những bức tranh rời rạc, mà là những lát cắt khác nhau của cùng một quyết định kiến trúc.
-
-\subsection{Góc nhìn logic}
-Ở góc nhìn logic, trọng tâm không còn là đường đi từ người dùng vào hệ thống, mà là cách IRMS tách các năng lực nghiệp vụ thành những miền trách nhiệm rõ ràng. Trong báo cáo này, góc nhìn logic được dùng theo hướng \textbf{capability and responsibility mapping}: hệ thống được đọc như một tập các năng lực nghiệp vụ, mỗi năng lực giữ một vùng quyết định riêng, có mối liên hệ rõ với các năng lực còn lại nhưng không bị trộn vào cùng một khối xử lý mơ hồ. Cách nhìn đó phù hợp với mục tiêu của báo cáo kiến trúc vì nó giúp kiểm tra xem kiến trúc có thật sự phản ánh vận hành nhà hàng hay chỉ mới phản ánh danh sách chức năng.
-
-Hai sơ đồ dưới đây lần lượt thể hiện bước phân rã logic ban đầu và bước gom các năng lực thành ranh giới kiến trúc ổn định hơn để dùng nhất quán ở các phần sau.
-
-\subsubsection{Sơ đồ tổng quan}
-\begin{figure}[H]
-\centering
-\IfFileExists{04_initial_logical_components_cua_irms.pdf}{
-  \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{04_initial_logical_components_cua_irms.pdf}
-}{
-  \IfFileExists{04_initial_logical_components_cua_irms.png}{
-    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{04_initial_logical_components_cua_irms.png}
-  }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{04\_initial\_logical\_components\_cua\_irms.(pdf/png)}.}}
-  }
-}
-\caption{Sơ đồ phân rã năng lực logic ban đầu của IRMS}
-\label{fig:irms-initial-components}
-\end{figure}
-
-
-Hình~\ref{fig:irms-initial-components} phản ánh bước phân rã năng lực nghiệp vụ ban đầu.
-Ở đây, hệ thống được nhìn như một tập hợp các năng lực chức năng còn khá gần với thao tác người dùng:
-đặt bàn và xếp bàn, duyệt thực đơn, tiếp nhận đơn gọi món,
-điều phối bếp, lập hóa đơn, xử lý thanh toán, theo dõi tồn kho,
-báo cáo, kiểm soát truy cập, rà soát kiểm toán và gửi thông báo.
-Cách nhìn này có ích ở giai đoạn đầu vì nó bám sát đầu bài và tác nhân,
-giúp việc kiểm tra phạm vi chức năng bắt buộc trở nên trực quan hơn.
-
-Tuy nhiên, nếu dừng ở mức này thì kiến trúc sẽ còn khá \emph{thiên về chức năng bề mặt}.
-Ví dụ, \texttt{Bill Generation} và \texttt{Payment Processing} thực ra nằm
-trong cùng một vùng quyết toán nghiệp vụ;
-\texttt{Access Control} và \texttt{Audit Review} cũng chưa được phân biệt rõ
-giữa chính sách kiểm soát và dữ liệu kiểm toán.
-Vì thế, sơ đồ này nên được hiểu là bước khám phá năng lực nghiệp vụ,
-không phải phương án phân rã cuối cùng.
-
-\paragraph{Các thành phần chính thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{Nhóm tuyến đầu}: gồm các năng lực gần trực tiếp với thao tác người dùng như đặt bàn, gọi món, bếp và thanh toán.
-  \item \textbf{Nhóm hỗ trợ vận hành}: gồm tồn kho, báo cáo và gửi thông báo.
-  \item \textbf{Nhóm kiểm soát hệ thống}: gồm kiểm soát truy cập và rà soát kiểm toán.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Sơ đồ ban đầu giúp quan sát xuất phát điểm theo chức năng bề mặt trước khi hệ thống được gom lại theo các ranh giới kiến trúc chặt chẽ hơn.
-  \item Việc đặt các năng lực gần nhau trong cùng một hình giúp người đọc thấy xuất phát điểm thiết kế trước khi báo cáo khóa lại thành các miền nghiệp vụ rõ ràng hơn.
-\end{itemize}
-
-\begin{figure}[H]
-\centering
-\IfFileExists{05_refined_logical_components_cua_irms.pdf}{
-  \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{05_refined_logical_components_cua_irms.pdf}
-}{
-  \IfFileExists{05_refined_logical_components_cua_irms.png}{
-    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{05_refined_logical_components_cua_irms.png}
-  }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{05\_refined\_logical\_components\_cua\_irms.(pdf/png)}.}}
-  }
-}
-\caption{Sơ đồ phân rã năng lực logic của IRMS}
-\label{fig:irms-refined-components}
-\end{figure}
-
-
-Hình~\ref{fig:irms-refined-components} khóa lại phương án phân rã logic được sử dụng xuyên suốt báo cáo.
-Ở mức này, các năng lực nghiệp vụ được gom thành những ranh giới phù hợp hơn cho kiến trúc:
-\texttt{Table and Reservation},
-\texttt{Menu Management},
-\texttt{Ordering},
-\texttt{Kitchen Coordination},
-\texttt{Billing and Settlement},
-\texttt{Inventory Monitoring},
-\texttt{Reporting and Analytics},
-\texttt{Identity and Access Control},
-\texttt{Audit and Compliance},
-và \texttt{Notification Integration}.
-Đây là điểm rất quan trọng vì nó cho thấy kiến trúc không còn chỉ phản ánh thao tác giao diện,
-mà đã chuyển sang phản ánh \textbf{các ranh giới năng lực nghiệp vụ}.
-
-Về mặt kiến trúc, cách phân rã này giúp ba việc.
-Thứ nhất, nó tăng \textbf{tính kết tụ}:
-mỗi năng lực nghiệp vụ gom những quy tắc gần nhau vào cùng một ranh giới.
-Thứ hai, nó giảm \textbf{mức độ phụ thuộc}:
-tồn kho, báo cáo và gửi thông báo không bị kéo vào cùng tuyến giao dịch nóng của gọi món.
-Thứ ba, nó tạo nền cho việc chọn kiểu kết nối phù hợp:
-\texttt{Ordering} và \texttt{Billing and Settlement} cần đồng bộ mạnh hơn,
-trong khi \texttt{Inventory Monitoring}, \texttt{Reporting and Analytics} và \texttt{Notification Integration} có thể đi qua sự kiện hoặc bộ xử lý nền.
-
-\paragraph{Các thành phần chính thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{Các năng lực nghiệp vụ lõi}: \texttt{Table and Reservation}, \texttt{Menu Management}, \texttt{Ordering}, \texttt{Kitchen Coordination} và \texttt{Billing and Settlement}.
-  \item \textbf{Các năng lực hỗ trợ}: \texttt{Inventory Monitoring}, \texttt{Reporting and Analytics} và \texttt{Notification Integration}.
-  \item \textbf{Các năng lực kiểm soát}: \texttt{Identity and Access Control} cùng \texttt{Audit and Compliance}.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Đây là sơ đồ tổng quan quan trọng nhất của góc nhìn logic vì nó khóa ranh giới miền nghiệp vụ trước khi đi sang service và thành phần thực thi.
-  \item Việc làm rõ các nhóm lõi, hỗ trợ và kiểm soát giúp những phần sau của báo cáo giải thích được vì sao có luồng đồng bộ và luồng bất đồng bộ trong kiến trúc.
-\end{itemize}
-
+Nhìn tổng thể, kiến trúc IRMS hướng đến một cấu trúc rõ ràng và thực dụng: giao diện thống nhất ở tuyến đầu, các service nghiệp vụ giữ ranh giới trách nhiệm rõ ràng ở lõi hệ thống, và các luồng sự kiện được sử dụng để xử lý các hoạt động phụ một cách linh hoạt. Cách tổ chức này giúp hệ thống vừa đảm bảo tính nhất quán cho các giao dịch quan trọng, vừa duy trì khả năng mở rộng và thích nghi khi hệ thống phát triển.
 
 \subsection{Tổng quan cho các góc nhìn chính}\label{sec:architecture-views}
 
@@ -159,63 +44,31 @@ trong khi \texttt{Inventory Monitoring}, \texttt{Reporting and Analytics} và \t
   \IfFileExists{21_logical_view_overview_business_capability_layers.png}{
     \includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{21_logical_view_overview_business_capability_layers.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{21\_logical\_view\_overview\_business\_capability\_layers.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{21\_logical\_view\_overview\_business\_capability\_layers.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ tổng quan cho góc nhìn logic của IRMS}
 \label{fig:irms-logical-overview-supplement}
 \end{figure}
+Hình~\ref{fig:irms-logical-overview-supplement} trình bày bức tranh tổng quan của góc nhìn logic trong hệ thống IRMS. Nếu góc nhìn chức năng tập trung vào việc hệ thống hỗ trợ những thao tác nào cho người dùng, thì góc nhìn logic tập trung vào việc xác định các năng lực nghiệp vụ nào tồn tại trong hệ thống và mối quan hệ giữa chúng. Nói cách khác, góc nhìn này mô tả cách hệ thống được phân rã thành các miền trách nhiệm nghiệp vụ trước khi được hiện thực hóa thành các service trong kiến trúc triển khai.
 
+Trong kiến trúc IRMS, góc nhìn logic được xây dựng theo hướng service-based architecture kết hợp event-driven interaction ở mức khái niệm. Mỗi năng lực nghiệp vụ được xem như một miền logic độc lập, có ranh giới trách nhiệm rõ ràng và có thể được ánh xạ sang một service hoặc một phần của service trong lớp backend. Các năng lực này tương tác với nhau thông qua hai cơ chế chính: gọi dịch vụ đồng bộ trong các luồng xử lý trực tiếp, và phát sinh sự kiện nghiệp vụ (domain events) để truyền tải thông tin và tách biệt trách nhiệm xử lý.
 
-Hình~\ref{fig:irms-logical-overview-supplement} làm rõ tầng khái niệm của góc nhìn logic, tức là trả lời câu hỏi \enquote{trong bức tranh nghiệp vụ tổng thể, các năng lực của IRMS được nhóm thành những lớp nào và quan hệ chính giữa các lớp đó là gì}. Khác với hình logic ở mức liệt kê năng lực riêng lẻ, hình này nhấn mạnh \textbf{bốn tầng năng lực}: tuyến phục vụ trực tiếp với khách, nhóm tham chiếu và hoạch định, nhóm kiểm soát và nhóm hỗ trợ phân tích. Cách nhìn đó giúp phần logic trở thành một bản đồ năng lực có cấu trúc, thay vì một danh sách chức năng rời rạc; phần định vị và lý do chọn kiểu nhìn này được nối thẳng tới Bảng~\ref{tab:appendix-traceability}, Bảng~\ref{tab:appendix-view-rationale} và Bảng~\ref{tab:appendix-component-rationale}.
+Các nhóm năng lực chính trong hệ thống bao gồm:
 
-\paragraph{Các nhóm năng lực chính thể hiện trong hình.}
 \begin{itemize}
-  \item \textbf{Nhóm năng lực tuyến đầu}: gồm \texttt{Reservation \& Seating Service}, \texttt{Ordering}, \texttt{Kitchen Coordination} và \texttt{Billing \& Settlement}; đây là tuyến giao dịch nóng, nơi mọi thao tác phải phản hồi nhanh và nhất quán.
-  \item \textbf{Nhóm năng lực tham chiếu và hoạch định}: gồm \texttt{Menu Management} và \texttt{Inventory Monitoring}; hai năng lực này cung cấp dữ liệu điều kiện và quy tắc cho tuyến vận hành, nhưng không nên làm nghẽn tuyến phục vụ.
-  \item \textbf{Nhóm năng lực kiểm soát và quản trị}: gồm \texttt{Identity \& Access Control} và \texttt{Audit \& Compliance}; đây là lớp bảo vệ và truy vết cho những hành động nhạy cảm.
-  \item \textbf{Nhóm năng lực hỗ trợ và phân tích}: gồm \texttt{Notification Integration} và \texttt{Reporting \& Analytics}; đây là lớp mở rộng giá trị vận hành, thiên về xử lý bất đồng bộ hoặc tổng hợp dữ liệu.
+    \item \textbf{Nhóm năng lực lõi}: gồm Table and Reservation, Ordering, Kitchen Coordination và Billing and Settlement. Đây là chuỗi năng lực trực tiếp phục vụ quy trình vận hành chính của nhà hàng, từ khi tiếp nhận khách đến khi hoàn tất thanh toán.
+    
+    \item \textbf{Nhóm năng lực tham chiếu và điều kiện vận hành}: gồm Menu Management và Inventory Monitoring. Nhóm này cung cấp dữ liệu và quy tắc nền cho các luồng nghiệp vụ chính như thông tin món ăn, giá bán và trạng thái tồn kho.
+    
+    \item \textbf{Nhóm năng lực hỗ trợ vận hành}: gồm Notification Integration và Reporting and Analytics. Các năng lực này xử lý thông tin vận hành theo hướng bất đồng bộ để phục vụ thông báo và báo cáo.
+    
+    \item \textbf{Nhóm năng lực kiểm soát hệ thống}: gồm Identity and Access Control và Audit and Compliance. Đây là lớp năng lực đảm bảo phân quyền, kiểm soát truy cập và ghi nhận lịch sử hoạt động của hệ thống.
 \end{itemize}
 
-\paragraph{Ý nghĩa thiết kế của sơ đồ tổng quan này.}
-\begin{itemize}
-  \item Nó khóa lại ranh giới logic ở mức \textbf{nhóm năng lực}, giúp những phần sau của báo cáo giải thích được vì sao có luồng đồng bộ mạnh ở tuyến đầu nhưng lại có luồng dựa trên sự kiện cho cảnh báo, báo cáo và gửi thông báo.
-  \item Nó cho thấy rõ \textbf{chiều phụ thuộc đúng}: thực đơn và tồn kho phục vụ gọi món; gọi món phát sinh dữ liệu cho bếp và quyết toán; món đã phục vụ phát sinh dữ liệu tiêu hao cho tồn kho, còn thanh toán hoàn tất kéo theo thông báo, báo cáo và khép phiên bàn.
-  \item Nó tạo nền cho góc nhìn phân bổ vì mỗi năng lực sau đó sẽ được ánh xạ sang vùng thực thi, nơi lưu trữ và bộ kết nối phù hợp thay vì ánh xạ ngẫu nhiên theo giao diện người dùng.
-\end{itemize}
+Việc phân nhóm năng lực như trên giúp làm rõ ranh giới nghiệp vụ giữa các miền, đồng thời tạo cơ sở cho việc ánh xạ sang các service trong kiến trúc service-based ở lớp triển khai. Các năng lực lõi được ưu tiên trong luồng đồng bộ, trong khi các năng lực hỗ trợ và kiểm soát thường được kích hoạt thông qua cơ chế sự kiện nhằm giảm phụ thuộc trực tiếp.
 
-\subsubsection{Góc nhìn logic cho chuỗi phục vụ lõi}
-\begin{figure}[H]
-\centering
-\IfFileExists{34_logical_view_core_service_chain.pdf}{
-  \includegraphics[width=\textwidth,height=0.84\textheight,keepaspectratio]{34_logical_view_core_service_chain.pdf}
-}{
-  \IfFileExists{34_logical_view_core_service_chain.png}{
-    \includegraphics[width=\textwidth,height=0.84\textheight,keepaspectratio]{34_logical_view_core_service_chain.png}
-  }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{34\_logical\_view\_core\_service\_chain.(pdf/png)}.}}
-  }
-}
-\caption{Góc nhìn logic cho chuỗi phục vụ lõi của IRMS}
-\label{fig:irms-logical-core-chain}
-\end{figure}
-
-Hình~\ref{fig:irms-logical-core-chain} đi từ bản đồ năng lực sang chuỗi năng lực lõi, tức phần quyết định trực tiếp trải nghiệm phục vụ của khách hàng từ lúc khách được nhận bàn cho tới khi bàn được giải phóng sau thanh toán. Trong góc nhìn logic, chuỗi này gồm bốn miền chính: \texttt{Reservation \& Seating} mở bối cảnh phục vụ, \texttt{Ordering} giữ dữ liệu giao dịch của món, \texttt{Kitchen Coordination} biến dữ liệu bán hàng thành công việc chế biến, và \texttt{Billing \& Settlement} chốt nghĩa vụ tài chính cũng như đóng vòng đời phiên bàn. Sơ đồ giúp người đọc thấy rõ hệ thống không vận hành như một chuỗi màn hình, mà như một chuỗi năng lực nghiệp vụ có đầu vào, đầu ra và trách nhiệm riêng.
-
-Điểm quan trọng nhất của hình là \textbf{mỗi miền logic chỉ công bố loại thông tin cần thiết cho miền kế tiếp}. \texttt{Reservation \& Seating} không truyền toàn bộ chi tiết đặt bàn sang gọi món; nó chỉ truyền bối cảnh phiên bàn hợp lệ. \texttt{Ordering} không giao thẳng các cấu trúc giao diện sang bếp; nó truyền ảnh chụp đơn gọi món đã xác nhận và có khả năng định tuyến. \texttt{Kitchen Coordination} không quyết toán thay cho thu ngân; nó chỉ phát hành trạng thái thực thi như \texttt{Ready}, \texttt{Blocked} hoặc \texttt{Served}. \texttt{Billing \& Settlement} sau đó sử dụng ảnh chụp giao dịch đủ tin cậy để tính tiền, thu tiền và khép lại phiên bàn. Nhờ giới hạn như vậy, chuỗi nghiệp vụ giữ được độ kết tụ cao mà không làm các miền trở nên phụ thuộc quá mức.
-
-Một chi tiết quan trọng khác là nút \texttt{Published Operational Facts} ở phần dưới của hình. Nút này không phải một thành phần triển khai, mà là cách biểu diễn ở mức logic cho nhóm dữ kiện được phát ra sau khi các quyết định lõi đã được chốt, ví dụ sự kiện đặt bàn, ảnh chụp đơn gọi món, trạng thái phục vụ món hay kết quả quyết toán. Cách biểu diễn này giúp tách rõ hai loại quan hệ: quan hệ trên \textbf{trục phục vụ chính} và quan hệ trên \textbf{trục quan sát, tích hợp, truy vết}. Nhờ đó, sơ đồ vừa giữ được chuỗi lõi dễ đọc, vừa vẫn thể hiện được vì sao báo cáo, thông báo và kiểm toán có thể bám theo giao dịch mà không chen vào quyết định lõi.
-
-Sơ đồ cũng cho thấy vị trí của các miền tham chiếu và kiểm soát xung quanh chuỗi lõi. \texttt{Menu Management} và \texttt{Inventory Monitoring} không đứng trên trục phục vụ chính, nhưng chúng cung cấp điều kiện vận hành như khả dụng món, giá, ánh xạ công thức và tín hiệu ẩn món. \texttt{Identity \& Access Control} cùng \texttt{Audit \& Compliance} lại bao quanh chuỗi lõi như một lớp kiểm soát: không tác động trực tiếp vào giá trị món ăn hay số tiền phải thu, nhưng quyết định ai được phép ghi đè, hoàn tiền, hủy món hay xem dữ liệu nhạy cảm. Đây là cách nhìn logic phù hợp với chuẩn mô tả kiến trúc: phân biệt rõ \textbf{năng lực nghiệp vụ chính}, \textbf{năng lực tham chiếu} và \textbf{năng lực điều tiết}.
-
-\paragraph{Những điểm chính cần đọc từ hình.}
-\begin{itemize}
-  \item \textbf{Chuỗi lõi} đi theo thứ tự \texttt{Reservation \& Seating} $\rightarrow$ \texttt{Ordering} $\rightarrow$ \texttt{Kitchen Coordination} $\rightarrow$ \texttt{Billing \& Settlement}, phản ánh đúng vòng đời phục vụ trong nhà hàng.
-  \item \textbf{Menu Management} và \textbf{Inventory Monitoring} đóng vai trò năng lực điều kiện: chúng không thay mặt tuyến đầu xử lý giao dịch nhưng ảnh hưởng trực tiếp tới tính hợp lệ của món và quyết định ẩn hoặc mở bán.
-  \item \textbf{Published Operational Facts} biểu diễn lớp dữ kiện được công bố ra ngoài chuỗi lõi sau khi các quyết định chính đã được chốt, làm cầu nối tới báo cáo, thông báo và truy vết.
-  \item \textbf{Identity \& Access Control} cùng \textbf{Audit \& Compliance} là lớp bảo vệ xuyên suốt, giúp những hành động nhạy cảm có cơ sở quyền hạn và dấu vết truy vết rõ ràng.
-  \item \textbf{Notification Integration} và \textbf{Reporting \& Analytics} nằm ở vòng ngoài vì chúng tiêu thụ dữ kiện vận hành hơn là điều khiển giao dịch lõi theo thời gian thực.
-\end{itemize}
+Như vậy, góc nhìn logic đóng vai trò như một bản đồ năng lực nghiệp vụ của hệ thống IRMS, là nền tảng để triển khai các mô-đun, service và các luồng xử lý trong các góc nhìn kiến trúc tiếp theo.
 
 \subsubsection{Tổng quan cho góc nhìn phân rã dịch vụ}
 \noindent
@@ -229,7 +82,7 @@ Trong báo cáo này, góc nhìn phân rã dịch vụ được trình bày theo
   \IfFileExists{22_module_view_overview_layered_dependencies.png}{
     \includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{22_module_view_overview_layered_dependencies.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{22\_module\_view\_overview\_layered\_dependencies.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{22\_module\_view\_overview\_layered\_dependencies.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ tổng quan cho góc nhìn phân rã dịch vụ của IRMS}
@@ -237,13 +90,13 @@ Trong báo cáo này, góc nhìn phân rã dịch vụ được trình bày theo
 \end{figure}
 
 
-Hình~\ref{fig:irms-module-overview-supplement} làm rõ quy tắc phụ thuộc theo lớp trong góc nhìn phân rã dịch vụ. Góc nhìn này không chỉ trả lời hệ thống có những service nào, mà còn phải trả lời service nào được phép gọi API trực tiếp, service nào chỉ nên giao tiếp qua event, và thành phần nào là hạ tầng dùng chung chứ không phải service nghiệp vụ. Vì vậy hình này cần được đọc theo các nhóm \texttt{Client Applications}, \texttt{Business Services} và \texttt{Shared Platform Capabilities}.
+Hình~\ref{fig:irms-module-overview-supplement} làm rõ quy tắc phụ thuộc theo lớp trong góc nhìn phân rã dịch vụ. Góc nhìn này không chỉ trả lời hệ thống có những service nào, mà còn phải trả lời service nào được phép gọi API trực tiếp, service nào chỉ nên giao tiếp qua event, và thành phần nào là hạ tầng dùng chung chứ không phải service nghiệp vụ. Vì vậy hình này cần được đọc theo các nhóm \textsf{Client Applications}, \textsf{Business Services} và \textsf{Shared Platform Capabilities}.
 
 \paragraph{Các ý chính cần đọc từ hình.}
 \begin{itemize}
-  \item Các giao diện người dùng chỉ đi vào \texttt{API / Web Layer}; chúng không được gọi chéo vào lớp kho lưu trữ hay bộ kết nối.
-  \item Các service nghiệp vụ giữ trách nhiệm riêng, ví dụ \texttt{Ordering \& Menu Service} không \enquote{ôm} logic thanh toán, còn \texttt{Billing \& Settlement Service} không trực tiếp điều phối trạng thái bếp.
-  \item Những năng lực như \texttt{Repositories / Unit of Work}, \texttt{Event Bus / Outbox}, \texttt{Reporting Views} và \texttt{External Adapters} là hạ tầng dùng chung, được phụ thuộc theo hướng có kiểm soát.
+  \item Các giao diện người dùng chỉ đi vào \textsf{API / Web Layer}; chúng không được gọi chéo vào lớp kho lưu trữ hay bộ kết nối.
+  \item Các service nghiệp vụ giữ trách nhiệm riêng, ví dụ \textsf{Ordering \& Menu Service} không \enquote{ôm} logic thanh toán, còn \textsf{Billing \& Settlement Service} không trực tiếp điều phối trạng thái bếp.
+  \item Những năng lực như \textsf{Repositories / Unit of Work}, \textsf{Event Bus / Outbox}, \textsf{Reporting Views} và \textsf{External Adapters} là hạ tầng dùng chung, được phụ thuộc theo hướng có kiểm soát.
 \end{itemize}
 
 \paragraph{Vì sao sơ đồ tổng quan này quan trọng.}
@@ -262,7 +115,7 @@ Hình~\ref{fig:irms-module-overview-supplement} làm rõ quy tắc phụ thuộc
   \IfFileExists{35_module_view_order_to_cash_slices.png}{
     \includegraphics[width=\textwidth,height=0.84\textheight,keepaspectratio]{35_module_view_order_to_cash_slices.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{35\_module\_view\_order\_to\_cash\_slices.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{35\_module\_view\_order\_to\_cash\_slices.(pdf/png)}.}}
   }
 }
 \caption{Góc nhìn phân rã dịch vụ cho tuyến order-to-cash của IRMS}
@@ -271,17 +124,17 @@ Hình~\ref{fig:irms-module-overview-supplement} làm rõ quy tắc phụ thuộc
 
 Hình~\ref{fig:irms-module-order-to-cash} làm rõ ở mức chi tiết hơn tuyến từ nhận bàn, gọi món, điều phối bếp, quyết toán cho tới phát sinh dữ kiện báo cáo và thông báo. Ở mức này, hệ thống được nhìn như một chuỗi service nghiệp vụ nối tiếp nhau bằng hợp đồng rõ ràng, thay vì một tập tên service đứng cạnh nhau. Với IRMS, tuyến order-to-cash là nơi mọi quyết định về ranh giới service, API đồng bộ và event bất đồng bộ lộ ra rõ nhất.
 
-Điểm cốt lõi của sơ đồ là \textbf{mỗi service sở hữu dữ liệu, luật nghiệp vụ và nhịp thực thi tương ứng}. Trong hình, mỗi service được biểu diễn như một lát cắt dọc gồm ba tầng \texttt{Application}, \texttt{Domain} và \texttt{Repository}. \texttt{Reservation \& Seating Service} sở hữu bối cảnh phiên bàn và trạng thái bàn; \texttt{Ordering \& Menu Service} sở hữu \texttt{Order}, \texttt{OrderItem} và ảnh chụp thực đơn; \texttt{Kitchen Coordination Service} sở hữu \texttt{KitchenTicket} và hàng chờ chế biến; \texttt{Billing \& Settlement Service} sở hữu \texttt{Bill}, \texttt{BillSplit}, \texttt{Payment} và \texttt{Refund}. Các phụ thuộc giữa chúng đi qua API, event hoặc ảnh chụp nghiệp vụ, chứ không qua việc truy cập thẳng vào cấu trúc bên trong nhau.
+Điểm cốt lõi của sơ đồ là \textbf{mỗi service sở hữu dữ liệu, luật nghiệp vụ và nhịp thực thi tương ứng}. Trong hình, mỗi service được biểu diễn như một lát cắt dọc gồm ba tầng \textsf{Application}, \textsf{Domain} và \textsf{Repository}. \textsf{Reservation \& Seating Service} sở hữu bối cảnh phiên bàn và trạng thái bàn; \textsf{Ordering \& Menu Service} sở hữu \textsf{Order}, \textsf{OrderItem} và ảnh chụp thực đơn; \textsf{Kitchen Coordination Service} sở hữu \textsf{KitchenTicket} và hàng chờ chế biến; \textsf{Billing \& Settlement Service} sở hữu \textsf{Bill}, \textsf{BillSplit}, \textsf{Payment} và \textsf{Refund}. Các phụ thuộc giữa chúng đi qua API, event hoặc ảnh chụp nghiệp vụ, chứ không qua việc truy cập thẳng vào cấu trúc bên trong nhau.
 
-Hình này còn nhấn mạnh sự khác nhau giữa \textbf{đường thực thi đồng bộ} và \textbf{đường hệ quả sau giao dịch}. Đường thực thi đồng bộ xuất hiện ở các thao tác cần phản hồi ngay như mở \texttt{TableSession}, xác nhận đơn gọi món, lập hóa đơn hoặc ghi nhận thanh toán. Đường hệ quả sau giao dịch đi qua \texttt{Outbox and Event Contracts}, \texttt{Event Bus}, \texttt{Inventory Projection}, \texttt{Reporting Projection}, \texttt{Notification Service} và \texttt{Audit Trail}. Việc tách hai đường này bảo vệ tuyến đầu khỏi các tác vụ phụ như gửi thông báo, trừ tồn kho, làm giàu audit hoặc làm mới báo cáo.
+Hình này còn nhấn mạnh sự khác nhau giữa \textbf{đường thực thi đồng bộ} và \textbf{đường hệ quả sau giao dịch}. Đường thực thi đồng bộ xuất hiện ở các thao tác cần phản hồi ngay như mở \textsf{TableSession}, xác nhận đơn gọi món, lập hóa đơn hoặc ghi nhận thanh toán. Đường hệ quả sau giao dịch đi qua \textsf{Outbox and Event Contracts}, \textsf{Event Bus}, \textsf{Inventory Projection}, \textsf{Reporting Projection}, \textsf{Notification Service} và \textsf{Audit Trail}. Việc tách hai đường này bảo vệ tuyến đầu khỏi các tác vụ phụ như gửi thông báo, trừ tồn kho, làm giàu audit hoặc làm mới báo cáo.
 
-Ngoài ra, sơ đồ còn cho thấy vai trò của \texttt{API and Policy Gate} như một biên truy cập nằm trước các service nghiệp vụ. Đây là nơi phù hợp để gom các kiểm tra đầu vào, xác thực, kiểm tra quyền ở mức yêu cầu và chuẩn hóa lời gọi. Nhờ có tầng biên này, các service phía sau không phải lặp lại quá nhiều logic kỹ thuật, trong khi phần điều phối ứng dụng vẫn giữ được biên giao dịch riêng của từng service.
+Ngoài ra, sơ đồ còn cho thấy vai trò của \textsf{API and Policy Gate} như một biên truy cập nằm trước các service nghiệp vụ. Đây là nơi phù hợp để gom các kiểm tra đầu vào, xác thực, kiểm tra quyền ở mức yêu cầu và chuẩn hóa lời gọi. Nhờ có tầng biên này, các service phía sau không phải lặp lại quá nhiều logic kỹ thuật, trong khi phần điều phối ứng dụng vẫn giữ được biên giao dịch riêng của từng service.
 
 \paragraph{Những điểm chính cần đọc từ hình.}
 \begin{itemize}
   \item \textbf{Lát cắt service} được tổ chức theo chiều dọc: mỗi service có lớp ứng dụng, lớp miền và kho lưu trữ riêng, thay vì dùng chung một lớp kỹ thuật cho toàn bộ hệ thống.
   \item \textbf{Tuyến phụ thuộc tĩnh} chỉ đi qua giao diện công khai và ảnh chụp nghiệp vụ cần thiết, nhờ đó tránh phụ thuộc chéo vào chi tiết nội bộ.
-  \item \textbf{Tuyến hệ quả sự kiện} được tách sang \texttt{Outbox}, \texttt{Event Bus}, \texttt{Reporting Service}, \texttt{Notification Service} và một phần \texttt{Inventory Monitoring Service}, bảo vệ đường nóng khỏi tác vụ phụ.
+  \item \textbf{Tuyến hệ quả sự kiện} được tách sang \textsf{Outbox}, \textsf{Event Bus}, \textsf{Reporting Service}, \textsf{Notification Service} và một phần \textsf{Inventory Monitoring Service}, bảo vệ đường nóng khỏi tác vụ phụ.
   \item \textbf{API and Policy Gate} là biên chung trước các lát cắt nghiệp vụ, giúp gom các kiểm tra kỹ thuật và kiểm tra quyền trước khi lời gọi đi vào từng service.
   \item \textbf{Quy tắc service} ở hình này là cơ sở để kiểm chứng phần hiện thực mã nguồn về sau: nếu service truy cập xuyên qua chi tiết nội bộ của nhau, kiến trúc sẽ bị phá vỡ ngay ở mức code.
 \end{itemize}
@@ -295,7 +148,7 @@ Ngoài ra, sơ đồ còn cho thấy vai trò của \texttt{API and Policy Gate}
   \IfFileExists{23_allocation_view_overview_software_to_runtime_mapping.png}{
     \includegraphics[width=\textwidth,height=0.84\textheight,keepaspectratio]{23_allocation_view_overview_software_to_runtime_mapping.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{23\_allocation\_view\_overview\_software\_to\_runtime\_mapping.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{23\_allocation\_view\_overview\_software\_to\_runtime\_mapping.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ tổng quan cho góc nhìn phân bổ của IRMS}
@@ -309,14 +162,14 @@ Hình~\ref{fig:irms-allocation-overview} đưa ra bức tranh tổng quan cho g�
 \begin{itemize}
   \item \textbf{Lớp biên và thiết bị}: là nơi phát sinh thao tác nghiệp vụ thực tế như máy của lễ tân, máy của phục vụ, màn hình bếp, máy thu ngân và màn hình quản lý.
   \item \textbf{Lớp phân bổ thực thi}: gồm nút giao diện lập trình ứng dụng, bộ xử lý nền và dịch vụ truy vấn báo cáo; đây là nơi các năng lực được hiện thực thành tiến trình hoặc vùng thực thi cụ thể.
-  \item \textbf{Lớp phân bổ dữ liệu}: gồm \texttt{Operational RDBMS}, \texttt{Reporting Views / Read Model} và \texttt{Outbox / Job Queue}; chúng tách dữ liệu giao dịch, dữ liệu đọc tổng hợp và hàng đợi xử lý nền.
-  \item \textbf{Lớp hệ thống ngoài}: gồm \texttt{Payment Gateway}, \texttt{Notification Service} và \texttt{Receipt Printer}; chúng là các điểm tích hợp nằm ngoài lõi IRMS.
+  \item \textbf{Lớp phân bổ dữ liệu}: gồm \textsf{Operational RDBMS}, \textsf{Reporting Views / Read Model} và \textsf{Outbox / Job Queue}; chúng tách dữ liệu giao dịch, dữ liệu đọc tổng hợp và hàng đợi xử lý nền.
+  \item \textbf{Lớp hệ thống ngoài}: gồm \textsf{Payment Gateway}, \textsf{Notification Service} và \textsf{Receipt Printer}; chúng là các điểm tích hợp nằm ngoài lõi IRMS.
 \end{itemize}
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
 \begin{itemize}
   \item Sơ đồ giúp người đọc nhìn ra ngay \textbf{service nào chạy trên nút giao diện lập trình ứng dụng}, \textbf{service nào đi qua bộ xử lý nền}, và \textbf{service nào đọc từ mô hình báo cáo thay vì đánh trực tiếp vào cơ sở dữ liệu giao dịch}.
-  \item Nó cho thấy rõ vì sao \texttt{Notification} và một phần \texttt{Reporting} không nên bị buộc vào tuyến giao dịch nóng.
+  \item Nó cho thấy rõ vì sao \textsf{Notification} và một phần \textsf{Reporting} không nên bị buộc vào tuyến giao dịch nóng.
   \item Nó là phần nối đúng giữa góc nhìn thành phần và góc nhìn triển khai: sơ đồ thành phần cho thấy thành phần hợp tác ra sao; góc nhìn phân bổ cho thấy các thành phần đó được đặt trên vùng thực thi và nơi lưu trữ nào.
 \end{itemize}
 
@@ -325,7 +178,7 @@ Dựa trên các yêu cầu phi chức năng đã được lượng hóa ở ph�
 \begin{enumerate}
   \item \textbf{Khả năng đáp ứng}: màn hình gọi món, màn hình bếp và màn hình thu ngân phải phản hồi nhanh để không làm chậm tuyến phục vụ trực tiếp với khách.
   \item \textbf{Độ tin cậy}: đơn gọi món, thanh toán, hoàn tiền và cập nhật trạng thái bàn là các luồng không được mất dữ liệu hoặc xử lý lặp sai lệch.
-  \item \textbf{Khả năng mở rộng}: điểm nóng thường dồn vào giờ cao điểm và tập trung ở các miền \texttt{Ordering}, \texttt{Kitchen Coordination} và \texttt{Billing} thay vì toàn hệ thống.
+  \item \textbf{Khả năng mở rộng}: điểm nóng thường dồn vào giờ cao điểm và tập trung ở các miền \textsf{Ordering}, \textsf{Kitchen Coordination} và \textsf{Billing} thay vì toàn hệ thống.
   \item \textbf{Bảo mật và khả năng kiểm toán}: mọi thao tác nhạy cảm phải được kiểm soát bằng quyền và truy vết lại được về sau.
   \item \textbf{Khả năng quan sát}: hệ thống phải đủ nhật ký, vết thực thi và số đo để thấy độ trễ của phiếu bếp, thanh toán và các điểm nghẽn vận hành.
   \item \textbf{Khả năng sửa đổi}: thực đơn, giá, khuyến mãi, ngưỡng cảnh báo tồn kho, kênh gửi thông báo và bộ kết nối thanh toán thay đổi thường xuyên nên cần biên thay đổi hẹp.
@@ -339,19 +192,132 @@ nhưng nếu tách quá sớm hoặc quá mạnh thì có thể làm tăng độ
 ảnh hưởng ngược lại \textbf{khả năng đáp ứng} và \textbf{khả năng bảo trì}.
 Vì vậy, các quyết định kiến trúc ở phần sau đều được đọc dưới góc nhìn cân bằng giữa các đặc trưng này,
 không phải tối ưu một đặc tính duy nhất.
+\subsection{Góc nhìn logic}
 
+Góc nhìn logic mô tả các năng lực nghiệp vụ cốt lõi của hệ thống IRMS và cách các năng lực này được tổ chức thành các miền trách nhiệm có ranh giới rõ ràng. Nếu góc nhìn ngữ cảnh tập trung vào việc hệ thống tương tác với các tác nhân và hệ thống bên ngoài nào, thì góc nhìn logic trả lời câu hỏi: hệ thống cần cung cấp những năng lực nghiệp vụ nào để hiện thực hóa các tương tác đó.
+
+Trong kiến trúc IRMS, góc nhìn logic đóng vai trò như một bản đồ năng lực nghiệp vụ (capability map), làm cơ sở cho việc tổ chức hệ thống theo hướng service-based architecture ở lớp triển khai. Tuy nhiên, ở mức này, các năng lực chưa được hiện thực hóa thành service cụ thể mà chỉ được xem như các miền nghiệp vụ logic độc lập, có ranh giới trách nhiệm rõ ràng.
+
+Các năng lực được xác định dựa trên vòng đời vận hành của nhà hàng, bao gồm tiếp nhận khách, quản lý bàn, gọi món, chế biến, thanh toán và các hoạt động quản trị – giám sát. Về mặt tương tác, các năng lực có thể trao đổi thông tin theo hai cơ chế: đồng bộ trong luồng xử lý nghiệp vụ chính hoặc bất đồng bộ thông qua các sự kiện nghiệp vụ (domain events).
+
+\subsubsection{Sơ đồ phân rã năng lực logic ban đầu}
+
+Hình~{fig:irms-initial-components} thể hiện bước phân rã ban đầu các năng lực nghiệp vụ trong hệ thống IRMS. Ở giai đoạn này, hệ thống được nhìn dưới góc độ chức năng trực tiếp, phản ánh gần với thao tác người dùng và các quy trình vận hành thực tế trong nhà hàng.
+
+\begin{figure}[H]
+\centering
+\IfFileExists{04_initial_logical_components_cua_irms.pdf}{
+  \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{04_initial_logical_components_cua_irms.pdf}
+}{
+  \IfFileExists{04_initial_logical_components_cua_irms.png}{
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{04_initial_logical_components_cua_irms.png}
+  }{
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{04\_initial\_logical\_components\_cua\_irms.(pdf/png)}.}}
+  }
+}
+\caption{Sơ đồ phân rã năng lực logic ban đầu của IRMS}
+\label{fig:irms-initial-components}
+\end{figure}
+Trong sơ đồ này, các năng lực được xác định theo hướng chức năng bề mặt như quản lý bàn, tiếp nhận đơn gọi món, điều phối bếp, thanh toán, quản lý tồn kho, báo cáo, kiểm soát truy cập và giám sát hệ thống. Cách phân rã này phù hợp trong giai đoạn đầu của quá trình phân tích, vì giúp đảm bảo bao phủ đầy đủ các yêu cầu nghiệp vụ và phản ánh trực tiếp các hoạt động chính của hệ thống.
+
+Mục tiêu của bước phân rã này không phải là tối ưu kiến trúc, mà là nhận diện đầy đủ phạm vi năng lực của hệ thống IRMS. Do đó, các năng lực được mô tả theo cách gần với quy trình vận hành thực tế để dễ kiểm tra và tránh bỏ sót chức năng quan trọng.
+
+Tuy nhiên, ở mức phân rã này, các năng lực vẫn mang tính rời rạc và chưa hình thành các miền nghiệp vụ ổn định. Một số năng lực có quan hệ chặt chẽ về mặt nghiệp vụ nhưng lại bị tách theo góc nhìn chức năng, dẫn đến phân mảnh trong mô hình logic. Ví dụ, thanh toán và lập hóa đơn thuộc cùng một chuỗi quyết toán nghiệp vụ, hoặc kiểm soát truy cập và kiểm toán có mối quan hệ chặt chẽ trong việc đảm bảo an toàn và tuân thủ hệ thống.
+
+Vì vậy, sơ đồ này được xem là bước khởi tạo trong quá trình phân tích logic, đóng vai trò nền tảng để tiếp tục tái cấu trúc và gom nhóm các năng lực thành các miền nghiệp vụ ổn định hơn ở bước tiếp theo.
+\subsubsection{Sơ đồ phân rã năng lực logic hoàn chỉnh}
+
+Dựa trên quá trình tinh chỉnh và gom nhóm các năng lực nghiệp vụ, hệ thống IRMS được tái cấu trúc thành các miền năng lực ổn định hơn như thể hiện trong Hình~{fig:irms-refined-components}.
+
+\begin{figure}[H]
+\centering
+\IfFileExists{05_refined_logical_components_cua_irms.pdf}{
+  \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{05_refined_logical_components_cua_irms.pdf}
+}{
+  \IfFileExists{05_refined_logical_components_cua_irms.png}{
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{05_refined_logical_components_cua_irms.png}
+  }{
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{05\_refined\_logical\_components\_cua\_irms.(pdf/png)}.}}
+  }
+}
+\caption{Sơ đồ phân rã năng lực logic của IRMS}
+\label{fig:irms-refined-components}
+\end{figure}
+
+Trong cấu trúc này, các năng lực được tổ chức lại theo các miền nghiệp vụ có mức độ kết dính cao hơn và phản ánh đầy đủ vòng đời vận hành của nhà hàng, bao gồm:
+
+\begin{itemize}
+    \item Table \& Reservation
+    \item Menu Management
+    \item Ordering
+    \item Kitchen Coordination
+    \item Billing \& Settlement
+    \item Inventory Monitoring
+    \item Reporting \& Analytics
+    \item Identity \& Access Control
+    \item Audit \& Compliance
+    \item Notification Integration
+\end{itemize}
+
+Việc tái cấu trúc này giúp chuyển từ cách nhìn theo chức năng thao tác người dùng sang cách nhìn theo miền trách nhiệm nghiệp vụ. Thay vì xem hệ thống như tập hợp các chức năng rời rạc, mỗi năng lực được định nghĩa như một miền logic độc lập, có ranh giới rõ ràng và chịu trách nhiệm cho một phần xác định trong vòng đời vận hành của nhà hàng.
+
+Từ góc độ kiến trúc, đây là bước chuyển từ functional decomposition sang domain-oriented decomposition. Các năng lực lúc này không chỉ mang ý nghĩa chức năng, mà trở thành các đơn vị nghiệp vụ có tính độc lập tương đối, có thể được ánh xạ trực tiếp hoặc gián tiếp sang các service trong kiến trúc service-based.
+
+Bên cạnh đó, cấu trúc này cũng tạo nền tảng cho mô hình event-driven processing trong các góc nhìn kiến trúc tiếp theo. Các miền năng lực có thể trao đổi thông tin thông qua sự kiện nghiệp vụ thay vì phụ thuộc trực tiếp lẫn nhau, từ đó giảm coupling giữa các thành phần và tăng khả năng mở rộng của hệ thống trong dài hạn.
+\subsubsection{Sơ đồ chuỗi phục vụ lõi}
+
+Hình~{fig:irms-logical-core-chain} mô tả cách các năng lực logic lõi tương tác với nhau trong chuỗi phục vụ chính của hệ thống IRMS.
+
+\begin{figure}[H]
+\centering
+\IfFileExists{34_logical_view_core_service_chain.pdf}{
+  \includegraphics[width=\textwidth,height=0.84\textheight,keepaspectratio]{34_logical_view_core_service_chain.pdf}
+}{
+  \IfFileExists{34_logical_view_core_service_chain.png}{
+    \includegraphics[width=\textwidth,height=0.84\textheight,keepaspectratio]{34_logical_view_core_service_chain.png}
+  }{
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{34\_logical\_view\_core\_service\_chain.(pdf/png)}.}}
+  }
+}
+\caption{Góc nhìn logic cho chuỗi phục vụ lõi của IRMS}
+\label{fig:irms-logical-core-chain}
+\end{figure}
+
+Chuỗi này bao gồm bốn miền năng lực chính:
+
+\begin{itemize}
+    \item Reservation \& Seating: thiết lập và duy trì ngữ cảnh phục vụ
+    \item Ordering: ghi nhận và quản lý đơn gọi món
+    \item Kitchen Coordination: điều phối quá trình chế biến món ăn
+    \item Billing \& Settlement: xử lý thanh toán và kết thúc phiên phục vụ
+\end{itemize}
+
+Sơ đồ thể hiện rằng hệ thống không vận hành như tập hợp các chức năng độc lập, mà được tổ chức theo một chuỗi năng lực có thứ tự rõ ràng, phản ánh trực tiếp vòng đời phục vụ của nhà hàng. Mỗi năng lực tương ứng với một giai đoạn trong quy trình nghiệp vụ tổng thể và chỉ chịu trách nhiệm trong phạm vi của giai đoạn đó.
+
+Trong chuỗi này, các miền nghiệp vụ chỉ trao đổi lượng thông tin tối thiểu cần thiết để đảm bảo tính nhất quán của luồng xử lý. Reservation \& Seating cung cấp ngữ cảnh phiên bàn hợp lệ; Ordering tạo và xác nhận thông tin đơn gọi món; Kitchen Coordination tiếp nhận và xử lý trạng thái chế biến; trong khi Billing \& Settlement sử dụng dữ liệu đã được chốt để thực hiện quyết toán và kết thúc phiên phục vụ.
+
+Cách tổ chức này giúp đảm bảo luồng nghiệp vụ chính có tính tuyến tính và dễ kiểm soát, đồng thời giảm thiểu sự phụ thuộc trực tiếp giữa các miền nghiệp vụ. Về mặt kiến trúc, đây là cơ sở để hiện thực hóa các tương tác giữa các năng lực thông qua cơ chế gọi dịch vụ đồng bộ trong luồng chính và cơ chế sự kiện nghiệp vụ (domain events) cho các tương tác mở rộng trong các góc nhìn triển khai phía sau.
+\subsection{Ý nghĩa kiến trúc của góc nhìn logic}
+
+Góc nhìn logic đóng vai trò là lớp nền quan trọng trong kiến trúc service-based của IRMS. Thay vì mô tả hệ thống theo giao diện người dùng hoặc các thành phần kỹ thuật, góc nhìn này xác định các miền nghiệp vụ cốt lõi dưới dạng các capability độc lập, từ đó làm cơ sở trực tiếp cho việc thiết kế các service ở lớp backend.
+
+Trong kiến trúc tổng thể, các miền năng lực logic này được ánh xạ trực tiếp hoặc gián tiếp sang các service tương ứng trong hệ thống (ví dụ: Ordering Service, Billing \& Settlement Service, Kitchen Coordination Service). Tùy theo mức độ mở rộng và tối ưu, một miền nghiệp vụ có thể được triển khai thành một service hoặc được tách nhỏ hơn thành nhiều service con. Tuy nhiên, ranh giới nghiệp vụ được xác định ở mức logic cần được giữ ổn định, ngay cả khi cách hiện thực thay đổi.
+
+Bên cạnh đó, góc nhìn logic cũng là cơ sở để tổ chức tương tác giữa các miền nghiệp vụ theo hướng event-driven. Các năng lực nằm ngoài tuyến giao dịch chính như Reporting \& Analytics, Notification Integration và Audit \& Compliance được xử lý bất đồng bộ thông qua domain events. Cách tiếp cận này giúp giảm phụ thuộc trực tiếp giữa các miền nghiệp vụ, đồng thời hạn chế tải lên luồng xử lý đồng bộ trong các tác vụ quan trọng như gọi món hoặc thanh toán.
+
+Như vậy, góc nhìn logic không chỉ đóng vai trò mô tả trung gian, mà còn là nền tảng định hình cấu trúc service, thiết kế luồng dữ liệu và xác định ranh giới xử lý trong toàn bộ kiến trúc IRMS.
 \subsection{Góc nhìn phân rã}
 Ở góc nhìn phân rã, hệ thống được chia thành hai lớp lớn:
 \textbf{các ứng dụng phía người dùng} và \textbf{các service nghiệp vụ phía sau}.
-Việc phân rã không dựa trên tầng kỹ thuật thuần túy, mà bám theo miền nghiệp vụ của nhà hàng.
+Việc phân rã bám theo các miền nghiệp vụ của nhà hàng.
 
 \subsubsection{Các ứng dụng phía người dùng}
 \begin{itemize}
   \item \textbf{Host/Reservation UI}: phục vụ đặt bàn, danh sách chờ, sơ đồ bàn và check-in.
-  \item \textbf{Server POS UI}: phục vụ gọi món tại bàn, chỉnh món, theo dõi phiếu bếp và hỗ trợ tính tiền.
-  \item \textbf{Kitchen Display UI}: hiển thị phiếu bếp theo trạm, mức ưu tiên, hạn hoàn thành và tiến độ chế biến.
+  \item \textbf{Server POS UI}: phục vụ gọi món tại bàn, thay đổi món, theo dõi phiếu bếp và thực hiện tính tiền.
+  \item \textbf{Kitchen Display UI}: hiển thị phiếu bếp theo trạm, mức ưu tiên, thời gian dự kiến hoàn thành và tiến độ chế biến.
   \item \textbf{Cashier UI}: tạo hóa đơn, tách hóa đơn, thanh toán, biên lai và hoàn tiền.
-  \item \textbf{Manager Portal}: quản trị thực đơn, chương trình khuyến mãi, cảnh báo tồn kho, lịch làm việc và bảng điều khiển báo cáo.
+  \item \textbf{Manager Portal}: quản lý thực đơn, chương trình khuyến mãi, cảnh báo tồn kho, lịch làm việc và báo cáo.
 \end{itemize}
 
 \subsubsection{Các dịch vụ nghiệp vụ phía sau}
@@ -382,7 +348,7 @@ Phân rã như trên giúp ranh giới trách nhiệm rõ ràng: thay đổi ở
   \IfFileExists{06_module_view_overall_irms.png}{
     \includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{06_module_view_overall_irms.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{06\_module\_view\_overall\_irms.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{06\_module\_view\_overall\_irms.(pdf/png)}.}}
   }
 }
 \caption{Góc nhìn phân rã dịch vụ tổng quan của IRMS}
@@ -390,18 +356,18 @@ Phân rã như trên giúp ranh giới trách nhiệm rõ ràng: thay đổi ở
 \end{figure}
 
 
-Hình~\ref{fig:irms-module-overall} thể hiện góc nhìn phân rã dịch vụ ở mức đủ rộng để nhìn ra toàn bộ cấu trúc trách nhiệm của hệ thống mà chưa sa vào chi tiết cách hiện thực. Đây là một trong những sơ đồ quan trọng nhất của báo cáo vì nó trả lời câu hỏi mà bất kỳ người phản biện nào cũng sẽ quan tâm: hệ thống được chia thành các khối nào, mỗi khối thật sự chịu trách nhiệm cho điều gì, và ranh giới nào là ranh giới kiến trúc đáng bảo vệ.
+Hình 16 thể hiện góc nhìn phân rã dịch vụ ở mức đủ rộng để nhìn ra toàn bộ cấu trúc trách nhiệm của hệ thống mà chưa sa vào chi tiết cách hiện thực. Đây là một trong những sơ đồ quan trọng nhất của báo cáo vì nó trả lời câu hỏi mà bất kỳ người phản biện nào cũng sẽ quan tâm: hệ thống được chia thành các khối nào, mỗi khối thật sự chịu trách nhiệm cho điều gì, và ranh giới nào là ranh giới kiến trúc đáng bảo vệ.
 
-Điều cần đọc đầu tiên ở hình này không phải là số lượng service, mà là \textbf{cách chia service theo nghĩa nghiệp vụ}. \texttt{Reservation} không chỉ là nơi lưu đặt bàn; nó giữ toàn bộ quy tắc về tiếp nhận khách, danh sách chờ, sức chứa và mở phiên bàn. \texttt{Ordering} không chỉ là nơi ghi dòng món; nó giữ ảnh chụp thực đơn tại thời điểm gọi, các tùy chọn món, ghi chú đặc biệt và trạng thái đơn gọi món. \texttt{Kitchen} không phải là phần mở rộng nhỏ của gọi món; nó là miền chịu trách nhiệm cho hàng chờ chế biến, ưu tiên, đồng bộ trạng thái và bàn giao món. \texttt{Billing} là miền quyết toán có vòng đời riêng. Khi được tách như vậy, service trở thành nơi trú ngụ của quyết định nghiệp vụ, không chỉ là vỏ bọc kỹ thuật.
+Điều cần đọc đầu tiên ở hình này không phải là số lượng service, mà là \textbf{cách chia service theo nghĩa nghiệp vụ}. \textsf{Reservation} không chỉ là nơi lưu đặt bàn; nó giữ toàn bộ quy tắc về tiếp nhận khách, danh sách chờ, sức chứa và mở phiên bàn. \textsf{Ordering} không chỉ là nơi ghi dòng món; nó giữ ảnh chụp thực đơn tại thời điểm gọi, các tùy chọn món, ghi chú đặc biệt và trạng thái đơn gọi món. \textsf{Kitchen} không phải là phần mở rộng nhỏ của gọi món; nó là miền chịu trách nhiệm cho hàng chờ chế biến, ưu tiên, đồng bộ trạng thái và bàn giao món. \textsf{Billing} là miền quyết toán có vòng đời riêng. Khi được tách như vậy, service trở thành nơi trú ngụ của quyết định nghiệp vụ, không chỉ là vỏ bọc kỹ thuật.
 
-Một điểm quan trọng khác của sơ đồ là \textbf{các phụ thuộc giữa service}. \texttt{Ordering} cần biết ngữ cảnh bàn đang phục vụ và cần lấy thông tin món từ menu, nhưng không vì vậy mà được ôm luôn toàn bộ quy tắc của bàn hay toàn bộ vòng đời khuyến mãi. \texttt{Billing} cần ảnh chụp đáng tin cậy của những gì đã được gọi và phục vụ, nhưng không nên quay ngược trở lại để điều khiển trực tiếp \texttt{Kitchen}. \texttt{Inventory}, \texttt{Reporting}, \texttt{Notification}, \texttt{Audit} và \texttt{IAM} được bố trí thành các service hỗ trợ hoặc xuyên suốt nhằm nhấn mạnh rằng chúng rất quan trọng, nhưng không nên chen vào mọi quyết định ở tuyến giao dịch nóng. Cách đặt đó giúp người đọc thấy ngay nơi nào phải ưu tiên tính đúng đắn tức thời, nơi nào có thể chấp nhận độ trễ nhỏ và nơi nào phải ưu tiên khả năng truy vết.
+Một điểm quan trọng khác của sơ đồ là \textbf{các phụ thuộc giữa service}. \textsf{Ordering} cần biết ngữ cảnh bàn đang phục vụ và cần lấy thông tin món từ menu, nhưng không vì vậy mà được ôm luôn toàn bộ quy tắc của bàn hay toàn bộ vòng đời khuyến mãi. \textsf{Billing} cần ảnh chụp đáng tin cậy của những gì đã được gọi và phục vụ, nhưng không nên quay ngược trở lại để điều khiển trực tiếp \textsf{Kitchen}. \textsf{Inventory}, \textsf{Reporting}, \textsf{Notification}, \textsf{Audit} và \textsf{IAM} được bố trí thành các service hỗ trợ hoặc xuyên suốt nhằm nhấn mạnh rằng chúng rất quan trọng, nhưng không nên chen vào mọi quyết định ở tuyến giao dịch nóng. Cách đặt đó giúp người đọc thấy ngay nơi nào phải ưu tiên tính đúng đắn tức thời, nơi nào có thể chấp nhận độ trễ nhỏ và nơi nào phải ưu tiên khả năng truy vết.
 
-Sơ đồ còn quan trọng ở chỗ nó làm rõ \textbf{điểm dễ hỏng nếu thiết kế kém kỷ luật}. Trong một hệ thống nhà hàng, rất nhiều khái niệm có liên hệ chặt với nhau: \texttt{Order} liên quan đến \texttt{Bill}; \texttt{KitchenTicket} liên quan đến \texttt{OrderItem}; tồn kho lại suy diễn từ các món đã phục vụ hoặc các quy tắc nghiệp vụ khác. Nếu không có ranh giới service đủ chặt, hệ thống sẽ rất dễ rơi vào tình trạng bất kỳ thay đổi nhỏ nào ở khuyến mãi, thực đơn hay thanh toán cũng kéo theo một chuỗi sửa chéo trên nhiều vùng mã. Hình này vì vậy không chỉ mô tả cấu trúc hiện tại, mà còn là công cụ để tự kiểm tra chất lượng kiến trúc trong suốt vòng đời phát triển.
+Sơ đồ còn quan trọng ở chỗ nó làm rõ \textbf{điểm dễ hỏng nếu thiết kế kém kỷ luật}. Trong một hệ thống nhà hàng, rất nhiều khái niệm có liên hệ chặt với nhau: \textsf{Order} liên quan đến \textsf{Bill}; \textsf{KitchenTicket} liên quan đến \textsf{OrderItem}; tồn kho lại suy diễn từ các món đã phục vụ hoặc các quy tắc nghiệp vụ khác. Nếu không có ranh giới service đủ chặt, hệ thống sẽ rất dễ rơi vào tình trạng bất kỳ thay đổi nhỏ nào ở khuyến mãi, thực đơn hay thanh toán cũng kéo theo một chuỗi sửa chéo trên nhiều vùng mã. Hình này vì vậy không chỉ mô tả cấu trúc hiện tại, mà còn là công cụ để tự kiểm tra chất lượng kiến trúc trong suốt vòng đời phát triển.
 
 \paragraph{Các thành phần chính thể hiện trong hình.}
 \begin{itemize}
-  \item \textbf{Các service nghiệp vụ lõi}: \texttt{Reservation}, \texttt{Ordering}, \texttt{Kitchen}, \texttt{Billing}.
-  \item \textbf{Các service hỗ trợ và xuyên suốt}: \texttt{Inventory}, \texttt{Reporting}, \texttt{Notification}, \texttt{Audit}, \texttt{IAM}.
+  \item \textbf{Các service nghiệp vụ lõi}: \textsf{Reservation}, \textsf{Ordering}, \textsf{Kitchen}, \textsf{Billing}.
+  \item \textbf{Các service hỗ trợ và xuyên suốt}: \textsf{Inventory}, \textsf{Reporting}, \textsf{Notification}, \textsf{Audit}, \textsf{IAM}.
   \item \textbf{Các phụ thuộc service}: cho thấy dữ liệu hoặc quyết định nào đi qua biên service nào.
 \end{itemize}
 
@@ -411,7 +377,7 @@ Sơ đồ còn quan trọng ở chỗ nó làm rõ \textbf{điểm dễ hỏng n
   \item Việc nhìn dependencies ở mức service giúp người đọc đánh giá nhanh mức kết tụ và mức phụ thuộc chéo của kiến trúc.
 \end{itemize}
 
-\begin{landscape}
+
 \begin{figure}[H]
 \centering
 \IfFileExists{07_module_view_core_fulfillment_path.pdf}{
@@ -420,22 +386,22 @@ Sơ đồ còn quan trọng ở chỗ nó làm rõ \textbf{điểm dễ hỏng n
   \IfFileExists{07_module_view_core_fulfillment_path.png}{
     \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{07_module_view_core_fulfillment_path.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{07\_module\_view\_core\_fulfillment\_path.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{07\_module\_view\_core\_fulfillment\_path.(pdf/png)}.}}
   }
 }
 \caption{Góc nhìn phân rã dịch vụ của luồng thực thi nghiệp vụ lõi}
 \label{fig:irms-module-core}
 \end{figure}
-\end{landscape}
 
 
-Hình~\ref{fig:irms-module-core} đi sâu vào tuyến thực thi nghiệp vụ lõi của IRMS, tức tuyến mà mỗi giây chậm đi hoặc mỗi quyết định sai lệch đều tác động trực tiếp tới khách hàng đang ngồi tại bàn. Đây là vùng kiến trúc phải được đọc cẩn thận nhất vì nó quyết định hệ thống có thực sự dùng được trong giờ cao điểm hay không.
 
-Trung tâm của hình là \texttt{Ordering}. Cách đặt \texttt{Ordering} ở tâm không nhằm làm service này trở nên \enquote{quyền lực}, mà để phản ánh đúng bản chất dữ liệu của bài toán. Tại thời điểm gọi món, hệ thống phải biết khách đang ở bàn nào, phiên bàn có còn hiệu lực hay không, món còn bán hay không, cấu hình tùy chọn có hợp lệ hay không, giá nào cần được chụp lại để về sau hóa đơn không bị sai lệch, và sau khi xác nhận thì thông tin nào phải được lan truyền sang bếp. Tất cả các quyết định đó gặp nhau ở \texttt{Ordering}. Vì vậy, nếu đặt trung tâm vào nơi khác, mô hình sẽ méo theo kỹ thuật chứ không còn bám đúng nghiệp vụ.
+Hình 17 đi sâu vào tuyến thực thi nghiệp vụ lõi của IRMS, tức tuyến mà mỗi giây chậm đi hoặc mỗi quyết định sai lệch đều tác động trực tiếp tới khách hàng đang ngồi tại bàn. Đây là vùng kiến trúc phải được đọc cẩn thận nhất vì nó quyết định hệ thống có thực sự dùng được trong giờ cao điểm hay không.
 
-Tuy nhiên, chính vì ở trung tâm nên \texttt{Ordering} cũng là service dễ bị phình to nhất. Nếu cả khuyến mãi phức tạp, tính toán kho, gửi thông báo, phân tích và kiểm toán chi tiết đều bị dồn vào cùng một chỗ, service này sẽ nhanh chóng trở thành \enquote{điểm dồn mọi thứ}. Hình này vì vậy không chỉ cho thấy vai trò trung tâm của \texttt{Ordering}, mà còn nhắc rất rõ biên của nó: nó phải tập trung vào dữ liệu gọi món và chuyển tiếp nghiệp vụ trực tiếp; còn các hệ quả hỗ trợ cần được chuyển sang service khác hoặc luồng xử lý khác.
+Trung tâm của hình là \textsf{Ordering}. Cách đặt \textsf{Ordering} ở tâm không nhằm làm service này trở nên \enquote{quyền lực}, mà để phản ánh đúng bản chất dữ liệu của bài toán. Tại thời điểm gọi món, hệ thống phải biết khách đang ở bàn nào, phiên bàn có còn hiệu lực hay không, món còn bán hay không, cấu hình tùy chọn có hợp lệ hay không, giá nào cần được chụp lại để về sau hóa đơn không bị sai lệch, và sau khi xác nhận thì thông tin nào phải được lan truyền sang bếp. Tất cả các quyết định đó gặp nhau ở \textsf{Ordering}. Vì vậy, nếu đặt trung tâm vào nơi khác, mô hình sẽ méo theo kỹ thuật chứ không còn bám đúng nghiệp vụ.
 
-Mối quan hệ giữa \texttt{Ordering}, \texttt{Kitchen} và \texttt{Billing} trong hình cũng rất quan trọng. Sau khi đơn gọi món được xác nhận, \texttt{Kitchen} phải nhận đủ thông tin để tổ chức chế biến nhưng không nên quyết định ngược trở lại những bất biến gốc của đơn gọi món. Tương tự, \texttt{Billing} cần một ảnh chụp đáng tin cậy của món đã gọi và món đã phục vụ; nhưng miền quyết toán không nên trở thành nơi quay lại chỉnh sửa cấu trúc gọi món gốc. Cách sắp xếp này giúp chuỗi nghiệp vụ có hướng đi rõ ràng: từ ngữ cảnh bàn, sang xác nhận đơn gọi món, sang điều phối bếp, rồi tới quyết toán. Khi hướng đi rõ, ranh giới giao dịch, khóa đồng thời và xử lý ngoại lệ cũng dễ được xác định hơn.
+Tuy nhiên, chính vì ở trung tâm nên \textsf{Ordering} cũng là service dễ bị phình to nhất. Nếu cả khuyến mãi phức tạp, tính toán kho, gửi thông báo, phân tích và kiểm toán chi tiết đều bị dồn vào cùng một chỗ, service này sẽ nhanh chóng trở thành \enquote{điểm dồn mọi thứ}. Hình này vì vậy không chỉ cho thấy vai trò trung tâm của \textsf{Ordering}, mà còn nhắc rất rõ biên của nó: nó phải tập trung vào dữ liệu gọi món và chuyển tiếp nghiệp vụ trực tiếp; còn các hệ quả hỗ trợ cần được chuyển sang service khác hoặc luồng xử lý khác.
+
+Mối quan hệ giữa \textsf{Ordering}, \textsf{Kitchen} và \textsf{Billing} trong hình cũng rất quan trọng. Sau khi đơn gọi món được xác nhận, \textsf{Kitchen} phải nhận đủ thông tin để tổ chức chế biến nhưng không nên quyết định ngược trở lại những bất biến gốc của đơn gọi món. Tương tự, \textsf{Billing} cần một ảnh chụp đáng tin cậy của món đã gọi và món đã phục vụ; nhưng miền quyết toán không nên trở thành nơi quay lại chỉnh sửa cấu trúc gọi món gốc. Cách sắp xếp này giúp chuỗi nghiệp vụ có hướng đi rõ ràng: từ ngữ cảnh bàn, sang xác nhận đơn gọi món, sang điều phối bếp, rồi tới quyết toán. Khi hướng đi rõ, ranh giới giao dịch, khóa đồng thời và xử lý ngoại lệ cũng dễ được xác định hơn.
 
 \paragraph{Các thành phần chính thể hiện trong hình.}
 \begin{itemize}
@@ -447,10 +413,10 @@ Mối quan hệ giữa \texttt{Ordering}, \texttt{Kitchen} và \texttt{Billing} 
 \paragraph{Lý do thiết kế của sơ đồ này.}
 \begin{itemize}
   \item Sơ đồ được tách riêng để người đọc nhìn rõ đường nghiệp vụ nóng thay vì bị chìm trong toàn bộ hệ thống.
-  \item Việc nhấn mạnh tâm của \texttt{Ordering} giúp giải thích vì sao service này cần được bảo vệ khỏi việc ôm thêm quá nhiều trách nhiệm.
+  \item Việc nhấn mạnh tâm của \textsf{Ordering} giúp giải thích vì sao service này cần được bảo vệ khỏi việc ôm thêm quá nhiều trách nhiệm.
 \end{itemize}
 
-\begin{landscape}
+
 \begin{figure}[H]
 \centering
 \IfFileExists{08_module_view_support_and_cross_cutting_modules.pdf}{
@@ -459,18 +425,19 @@ Mối quan hệ giữa \texttt{Ordering}, \texttt{Kitchen} và \texttt{Billing} 
   \IfFileExists{08_module_view_support_and_cross_cutting_modules.png}{
     \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{08_module_view_support_and_cross_cutting_modules.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{08\_module\_view\_support\_and\_cross\_cutting\_modules.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{08\_module\_view\_support\_and\_cross\_cutting\_modules.(pdf/png)}.}}
   }
 }
 \caption{Góc nhìn phân rã dịch vụ của các service hỗ trợ và kiểm soát}
 \label{fig:irms-module-support}
 \end{figure}
-\end{landscape}
+
+Hình 18 giải thích phần còn lại của kiến trúc, tức những service không trực tiếp đứng trên đường giao dịch nóng nhưng vẫn quyết định chất lượng vận hành của hệ thống trong dài hạn. Với IRMS, \texttt{Inventory Monitoring Service}, \texttt{Reporting Service}, \texttt{Notification Service}, \texttt{IAM \& Audit Service} đều là các service qun trọng, chỉ khác ở chỗ chúng phục vụ mục tiêu khác với gọi món và thanh toán.
 
 
-Hình~\ref{fig:irms-module-support} giải thích phần còn lại của kiến trúc, tức những service không trực tiếp đứng trên đường giao dịch nóng nhưng vẫn quyết định chất lượng vận hành của hệ thống trong dài hạn. Với IRMS, \texttt{Inventory Monitoring Service}, \texttt{Reporting Service}, \texttt{Notification Service}, \texttt{IAM \& Audit Service} đều là các service hạng nhất, chỉ khác ở chỗ chúng phục vụ mục tiêu khác với gọi món và thanh toán.
+Hình~\ref{fig:irms-module-support} giải thích phần còn lại của kiến trúc, tức những service không trực tiếp đứng trên đường giao dịch nóng nhưng vẫn quyết định chất lượng vận hành của hệ thống trong dài hạn. Với IRMS, \textsf{Inventory Monitoring Service}, \textsf{Reporting Service}, \textsf{Notification Service}, \textsf{IAM \& Audit Service} đều là các service hạng nhất, chỉ khác ở chỗ chúng phục vụ mục tiêu khác với gọi món và thanh toán.
 
-\texttt{Inventory Monitoring Service} suy diễn từ kết quả vận hành sang biến động kho; \texttt{Reporting Service} chuyển dữ liệu nghiệp vụ thành góc nhìn quản trị; \texttt{Notification Service} chịu trách nhiệm lan truyền thông tin ra ngoài; còn \texttt{IAM \& Audit Service} bảo vệ tính kiểm soát của toàn hệ thống. Các service hỗ trợ không tồn tại lơ lửng, mà được nuôi bởi các event phát ra từ \texttt{Reservation \& Seating Service}, \texttt{Ordering \& Menu Service}, \texttt{Kitchen Coordination Service} và \texttt{Billing \& Settlement Service} thông qua \texttt{Shared Event Contracts}, \texttt{Outbox} và \texttt{Event Bus}.
+\textsf{Inventory Monitoring Service} suy diễn từ kết quả vận hành sang biến động kho; \textsf{Reporting Service} chuyển dữ liệu nghiệp vụ thành góc nhìn quản trị; \textsf{Notification Service} chịu trách nhiệm lan truyền thông tin ra ngoài; còn \textsf{IAM \& Audit Service} bảo vệ tính kiểm soát của toàn hệ thống. Các service hỗ trợ không tồn tại lơ lửng, mà được nuôi bởi các event phát ra từ \textsf{Reservation \& Seating Service}, \textsf{Ordering \& Menu Service}, \textsf{Kitchen Coordination Service} và \textsf{Billing \& Settlement Service} thông qua \textsf{Shared Event Contracts}, \textsf{Outbox} và \textsf{Event Bus}.
 
 Tách ra riêng không có nghĩa là xem nhẹ. Chính các service hỗ trợ này mới giúp IRMS trở thành một hệ thống vận hành hoàn chỉnh thay vì chỉ là công cụ nhập món. Nhà quản lý cần số liệu; bộ phận vận hành cần cảnh báo tồn kho; tổ chức cần khả năng truy vết thao tác; hệ thống cần phân quyền đủ chặt để tránh lạm dụng quyền hạn. Tuyến lõi phản ánh trạng thái phục vụ đang diễn ra, còn nhóm service hỗ trợ phản ánh cách toàn bộ nhà hàng được điều hành, quan sát và kiểm soát.
 
@@ -536,7 +503,7 @@ Giao thức HTTP (REST API) & Kết nối đồng bộ (Synchronous), ưu tiên 
 Giao thức Đẩy (WebSocket / SSE) & Kết nối song công (Full-duplex) hoặc đẩy dữ liệu một chiều từ Server nhằm đảm bảo cập nhật trạng thái thời gian thực dưới 2 giây. & Đẩy thông báo phiếu bếp mới xuống KDS; cập nhật trạng thái món đã xong cho nhân viên. \\
 \hline
 Thông điệp Sự kiện (Pub/Sub) & Kết nối bất đồng bộ (Asynchronous) qua Message Broker, giúp giảm sự phụ thuộc trực tiếp (Decoupling) giữa các module. & Lan truyền sự kiện đơn hàng hoàn tất để trừ tồn kho và làm giàu dữ liệu báo cáo. \\
-\hline
+\hline  
 Giao thức LAN (TCP/IP - ESC/POS) & Kết nối trực tiếp từ ứng dụng khách tới thiết bị ngoại vi trong mạng nội bộ nhà hàng. & POS App điều khiển máy in biên lai hoặc máy in tem tại quầy. \\
 \hline
 Kết nối Database (JDBC / Driver) & Truy xuất dữ liệu có cấu trúc và quản lý ranh giới giao dịch (Atomic Transactions). & Business Services lưu trữ trạng thái bàn và phiên phục vụ vào PostgreSQL. \\
@@ -559,7 +526,7 @@ Kiến trúc IRMS không sử dụng duy nhất một kiểu kết nối mà k�
 với \emph{kết nối phục vụ phối hợp nội bộ}. Chọn đúng kiểu kết nối cho từng nhóm thành phần sẽ quyết định trực tiếp đến độ trễ phản hồi, khả năng giải thích lỗi và khả năng mở rộng của toàn hệ thống.
 \end{infobox}
 
-\begin{landscape}
+
 \begin{figure}[H]
 \centering
 \IfFileExists{09_component_and_connector_view_overall_runtime_structure.pdf}{
@@ -568,13 +535,13 @@ với \emph{kết nối phục vụ phối hợp nội bộ}. Chọn đúng ki�
   \IfFileExists{09_component_and_connector_view_overall_runtime_structure.png}{
     \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{09_component_and_connector_view_overall_runtime_structure.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{09\_component\_and\_connector\_view\_overall\_runtime\_structure.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{09\_component\_and\_connector\_view\_overall\_runtime\_structure.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ thành phần và kết nối tổng quan của IRMS}
 \label{fig:irms-cc-overall}
 \end{figure}
-\end{landscape}
+
 
 
 Hình~\ref{fig:irms-cc-overall} cho thấy cấu trúc thực thi tổng quan của hệ thống theo cách nhìn thành phần. Thiết bị người dùng chỉ giao tiếp với lớp cổng vào; từ đó yêu cầu đi qua lớp điều phối ca sử dụng, xuống miền nghiệp vụ, lớp lưu trữ và các bộ kết nối ra ngoài. Ý nghĩa học thuật của hình này là chứng minh hệ thống không được tổ chức như một khối gọi chéo tùy ý, mà có hướng phụ thuộc rõ ràng từ ngoài vào trong.
@@ -600,7 +567,7 @@ Hình~\ref{fig:irms-cc-overall} cho thấy cấu trúc thực thi tổng quan c�
 
 Ưu điểm của sơ đồ này là chiều phụ thuộc được kiểm soát rõ: giao diện không phụ thuộc trực tiếp vào miền nghiệp vụ, miền nghiệp vụ không gọi ngược bộ điều khiển, còn bộ kết nối ngoài chỉ xuất hiện ở rìa hệ thống. Nhược điểm là việc hiện thực phải giữ kỷ luật rõ ràng; nếu đưa luật nghiệp vụ vào bộ điều khiển hoặc để miền nghiệp vụ gọi thẳng bộ kết nối ngoài thì giá trị của kiến trúc sẽ bị phá vỡ.
 
-\begin{landscape}
+
 \begin{figure}[H]
 \centering
 \IfFileExists{10_component_diagram_detailed_backend_composition.pdf}{
@@ -609,13 +576,13 @@ Hình~\ref{fig:irms-cc-overall} cho thấy cấu trúc thực thi tổng quan c�
   \IfFileExists{10_component_diagram_detailed_backend_composition.png}{
     \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{10_component_diagram_detailed_backend_composition.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{10\_component\_diagram\_detailed\_backend\_composition.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{10\_component\_diagram\_detailed\_backend\_composition.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ thành phần chi tiết của lớp service nghiệp vụ trong IRMS}
 \label{fig:irms-cc-backend}
 \end{figure}
-\end{landscape}
+
 
 
 Hình~\ref{fig:irms-cc-backend} là sơ đồ quan trọng nhất của góc nhìn thành phần vì nó mở lớp service nghiệp vụ phía sau và cho thấy hệ thống được tổ chức theo trật tự trách nhiệm như thế nào. Rất nhiều tài liệu chỉ dừng ở việc nói rằng hệ thống có giao diện, dịch vụ và cơ sở dữ liệu. Hình này đi xa hơn: nó chỉ ra thành phần nào được quyền giữ luật nghiệp vụ, thành phần nào chỉ nên điều phối tiến trình, và thành phần nào tuyệt đối không được chen ngược vào lõi.
@@ -647,38 +614,38 @@ Một giá trị khác của hình là nó chứng minh rằng các nguyên lý 
 
 \subsubsection{Sơ đồ thành phần cho tuyến lệnh vận hành}
 
-\begin{landscape}
+
 \begin{figure}[H]
 \centering
 \IfFileExists{24_component_diagram_operational_command_collaboration.pdf}{
-  \includegraphics[width=0.95\linewidth,keepaspectratio]{24_component_diagram_operational_command_collaboration.pdf}
+  \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{24_component_diagram_operational_command_collaboration.pdf}
 }{
   \IfFileExists{24_component_diagram_operational_command_collaboration.png}{
-    \includegraphics[width=0.95\linewidth,keepaspectratio]{24_component_diagram_operational_command_collaboration.png}
+    \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{24_component_diagram_operational_command_collaboration.png}
   }{
-    \fbox{\parbox{0.8\linewidth}{Thiếu file \texttt{24\_component\_diagram\_operational\_command\_collaboration.(pdf/png)}.}}
+    \fbox{\parbox{0.8\linewidth}{Thiếu file \textsf{24\_component\_diagram\_operational\_command\_collaboration.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ thành phần cho tuyến lệnh vận hành của IRMS}
 \label{fig:irms-component-operational-command}
 \end{figure}
-\end{landscape}
+
 
 
 Hình~\ref{fig:irms-component-operational-command} được đưa vào để giải thích thật rõ đường đi của một lệnh vận hành điển hình, từ lúc người dùng thao tác trên giao diện đến lúc dữ liệu lõi được ghi bền vững và các hệ quả phụ được chuẩn bị để xử lý tiếp. Đây là sơ đồ rất quan trọng vì IRMS không chỉ cần \enquote{xử lý được}, mà còn cần xử lý theo một trình tự có thể giải thích và kiểm toán được.
 
-Điểm đáng chú ý đầu tiên là yêu cầu đi qua lớp kiểm soát ở biên trước khi chạm vào lõi. Bộ lọc xác thực và kiểm tra chính sách không phải là chi tiết phụ. Chúng quyết định ai được phép gọi thao tác nào, trong bối cảnh nào, và với dữ liệu nào. Sau khi qua biên này, yêu cầu đi vào dịch vụ ứng dụng của từng vùng như \texttt{Reservation}, \texttt{Ordering}, \texttt{Kitchen} hoặc \texttt{Billing}. Dịch vụ ứng dụng ở đây chỉ nên điều phối: nó gọi đúng đối tượng miền nghiệp vụ, mở và đóng giao dịch, và quyết định thời điểm thích hợp để ghi hộp thư ra hoặc phát tín hiệu cho các phần hỗ trợ.
+Điểm đáng chú ý đầu tiên là yêu cầu đi qua lớp kiểm soát ở biên trước khi chạm vào lõi. Bộ lọc xác thực và kiểm tra chính sách không phải là chi tiết phụ. Chúng quyết định ai được phép gọi thao tác nào, trong bối cảnh nào, và với dữ liệu nào. Sau khi qua biên này, yêu cầu đi vào dịch vụ ứng dụng của từng vùng như \textsf{Reservation}, \textsf{Ordering}, \textsf{Kitchen} hoặc \textsf{Billing}. Dịch vụ ứng dụng ở đây chỉ nên điều phối: nó gọi đúng đối tượng miền nghiệp vụ, mở và đóng giao dịch, và quyết định thời điểm thích hợp để ghi hộp thư ra hoặc phát tín hiệu cho các phần hỗ trợ.
 
 Điểm quan trọng thứ hai là sơ đồ tách rất rõ giữa \textbf{hoàn thành giao dịch lõi} và \textbf{xử lý hệ quả phụ}. Một thao tác như xác nhận đơn gọi món hay ghi nhận thanh toán phải đạt trạng thái bền vững trước. Chỉ sau khi phần đó an toàn, hệ thống mới nên phát thông tin sang bếp, làm mới báo cáo, gửi thông báo hoặc cập nhật phần đọc. Cách tổ chức này là nền tảng của luận điểm \enquote{lõi đồng bộ, hỗ trợ bất đồng bộ}. Nó cho phép IRMS phản hồi nhanh ở tuyến đầu mà không đánh đổi tính đúng đắn của dữ liệu.
 
-Điểm đáng đọc thứ ba là vị trí của các bộ kết nối như \texttt{Payment Gateway Adapter}, \texttt{Receipt Printer Adapter} và \texttt{Notification Adapter}. Chúng xuất hiện ở rìa thay vì ở giữa. Điều đó nói lên rằng cổng thanh toán, máy in hay kênh gửi thông báo không được phép định hình cấu trúc miền nghiệp vụ. Miền nghiệp vụ chỉ biết các năng lực mà nó cần; cách kết nối cụ thể được để cho lớp ngoài đảm nhiệm. Đây chính là điều làm cho thiết kế giữ được khả năng thay thế nhà cung cấp và cô lập lỗi khi tích hợp ngoài gặp trục trặc.
+Điểm đáng đọc thứ ba là vị trí của các bộ kết nối như \textsf{Payment Gateway Adapter}, \textsf{Receipt Printer Adapter} và \textsf{Notification Adapter}. Chúng xuất hiện ở rìa thay vì ở giữa. Điều đó nói lên rằng cổng thanh toán, máy in hay kênh gửi thông báo không được phép định hình cấu trúc miền nghiệp vụ. Miền nghiệp vụ chỉ biết các năng lực mà nó cần; cách kết nối cụ thể được để cho lớp ngoài đảm nhiệm. Đây chính là điều làm cho thiết kế giữ được khả năng thay thế nhà cung cấp và cô lập lỗi khi tích hợp ngoài gặp trục trặc.
 
 \paragraph{Các thành phần chính thể hiện trong hình.}
 \begin{itemize}
   \item \textbf{Cổng vào giao diện lập trình ứng dụng và lớp bộ điều khiển} cùng \textbf{bộ lọc xác thực / kiểm tra chính sách}: tiếp nhận yêu cầu, chuẩn hóa dữ liệu vào, xác thực và chặn hành vi vượt quyền trước khi đi vào lõi.
-  \item \textbf{Các dịch vụ ứng dụng} của từng vùng \texttt{Reservation}, \texttt{Ordering}, \texttt{Kitchen} và \texttt{Billing}: điều phối ca sử dụng, gọi đúng thành phần miền nghiệp vụ và kiểm soát biên giao dịch.
+  \item \textbf{Các dịch vụ ứng dụng} của từng vùng \textsf{Reservation}, \textsf{Ordering}, \textsf{Kitchen} và \textsf{Billing}: điều phối ca sử dụng, gọi đúng thành phần miền nghiệp vụ và kiểm soát biên giao dịch.
   \item \textbf{Các thành phần miền nghiệp vụ} và \textbf{kho lưu trữ}: hiện thực quy tắc miền và nơi lưu trạng thái bền vững.
-  \item \textbf{Hộp thư ra / bộ phát sự kiện} cùng các bộ kết nối như \texttt{Payment Gateway Adapter}, \texttt{Receipt Printer Adapter} và \texttt{Notification Adapter}: tách bước chốt giao dịch khỏi bước tích hợp hoặc xử lý nền.
+  \item \textbf{Hộp thư ra / bộ phát sự kiện} cùng các bộ kết nối như \textsf{Payment Gateway Adapter}, \textsf{Receipt Printer Adapter} và \textsf{Notification Adapter}: tách bước chốt giao dịch khỏi bước tích hợp hoặc xử lý nền.
 \end{itemize}
 
 \paragraph{Lý do cần thêm sơ đồ này.}
@@ -697,7 +664,7 @@ Hình~\ref{fig:irms-component-operational-command} được đưa vào để gi�
   \IfFileExists{25_component_diagram_supporting_async_and_governance.png}{
     \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{25_component_diagram_supporting_async_and_governance.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{25\_component\_diagram\_supporting\_async\_and\_governance.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{25\_component\_diagram\_supporting\_async\_and\_governance.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ thành phần cho xử lý nền, quản trị và mô hình đọc}
@@ -728,45 +695,85 @@ Cấu trúc phối hợp giữa các thành phần hỗ trợ được tổ ch�
 \end{itemize}
 
 \subsection{Góc nhìn triển khai}
-Ở góc nhìn triển khai, hệ thống được ánh xạ lên hạ tầng vật lý và hạ tầng chạy chương trình như sau:
+\subsubsection{Tổng quan phân bổ hệ thống}
+
+Ở góc nhìn triển khai, hệ thống được ánh xạ lên hạ tầng vật lý và hạ tầng thực thi nhằm làm rõ cách các thành phần phần mềm được phân bổ trên các nút triển khai (deployment nodes), cách các nút này giao tiếp với nhau và cách hệ thống đáp ứng các yêu cầu phi chức năng như độ trễ, khả năng mở rộng và độ tin cậy.
+
+Hệ thống được tổ chức thành bốn tầng chính như sau:
 
 \begin{enumerate}
-  \item \textbf{Tầng thiết bị đầu cuối}
+
+  \item \textbf{Tầng thiết bị đầu cuối (Client Layer)}
   \begin{itemize}
-    \item Máy tính bảng dành cho nhân viên phục vụ.
-    \item Thiết bị lễ tân hoặc ki-ốt tiếp nhận khách.
-    \item Màn hình bếp tại từng trạm chế biến.
-    \item Máy thu ngân.
-    \item Trình duyệt của quản lý.
+    \item Máy tính bảng dành cho nhân viên phục vụ, hỗ trợ thao tác đặt bàn và gọi món theo thời gian thực.
+    \item Thiết bị lễ tân hoặc ki-ốt tiếp nhận khách, phục vụ việc đăng ký và phân bổ chỗ ngồi.
+    \item Màn hình bếp tại từng trạm chế biến, hiển thị danh sách món cần chuẩn bị với yêu cầu cập nhật gần thời gian thực.
+    \item Máy thu ngân, thực hiện các giao dịch thanh toán với yêu cầu độ trễ thấp và tính nhất quán cao.
+    \item Trình duyệt của quản lý, phục vụ truy vấn báo cáo và giám sát hoạt động hệ thống.
   \end{itemize}
 
-  \item \textbf{Tầng cổng vào và phân phối}
+  Các thiết bị này hoạt động như các client gửi yêu cầu đồng bộ (synchronous request) tới hệ thống thông qua giao thức HTTP/HTTPS. Đặc điểm chung của tầng này là phụ thuộc vào mạng và yêu cầu độ trễ thấp đối với các thao tác nghiệp vụ chính.
+
+  \item \textbf{Tầng cổng vào và phân phối (Gateway \& Delivery Layer)}
   \begin{itemize}
-    \item Bộ đảo ngược lưu lượng hoặc \textbf{API Gateway}.
-    \item Máy chủ phân phối giao diện tĩnh hoặc giao diện phía máy chủ.
+    \item Bộ đảo ngược lưu lượng hoặc \textbf{API Gateway}, đóng vai trò điểm truy cập duy nhất của hệ thống.
+    \item Máy chủ phân phối giao diện tĩnh hoặc giao diện phía máy chủ, chịu trách nhiệm phục vụ nội dung frontend.
   \end{itemize}
 
-  \item \textbf{Tầng ứng dụng}
+  Tầng này chịu trách nhiệm:
   \begin{itemize}
-    \item Khối xử lý phía sau chứa các service đặt bàn, gọi món, điều phối bếp, thanh toán, tồn kho, báo cáo và quản lý truy cập.
-    \item Bộ xử lý nền thực hiện tác vụ sự kiện, hàng đợi thử lại và làm mới ảnh chụp dữ liệu báo cáo.
+    \item Điều phối yêu cầu từ client tới các service tương ứng.
+    \item Thực hiện các kiểm tra kỹ thuật chung như xác thực, phân quyền và ghi nhận nhật ký truy cập.
+    \item Giảm tải cho các service phía sau thông qua việc gom và chuẩn hóa các điểm truy cập.
   \end{itemize}
 
-  \item \textbf{Tầng dữ liệu}
+  Việc sử dụng API Gateway giúp cô lập tầng client với tầng ứng dụng, đồng thời tạo điều kiện thuận lợi cho việc mở rộng và thay đổi cấu trúc backend trong tương lai.
+
+  \item \textbf{Tầng ứng dụng (Application Layer)}
   \begin{itemize}
-    \item Cơ sở dữ liệu giao dịch hoặc lược đồ giao dịch theo từng miền.
-    \item Mô hình đọc và khung nhìn báo cáo.
-    \item Kho lưu trữ đối tượng cho biên lai xuất ra hoặc tài nguyên của thực đơn.
-    \item Hạ tầng nhật ký, số đo và vết thực thi.
+    \item Khối xử lý phía sau bao gồm các service nghiệp vụ chính:
+    \begin{itemize}
+      \item Service đặt bàn và quản lý chỗ ngồi.
+      \item Service gọi món và thực đơn.
+      \item Service điều phối bếp.
+      \item Service thanh toán.
+      \item Service quản lý tồn kho.
+      \item Service báo cáo và quản trị.
+      \item Service quản lý truy cập và kiểm toán.
+    \end{itemize}
+
+    \item Bộ xử lý nền (Background Worker) thực hiện các tác vụ bất đồng bộ:
+    \begin{itemize}
+      \item Xử lý sự kiện phát sinh từ hệ thống (event-driven processing).
+      \item Thực hiện các tác vụ retry khi xảy ra lỗi tạm thời.
+      \item Làm mới các ảnh chụp dữ liệu phục vụ báo cáo (reporting projections).
+    \end{itemize}
   \end{itemize}
+
+  Các service trong tầng này có thể được triển khai trên cùng một cụm máy chủ hoặc container, nhưng được tách biệt về mặt logic theo miền nghiệp vụ. Các giao tiếp giữa service có thể bao gồm:
+  \begin{itemize}
+    \item Giao tiếp đồng bộ (REST API) cho các thao tác nghiệp vụ chính.
+    \item Giao tiếp bất đồng bộ (message queue) cho các tác vụ nền.
+  \end{itemize}
+
+  \item \textbf{Tầng dữ liệu (Data Layer)}
+  \begin{itemize}
+    \item Cơ sở dữ liệu giao dịch, lưu trữ dữ liệu vận hành chính như đơn hàng, thanh toán, tồn kho và người dùng.
+    \item Mô hình đọc và khung nhìn báo cáo, được tối ưu cho truy vấn và phân tích dữ liệu.
+    \item Kho lưu trữ đối tượng (object storage) dùng cho biên lai, hình ảnh thực đơn và các tài nguyên tĩnh.
+    \item Hạ tầng nhật ký, số đo và vết thực thi (logging, metrics, tracing), phục vụ giám sát và vận hành hệ thống.
+  \end{itemize}
+
+  Tầng dữ liệu được thiết kế tách biệt với tầng ứng dụng nhằm đảm bảo tính toàn vẹn dữ liệu, đồng thời hỗ trợ mở rộng theo nhu cầu đọc/ghi. Các thành phần như mô hình đọc và hệ thống logging thường được cập nhật thông qua luồng xử lý bất đồng bộ để giảm tải cho hệ thống giao dịch chính.
+
 \end{enumerate}
 
-\subsubsection{Lý do thiết kế}
+\subsubsection{Giải thích thiết kế triển khai}
 \begin{itemize}
-  \item Thiết bị gọi món và thiết bị bếp phải đặt gần môi trường mạng nội bộ của nhà hàng và có cơ chế kết nối lại tốt vì đây là hai điểm bị ảnh hưởng trực tiếp nhất khi mạng dao động.
-  \item Khối thanh toán và khối gọi món có yêu cầu sẵn sàng cao hơn các khối còn lại, nên cần được ưu tiên về giám sát, sao lưu và khả năng mở rộng.
-  \item Khối báo cáo cần tách khỏi tuyến giao dịch để truy vấn phân tích không cản trở đường xử lý gọi món và thanh toán.
-  \item Các nút dữ liệu phải có sao lưu và chính sách phân quyền riêng; dữ liệu thanh toán, hoàn tiền và nhật ký kiểm toán là nhóm cần ưu tiên bảo vệ cao.
+  \item Thiết bị gọi món và thiết bị bếp phải đặt gần môi trường mạng nội bộ của nhà hàng và có cơ chế kết nối lại tốt vì đây là hai điểm bị ảnh hưởng trực tiếp nhất khi mạng dao động. Việc bố trí này giúp giảm độ trễ thao tác và đảm bảo tính liên tục của hoạt động vận hành ngay cả khi kết nối không ổn định.
+  \item Khối thanh toán và khối gọi món có yêu cầu sẵn sàng cao hơn các khối còn lại, nên cần được ưu tiên về giám sát, sao lưu và khả năng mở rộng. Đây là các điểm chạm trực tiếp với khách hàng, nơi mọi gián đoạn đều ảnh hưởng rõ rệt đến trải nghiệm và doanh thu.
+  \item Khối báo cáo cần tách khỏi tuyến giao dịch để truy vấn phân tích không cản trở đường xử lý gọi món và thanh toán. Việc tách này cho phép hệ thống duy trì thời gian phản hồi thấp cho các thao tác thời gian thực, đồng thời vẫn hỗ trợ các nhu cầu phân tích dữ liệu với khối lượng lớn.
+  \item Các nút dữ liệu phải có sao lưu và chính sách phân quyền riêng; dữ liệu thanh toán, hoàn tiền và nhật ký kiểm toán là nhóm cần ưu tiên bảo vệ cao. Điều này phản ánh yêu cầu về bảo mật và tuân thủ trong môi trường vận hành thực tế.
   \item Việc tách bộ xử lý nền khỏi khối xử lý yêu cầu trực tuyến giúp những tác vụ như gửi thông báo, in biên lai điện tử hoặc cập nhật báo cáo không tranh chấp tài nguyên với thao tác tại quầy.
 \end{itemize}
 
@@ -775,7 +782,6 @@ Cấu trúc phối hợp giữa các thành phần hỗ trợ được tổ ch�
 Góc nhìn triển khai giúp chứng minh rằng kiến trúc được chọn không chỉ hợp lý trên sơ đồ logic mà còn có thể triển khai thực tế. Với IRMS, bản chất \emph{nhiều điểm chạm vật lý} --- quầy lễ tân, bàn phục vụ, trạm bếp, quầy thu ngân --- làm cho góc nhìn triển khai quan trọng hơn nhiều so với các hệ thống chỉ có một giao diện web thông thường.
 \end{infobox}
 
-\begin{landscape}
 \begin{figure}[H]
 \centering
 \IfFileExists{15_deployment_diagram_physical_deployment_overview.pdf}{
@@ -784,39 +790,52 @@ Góc nhìn triển khai giúp chứng minh rằng kiến trúc được chọn k
   \IfFileExists{15_deployment_diagram_physical_deployment_overview.png}{
     \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{15_deployment_diagram_physical_deployment_overview.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{15\_deployment\_diagram\_physical\_deployment\_overview.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{15\_deployment\_diagram\_physical\_deployment\_overview.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ triển khai tổng quan về bố trí vật lý của IRMS}
 \label{fig:irms-deploy-overall}
 \end{figure}
-\end{landscape}
 
+Hình~\ref{fig:irms-deploy-overall} mô tả cách hệ thống được triển khai trong môi trường thực tế của nhà hàng. Ở mức này, mục tiêu không còn là mô tả logic nghiệp vụ, mà là trả lời câu hỏi hệ thống hiện diện như thế nào trong không gian vật lý và các thành phần phần mềm được gắn vào những thiết bị cụ thể nào.
 
-Hình~\ref{fig:irms-deploy-overall} là sơ đồ triển khai ở mức vật lý, tức mức trả lời câu hỏi hệ thống sẽ hiện diện như thế nào trong nhà hàng thật. Giá trị lớn nhất của hình này là nó kéo kiến trúc ra khỏi trạng thái trừu tượng thuần túy. Khi nhìn vào sơ đồ, người đọc không còn thấy các service dưới dạng khái niệm, mà thấy chúng gắn vào máy tính bảng gọi món, thiết bị lễ tân, màn hình bếp, quầy thu ngân, khối xử lý trung tâm, bộ xử lý nền, cơ sở dữ liệu và các hệ thống ngoài.
+Điểm quan trọng nhất cần rút ra là IRMS được tổ chức theo mô hình \textbf{nhiều điểm chạm vật lý nhưng một lõi điều phối tập trung}. Các thiết bị tại hiện trường --- như máy tính bảng phục vụ, thiết bị lễ tân, màn hình bếp và quầy thu ngân --- được đặt gần người dùng để đảm bảo thao tác nhanh và thuận tiện. Tuy nhiên, toàn bộ trạng thái nghiệp vụ cốt lõi vẫn được duy trì tại khối xử lý trung tâm và hạ tầng dữ liệu, thay vì phân tán xuống các thiết bị.
 
-Điều quan trọng nhất cần rút ra là IRMS có \textbf{nhiều điểm chạm vật lý nhưng một lõi điều phối tập trung}. Đây là lựa chọn rất phù hợp với phạm vi của bài toán. Nhà hàng cần nhiều thiết bị tại hiện trường để thao tác gần nơi công việc diễn ra nhất, nhưng lại cần một lõi chung để giữ trạng thái thống nhất của bàn, đơn gọi món, bếp và hóa đơn. Nếu đẩy quá nhiều quyết định xuống từng thiết bị cục bộ, hệ thống sẽ rất dễ mất nhất quán khi mạng dao động hoặc khi hai vai trò thao tác chồng thời điểm. Vì vậy, hình này làm rõ rằng thiết bị đầu cuối nên gần người dùng, còn quyết định nghiệp vụ bền vững phải được neo ở khối xử lý trung tâm và hạ tầng dữ liệu.
+Cách bố trí này giúp tránh tình trạng mất nhất quán khi mạng dao động hoặc khi nhiều thao tác xảy ra đồng thời tại các điểm khác nhau. Nó cũng phản ánh một nguyên tắc quan trọng: các thiết bị đầu cuối chỉ nên đóng vai trò tương tác, còn quyết định nghiệp vụ bền vững phải được neo tại backend.
 
-Sơ đồ cũng cho thấy vì sao bộ xử lý nền cần đứng riêng. Nhiều tác vụ như gửi thông báo, phát hành biên lai điện tử, làm mới báo cáo hoặc xử lý một số hệ quả phụ không cần tranh tài nguyên trực tiếp với thao tác ở bàn, ở bếp hay ở quầy thu ngân. Khi chúng được tách ra, hệ thống giữ được nhịp phản hồi ổn định hơn ở tuyến trước khách hàng. Đây là lựa chọn triển khai có ý nghĩa thực tế rất lớn, vì giờ cao điểm của nhà hàng thường không cho phép những tác vụ phụ chen vào tuyến chính.
+Một đặc điểm thiết kế quan trọng khác là sự tách biệt giữa hai tuyến xử lý:
+
+\begin{itemize}
+  \item \textbf{Tuyến xử lý trực tuyến (synchronous path)} phục vụ các thao tác yêu cầu phản hồi ngay như gọi món, cập nhật trạng thái bếp và thanh toán.
+  \item \textbf{Tuyến xử lý bất đồng bộ (asynchronous path)} xử lý các hệ quả phụ thông qua \textbf{Outbox / hàng đợi} và bộ xử lý nền, bao gồm gửi thông báo, phát hành biên lai và cập nhật dữ liệu báo cáo.
+\end{itemize}
+
+Việc phân tách này cho phép hệ thống giữ được thời gian phản hồi ổn định trong giờ cao điểm, khi các thao tác trực tuyến cần được ưu tiên tuyệt đối.
+
+Ngoài ra, sơ đồ cũng làm rõ vai trò của các thành phần như bộ xử lý nền và kho lưu trữ đối tượng. Các tác vụ không yêu cầu phản hồi ngay được xử lý tách biệt, trong khi các tài nguyên như biên lai hoặc hình ảnh thực đơn được lưu trữ ở lớp riêng, giúp giảm tải cho hệ thống giao dịch chính.
+
+Từ góc độ vận hành, cách bố trí này còn mang lại khả năng \textbf{cô lập lỗi theo thành phần}. Khi một bộ xử lý nền hoặc một tích hợp ngoài gặp sự cố, tuyến xử lý trực tuyến vẫn có thể tiếp tục hoạt động với mức suy giảm tối thiểu.
 
 \paragraph{Các thành phần chính thể hiện trong hình.}
 \begin{itemize}
-  \item \textbf{Thiết bị đầu cuối}: gồm máy tính bảng gọi món, thiết bị lễ tân, màn hình bếp, máy thu ngân và trình duyệt quản lý.
-  \item \textbf{Khối cổng vào}: tiếp nhận yêu cầu từ các thiết bị và chuyển tiếp vào khối xử lý.
-  \item \textbf{Khối xử lý phía sau}: thực hiện các chức năng nghiệp vụ chính của hệ thống.
-  \item \textbf{Bộ xử lý nền}: nhận tác vụ không cần phản hồi ngay như gửi thông báo hoặc cập nhật báo cáo.
-  \item \textbf{Hạ tầng dữ liệu}: lưu trữ dữ liệu giao dịch, dữ liệu báo cáo và tệp đính kèm.
-  \item \textbf{Các hệ thống ngoài}: gồm cổng thanh toán, kênh gửi thông báo và thiết bị hoặc dịch vụ in biên lai.
+  \item \textbf{Thiết bị đầu cuối}: máy tính bảng phục vụ, thiết bị lễ tân, màn hình bếp, máy thu ngân và trình duyệt quản lý.
+  \item \textbf{Khối cổng vào}: tiếp nhận và điều phối yêu cầu từ thiết bị.
+  \item \textbf{Khối xử lý trung tâm}: thực hiện các logic nghiệp vụ chính.
+  \item \textbf{Bộ xử lý nền}: xử lý các tác vụ bất đồng bộ.
+  \item \textbf{Hạ tầng dữ liệu}: bao gồm dữ liệu giao dịch, mô hình đọc và kho lưu trữ đối tượng.
+  \item \textbf{Hệ thống ngoài}: cổng thanh toán, dịch vụ thông báo và hệ thống in biên lai.
 \end{itemize}
 
-\paragraph{Lý do thiết kế của sơ đồ này.}
+\paragraph{Lý do thiết kế.}
 \begin{itemize}
-  \item Bố trí một khối xử lý trung tâm giúp đơn giản hóa triển khai, dễ kiểm thử đầu-cuối và dễ giữ ranh giới giao dịch ngắn gọn.
-  \item Tách bộ xử lý nền khỏi khối tiếp nhận yêu cầu trực tuyến giúp tác vụ phụ không tranh chấp quá mạnh với yêu cầu tại quầy.
-  \item Đặt các hệ thống ngoài ở rìa giúp phân biệt rõ phần lõi của IRMS với phần tích hợp phụ thuộc đối tác.
+  \item Giữ một lõi xử lý trung tâm giúp đảm bảo tính nhất quán và đơn giản hóa triển khai.
+  \item Tách tuyến bất đồng bộ giúp giảm tải cho tuyến trực tuyến.
+  \item Phân lớp lưu trữ giúp hệ thống linh hoạt và dễ mở rộng hơn.
 \end{itemize}
 
-Phương án này mạnh ở chỗ đơn giản và dễ vận hành, rất phù hợp với bài toán một nhà hàng hoặc một nhóm nhỏ chi nhánh. Đổi lại, khối xử lý trung tâm trở thành vùng cần được giám sát và bảo vệ cẩn thận hơn, vì nó là nơi hội tụ của nhiều quyết định nghiệp vụ.
+Phương án này đơn giản và thực dụng, phù hợp với quy mô hệ thống, nhưng cũng đặt áp lực lên khối xử lý trung tâm, đòi hỏi giám sát và mở rộng phù hợp.
+
+% =========================
 
 \begin{figure}[H]
 \centering
@@ -826,37 +845,39 @@ Phương án này mạnh ở chỗ đơn giản và dễ vận hành, rất phù
   \IfFileExists{16_deployment_diagram_network_zones_and_trust_boundaries.png}{
     \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{16_deployment_diagram_network_zones_and_trust_boundaries.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{16\_deployment\_diagram\_network\_zones\_and\_trust\_boundaries.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{16\_deployment\_diagram\_network\_zones\_and\_trust\_boundaries.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ triển khai theo vùng mạng và ranh giới tin cậy}
 \label{fig:irms-deploy-network}
 \end{figure}
 
+Hình~\ref{fig:irms-deploy-network} mở rộng góc nhìn triển khai bằng cách làm rõ \textbf{ranh giới tin cậy} và cách hệ thống được phân chia thành các vùng mạng khác nhau.
 
-Hình~\ref{fig:irms-deploy-network} làm rõ góc nhìn mà sơ đồ vật lý tổng quan mới chỉ chạm tới ở mức khái quát: \textbf{ranh giới tin cậy}. Với một hệ thống như IRMS, bảo mật không chỉ là câu chuyện tài khoản và mật khẩu. Nó còn là câu chuyện thành phần nào được đặt ở vùng mạng nào, ai được phép nói chuyện trực tiếp với ai, và dữ liệu nhạy cảm nằm ở đâu trong toàn bộ mặt bằng triển khai.
+Kiến trúc được chia thành các vùng: vùng thiết bị hiện trường, vùng ứng dụng, vùng dữ liệu và vùng tích hợp ngoài. Mỗi vùng đại diện cho một mức độ tin cậy và quyền truy cập khác nhau.
 
-Việc tách thành vùng phục vụ phía trước, vùng bếp, vùng ứng dụng, vùng dữ liệu và vùng tích hợp ngoài giúp kiến trúc thể hiện rõ những lớp bảo vệ khác nhau. Thiết bị ở hiện trường phải đủ gần nghiệp vụ để thao tác nhanh, nhưng không nên có quyền đi thẳng tới cơ sở dữ liệu. Cơ sở dữ liệu lại phải ở một vùng được bảo vệ hơn, tránh truy cập trực tiếp từ thiết bị đầu cuối hoặc từ các kết nối ngoài. Các hệ thống đối tác như cổng thanh toán hay dịch vụ gửi thông báo nằm ngoài biên tin cậy nội bộ, nên mọi lưu lượng đi qua chúng đều phải được kiểm soát, ghi nhật ký và hạn chế quyền truy cập. Nhờ vậy, sơ đồ này làm nổi bật một nguyên tắc quan trọng: không có \enquote{một vùng an toàn duy nhất}, mà có nhiều lớp biên, mỗi lớp có mức tin cậy khác nhau.
+Nguyên tắc quan trọng nhất là \textbf{không có thành phần nào được phép vượt qua ranh giới mà không qua kiểm soát}. Các thiết bị đầu cuối chỉ giao tiếp với hệ thống thông qua khối cổng vào. Tương tự, các hệ thống bên ngoài không truy cập trực tiếp vào dữ liệu mà phải đi qua tầng ứng dụng.
 
-Sơ đồ còn có giá trị vận hành thực tế. Khi xảy ra sự cố, cách chia vùng giúp khoanh nhanh câu hỏi: lỗi nằm ở lớp thiết bị hiện trường, ở vùng ứng dụng hay ở kết nối với hệ ngoài. Tương tự, khi thiết kế tường lửa, mã hóa đường truyền, nhật ký truy cập hay chính sách cấp quyền mạng, chính sơ đồ vùng mạng là cơ sở để quyết định cái gì phải bị chặn tuyệt đối, cái gì được phép đi qua một cổng duy nhất và cái gì chỉ được mở từ một vùng đã kiểm soát.
+Việc tách riêng vùng dữ liệu giúp bảo vệ dữ liệu nhạy cảm và giảm nguy cơ truy cập trái phép. Đồng thời, việc đặt các tích hợp ngoài ở rìa giúp cô lập lỗi và tăng khả năng kiểm soát lưu lượng.
 
-\paragraph{Các vùng chính thể hiện trong hình.}
+Sơ đồ này cũng hỗ trợ vận hành thực tế: khi xảy ra sự cố, việc phân vùng giúp nhanh chóng xác định lỗi thuộc lớp nào.
+
+\paragraph{Các vùng chính.}
 \begin{itemize}
-  \item \textbf{Vùng phục vụ phía trước}: chứa thiết bị của lễ tân, phục vụ và thu ngân.
-  \item \textbf{Vùng bếp}: chứa màn hình bếp và các thiết bị phục vụ chế biến.
-  \item \textbf{Vùng ứng dụng}: chứa cổng vào, khối xử lý phía sau và bộ xử lý nền.
-  \item \textbf{Vùng dữ liệu}: chứa cơ sở dữ liệu giao dịch, mô hình đọc và kho lưu trữ đối tượng.
-  \item \textbf{Vùng tích hợp ngoài}: chứa cổng thanh toán, dịch vụ gửi thông báo và các hệ thống ngoài khác.
+  \item Vùng thiết bị hiện trường
+  \item Vùng ứng dụng
+  \item Vùng dữ liệu
+  \item Vùng tích hợp ngoài
 \end{itemize}
 
-\paragraph{Lý do thiết kế của sơ đồ này.}
+\paragraph{Lý do thiết kế.}
 \begin{itemize}
-  \item Sơ đồ làm rõ nơi nào là mạng nội bộ hiện trường, nơi nào là vùng ứng dụng, nơi nào là vùng dữ liệu nhạy cảm và nơi nào là thế giới bên ngoài.
-  \item Việc tách vùng dữ liệu thành một lớp riêng giúp giảm nguy cơ truy cập trực tiếp từ thiết bị đầu cuối hoặc từ Internet.
-  \item Mọi tích hợp ngoài đi qua khối ứng dụng giúp tăng khả năng kiểm soát, ghi nhật ký và áp dụng chính sách bảo vệ dữ liệu.
+  \item Tăng cường bảo mật thông qua phân tách vùng
+  \item Kiểm soát luồng truy cập giữa các thành phần
+  \item Hỗ trợ vận hành và xử lý sự cố
 \end{itemize}
 
-Ưu điểm của cách biểu diễn theo vùng là giúp người đọc hiểu được nơi nào là nội bộ nhà hàng, nơi nào là biên kết nối ra ngoài và nơi nào là dữ liệu nhạy cảm. Nó cũng hỗ trợ suy nghĩ về tường lửa, cắt lớp mạng, mã hóa đường truyền, ghi nhật ký và ứng phó sự cố. Nhược điểm là sơ đồ này không diễn tả chi tiết luồng dữ liệu nghiệp vụ như sơ đồ trình tự, nên cần được đọc cùng góc nhìn sử dụng và góc nhìn thành phần.
+% =========================
 
 \begin{figure}[H]
 \centering
@@ -866,41 +887,48 @@ Sơ đồ còn có giá trị vận hành thực tế. Khi xảy ra sự cố, c
   \IfFileExists{17_deployment_diagram_data_and_execution_mapping.png}{
     \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{17_deployment_diagram_data_and_execution_mapping.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{17\_deployment\_diagram\_data\_and\_execution\_mapping.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{17\_deployment\_diagram\_data\_and\_execution\_mapping.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ triển khai về ánh xạ dữ liệu và thực thi}
 \label{fig:irms-deploy-data}
 \end{figure}
 
+Hình~\ref{fig:irms-deploy-data} làm rõ cách các service, dữ liệu và luồng thực thi được tổ chức trong hệ thống.
 
-Hình~\ref{fig:irms-deploy-data} là sơ đồ có ý nghĩa quyết định khi cần biện minh kiểu kiến trúc được chọn ở mức thực thi. Nó cho thấy các service nghiệp vụ, bộ xử lý nền, dữ liệu giao dịch, mô hình đọc và kho lưu trữ đối tượng được đặt vào các vùng thực thi khác nhau. Nói cách khác, đây là sơ đồ chứng minh IRMS đi theo \textbf{kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện}, chứ không phải một khối xử lý tập trung được chia thành các phần chạy chung.
+Sơ đồ này thể hiện rõ rằng IRMS theo \textbf{kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện}. Các service nghiệp vụ xử lý giao dịch chính thông qua API đồng bộ, trong khi các hệ quả phụ được xử lý thông qua cơ chế bất đồng bộ dựa trên \textbf{Outbox và hàng đợi sự kiện}.
 
-Điểm mạnh nhất của cách bố trí này là giữ được cả hai lợi ích tưởng như khó đi cùng nhau. Một mặt, ranh giới service vẫn rõ nên hệ thống không trượt thành một khối mã hỗn loạn. Mặt khác, các giao dịch lõi như tạo đơn gọi món, cập nhật trạng thái bếp, lập hóa đơn và thanh toán vẫn có API phản hồi trực tiếp, còn các hệ quả như gửi thông báo, in biên lai, cập nhật báo cáo và đồng bộ tồn kho đi qua \texttt{Outbox}, \texttt{Event Bus} hoặc \texttt{Background Worker}. Đây là lựa chọn rất hợp lý cho bối cảnh bài toán và quy mô dự án.
+Luồng xử lý có thể chia thành hai phần:
 
-Sơ đồ cũng làm rõ vai trò của mô hình đọc và kho lưu trữ đối tượng. Mô hình đọc không phải là bản sao tùy hứng của dữ liệu giao dịch, mà là một mặt cắt phục vụ truy vấn quản trị. Kho lưu trữ đối tượng lại là nơi phù hợp cho biên lai, tệp đính kèm hoặc tài nguyên thực đơn khi cần. Nhờ tách như vậy, khối xử lý trực tuyến không phải ôm mọi nhu cầu lưu trữ vào cùng một hình thức.
-
-\paragraph{Các thành phần chính thể hiện trong hình.}
 \begin{itemize}
-  \item \textbf{Lớp service trực tuyến}: chứa các service nghiệp vụ phục vụ yêu cầu thời gian thực.
-  \item \textbf{Bộ xử lý nền}: xử lý các tác vụ chấp nhận độ trễ nhỏ.
-  \item \textbf{Lược đồ giao dịch}: lưu dữ liệu giao dịch cốt lõi của hệ thống.
-  \item \textbf{Mô hình đọc và dữ liệu báo cáo}: tối ưu cho truy vấn quản trị và thống kê.
-  \item \textbf{Kho lưu trữ đối tượng}: giữ biên lai, tệp đính kèm hoặc tài nguyên thực đơn nếu có.
+  \item \textbf{Luồng giao dịch chính}: các service ghi dữ liệu vào cơ sở dữ liệu giao dịch.
+  \item \textbf{Luồng bất đồng bộ}: các sự kiện được ghi vào Outbox, sau đó được bộ xử lý nền tiêu thụ để cập nhật mô hình đọc, gửi thông báo hoặc xử lý các tác vụ phụ.
 \end{itemize}
 
-\paragraph{Lý do thiết kế của sơ đồ này.}
+Cách tổ chức này giúp đảm bảo rằng các giao dịch cốt lõi vẫn rõ ràng và nhất quán, trong khi hệ thống vẫn linh hoạt trong việc xử lý các nhu cầu mở rộng như báo cáo và tích hợp.
+
+Ngoài ra, việc tách mô hình đọc khỏi dữ liệu giao dịch cho phép tối ưu hóa truy vấn mà không ảnh hưởng đến hiệu năng của hệ thống chính.
+
+\paragraph{Các thành phần chính.}
 \begin{itemize}
-  \item Phân bổ service theo năng lực nghiệp vụ giúp giữ giao dịch lõi rõ ràng, trong khi các event cho phép xử lý hệ quả phụ mà không buộc mọi service gọi trực tiếp lẫn nhau.
-  \item Tách mô hình đọc khỏi dữ liệu giao dịch giúp báo cáo phong phú hơn mà không làm nặng tuyến xử lý trực tuyến.
-  \item Giữ bộ xử lý nền ở ngoài khối trực tuyến giúp hệ thống vừa rõ ràng về thực thi, vừa linh hoạt khi sau này cần tách riêng một số năng lực lớn.
+  \item Service nghiệp vụ
+  \item Cơ sở dữ liệu giao dịch
+  \item Outbox / hàng đợi sự kiện
+  \item Bộ xử lý nền
+  \item Mô hình đọc
+  \item Hệ thống ngoài
 \end{itemize}
 
-Ưu điểm của cách tổ chức này là thực dụng, nhất quán và phù hợp với phạm vi đề tài. Đổi lại, kiến trúc phải được bảo vệ bằng kỷ luật hợp đồng API, hợp đồng event và quyền sở hữu dữ liệu theo service; nếu không, các service có thể rơi vào tình trạng phụ thuộc chéo quá mức.
+\paragraph{Lý do thiết kế.}
+\begin{itemize}
+  \item Giữ ranh giới service rõ ràng
+  \item Tách xử lý bất đồng bộ để giảm phụ thuộc
+  \item Tối ưu hóa truy vấn thông qua mô hình đọc
+\end{itemize}
 
+Ưu điểm của kiến trúc này là vừa đảm bảo tính rõ ràng của giao dịch, vừa hỗ trợ mở rộng linh hoạt. Đổi lại, hệ thống cần được thiết kế cẩn thận về hợp đồng API, sự kiện và quyền sở hữu dữ liệu để tránh phụ thuộc chéo giữa các service.
 
 \subsubsection{Sơ đồ triển khai cho tính sẵn sàng cao và cô lập lỗi}
-\begin{landscape}
 \begin{figure}[H]
 \centering
 \IfFileExists{32_deployment_diagram_high_availability_and_failure_isolation.pdf}{
@@ -909,37 +937,47 @@ Sơ đồ cũng làm rõ vai trò của mô hình đọc và kho lưu trữ đ�
   \IfFileExists{32_deployment_diagram_high_availability_and_failure_isolation.png}{
     \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{32_deployment_diagram_high_availability_and_failure_isolation.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{32\_deployment\_diagram\_high\_availability\_and\_failure\_isolation.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{32\_deployment\_diagram\_high\_availability\_and\_failure\_isolation.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ triển khai cho tính sẵn sàng cao và cô lập lỗi}
 \label{fig:irms-deployment-ha-supplement}
 \end{figure}
-\end{landscape}
 
+Hình~\ref{fig:irms-deployment-ha-supplement} đi sâu vào một câu hỏi quan trọng của góc nhìn triển khai: khi một nút ứng dụng, một bộ xử lý nền hoặc một thành phần tích hợp gặp sự cố, hệ thống còn giữ được điều gì và suy giảm dịch vụ ra sao. Giá trị chính của sơ đồ này là buộc kiến trúc phải trả lời về hành vi khi lỗi xảy ra, thay vì chỉ mô tả trạng thái lý tưởng khi mọi thứ đều hoạt động bình thường.
 
-Hình~\ref{fig:irms-deployment-ha-supplement} đi sâu vào một câu hỏi thường được đặt ra khi đánh giá kiến trúc vận hành: nếu một nút ứng dụng, một bộ xử lý nền hoặc một thành phần tích hợp gặp sự cố, IRMS còn giữ được điều gì và suy giảm dịch vụ ra sao. Đây là sơ đồ rất đáng giá vì nó buộc thiết kế phải trả lời về hành vi khi lỗi xảy ra, thay vì chỉ mô tả trạng thái lý tưởng khi mọi thứ đều hoạt động.
+Điểm đầu tiên cần rút ra là \textbf{tuyến yêu cầu trực tuyến} và \textbf{tuyến xử lý nền} đều có phương án dự phòng. Bộ chuyển tiếp ngược kiêm cân bằng tải đứng trước các nút ứng dụng giúp thiết bị đầu cuối không gắn cứng vào một nút xử lý cụ thể. Khi một nút ứng dụng gặp lỗi, lưu lượng có thể được chuyển sang nút còn lại mà không làm người dùng phải thay đổi điểm truy cập. Tương tự, việc bố trí nhiều bộ xử lý nền giúp các tác vụ bất đồng bộ không bị tắc nghẽn hoàn toàn khi một nút tiêu thụ gặp sự cố.
 
-Điểm đầu tiên cần rút ra là \textbf{tuyến yêu cầu trực tuyến} và \textbf{tuyến xử lý nền} đều có phương án dự phòng. Bộ chuyển tiếp ngược hoặc bộ cân bằng tải đặt trước các nút ứng dụng giúp ứng dụng khách không gắn cứng vào một nút cụ thể. Nếu một nút ứng dụng lỗi, lưu lượng có thể được đưa sang nút còn lại mà không làm người dùng phải thay đổi điểm truy cập. Tương tự, việc có nhiều nút bộ xử lý nền giúp các tác vụ không bị tắc nghẽn toàn bộ khi một bộ tiêu thụ gặp lỗi.
+Điểm thứ hai là sơ đồ làm rõ cách \textbf{dữ liệu giao dịch lõi} được bảo vệ. \textsf{PostgreSQL Primary} kết hợp với \textsf{Read Replica / Warm Standby} cho thấy dữ liệu không chỉ tồn tại ở một nút duy nhất. Cơ chế sao chép dòng dữ liệu từ nút chính sang nút dự phòng giúp hỗ trợ phục hồi nhanh hơn khi xảy ra lỗi, đồng thời tạo nền cho việc tách một phần tải đọc ra khỏi nút giao dịch chính.
 
-Điểm thứ hai là sơ đồ làm rõ cách dữ liệu được bảo vệ. \texttt{PostgreSQL Primary} kết hợp với \texttt{Read Replica / Warm Standby} cho thấy dữ liệu giao dịch lõi không nên chỉ có một nơi duy nhất. Đồng thời, phần đọc báo cáo và phần xử lý nền được đi qua hàng đợi hoặc hộp thư ra, nhờ đó sự cố ở bảng điều khiển hoặc một nhiệm vụ nền không làm sập ngay tuyến giao dịch. Đây là một dạng cô lập lỗi rất quan trọng trong nhà hàng: nếu kênh thông báo bị chậm, khách vẫn phải thanh toán được; nếu báo cáo chưa kịp làm mới, bàn vẫn phải mở và món vẫn phải ra đúng.
+Điểm thứ ba là sơ đồ thể hiện rõ việc \textbf{cô lập lỗi giữa giao dịch chính và các hệ quả phụ}. Các nút ứng dụng ghi dữ liệu giao dịch theo tuyến đồng bộ, trong khi các tác vụ như làm mới mô hình đọc, gửi thông báo và in biên lai được tách qua \textsf{Outbox / Job Queue} và các worker. Nhờ vậy, sự cố ở kênh thông báo, cổng in hoặc tiến trình làm mới báo cáo không làm sập ngay tuyến giao dịch. Đây là một dạng cô lập lỗi rất quan trọng trong bối cảnh vận hành nhà hàng: nếu kênh thông báo bị chậm, khách vẫn phải thanh toán được; nếu báo cáo chưa được làm mới kịp thời, bàn vẫn phải mở và món vẫn phải ra đúng.
 
-Điểm thứ ba là sơ đồ thể hiện rõ \textbf{đường suy giảm dịch vụ chấp nhận được}. Không phải mọi lỗi đều phải dẫn tới dừng toàn hệ thống. Một số lỗi chỉ nên làm chậm phần đọc, làm chậm thông báo hoặc chuyển một số tác vụ sang hàng chờ. Khả năng chấp nhận suy giảm có kiểm soát như vậy mới là dấu hiệu của một hệ thống vận hành trưởng thành.
+Một cách đọc thực tế hơn của sơ đồ là thông qua các kịch bản lỗi cụ thể:
+\begin{itemize}
+  \item Nếu một nút ứng dụng gặp sự cố, bộ cân bằng tải chuyển lưu lượng sang nút còn lại và hệ thống tiếp tục phục vụ các yêu cầu trực tuyến.
+  \item Nếu một worker bị lỗi, các tác vụ chưa hoàn thành vẫn nằm trong hàng đợi và sẽ được nút tiêu thụ còn lại tiếp tục xử lý.
+  \item Nếu dịch vụ bên ngoài như cổng thanh toán, dịch vụ thông báo hoặc cổng in phản hồi chậm, các giao dịch lõi vẫn được ghi nhận; phần tích hợp ngoài sẽ được xử lý theo cơ chế bất đồng bộ hoặc thử lại sau.
+\end{itemize}
+
+Điểm thứ tư là sơ đồ thể hiện rõ \textbf{đường suy giảm dịch vụ chấp nhận được}. Không phải mọi lỗi đều dẫn tới dừng toàn hệ thống. Một số lỗi chỉ nên làm chậm phần đọc, làm chậm thông báo hoặc đưa một số tác vụ sang hàng chờ. Khả năng chấp nhận suy giảm có kiểm soát như vậy là dấu hiệu của một kiến trúc vận hành trưởng thành hơn so với mô hình mà mọi thành phần đều phụ thuộc chặt vào nhau.
 
 \paragraph{Các ý chính cần rút ra từ sơ đồ.}
 \begin{itemize}
-  \item \textbf{Bộ chuyển tiếp ngược / bộ cân bằng tải} tách lớp ứng dụng khách khỏi từng nút ứng dụng riêng lẻ, nên lỗi một nút không đồng nghĩa lỗi toàn bộ điểm vào.
-  \item \textbf{IRMS App Node A/B} cùng \textbf{Worker Node A/B} cho phép dự phòng ở cả tuyến xử lý yêu cầu và tuyến xử lý nền.
-  \item \textbf{PostgreSQL Primary} cùng \textbf{bản sao đọc / nút dự phòng ấm} hỗ trợ tách truy vấn đọc hoặc phục hồi nhanh hơn sau lỗi nút chính.
-  \item \textbf{Outbox / Job Queue} ngăn các tác vụ nền và việc làm mới mô hình chiếu làm nghẽn trực tiếp tuyến giao dịch.
+  \item \textbf{Reverse Proxy / Load Balancer} tách lớp ứng dụng khách khỏi từng nút ứng dụng riêng lẻ, nên lỗi một nút không đồng nghĩa với lỗi toàn bộ điểm vào.
+  \item \textbf{IRMS App Node A/B} và \textbf{Worker Node A/B} tạo dự phòng ở cả tuyến xử lý yêu cầu lẫn tuyến xử lý nền.
+  \item \textbf{PostgreSQL Primary} cùng \textbf{Read Replica / Warm Standby} hỗ trợ sao chép dữ liệu và cải thiện khả năng phục hồi sau lỗi nút chính.
+  \item \textbf{Outbox / Job Queue} ngăn các tác vụ nền và việc làm mới mô hình đọc làm nghẽn trực tiếp tuyến giao dịch.
+  \item \textbf{Reporting Read Model} cho phép tách truy vấn đọc ra khỏi tuyến ghi chính, nhờ đó báo cáo không cản trở giao dịch vận hành.
 \end{itemize}
 
 \paragraph{Vì sao sơ đồ này cần có trong góc nhìn triển khai.}
 \begin{itemize}
-  \item Góc nhìn triển khai không chỉ nên cho thấy hệ thống đặt ở đâu, mà còn phải cho thấy nó phản ứng ra sao khi có lỗi.
-  \item Với IRMS, nếu cổng thanh toán hoặc dịch vụ gửi thông báo chậm, hệ thống vẫn phải giữ đúng giao dịch đã hoàn tất trong lõi; sơ đồ này minh họa chính xác cơ chế tách biệt đó.
-  \item Nó cũng làm rõ hướng mở rộng sau này: có thể tăng số nút ứng dụng, nút bộ xử lý nền hoặc năng lực đọc mà không phải thiết kế lại mô hình miền nghiệp vụ.
+  \item Góc nhìn triển khai không chỉ cần cho thấy hệ thống được đặt ở đâu, mà còn phải cho thấy nó phản ứng ra sao khi có lỗi.
+  \item Với IRMS, các thành phần ngoài như cổng thanh toán, dịch vụ thông báo hay cổng in có thể chậm hoặc lỗi từng phần; sơ đồ này cho thấy cách hệ thống cô lập các lỗi đó khỏi lõi giao dịch.
+  \item Sơ đồ cũng làm rõ hướng mở rộng về sau: có thể tăng số nút ứng dụng, số worker hoặc năng lực đọc mà không phải thiết kế lại mô hình miền nghiệp vụ.
 \end{itemize}
+
+Ngoài khả năng chịu lỗi, sơ đồ này cũng thể hiện rõ hướng mở rộng của hệ thống. Việc bổ sung thêm nút ứng dụng hoặc bộ xử lý nền có thể được thực hiện mà không làm thay đổi cấu trúc tổng thể, nhờ vào tính chất stateless của tầng ứng dụng và cơ chế điều phối thông qua hàng đợi.
 
 \subsection{Nguyên tắc thiết kế}\label{sec:architecture-principles}
 Kiến trúc của IRMS bám theo các nguyên tắc thiết kế sau:
@@ -948,11 +986,11 @@ Kiến trúc của IRMS bám theo các nguyên tắc thiết kế sau:
   \item \textbf{Phân tách mối quan tâm}: bộ điều khiển, dịch vụ ứng dụng, miền nghiệp vụ và hạ tầng kỹ thuật không bị trộn vai trò.
   \item \textbf{Phụ thuộc thông qua lớp trừu tượng}: các tích hợp ngoài đi qua giao diện trừu tượng thay vì để lõi nghiệp vụ phụ thuộc trực tiếp vào nhà cung cấp hoặc bộ thư viện cụ thể.
   \item \textbf{API đồng bộ cho thao tác cần phản hồi trực tiếp}: các giao dịch lõi như xác nhận đặt bàn, tạo đơn gọi món, lập hóa đơn và thanh toán ưu tiên xử lý đồng bộ để trạng thái phản hồi rõ ràng.
-  \item \textbf{Event bất đồng bộ cho hệ quả sau giao dịch}: các hệ quả phụ như cảnh báo tồn kho, làm mới báo cáo, gửi thông báo, ghi audit và in biên lai đi qua \texttt{Outbox}, \texttt{Event Bus} hoặc \texttt{Background Worker}.
+  \item \textbf{Event bất đồng bộ cho hệ quả sau giao dịch}: các hệ quả phụ như cảnh báo tồn kho, làm mới báo cáo, gửi thông báo, ghi audit và in biên lai đi qua \textsf{Outbox}, \textsf{Event Bus} hoặc \textsf{Background Worker}.
   \item \textbf{Mô hình hóa bắt đầu từ miền nghiệp vụ}: sơ đồ lớp phải phản ánh hành vi thật của nhà hàng, không bị giản lược thành sơ đồ quan hệ dữ liệu thuần túy.
 \end{itemize}
 
-Các nguyên tắc trên không chỉ là danh sách khái niệm, mà là bộ tiêu chí nhất quán xuyên suốt toàn bộ tài liệu. Trong góc nhìn phân rã, chúng dẫn tới ranh giới năng lực nghiệp vụ rõ ràng; trong góc nhìn thành phần, chúng dẫn tới sự tách bạch giữa bộ điều khiển, dịch vụ ứng dụng, miền nghiệp vụ và bộ kết nối; trong góc nhìn triển khai, chúng dẫn tới quyết định tách bộ xử lý nền và đường báo cáo khỏi đường xử lý yêu cầu; còn trong sơ đồ lớp, chúng dẫn tới việc ưu tiên thực thể gốc, chính sách và giao diện trừu tượng thay vì chỉ vẽ các bảng dữ liệu rời rạc.
+Các nguyên tắc này là tiêu chí xuyên suốt: giúp xác định ranh giới nghiệp vụ rõ ràng, tách biệt các thành phần, phân luồng xử lý hợp lý và ưu tiên mô hình hóa theo nghiệp vụ thay vì chỉ theo dữ liệu.
 
 \subsection{Áp dụng nguyên lý SOLID vào thiết kế}
 
@@ -963,33 +1001,33 @@ Các nguyên tắc trên không chỉ là danh sách khái niệm, mà là bộ 
 \hline
 \textbf{Nguyên lý} & \textbf{Quyết định thiết kế chính} & \textbf{Biểu hiện trong IRMS} \\
 \hline
-Trách nhiệm đơn nhất & tách trách nhiệm theo ca sử dụng, thực thể gốc và mối quan tâm tích hợp & bộ điều khiển chỉ tiếp nhận yêu cầu; dịch vụ ứng dụng chỉ điều phối; thực thể gốc giữ bất biến; bộ xử lý nền xử lý tác vụ phụ \\
+Trách nhiệm đơn nhất (SRP)&  Mỗi lớp đảm nhận một trách nhiệm rõ ràng theo vai trò (điều hướng, điều phối, nghiệp vụ, xử lý nền)  & Bộ điều khiển chỉ tiếp nhận và kiểm tra yêu cầu ban đầu; dịch vụ ứng dụng điều phối luồng xử lý; thực thể nghiệp vụ chứa logic và giữ các bất biến; bộ xử lý nền đảm nhận các tác vụ phụ như gửi thông báo hoặc cập nhật kho \\
 \hline
-Đóng để ổn định, mở để mở rộng & mở các điểm mở rộng qua chiến lược, chính sách và bộ kết nối & thêm phương thức thanh toán, kênh thông báo hoặc quy tắc khuyến mãi mà không phải sửa lõi giao dịch \\
+Đóng để ổn định, mở để mở rộng (OCP)& Thiết kế các điểm mở rộng thông qua interface, chiến lược và chính sách thay vì sửa trực tiếp mã nguồn lõi  & Thêm phương thức thanh toán mới, kênh thông báo hoặc quy tắc khuyến mãi bằng cách thêm lớp hiện thực mới mà không cần thay đổi phần lõi của hệ thống \\
 \hline
-Thay thế tương thích & thiết kế hợp đồng rõ cho các lớp trừu tượng tích hợp & mọi cách hiện thực của \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{ReceiptPrinter} phải thay thế được nhau mà không làm đổi hành vi mong đợi của lớp dùng chúng \\
+Thay thế tương thích (LSP) & Định nghĩa hợp đồng hành vi rõ ràng cho các lớp trừu tượng, đảm bảo các lớp hiện thực có thể thay thế cho nhau & Các hiện thực của \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{ReceiptPrinter} đều có thể thay thế lẫn nhau mà không làm thay đổi hành vi mong đợi của dịch vụ sử dụng chúng \\
 \hline
-Phân tách giao diện & tránh giao diện lớn kiểu \enquote{làm mọi thứ} & \texttt{Billing} chỉ phụ thuộc cổng thanh toán và biên lai; \texttt{Inventory} chỉ phụ thuộc cổng cảnh báo; \texttt{Reporting} chỉ phụ thuộc giao diện truy vấn phù hợp \\
+Phân tách giao diện (ISP)& Chia nhỏ các interface theo từng nhu cầu cụ thể, tránh tạo ra các interface lớn chứa nhiều chức năng không liên quan & Mỗi mô-đun chỉ phụ thuộc vào những interface cần thiết: \texttt{Billing} dùng cổng thanh toán và biên lai; \texttt{Inventory} dùng cổng cảnh báo; \texttt{Reporting} dùng giao diện truy vấn phù hợp \\
 \hline
-Đảo ngược phụ thuộc & giữ chiều phụ thuộc hướng vào lớp trừu tượng & dịch vụ nghiệp vụ phụ thuộc kho lưu trữ, chính sách và cổng kết nối trừu tượng thay vì phụ thuộc trực tiếp vào cách hiện thực cụ thể \\
+Đảo ngược phụ thuộc (DIP)& Các thành phần cấp cao phụ thuộc vào abstraction (interface), không phụ thuộc vào lớp hiện thực cụ thể  & ịch vụ nghiệp vụ làm việc thông qua các interface như kho lưu trữ, chính sách và cổng tích hợp; các lớp hạ tầng mới hiện thực các interface này bằng công nghệ cụ thể như cơ sở dữ liệu hoặc dịch vụ bên ngoài \\
 \hline
 \end{tabularx}
 \end{table}
 
 \subsubsection{Nguyên lý trách nhiệm đơn nhất}
-Nguyên lý này được áp dụng theo nhiều lớp khác nhau. Ở biên hệ thống, bộ điều khiển chỉ làm nhiệm vụ nhận yêu cầu, kiểm tra sơ bộ và chuyển cho dịch vụ ứng dụng; nó không chứa quy tắc nghiệp vụ cốt lõi. Ở lớp điều phối, mỗi dịch vụ ứng dụng chỉ chịu trách nhiệm cho một nhóm hành vi gần nhau: \texttt{OrderingApplicationService} không xử lý hoàn tiền, còn \texttt{BillingApplicationService} không làm nhiệm vụ điều phối bếp. Ở miền nghiệp vụ, các thực thể gốc như \texttt{Order}, \texttt{Bill} hay \texttt{InventoryItem} giữ bất biến tương ứng thay vì đẩy toàn bộ quy tắc vào một lớp trung tâm khổng lồ. Nhờ vậy, khi một chính sách thay đổi, phạm vi sửa đổi được khoanh gọn đúng nơi có trách nhiệm.
+Nguyên lý này được áp dụng nhất quán ở nhiều lớp trong hệ thống. Ở biên hệ thống, bộ điều khiển chỉ tiếp nhận yêu cầu, thực hiện kiểm tra sơ bộ và chuyển tiếp cho dịch vụ ứng dụng; nó không chứa các quy tắc nghiệp vụ cốt lõi. Ở lớp điều phối, mỗi dịch vụ ứng dụng chịu trách nhiệm cho một nhóm hành vi liên quan chặt chẽ với nhau: \texttt{OrderingApplicationService} không xử lý hoàn tiền, trong khi \texttt{BillingApplicationService} không điều phối hoạt động của bếp. Ở miền nghiệp vụ, các thực thể gốc như \texttt{Order}, \texttt{Bill} hay \texttt{InventoryItem} vừa chứa logic nghiệp vụ vừa duy trì các bất biến của mình, thay vì dồn toàn bộ quy tắc vào một lớp trung tâm. Nhờ cách phân tách này, khi một chính sách thay đổi, phạm vi ảnh hưởng được giới hạn đúng vào thành phần có trách nhiệm.
 
-\subsubsection{Nguyên lý đóng để ổn định, mở để mở rộng}
-IRMS có nhiều điểm biến động cao: đối tác thanh toán, kênh gửi thông báo, cách phát hành biên lai, quy tắc khuyến mãi, quy tắc cảnh báo mức tồn thấp. Nếu lõi nghiệp vụ gọi thẳng từng nhà cung cấp hoặc mã hóa cứng từng biến thể, mỗi thay đổi sẽ buộc phải sửa phần trung tâm. Thiết kế vì thế ưu tiên các lớp trừu tượng như \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{ReceiptPrinter}, cùng các chính sách riêng cho định giá, khả dụng và phân quyền. Nhờ đó, hệ thống mở cho mở rộng nhưng vẫn giữ được phần lõi ổn định.
+\subsubsection{Nguyên lý đóng để sửa đổi, mở để mở rộng}
+Hệ thống IRMS có nhiều điểm dễ thay đổi như đối tác thanh toán, kênh gửi thông báo, cách phát hành biên lai, hay các quy tắc khuyến mãi và cảnh báo tồn kho. Nếu lõi nghiệp vụ phụ thuộc trực tiếp vào từng nhà cung cấp hoặc mã hóa cứng các biến thể này, mỗi thay đổi sẽ buộc phải sửa phần trung tâm của hệ thống. Để tránh điều đó, thiết kế sử dụng các lớp trừu tượng như \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{ReceiptPrinter}, kết hợp với các chính sách riêng cho định giá, khả dụng và phân quyền. Nhờ vậy, hệ thống có thể mở rộng bằng cách bổ sung các lớp hiện thực mới mà không cần thay đổi phần lõi.
 
-\subsubsection{Nguyên lý thay thế tương thích}
-Nguyên lý này đặc biệt quan trọng ở các bộ kết nối tích hợp. Một cách hiện thực mới của \texttt{PaymentGateway} phải tuân thủ cùng một hợp đồng hành vi về giao dịch thành công, thất bại, hoàn tiền, tính chống xử lý lặp và mã tham chiếu. Tương tự, một \texttt{NotificationSender} mới có thể gửi thư điện tử, tin nhắn hay thông báo đẩy, nhưng không được khiến dịch vụ ứng dụng phải viết nhánh xử lý đặc biệt chỉ dành riêng cho nó. Khi một lớp trừu tượng được thiết kế đúng, lớp dùng nó không cần biết bộ kết nối phía sau là nhà cung cấp nào.
+\subsubsection{Nguyên lý thay thế Liskov}
+Nguyên lý này đặc biệt quan trọng trong các thành phần tích hợp với hệ thống bên ngoài. Mỗi hiện thực của \texttt{PaymentGateway} phải tuân thủ cùng một hợp đồng hành vi, bao gồm cách xử lý giao dịch thành công, thất bại, hoàn tiền, tính chống xử lý lặp và cách tạo mã tham chiếu. Tương tự, các hiện thực của \texttt{NotificationSender} có thể khác nhau về phương thức gửi (thư điện tử, tin nhắn, thông báo đẩy), nhưng không được làm thay đổi cách mà dịch vụ ứng dụng sử dụng chúng. Khi các lớp trừu tượng được thiết kế đúng, các lớp hiện thực có thể thay thế lẫn nhau mà không làm ảnh hưởng đến hành vi chung của hệ thống.
 
 \subsubsection{Nguyên lý phân tách giao diện}
-IRMS tránh các giao diện khổng lồ kiểu \enquote{dịch vụ tiện ích tổng hợp} hoặc \enquote{quản lý mọi hệ ngoài}. Thay vào đó, mỗi service chỉ phụ thuộc vào đúng giao diện mà nó cần. \texttt{Billing} chỉ cần cổng thanh toán và cổng biên lai. \texttt{Inventory} chỉ cần cổng cảnh báo. \texttt{Reporting} chỉ cần giao diện truy vấn hoặc giao diện làm mới mô hình đọc phù hợp. Cách chia này làm cho việc kiểm thử đơn vị gọn hơn, giảm phụ thuộc chéo và tránh việc service tuyến đầu phải nhìn thấy những giao diện quản trị không liên quan.
+IRMS tránh việc thiết kế các giao diện lớn chứa nhiều chức năng không liên quan, thường được gọi là “giao diện đa năng”. Thay vào đó, mỗi mô-đun chỉ phụ thuộc vào những giao diện phục vụ trực tiếp cho nhu cầu của nó. Ví dụ, \texttt{Billing} chỉ cần cổng thanh toán và cổng phát hành biên lai; \texttt{Inventory} chỉ cần cổng cảnh báo; còn \texttt{Reporting} chỉ cần các giao diện truy vấn hoặc làm mới mô hình đọc. Cách phân tách này giúp giảm phụ thuộc chéo, đơn giản hóa kiểm thử và hạn chế việc một mô-đun phải biết đến những chức năng không liên quan.
 
 \subsubsection{Nguyên lý đảo ngược phụ thuộc}
-Đây là nguyên lý bảo vệ lõi nghiệp vụ khỏi công nghệ cụ thể. Dịch vụ ứng dụng và mô hình miền nghiệp vụ phụ thuộc vào giao diện kho lưu trữ, giao diện chính sách và giao diện bộ kết nối; còn lớp hạ tầng mới hiện thực các giao diện đó bằng \texttt{PostgreSQL}, giao diện thanh toán hay nhà cung cấp thông báo cụ thể. Nhờ vậy, chiều phụ thuộc được giữ nhất quán: chi tiết công nghệ phụ thuộc vào nhu cầu nghiệp vụ, chứ không phải nghiệp vụ bị ép đi theo công nghệ. Chính điều này làm cho kiến trúc có thể tiến hóa dần mà không làm nứt phần lõi.
+Nguyên lý này đảm bảo lõi nghiệp vụ không bị ràng buộc vào công nghệ cụ thể. Các dịch vụ ứng dụng và mô hình miền nghiệp vụ chỉ phụ thuộc vào các interface như kho lưu trữ, chính sách và cổng tích hợp. Ngược lại, các thành phần hạ tầng sẽ hiện thực các interface này bằng công nghệ cụ thể như \texttt{PostgreSQL}, hệ thống thanh toán hoặc dịch vụ gửi thông báo. Nhờ đó, chiều phụ thuộc được đảo ngược: các chi tiết kỹ thuật phụ thuộc vào nhu cầu nghiệp vụ, thay vì nghiệp vụ phải thích nghi với công nghệ. Điều này cho phép hệ thống thay đổi hoặc nâng cấp công nghệ mà không làm ảnh hưởng đến phần lõi.
 
 \subsection{Khả năng mở rộng trong tương lai}
 \begin{figure}[H]
@@ -1000,7 +1038,7 @@ IRMS tránh các giao diện khổng lồ kiểu \enquote{dịch vụ tiện íc
   \IfFileExists{36_future_extensibility_evolution_path.png}{
     \includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{36_future_extensibility_evolution_path.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{36\_future\_extensibility\_evolution\_path.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{36\_future\_extensibility\_evolution\_path.(pdf/png)}.}}
   }
 }
 \caption{Lộ trình mở rộng kiến trúc của IRMS trong tương lai}
@@ -1009,9 +1047,9 @@ IRMS tránh các giao diện khổng lồ kiểu \enquote{dịch vụ tiện íc
 
 Hình~\ref{fig:irms-future-extensibility} tập trung riêng vào câu hỏi mà hầu như mọi đồ án kiến trúc đều phải trả lời tường minh: nếu phạm vi vận hành lớn hơn, số thiết bị tăng lên, số chi nhánh tăng lên hoặc yêu cầu tích hợp đa dạng hơn, kiến trúc hiện tại sẽ tiến hóa theo đường nào mà không phải viết lại phần lõi. Hình này không mô tả một trạng thái giả định mơ hồ trong tương lai. Nó mô tả \textbf{đường tiến hóa hợp lý} từ kiến trúc hiện tại sang những khả năng mở rộng có xác suất xảy ra cao nhất đối với IRMS.
 
-Ở trạng thái hiện tại, IRMS vận hành như một \textbf{kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện}, trong đó các service nghiệp vụ có ranh giới rõ, tuyến giao dịch nóng dùng API đồng bộ và các hệ quả sau giao dịch được xử lý qua event. Đây là nền tảng tốt vì giao dịch lõi vẫn gọn, ranh giới service vẫn rõ và các service hỗ trợ như \texttt{Reporting Service}, \texttt{Notification Service}, \texttt{Inventory Monitoring Service} hoặc một phần \texttt{Kitchen Coordination Service} có thể mở rộng theo nhịp tải riêng trước khi cần thay đổi sâu tuyến giao dịch lõi.
+Ở trạng thái hiện tại, IRMS vận hành như một \textbf{kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện}, trong đó các service nghiệp vụ có ranh giới rõ, tuyến giao dịch nóng dùng API đồng bộ và các hệ quả sau giao dịch được xử lý qua event. Đây là nền tảng tốt vì giao dịch lõi vẫn gọn, ranh giới service vẫn rõ và các service hỗ trợ như \textsf{Reporting Service}, \textsf{Notification Service}, \textsf{Inventory Monitoring Service} hoặc một phần \textsf{Kitchen Coordination Service} có thể mở rộng theo nhịp tải riêng trước khi cần thay đổi sâu tuyến giao dịch lõi.
 
-Điểm quan trọng của hình là nó nêu rõ \textbf{điều kiện để mở rộng mà không phá kiến trúc}. Nếu muốn thêm phương thức thanh toán mới, hệ thống chỉ nên chạm vào lớp cổng thanh toán và chính sách liên quan. Nếu muốn thêm kênh thông báo, thay đổi phải chủ yếu nằm ở \texttt{Notification Integration}. Nếu muốn mở thêm chi nhánh, hệ thống cần tăng sức chứa ở lớp cấu hình chi nhánh, vùng dữ liệu và tầng triển khai, nhưng không được buộc viết lại mô hình đơn gọi món hay quyết toán. Nếu muốn có kiosk tự phục vụ hoặc thiết bị cầm tay mới, thay đổi chủ yếu nằm ở lớp client và giao diện lập trình ứng dụng, còn chuỗi miền nghiệp vụ chính vẫn giữ nguyên. Những điều kiện đó chính là thước đo thật sự của extensibility, chứ không chỉ là khả năng thêm lớp mã mới.
+Điểm quan trọng của hình là nó nêu rõ \textbf{điều kiện để mở rộng mà không phá kiến trúc}. Nếu muốn thêm phương thức thanh toán mới, hệ thống chỉ nên chạm vào lớp cổng thanh toán và chính sách liên quan. Nếu muốn thêm kênh thông báo, thay đổi phải chủ yếu nằm ở \textsf{Notification Integration}. Nếu muốn mở thêm chi nhánh, hệ thống cần tăng sức chứa ở lớp cấu hình chi nhánh, vùng dữ liệu và tầng triển khai, nhưng không được buộc viết lại mô hình đơn gọi món hay quyết toán. Nếu muốn có kiosk tự phục vụ hoặc thiết bị cầm tay mới, thay đổi chủ yếu nằm ở lớp client và giao diện lập trình ứng dụng, còn chuỗi miền nghiệp vụ chính vẫn giữ nguyên. Những điều kiện đó chính là thước đo thật sự của extensibility, chứ không chỉ là khả năng thêm lớp mã mới.
 
 Sơ đồ cũng chỉ ra các \textbf{điểm mở rộng chiến lược} cần được giữ ổn định từ sớm: cổng thanh toán, cổng gửi thông báo, chính sách phân quyền, quy tắc định giá, quy tắc cảnh báo tồn kho, mô hình đọc báo cáo và các giao diện ứng dụng khách. Khi những điểm này được giữ ở đúng ranh giới, hệ thống có thể tiến hóa dần từng năng lực mà không cần đánh đổi sự ổn định của tuyến lõi. Đây là lý do mục \enquote{Future Extensibility} không nên chỉ được nói bằng một đoạn văn chung chung; nó cần một hình kiến trúc riêng để cho thấy đường phát triển của hệ thống là hữu hình và có kiểm soát.
 
