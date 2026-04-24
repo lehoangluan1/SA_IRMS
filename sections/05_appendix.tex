@@ -30,7 +30,7 @@ Các mục trong phụ lục này không đứng riêng với thân báo cáo. C
 &
 Dễ khởi tạo ban đầu, ít thành phần triển khai, đơn giản cho giao dịch nội bộ, thuận lợi nếu phạm vi hệ thống còn nhỏ.
 &
-Dễ trượt thành một khối lớn tổ chức theo tầng kỹ thuật thay vì theo năng lực nghiệp vụ. Trong bối cảnh IRMS, các vùng như gọi món, bếp, thanh toán, tồn kho và báo cáo rất dễ chồng lấn trách nhiệm nếu chỉ bám vào cấu trúc \texttt{controller--service--repository}. Điều này làm giảm khả năng kiểm soát ranh giới service và gây khó khăn cho bảo trì về sau. \\
+Dễ trượt thành một khối lớn tổ chức theo tầng kỹ thuật thay vì theo năng lực nghiệp vụ. Trong bối cảnh IRMS, các vùng như gọi món, bếp, thanh toán, tồn kho và báo cáo rất dễ chồng lấn trách nhiệm nếu chỉ bám vào cấu trúc \textsf{controller--service--repository}. Điều này làm giảm khả năng kiểm soát ranh giới service và gây khó khăn cho bảo trì về sau. \\
 \hline
 \textbf{Service-Based phân tán}
 &
@@ -69,7 +69,7 @@ tồn kho, báo cáo, IAM và kiểm toán.
 Các năng lực này được biểu diễn như các service có ranh giới trách nhiệm rõ ràng, có hợp đồng API cho thao tác cần phản hồi ngay và có hợp đồng event cho hệ quả sau giao dịch.
 
 Vì vậy, cách mô tả chính xác hơn là:
-IRMS được tổ chức thành các service như \texttt{Reservation \& Seating Service}, \texttt{Ordering \& Menu Service}, \texttt{Kitchen Coordination Service}, \texttt{Billing \& Settlement Service}, \texttt{Inventory Monitoring Service}, \texttt{Reporting Service}, \texttt{IAM \& Audit Service} và \texttt{Notification Service}. API đồng bộ được dùng cho xác nhận đặt bàn, gửi món, lập hóa đơn và thanh toán; event bất đồng bộ được dùng cho cập nhật bếp, trừ tồn kho, gửi thông báo, tạo dữ liệu báo cáo, ghi audit và in biên lai. Cách kết hợp này cho phép IRMS giữ được sự rõ ràng về kiến trúc mà không phải buộc mọi hệ quả phụ nằm trong tuyến giao dịch chính.
+IRMS được tổ chức thành các service như \textsf{Reservation \& Seating Service}, \textsf{Ordering \& Menu Service}, \textsf{Kitchen Coordination Service}, \textsf{Billing \& Settlement Service}, \textsf{Inventory Monitoring Service}, \textsf{Reporting Service}, \textsf{IAM \& Audit Service} và \textsf{Notification Service}. API đồng bộ được dùng cho xác nhận đặt bàn, gửi món, lập hóa đơn và thanh toán; event bất đồng bộ được dùng cho cập nhật bếp, trừ tồn kho, gửi thông báo, tạo dữ liệu báo cáo, ghi audit và in biên lai. Cách kết hợp này cho phép IRMS giữ được sự rõ ràng về kiến trúc mà không phải buộc mọi hệ quả phụ nằm trong tuyến giao dịch chính.
 
 \begin{adrbox}[title={ADR-01: Lựa chọn kiến trúc hướng dịch vụ kết hợp điều phối bằng sự kiện cho IRMS}]
 \begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
@@ -107,8 +107,8 @@ IRMS được tổ chức thành các service như \texttt{Reservation \& Seatin
   có ranh giới trách nhiệm và dữ liệu rõ ràng.
   Mỗi service cần công bố API cho thao tác trực tiếp và event cho hệ quả sau giao dịch.
   Nếu tải hệ thống hoặc độ phức tạp vận hành tăng trong tương lai,
-  các năng lực như \texttt{Reporting}, \texttt{Notification}
-  hoặc một phần \texttt{Inventory} là các ứng viên phù hợp để tách ra trước.
+  các năng lực như \textsf{Reporting}, \textsf{Notification}
+  hoặc một phần \textsf{Inventory} là các ứng viên phù hợp để tách ra trước.
 
   \item \textbf{Các phương án không được chọn:}
   Kiến trúc phân lớp tập trung thuần bị loại vì không giữ được ranh giới năng lực đủ rõ;
@@ -192,8 +192,8 @@ IRMS được tổ chức thành các service như \texttt{Reservation \& Seatin
 
   \item \textbf{Ví dụ áp dụng trong IRMS:}
   \begin{itemize}
-    \item \texttt{ConfirmReservation}, \texttt{ConfirmOrder}, \texttt{IssueBill}, \texttt{CapturePayment} đi theo tuyến API đồng bộ.
-    \item \texttt{ReservationConfirmed}, \texttt{TableSessionOpened}, \texttt{OrderConfirmed}, \texttt{KitchenTicketCreated}, \texttt{OrderItemPrepared}, \texttt{BillIssued}, \texttt{PaymentCaptured}, \texttt{InventoryLow}, \texttt{ReportSnapshotRequested}
+    \item \textsf{ConfirmReservation}, \textsf{ConfirmOrder}, \textsf{IssueBill}, \textsf{CapturePayment} đi theo tuyến API đồng bộ.
+    \item \textsf{ReservationConfirmed}, \textsf{TableSessionOpened}, \textsf{OrderConfirmed}, \textsf{KitchenTicketCreated}, \textsf{OrderItemPrepared}, \textsf{BillIssued}, \textsf{PaymentCaptured}, \textsf{InventoryLow}, \textsf{ReportSnapshotRequested}
     là các ví dụ phù hợp với tuyến bất đồng bộ.
   \end{itemize}
 \end{enumerate}
@@ -331,7 +331,7 @@ Góc nhìn phân rã dịch vụ và thành phần & Mục~\ref{sec:architecture
 \hline
 Góc nhìn triển khai và phân bổ & Mục~\ref{sec:architecture-views} & Dùng để trả lời hệ thống chạy ở đâu, tuyến dữ liệu và tuyến nền đi qua đâu, và cách cô lập lỗi hoặc mở rộng tải được thực hiện như thế nào. Đây là phần giúp nối quyết định service với hạ tầng thực thi. \\
 \hline
-Sơ đồ lớp & Mục~\ref{sec:detailed-design-class-view} & Dùng để thể hiện aggregate, hành vi miền nghiệp vụ và các điểm mở rộng như \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{AuthorizationPolicy}; vì vậy nó phù hợp hơn ERD thuần dữ liệu trong bối cảnh báo cáo kiến trúc. \\
+Sơ đồ lớp & Mục~\ref{sec:detailed-design-class-view} & Dùng để thể hiện aggregate, hành vi miền nghiệp vụ và các điểm mở rộng như \textsf{PaymentGateway}, \textsf{NotificationSender}, \textsf{AuthorizationPolicy}; vì vậy nó phù hợp hơn ERD thuần dữ liệu trong bối cảnh báo cáo kiến trúc. \\
 \hline
 Sơ đồ hoạt động chi tiết & Mục~\ref{sec:detailed-design-clusters} & Dùng để kiểm chứng từng ca sử dụng trọng yếu bằng chuỗi thực thi cụ thể, nhất là ở những vị trí nhạy cảm như gửi bếp, thanh toán, hoàn tiền, cập nhật tồn kho và kiểm toán. \\
 \hline
@@ -351,15 +351,15 @@ Phần này tổng hợp cơ sở giải thích cho các thành phần và kiể
 \hline
 \textbf{Thành phần / loại hình} & \textbf{Lý do dùng trong IRMS} & \textbf{Liên hệ trực tiếp trong báo cáo} \\
 \hline
-\texttt{ReactJS} cho lớp giao diện & Phù hợp với nhiều màn hình thao tác nhanh theo vai trò như lễ tân, phục vụ, bếp, thu ngân và quản lý; thuận lợi cho đồng bộ trạng thái giao diện và điều hướng thống nhất. & Xuất hiện trong Mục~\ref{sec:architecture-overview} như lớp biên người dùng, đồng thời là điểm vào chung cho các kịch bản ở Mục~\ref{sec:system-modeling-overview}. \\
+\textsf{ReactJS} cho lớp giao diện & Phù hợp với nhiều màn hình thao tác nhanh theo vai trò như lễ tân, phục vụ, bếp, thu ngân và quản lý; thuận lợi cho đồng bộ trạng thái giao diện và điều hướng thống nhất. & Xuất hiện trong Mục~\ref{sec:architecture-overview} như lớp biên người dùng, đồng thời là điểm vào chung cho các kịch bản ở Mục~\ref{sec:system-modeling-overview}. \\
 \hline
-\texttt{Nginx} / API edge boundary & Tạo biên truy cập rõ ràng, gom xác thực sơ bộ, định tuyến, chuẩn hóa phản hồi và che giấu cấu trúc nội bộ khỏi client. & Biện minh cho ADR-02 trong Phụ lục~\ref{appendix:architecture-rationale} và xuất hiện trực tiếp trong sơ đồ tổng quan kiến trúc. \\
+\textsf{Nginx} / API edge boundary & Tạo biên truy cập rõ ràng, gom xác thực sơ bộ, định tuyến, chuẩn hóa phản hồi và che giấu cấu trúc nội bộ khỏi client. & Biện minh cho ADR-02 trong Phụ lục~\ref{appendix:architecture-rationale} và xuất hiện trực tiếp trong sơ đồ tổng quan kiến trúc. \\
 \hline
 Kiến trúc hướng dịch vụ kết hợp event-driven & Phù hợp với IRMS vì các giao dịch lõi như gọi món, bếp và thanh toán cần phản hồi rõ ràng qua API, trong khi thông báo, báo cáo, audit, in biên lai và tồn kho phù hợp với event bất đồng bộ. & Là trục chính của ADR-01; được thể hiện xuyên suốt ở Mục~\ref{sec:architecture-overview} và Mục~\ref{sec:architecture-views}. \\
 \hline
 Outbox / background worker & Tách các hệ quả phụ như làm mới read model, gửi thông báo, in biên lai và phát cảnh báo khỏi tuyến giao dịch nóng; hỗ trợ retry và giảm ghép nối. & Biện minh cho ADR-03 và xuất hiện trong sơ đồ tổng quan, service, thành phần và triển khai. \\
 \hline
-\texttt{PostgreSQL} giao dịch & Phù hợp để neo giữ tính nhất quán của các quyết định có hậu quả nghiệp vụ cao như xác nhận đơn, đóng hóa đơn, hoàn tiền và truy vết kiểm toán. & Gắn với ADR-04 và các sơ đồ dữ liệu / triển khai trong Mục~\ref{sec:architecture-views}. \\
+\textsf{PostgreSQL} giao dịch & Phù hợp để neo giữ tính nhất quán của các quyết định có hậu quả nghiệp vụ cao như xác nhận đơn, đóng hóa đơn, hoàn tiền và truy vết kiểm toán. & Gắn với ADR-04 và các sơ đồ dữ liệu / triển khai trong Mục~\ref{sec:architecture-views}. \\
 \hline
 Read model cho báo cáo & Giữ báo cáo và phân tích không làm nặng tuyến giao dịch nóng, đồng thời chấp nhận độ trễ nhỏ có kiểm soát cho dữ liệu quản trị. & Biện minh bởi ADR-04; liên kết trực tiếp với các sơ đồ báo cáo và triển khai. \\
 \hline
@@ -367,7 +367,7 @@ Payment gateway adapter & Cô lập giao thức và nhà cung cấp thanh toán 
 \hline
 Notification sender / receipt printer adapter & Tách những tích hợp có độ biến động cao khỏi miền nghiệp vụ; thuận tiện cho retry, fallback và thay đổi nhà cung cấp. & Nối trực tiếp giữa phần kiến trúc tổng quan với phần lớp / hoạt động chi tiết ở Mục~\ref{sec:detailed-design-clusters}. \\
 \hline
-RBAC + \texttt{AuthorizationPolicy} + audit log & Bảo vệ các thao tác nhạy cảm như hoàn tiền, ghi đè giá, đổi quyền, xem audit log; đồng thời giữ khả năng truy vết khi điều tra sự cố. & Được biện minh bởi ADR-05 và được dùng trong cả góc nhìn kiến trúc lẫn góc nhìn lớp chi tiết. \\
+RBAC + \textsf{AuthorizationPolicy} + audit log & Bảo vệ các thao tác nhạy cảm như hoàn tiền, ghi đè giá, đổi quyền, xem audit log; đồng thời giữ khả năng truy vết khi điều tra sự cố. & Được biện minh bởi ADR-05 và được dùng trong cả góc nhìn kiến trúc lẫn góc nhìn lớp chi tiết. \\
 \hline
 \end{tabularx}
 \normalsize

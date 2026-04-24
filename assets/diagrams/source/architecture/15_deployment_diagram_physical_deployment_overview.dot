@@ -5,31 +5,64 @@ digraph G {
     newrank=true,
     bgcolor="white",
     pad=0.42,
-    nodesep=0.48,
-    ranksep=0.9,
+    nodesep=0.52,
+    ranksep=0.95,
     splines=line,
     fontname="DejaVu Sans",
     labelloc="t",
     label="Deployment Diagram - Physical Deployment Overview"
   ];
 
-  node [fontname="DejaVu Sans", fontsize=11, color="#334155", penwidth=1.1, style="filled"];
-  edge [fontname="DejaVu Sans", fontsize=10, color="#64748B", penwidth=1.0, arrowsize=0.72];
+  node [
+    fontname="DejaVu Sans",
+    fontsize=11,
+    color="#334155",
+    penwidth=1.1,
+    style="filled"
+  ];
+
+  edge [
+    fontname="DejaVu Sans",
+    fontsize=10,
+    color="#64748B",
+    penwidth=1.0,
+    arrowsize=0.72
+  ];
 
   subgraph cluster_clients {
     label="Restaurant Endpoints";
     color="#CBD5E1";
     style="rounded";
-    host   [shape=box3d, fillcolor="#FEFCE8", label="«device»
-Host Tablet"];
-    server [shape=box3d, fillcolor="#FEFCE8", label="«device»
-Server Tablet"];
-    kitchen[label="«device»
-Kitchen Display Station", shape=box3d, fillcolor="#FEFCE8"];
-    cashier[label="«device»
-Cashier Terminal", shape=box3d, fillcolor="#FEFCE8"];
-    manager[label="«device»
-Manager Console", shape=box3d, fillcolor="#FEFCE8"];
+
+    host [
+      shape=box3d,
+      fillcolor="#FEFCE8",
+      label="«device»\nHost Tablet"
+    ];
+
+    server [
+      shape=box3d,
+      fillcolor="#FEFCE8",
+      label="«device»\nServer Tablet"
+    ];
+
+    kitchen [
+      shape=box3d,
+      fillcolor="#FEFCE8",
+      label="«device»\nKitchen Display Station"
+    ];
+
+    cashier [
+      shape=box3d,
+      fillcolor="#FEFCE8",
+      label="«device»\nCashier Terminal"
+    ];
+
+    manager [
+      shape=box3d,
+      fillcolor="#FEFCE8",
+      label="«device»\nManager Console"
+    ];
   }
 
   subgraph cluster_edge {
@@ -37,29 +70,50 @@ Manager Console", shape=box3d, fillcolor="#FEFCE8"];
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#EFF6FF";
-    proxy [shape=box3d, fillcolor="#DBEAFE", color="#60A5FA", label="«device»
-Reverse Proxy / Web Server"];
-    nginx [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
-Nginx"];
-    proxy -> nginx [arrowhead=none, color="#94A3B8"];
+
+    proxy [
+      shape=box3d,
+      fillcolor="#DBEAFE",
+      color="#60A5FA",
+      label="«device»\nReverse Proxy / Web Server"
+    ];
   }
 
   subgraph cluster_core {
-    label="Core Runtime";
+    label="Central Application Tier";
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#F8FAFC";
 
-    apphost [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Backend IRMS Application Server"];
-    apprt   [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
-IRMS Runtime"];
-    workerh [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Background Worker Host"];
-    workrt  [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
-Worker Runtime"];
-    printer [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Receipt Printer Gateway"];
+    apphost [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nIRMS Application Node"
+    ];
+
+    apprt [
+      shape=box3d,
+      fillcolor="#F8FAFC",
+      label="«executionEnvironment»\nApplication Runtime"
+    ];
+
+    workerh [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nBackground Worker Node"
+    ];
+
+    workrt [
+      shape=box3d,
+      fillcolor="#F8FAFC",
+      label="«executionEnvironment»\nWorker Runtime"
+    ];
+
+    printer [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nReceipt Printer Gateway"
+    ];
 
     apphost -> apprt [arrowhead=none, color="#94A3B8"];
     workerh -> workrt [arrowhead=none, color="#94A3B8"];
@@ -70,48 +124,82 @@ Receipt Printer Gateway"];
     color="#FCA5A5";
     style="rounded,filled";
     fillcolor="#FEF2F2";
-    dbhost [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Database Server"];
-    pg     [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
-PostgreSQL"];
-    opdb   [shape=note, fillcolor="#FFF7ED", color="#FDBA74", label="«artifact»
-IRMS Operational Schema"];
-    readm  [shape=note, fillcolor="#FFF7ED", color="#FDBA74", label="«artifact»
-Reporting Views / Read Model"];
+
+    dbhost [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nOperational Database Node"
+    ];
+
+    pg [
+      shape=box3d,
+      fillcolor="#F8FAFC",
+      label="«executionEnvironment»\nPostgreSQL"
+    ];
+
+    opdb [
+      shape=note,
+      fillcolor="#FFF7ED",
+      color="#FDBA74",
+      label="«artifact»\nOperational Schema"
+    ];
+
+    readm [
+      shape=note,
+      fillcolor="#FFF7ED",
+      color="#FDBA74",
+      label="«artifact»\nReporting Views / Read Model"
+    ];
+
+    objstore [
+      shape=note,
+      fillcolor="#FFF7ED",
+      color="#FDBA74",
+      label="«artifact»\nObject Storage\n(Receipts / Menu Assets)"
+    ];
+
     dbhost -> pg [arrowhead=none, color="#94A3B8"];
     pg -> opdb [arrowhead=none, color="#94A3B8"];
     pg -> readm [arrowhead=none, color="#94A3B8"];
+    pg -> objstore [arrowhead=none, color="#94A3B8"];
   }
 
   subgraph cluster_external {
     label="External Services";
     color="#CBD5E1";
     style="rounded,dashed";
-    payment [shape=box3d, fillcolor="#F8FAFC", label="«external»
-Payment Gateway Service"];
-    notify  [shape=box3d, fillcolor="#F8FAFC", label="«external»
-Notification Service"];
+
+    payment [
+      shape=box3d,
+      fillcolor="#F8FAFC",
+      label="«external»\nPayment Gateway Service"
+    ];
+
+    notify [
+      shape=box3d,
+      fillcolor="#F8FAFC",
+      label="«external»\nNotification Service"
+    ];
   }
 
   { rank=same; host; server; kitchen; cashier; manager; }
   { rank=same; proxy; apphost; workerh; dbhost; payment; notify; }
 
-  host -> proxy    [label="HTTPS"];
-  server -> proxy  [label="HTTPS"];
+  host    -> proxy [label="HTTPS"];
+  server  -> proxy [label="HTTPS"];
   kitchen -> proxy [label="HTTPS"];
   cashier -> proxy [label="HTTPS"];
   manager -> proxy [label="HTTPS"];
 
-  proxy   -> apphost [label="HTTP / JSON"];
-  apphost -> dbhost  [label="JDBC / SQL"];
-  apphost -> workerh [label="publish jobs", style=dashed];
-  workerh -> dbhost  [label="job state / projection refresh"];
-  apphost -> payment [label="HTTPS"];
-  workerh -> notify  [label="HTTPS"];
-  workerh -> printer [label="print connector"];
+  proxy   -> apphost [label="route + auth"];
+  apphost -> dbhost  [label="transactional data"];
+  apphost -> workerh [label="async jobs / event handoff", style=dashed];
+  workerh -> dbhost  [label="job state / refresh reporting views", style=dashed];
+  apphost -> payment [label="payment calls"];
+  workerh -> notify  [label="notifications"];
+  workerh -> printer [label="print jobs"];
 
-  proxy -> apphost [weight=8];
-  apphost -> workerh [weight=8, style=invis];
-  workerh -> dbhost [weight=8, style=invis];
-  dbhost -> payment [weight=8, style=invis];
+  proxy  -> apphost [weight=8];
+  apphost -> workerh [weight=6];
+  workerh -> dbhost [weight=6];
 }
