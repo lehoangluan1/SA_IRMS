@@ -971,7 +971,7 @@ Kiến trúc của IRMS bám theo các nguyên tắc thiết kế sau:
   \item \textbf{Mô hình hóa bắt đầu từ miền nghiệp vụ}: sơ đồ lớp phải phản ánh hành vi thật của nhà hàng, không bị giản lược thành sơ đồ quan hệ dữ liệu thuần túy.
 \end{itemize}
 
-Các nguyên tắc trên không chỉ là danh sách khái niệm, mà là bộ tiêu chí nhất quán xuyên suốt toàn bộ tài liệu. Trong góc nhìn phân rã, chúng dẫn tới ranh giới năng lực nghiệp vụ rõ ràng; trong góc nhìn thành phần, chúng dẫn tới sự tách bạch giữa bộ điều khiển, dịch vụ ứng dụng, miền nghiệp vụ và bộ kết nối; trong góc nhìn triển khai, chúng dẫn tới quyết định tách bộ xử lý nền và đường báo cáo khỏi đường xử lý yêu cầu; còn trong sơ đồ lớp, chúng dẫn tới việc ưu tiên thực thể gốc, chính sách và giao diện trừu tượng thay vì chỉ vẽ các bảng dữ liệu rời rạc.
+Các nguyên tắc này là tiêu chí xuyên suốt: giúp xác định ranh giới nghiệp vụ rõ ràng, tách biệt các thành phần, phân luồng xử lý hợp lý và ưu tiên mô hình hóa theo nghiệp vụ thay vì chỉ theo dữ liệu.
 
 \subsection{Áp dụng nguyên lý SOLID vào thiết kế}
 
@@ -982,33 +982,33 @@ Các nguyên tắc trên không chỉ là danh sách khái niệm, mà là bộ 
 \hline
 \textbf{Nguyên lý} & \textbf{Quyết định thiết kế chính} & \textbf{Biểu hiện trong IRMS} \\
 \hline
-Trách nhiệm đơn nhất & tách trách nhiệm theo ca sử dụng, thực thể gốc và mối quan tâm tích hợp & bộ điều khiển chỉ tiếp nhận yêu cầu; dịch vụ ứng dụng chỉ điều phối; thực thể gốc giữ bất biến; bộ xử lý nền xử lý tác vụ phụ \\
+Trách nhiệm đơn nhất (SRP)&  Mỗi lớp đảm nhận một trách nhiệm rõ ràng theo vai trò (điều hướng, điều phối, nghiệp vụ, xử lý nền)  & Bộ điều khiển chỉ tiếp nhận và kiểm tra yêu cầu ban đầu; dịch vụ ứng dụng điều phối luồng xử lý; thực thể nghiệp vụ chứa logic và giữ các bất biến; bộ xử lý nền đảm nhận các tác vụ phụ như gửi thông báo hoặc cập nhật kho \\
 \hline
-Đóng để ổn định, mở để mở rộng & mở các điểm mở rộng qua chiến lược, chính sách và bộ kết nối & thêm phương thức thanh toán, kênh thông báo hoặc quy tắc khuyến mãi mà không phải sửa lõi giao dịch \\
+Đóng để ổn định, mở để mở rộng (OCP)& Thiết kế các điểm mở rộng thông qua interface, chiến lược và chính sách thay vì sửa trực tiếp mã nguồn lõi  & Thêm phương thức thanh toán mới, kênh thông báo hoặc quy tắc khuyến mãi bằng cách thêm lớp hiện thực mới mà không cần thay đổi phần lõi của hệ thống \\
 \hline
-Thay thế tương thích & thiết kế hợp đồng rõ cho các lớp trừu tượng tích hợp & mọi cách hiện thực của \textsf{PaymentGateway}, \textsf{NotificationSender}, \textsf{ReceiptPrinter} phải thay thế được nhau mà không làm đổi hành vi mong đợi của lớp dùng chúng \\
+Thay thế tương thích (LSP) & Định nghĩa hợp đồng hành vi rõ ràng cho các lớp trừu tượng, đảm bảo các lớp hiện thực có thể thay thế cho nhau & Các hiện thực của \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{ReceiptPrinter} đều có thể thay thế lẫn nhau mà không làm thay đổi hành vi mong đợi của dịch vụ sử dụng chúng \\
 \hline
-Phân tách giao diện & tránh giao diện lớn kiểu \enquote{làm mọi thứ} & \textsf{Billing} chỉ phụ thuộc cổng thanh toán và biên lai; \textsf{Inventory} chỉ phụ thuộc cổng cảnh báo; \textsf{Reporting} chỉ phụ thuộc giao diện truy vấn phù hợp \\
+Phân tách giao diện (ISP)& Chia nhỏ các interface theo từng nhu cầu cụ thể, tránh tạo ra các interface lớn chứa nhiều chức năng không liên quan & Mỗi mô-đun chỉ phụ thuộc vào những interface cần thiết: \texttt{Billing} dùng cổng thanh toán và biên lai; \texttt{Inventory} dùng cổng cảnh báo; \texttt{Reporting} dùng giao diện truy vấn phù hợp \\
 \hline
-Đảo ngược phụ thuộc & giữ chiều phụ thuộc hướng vào lớp trừu tượng & dịch vụ nghiệp vụ phụ thuộc kho lưu trữ, chính sách và cổng kết nối trừu tượng thay vì phụ thuộc trực tiếp vào cách hiện thực cụ thể \\
+Đảo ngược phụ thuộc (DIP)& Các thành phần cấp cao phụ thuộc vào abstraction (interface), không phụ thuộc vào lớp hiện thực cụ thể  & ịch vụ nghiệp vụ làm việc thông qua các interface như kho lưu trữ, chính sách và cổng tích hợp; các lớp hạ tầng mới hiện thực các interface này bằng công nghệ cụ thể như cơ sở dữ liệu hoặc dịch vụ bên ngoài \\
 \hline
 \end{tabularx}
 \end{table}
 
 \subsubsection{Nguyên lý trách nhiệm đơn nhất}
-Nguyên lý này được áp dụng theo nhiều lớp khác nhau. Ở biên hệ thống, bộ điều khiển chỉ làm nhiệm vụ nhận yêu cầu, kiểm tra sơ bộ và chuyển cho dịch vụ ứng dụng; nó không chứa quy tắc nghiệp vụ cốt lõi. Ở lớp điều phối, mỗi dịch vụ ứng dụng chỉ chịu trách nhiệm cho một nhóm hành vi gần nhau: \textsf{OrderingApplicationService} không xử lý hoàn tiền, còn \textsf{BillingApplicationService} không làm nhiệm vụ điều phối bếp. Ở miền nghiệp vụ, các thực thể gốc như \textsf{Order}, \textsf{Bill} hay \textsf{InventoryItem} giữ bất biến tương ứng thay vì đẩy toàn bộ quy tắc vào một lớp trung tâm khổng lồ. Nhờ vậy, khi một chính sách thay đổi, phạm vi sửa đổi được khoanh gọn đúng nơi có trách nhiệm.
+Nguyên lý này được áp dụng nhất quán ở nhiều lớp trong hệ thống. Ở biên hệ thống, bộ điều khiển chỉ tiếp nhận yêu cầu, thực hiện kiểm tra sơ bộ và chuyển tiếp cho dịch vụ ứng dụng; nó không chứa các quy tắc nghiệp vụ cốt lõi. Ở lớp điều phối, mỗi dịch vụ ứng dụng chịu trách nhiệm cho một nhóm hành vi liên quan chặt chẽ với nhau: \texttt{OrderingApplicationService} không xử lý hoàn tiền, trong khi \texttt{BillingApplicationService} không điều phối hoạt động của bếp. Ở miền nghiệp vụ, các thực thể gốc như \texttt{Order}, \texttt{Bill} hay \texttt{InventoryItem} vừa chứa logic nghiệp vụ vừa duy trì các bất biến của mình, thay vì dồn toàn bộ quy tắc vào một lớp trung tâm. Nhờ cách phân tách này, khi một chính sách thay đổi, phạm vi ảnh hưởng được giới hạn đúng vào thành phần có trách nhiệm.
 
-\subsubsection{Nguyên lý đóng để ổn định, mở để mở rộng}
-IRMS có nhiều điểm biến động cao: đối tác thanh toán, kênh gửi thông báo, cách phát hành biên lai, quy tắc khuyến mãi, quy tắc cảnh báo mức tồn thấp. Nếu lõi nghiệp vụ gọi thẳng từng nhà cung cấp hoặc mã hóa cứng từng biến thể, mỗi thay đổi sẽ buộc phải sửa phần trung tâm. Thiết kế vì thế ưu tiên các lớp trừu tượng như \textsf{PaymentGateway}, \textsf{NotificationSender}, \textsf{ReceiptPrinter}, cùng các chính sách riêng cho định giá, khả dụng và phân quyền. Nhờ đó, hệ thống mở cho mở rộng nhưng vẫn giữ được phần lõi ổn định.
+\subsubsection{Nguyên lý đóng để sửa đổi, mở để mở rộng}
+Hệ thống IRMS có nhiều điểm dễ thay đổi như đối tác thanh toán, kênh gửi thông báo, cách phát hành biên lai, hay các quy tắc khuyến mãi và cảnh báo tồn kho. Nếu lõi nghiệp vụ phụ thuộc trực tiếp vào từng nhà cung cấp hoặc mã hóa cứng các biến thể này, mỗi thay đổi sẽ buộc phải sửa phần trung tâm của hệ thống. Để tránh điều đó, thiết kế sử dụng các lớp trừu tượng như \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{ReceiptPrinter}, kết hợp với các chính sách riêng cho định giá, khả dụng và phân quyền. Nhờ vậy, hệ thống có thể mở rộng bằng cách bổ sung các lớp hiện thực mới mà không cần thay đổi phần lõi.
 
-\subsubsection{Nguyên lý thay thế tương thích}
-Nguyên lý này đặc biệt quan trọng ở các bộ kết nối tích hợp. Một cách hiện thực mới của \textsf{PaymentGateway} phải tuân thủ cùng một hợp đồng hành vi về giao dịch thành công, thất bại, hoàn tiền, tính chống xử lý lặp và mã tham chiếu. Tương tự, một \textsf{NotificationSender} mới có thể gửi thư điện tử, tin nhắn hay thông báo đẩy, nhưng không được khiến dịch vụ ứng dụng phải viết nhánh xử lý đặc biệt chỉ dành riêng cho nó. Khi một lớp trừu tượng được thiết kế đúng, lớp dùng nó không cần biết bộ kết nối phía sau là nhà cung cấp nào.
+\subsubsection{Nguyên lý thay thế Liskov}
+Nguyên lý này đặc biệt quan trọng trong các thành phần tích hợp với hệ thống bên ngoài. Mỗi hiện thực của \texttt{PaymentGateway} phải tuân thủ cùng một hợp đồng hành vi, bao gồm cách xử lý giao dịch thành công, thất bại, hoàn tiền, tính chống xử lý lặp và cách tạo mã tham chiếu. Tương tự, các hiện thực của \texttt{NotificationSender} có thể khác nhau về phương thức gửi (thư điện tử, tin nhắn, thông báo đẩy), nhưng không được làm thay đổi cách mà dịch vụ ứng dụng sử dụng chúng. Khi các lớp trừu tượng được thiết kế đúng, các lớp hiện thực có thể thay thế lẫn nhau mà không làm ảnh hưởng đến hành vi chung của hệ thống.
 
 \subsubsection{Nguyên lý phân tách giao diện}
-IRMS tránh các giao diện khổng lồ kiểu \enquote{dịch vụ tiện ích tổng hợp} hoặc \enquote{quản lý mọi hệ ngoài}. Thay vào đó, mỗi service chỉ phụ thuộc vào đúng giao diện mà nó cần. \textsf{Billing} chỉ cần cổng thanh toán và cổng biên lai. \textsf{Inventory} chỉ cần cổng cảnh báo. \textsf{Reporting} chỉ cần giao diện truy vấn hoặc giao diện làm mới mô hình đọc phù hợp. Cách chia này làm cho việc kiểm thử đơn vị gọn hơn, giảm phụ thuộc chéo và tránh việc service tuyến đầu phải nhìn thấy những giao diện quản trị không liên quan.
+IRMS tránh việc thiết kế các giao diện lớn chứa nhiều chức năng không liên quan, thường được gọi là “giao diện đa năng”. Thay vào đó, mỗi mô-đun chỉ phụ thuộc vào những giao diện phục vụ trực tiếp cho nhu cầu của nó. Ví dụ, \texttt{Billing} chỉ cần cổng thanh toán và cổng phát hành biên lai; \texttt{Inventory} chỉ cần cổng cảnh báo; còn \texttt{Reporting} chỉ cần các giao diện truy vấn hoặc làm mới mô hình đọc. Cách phân tách này giúp giảm phụ thuộc chéo, đơn giản hóa kiểm thử và hạn chế việc một mô-đun phải biết đến những chức năng không liên quan.
 
 \subsubsection{Nguyên lý đảo ngược phụ thuộc}
-Đây là nguyên lý bảo vệ lõi nghiệp vụ khỏi công nghệ cụ thể. Dịch vụ ứng dụng và mô hình miền nghiệp vụ phụ thuộc vào giao diện kho lưu trữ, giao diện chính sách và giao diện bộ kết nối; còn lớp hạ tầng mới hiện thực các giao diện đó bằng \textsf{PostgreSQL}, giao diện thanh toán hay nhà cung cấp thông báo cụ thể. Nhờ vậy, chiều phụ thuộc được giữ nhất quán: chi tiết công nghệ phụ thuộc vào nhu cầu nghiệp vụ, chứ không phải nghiệp vụ bị ép đi theo công nghệ. Chính điều này làm cho kiến trúc có thể tiến hóa dần mà không làm nứt phần lõi.
+Nguyên lý này đảm bảo lõi nghiệp vụ không bị ràng buộc vào công nghệ cụ thể. Các dịch vụ ứng dụng và mô hình miền nghiệp vụ chỉ phụ thuộc vào các interface như kho lưu trữ, chính sách và cổng tích hợp. Ngược lại, các thành phần hạ tầng sẽ hiện thực các interface này bằng công nghệ cụ thể như \texttt{PostgreSQL}, hệ thống thanh toán hoặc dịch vụ gửi thông báo. Nhờ đó, chiều phụ thuộc được đảo ngược: các chi tiết kỹ thuật phụ thuộc vào nhu cầu nghiệp vụ, thay vì nghiệp vụ phải thích nghi với công nghệ. Điều này cho phép hệ thống thay đổi hoặc nâng cấp công nghệ mà không làm ảnh hưởng đến phần lõi.
 
 \subsection{Khả năng mở rộng trong tương lai}
 \begin{figure}[H]
