@@ -309,15 +309,15 @@ Như vậy, góc nhìn logic không chỉ đóng vai trò mô tả trung gian, m
 \subsection{Góc nhìn phân rã}
 Ở góc nhìn phân rã, hệ thống được chia thành hai lớp lớn:
 \textbf{các ứng dụng phía người dùng} và \textbf{các service nghiệp vụ phía sau}.
-Việc phân rã không dựa trên tầng kỹ thuật thuần túy, mà bám theo miền nghiệp vụ của nhà hàng.
+Việc phân rã bám theo các miền nghiệp vụ của nhà hàng.
 
 \subsubsection{Các ứng dụng phía người dùng}
 \begin{itemize}
   \item \textbf{Host/Reservation UI}: phục vụ đặt bàn, danh sách chờ, sơ đồ bàn và check-in.
-  \item \textbf{Server POS UI}: phục vụ gọi món tại bàn, chỉnh món, theo dõi phiếu bếp và hỗ trợ tính tiền.
-  \item \textbf{Kitchen Display UI}: hiển thị phiếu bếp theo trạm, mức ưu tiên, hạn hoàn thành và tiến độ chế biến.
+  \item \textbf{Server POS UI}: phục vụ gọi món tại bàn, thay đổi món, theo dõi phiếu bếp và thực hiện tính tiền.
+  \item \textbf{Kitchen Display UI}: hiển thị phiếu bếp theo trạm, mức ưu tiên, thời gian dự kiến hoàn thành và tiến độ chế biến.
   \item \textbf{Cashier UI}: tạo hóa đơn, tách hóa đơn, thanh toán, biên lai và hoàn tiền.
-  \item \textbf{Manager Portal}: quản trị thực đơn, chương trình khuyến mãi, cảnh báo tồn kho, lịch làm việc và bảng điều khiển báo cáo.
+  \item \textbf{Manager Portal}: quản lý thực đơn, chương trình khuyến mãi, cảnh báo tồn kho, lịch làm việc và báo cáo.
 \end{itemize}
 
 \subsubsection{Các dịch vụ nghiệp vụ phía sau}
@@ -356,7 +356,7 @@ Phân rã như trên giúp ranh giới trách nhiệm rõ ràng: thay đổi ở
 \end{figure}
 
 
-Hình~\ref{fig:irms-module-overall} thể hiện góc nhìn phân rã dịch vụ ở mức đủ rộng để nhìn ra toàn bộ cấu trúc trách nhiệm của hệ thống mà chưa sa vào chi tiết cách hiện thực. Đây là một trong những sơ đồ quan trọng nhất của báo cáo vì nó trả lời câu hỏi mà bất kỳ người phản biện nào cũng sẽ quan tâm: hệ thống được chia thành các khối nào, mỗi khối thật sự chịu trách nhiệm cho điều gì, và ranh giới nào là ranh giới kiến trúc đáng bảo vệ.
+Hình 16 thể hiện góc nhìn phân rã dịch vụ ở mức đủ rộng để nhìn ra toàn bộ cấu trúc trách nhiệm của hệ thống mà chưa sa vào chi tiết cách hiện thực. Đây là một trong những sơ đồ quan trọng nhất của báo cáo vì nó trả lời câu hỏi mà bất kỳ người phản biện nào cũng sẽ quan tâm: hệ thống được chia thành các khối nào, mỗi khối thật sự chịu trách nhiệm cho điều gì, và ranh giới nào là ranh giới kiến trúc đáng bảo vệ.
 
 Điều cần đọc đầu tiên ở hình này không phải là số lượng service, mà là \textbf{cách chia service theo nghĩa nghiệp vụ}. \textsf{Reservation} không chỉ là nơi lưu đặt bàn; nó giữ toàn bộ quy tắc về tiếp nhận khách, danh sách chờ, sức chứa và mở phiên bàn. \textsf{Ordering} không chỉ là nơi ghi dòng món; nó giữ ảnh chụp thực đơn tại thời điểm gọi, các tùy chọn món, ghi chú đặc biệt và trạng thái đơn gọi món. \textsf{Kitchen} không phải là phần mở rộng nhỏ của gọi món; nó là miền chịu trách nhiệm cho hàng chờ chế biến, ưu tiên, đồng bộ trạng thái và bàn giao món. \textsf{Billing} là miền quyết toán có vòng đời riêng. Khi được tách như vậy, service trở thành nơi trú ngụ của quyết định nghiệp vụ, không chỉ là vỏ bọc kỹ thuật.
 
@@ -395,7 +395,7 @@ Sơ đồ còn quan trọng ở chỗ nó làm rõ \textbf{điểm dễ hỏng n
 
 
 
-Hình~\ref{fig:irms-module-core} đi sâu vào tuyến thực thi nghiệp vụ lõi của IRMS, tức tuyến mà mỗi giây chậm đi hoặc mỗi quyết định sai lệch đều tác động trực tiếp tới khách hàng đang ngồi tại bàn. Đây là vùng kiến trúc phải được đọc cẩn thận nhất vì nó quyết định hệ thống có thực sự dùng được trong giờ cao điểm hay không.
+Hình 17 đi sâu vào tuyến thực thi nghiệp vụ lõi của IRMS, tức tuyến mà mỗi giây chậm đi hoặc mỗi quyết định sai lệch đều tác động trực tiếp tới khách hàng đang ngồi tại bàn. Đây là vùng kiến trúc phải được đọc cẩn thận nhất vì nó quyết định hệ thống có thực sự dùng được trong giờ cao điểm hay không.
 
 Trung tâm của hình là \textsf{Ordering}. Cách đặt \textsf{Ordering} ở tâm không nhằm làm service này trở nên \enquote{quyền lực}, mà để phản ánh đúng bản chất dữ liệu của bài toán. Tại thời điểm gọi món, hệ thống phải biết khách đang ở bàn nào, phiên bàn có còn hiệu lực hay không, món còn bán hay không, cấu hình tùy chọn có hợp lệ hay không, giá nào cần được chụp lại để về sau hóa đơn không bị sai lệch, và sau khi xác nhận thì thông tin nào phải được lan truyền sang bếp. Tất cả các quyết định đó gặp nhau ở \textsf{Ordering}. Vì vậy, nếu đặt trung tâm vào nơi khác, mô hình sẽ méo theo kỹ thuật chứ không còn bám đúng nghiệp vụ.
 
@@ -432,6 +432,7 @@ Mối quan hệ giữa \textsf{Ordering}, \textsf{Kitchen} và \textsf{Billing} 
 \label{fig:irms-module-support}
 \end{figure}
 
+Hình 18 giải thích phần còn lại của kiến trúc, tức những service không trực tiếp đứng trên đường giao dịch nóng nhưng vẫn quyết định chất lượng vận hành của hệ thống trong dài hạn. Với IRMS, \texttt{Inventory Monitoring Service}, \texttt{Reporting Service}, \texttt{Notification Service}, \texttt{IAM \& Audit Service} đều là các service qun trọng, chỉ khác ở chỗ chúng phục vụ mục tiêu khác với gọi món và thanh toán.
 
 
 Hình~\ref{fig:irms-module-support} giải thích phần còn lại của kiến trúc, tức những service không trực tiếp đứng trên đường giao dịch nóng nhưng vẫn quyết định chất lượng vận hành của hệ thống trong dài hạn. Với IRMS, \textsf{Inventory Monitoring Service}, \textsf{Reporting Service}, \textsf{Notification Service}, \textsf{IAM \& Audit Service} đều là các service hạng nhất, chỉ khác ở chỗ chúng phục vụ mục tiêu khác với gọi món và thanh toán.
