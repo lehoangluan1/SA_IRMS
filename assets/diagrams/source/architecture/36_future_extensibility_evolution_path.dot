@@ -6,16 +6,16 @@ digraph G {
   labelloc="t";
   label="Future Extensibility - Evolution Path of IRMS";
 
-  current [label="Current Baseline\nModular monolith\n+ background worker\n+ reporting read model", fillcolor="#E9F1FF"];
+  current [label="Current Baseline\nBusiness services + event bus\n+ background worker\n+ reporting read model", fillcolor="#E9F1FF"];
 
   subgraph cluster_extensions {
     label="Extension Points That Must Stay Stable";
     color="#9BB5FF";
     style="rounded";
-    pay [label="Payment Ports\nnew gateway or wallet"];
-    notif [label="Notification Ports\nemail, SMS, push"];
-    client [label="Client/API Boundary\nkiosk, handheld, self-order"];
-    rules [label="Business Policies\npricing, authorization,\nlow-stock rule"];
+    pay [label="Payment Adapter\nnew gateway or wallet"];
+    notif [label="Notification Channels\nemail, SMS, push"];
+    client [label="ReactJS / API Boundary\nkiosk, handheld, self-order"];
+    rules [label="Service Policies\npricing, authorization,\nlow-stock rule"];
   }
 
   subgraph cluster_scale {
@@ -34,7 +34,7 @@ digraph G {
     reporting [label="Reporting Service\nif query load diverges"];
     notification [label="Notification Service\nif channel count grows"];
     kitchen [label="Kitchen Coordination Service\nif station load diverges"];
-    inventory [label="Inventory Service\nif stock workflow grows"];
+    inventory [label="Inventory Monitoring Service\nif stock workflow grows"];
   }
 
   subgraph cluster_expand {
@@ -46,8 +46,8 @@ digraph G {
     ecosystem [label="External Ecosystem\nloyalty, delivery,\npartner integrations"];
   }
 
-  current -> pay [label="new provider"];
-  current -> notif [label="new channel"];
+  current -> pay [label="new payment provider"];
+  current -> notif [label="new notification channel"];
   current -> client [label="new device or app"];
   current -> rules [label="new policy"];
 

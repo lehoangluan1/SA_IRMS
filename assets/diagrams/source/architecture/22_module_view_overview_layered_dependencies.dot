@@ -10,14 +10,14 @@ digraph G {
     splines=polyline,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="UML Package Diagram - Layered Module Dependencies of IRMS"
+    label="UML Package Diagram - Layered Service Dependencies of IRMS"
   ];
 
   node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.6, margin="0.14,0.08"];
   edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9];
 
   subgraph cluster_model {
-    label="<<model>> Module View";
+    label="<<model>> Service Decomposition View";
     color="#94A3B8";
     penwidth=1.1;
     style="rounded";
@@ -29,32 +29,32 @@ digraph G {
       fillcolor="#F8FBFF";
       frontline_ui [label="Frontline Interfaces"];
       management_ui [label="Management Interfaces"];
-      gateway [label="API and Policy Gate"];
+      gateway [label="API Entry and Policy Gate"];
     }
 
     subgraph cluster_business {
-      label="<<package>> Business Module Layer";
+      label="<<package>> Business Service Layer";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
-      reservation [label="Reservation Module"];
-      menu [label="Menu Module"];
-      ordering [label="Ordering Module"];
-      kitchen [label="Kitchen Module"];
-      billing [label="Billing Module"];
-      inventory [label="Inventory Module"];
-      reporting [label="Reporting Module"];
-      notification [label="Notification Module"];
-      governance [label="IAM and Audit"];
+      reservation [label="Reservation & Seating\nService"];
+      menu [label="Menu Reference"];
+      ordering [label="Ordering & Menu\nService"];
+      kitchen [label="Kitchen Coordination\nService"];
+      billing [label="Billing & Settlement\nService"];
+      inventory [label="Inventory Monitoring\nService"];
+      reporting [label="Reporting\nService"];
+      notification [label="Notification\nService"];
+      governance [label="IAM & Audit\nService"];
     }
 
     subgraph cluster_platform {
-      label="<<package>> Shared Platform Layer";
+      label="<<package>> Shared Platform Capabilities";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
       repositories [label="Repository Contracts"];
-      events [label="Event Contracts and Outbox"];
+      events [label="Event Bus and Outbox"];
       readmodel [label="Read Model"];
       adapters [label="External Adapters"];
     }
@@ -72,11 +72,11 @@ digraph G {
 
   reservation -> ordering;
   menu -> ordering;
-  ordering -> kitchen;
-  ordering -> billing;
-  kitchen -> inventory;
-  billing -> notification;
-  inventory -> notification;
+  ordering -> kitchen [label="OrderConfirmed"];
+  ordering -> billing [label="billable snapshot API"];
+  kitchen -> inventory [label="OrderItemPrepared"];
+  billing -> notification [label="BillIssued"];
+  inventory -> notification [label="InventoryLow"];
 
   reservation -> repositories;
   ordering -> repositories;

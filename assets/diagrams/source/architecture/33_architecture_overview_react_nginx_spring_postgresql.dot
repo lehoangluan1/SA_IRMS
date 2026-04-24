@@ -34,18 +34,18 @@ digraph G {
          fillcolor="#ECF0F1", color="#34495E", fontsize=11, shape=box];
 
   // === PRESENTATION TIER ===
-  frontend [label="Frontend",
+  frontend [label="ReactJS UI",
            fillcolor="#FFFFFF", color="#61DAFB", fontcolor="#282C34", fontsize=11,
            image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/react-official.png", imagescale=width, width=0.03, height=0.03, labelloc=b, penwidth=2.5];
 
   // === API GATEWAY ===
-  gateway [label="Gateway",
+  gateway [label="Nginx Gateway",
           fillcolor="#F0F9F7", color="#009639", fontcolor="#1a1a1a", fontsize=11,
           image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/nginx-logo-official.png", imagescale=width, width=0.4, height=0.4, labelloc=b, penwidth=2.5];
 
   // === BACKEND RUNTIME ===
   subgraph cluster_runtime {
-    label="Spring Boot - Backend Runtime";
+    label="Spring Boot Service Runtime";
     labelloc=t;
     fontsize=13;
     fontcolor="#FFFFFF";
@@ -60,7 +60,7 @@ digraph G {
               image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/spring-logo.png", imagescale=width, width=0.4, height=0.4, labelloc=b, penwidth=2.5];
 
     subgraph cluster_modules {
-      label="Business Domain Modules";
+      label="Business Services";
       labelloc=t;
       fontsize=11;
       fontcolor="#16A085";
@@ -70,16 +70,16 @@ digraph G {
       fillcolor="#D5F4E6";
       margin="15,15";
 
-      ordering [label="Ordering\nModule", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
-      reservation [label="Reservation\n& Seating", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
-      kitchen [label="Kitchen\nCoordination", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
-      billing [label="Billing &\nSettlement", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
-      inventory [label="Inventory\nMonitoring", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
-      governance [label="IAM\n& Audit", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
-      reporting [label="Reporting", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      ordering [label="Ordering & Menu\nService", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      reservation [label="Reservation &\nSeating Service", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      kitchen [label="Kitchen Coordination\nService", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      billing [label="Billing &\nSettlement Service", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      inventory [label="Inventory Monitoring\nService", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      governance [label="IAM &\nAudit Service", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
+      reporting [label="Reporting\nService", fillcolor="#1ABC9C", color="#FFFFFF", fontcolor="#FFFFFF"];
     }
 
-    worker [label="Background Worker\n\nOutbox Pattern\nAsync Tasks | Notifications",
+    worker [label="Background Worker\n\nOutbox Pattern\nEvent Relay | Async Tasks",
            fillcolor="#FF9800", color="#FFFFFF", fontcolor="#FFFFFF", fontsize=10];
   }
 
@@ -98,14 +98,14 @@ digraph G {
     operationalDb [label="Database",
                    shape=cylinder, fillcolor="#F0F5FB", color="#336791", fontcolor="#1a1a1a",
                    image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/postgresql-elephant.png", imagescale=width, width=0.4, height=0.4, labelloc=b, penwidth=2.5];
-    reportingDb [label="Analytics",
+    reportingDb [label="Reporting Read Model",
                  shape=cylinder, fillcolor="#F0F5FB", color="#336791", fontcolor="#1a1a1a",
                  image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/postgresql-elephant.png", imagescale=width, width=0.4, height=0.4, labelloc=b, penwidth=2.5];
   }
 
   // === EXTERNAL SERVICES ===
   subgraph cluster_external {
-    label="External Integrations";
+    label="Boundary Adapters and Providers";
     labelloc=t;
     fontsize=12;
     fontcolor="#5B4B8A";
@@ -116,8 +116,8 @@ digraph G {
     margin="15,15";
 
     payment [label="Payment Gateway\n\nAuthorize | Capture\nRefund Processing", fillcolor="#9B59B6", color="#FFFFFF", fontcolor="#FFFFFF"];
-    notification [label="Notification Service\n\nEmail | SMS\nPush Notifications", fillcolor="#9B59B6", color="#FFFFFF", fontcolor="#FFFFFF"];
-    printer [label="Receipt Printer\n\nKitchen Display\nPOS Terminal Output", fillcolor="#9B59B6", color="#FFFFFF", fontcolor="#FFFFFF"];
+    notification [label="Notification Service\n\nEmail | SMS\nPush Channels", fillcolor="#9B59B6", color="#FFFFFF", fontcolor="#FFFFFF"];
+    printer [label="Receipt Printer Adapter\n\nKitchen Display\nPOS Terminal Output", fillcolor="#9B59B6", color="#FFFFFF", fontcolor="#FFFFFF"];
   }
 
   // === RANKING ===
@@ -149,20 +149,21 @@ digraph G {
   governance -> operationalDb [color="#336791"];
 
   // === INTER-MODULE COMMUNICATION ===
-  ordering -> kitchen [label="confirmed items", style="solid", color="#27AE60"];
-  ordering -> billing [label="billable snapshot", style="solid", color="#27AE60"];
+  ordering -> kitchen [label="OrderConfirmed", style="solid", color="#27AE60"];
+  ordering -> billing [label="billable snapshot API", style="solid", color="#27AE60"];
 
   // === EVENT STREAMS (ASYNC) ===
-  ordering -> worker [label="order events", style="dashed", color="#E67E22"];
-  kitchen -> worker [label="serve events", style="dashed", color="#E67E22"];
-  billing -> worker [label="payment events", style="dashed", color="#E67E22"];
-  inventory -> worker [label="stock alerts", style="dashed", color="#E67E22"];
+  reservation -> worker [label="ReservationConfirmed /\nTableSessionOpened", style="dashed", color="#E67E22"];
+  ordering -> worker [label="OrderConfirmed", style="dashed", color="#E67E22"];
+  kitchen -> worker [label="OrderItemPrepared", style="dashed", color="#E67E22"];
+  billing -> worker [label="BillIssued /\nPaymentCaptured", style="dashed", color="#E67E22"];
+  inventory -> worker [label="InventoryLow", style="dashed", color="#E67E22"];
 
   // === WORKER OUTPUTS ===
   worker -> reportingDb [label="refresh projections", color="#336791"];
-  worker -> payment [label="authorize/capture/refund", style="dashed", color="#8E44AD"];
+  billing -> payment [label="capture / refund API", style="solid", color="#8E44AD"];
   worker -> notification [label="send notifications", style="dashed", color="#8E44AD"];
-  worker -> printer [label="print jobs", style="dashed", color="#8E44AD"];
+  worker -> printer [label="print receipt", style="dashed", color="#8E44AD"];
 
   // === REPORTING ===
   reporting -> reportingDb [label="query", color="#336791"];

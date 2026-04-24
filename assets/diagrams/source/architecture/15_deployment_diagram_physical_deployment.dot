@@ -36,7 +36,7 @@ Unified Web Client Assets"];
   }
 
   subgraph cluster_appserver {
-    label="Backend Application Node";
+    label="Business Service Node";
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#EFF6FF";
@@ -47,9 +47,9 @@ Spring Boot IRMS Runtime"];
     api   [shape=note, fillcolor="#FFFFFF", label="«artifact»
 IRMS Web/API Artifact"];
     core  [shape=note, fillcolor="#FFFFFF", label="«artifact»
-IRMS Core Service Modules"];
+IRMS Business Services"];
     adapt [shape=note, fillcolor="#FFFFFF", label="«artifact»
-IRMS Integration Adapters"];
+IRMS Boundary Adapters"];
     apphost -> apprt [arrowhead=none, color="#94A3B8"];
     apprt -> api [arrowhead=none, color="#94A3B8"];
     apprt -> core [arrowhead=none, color="#94A3B8"];
@@ -57,7 +57,7 @@ IRMS Integration Adapters"];
   }
 
   subgraph cluster_worker {
-    label="Asynchronous Worker Node";
+    label="Event-Driven Worker Node";
     color="#C4B5FD";
     style="rounded,filled";
     fillcolor="#F5F3FF";
@@ -96,10 +96,10 @@ Reporting Views"];
   }
 
   printer [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Receipt Printer Gateway"];
+Receipt Printer Adapter Gateway"];
 
   subgraph cluster_external {
-    label="External Service Providers";
+    label="External Adapters and Providers";
     color="#CBD5E1";
     style="rounded,dashed";
     pay [shape=box3d, fillcolor="#F8FAFC", label="«external»
@@ -111,11 +111,11 @@ Notification Service"];
   browser -> edgehost [label="HTTPS"];
   edgehost -> apphost [label="HTTP / JSON"];
   apphost -> dbhost [label="JDBC / SQL"];
-  apphost -> workerh [style=dashed, label="job dispatch"];
-  workerh -> dbhost [label="projection / job state"];
-  apphost -> pay [label="HTTPS"];
-  workerh -> ns [label="HTTPS"];
-  workerh -> printer [label="print connector"];
+  apphost -> workerh [style=dashed, label="outbox event dispatch"];
+  workerh -> dbhost [label="projection / outbox state"];
+  apphost -> pay [label="payment adapter HTTPS"];
+  workerh -> ns [label="notification adapter HTTPS"];
+  workerh -> printer [label="receipt printer adapter"];
 
   edgehost -> apphost [weight=8];
   apphost -> workerh [style=invis, weight=8];

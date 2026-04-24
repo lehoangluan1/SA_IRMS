@@ -2,38 +2,28 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
   node [fontname="DejaVu Sans"];
   edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-ADM-01 — Quản lý menu và giá bán";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-ADM-01 -- Manage Menu and Pricing";
   subgraph cluster_l1 {
     style="rounded,filled";
     fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
-    label="Quản lý"; fontsize=14; labelloc="t"; labeljust="l";
+    label="Manager"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    n1 [label="Mở cấu hình menu
-hoặc món cần sửa", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n3 [label="Chỉnh giá, trạng
-thái bán, khuyến mãi", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n6 [label="Chọn publish ngay
-hoặc theo lịch", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n1 [label="Open the menu or item\nconfiguration", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n3 [label="Edit price, sale\nstatus, and promotion", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n6 [label="Choose publish now\nor by schedule", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n0 -> n1 -> n3 -> n6 [style=invis, weight=20];
   }
   subgraph cluster_l2 {
     style="rounded,filled";
     fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
-    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    label="IRMS"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n2 [label="Hiển thị version
-menu, giá và
-modifier", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n4 [label="Kiểm tra dữ liệu bắt
-buộc và lịch hiệu
-lực", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n5 [label="Publish được?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
-    n7 [label="Phát hành version
-menu mới và audit
-log", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n9 [label="Từ chối publish và
-yêu cầu sửa cấu hình", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n2 [label="Show menu version,\nprice, and\nmodifier setup", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n4 [label="Validate required fields\nand effective schedule", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n5 [label="Ready to publish?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n7 [label="Publish new menu version and\nwrite audit trail", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n9 [label="Reject publish and request\nconfiguration changes", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n2 -> n4 -> n5 -> n7 -> n9 [style=invis, weight=20];
   }
   subgraph cluster_l3 {
@@ -41,8 +31,7 @@ yêu cầu sửa cấu hình", shape=rect, style="rounded,filled", fillcolor="wh
     fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
     label="POS / KDS"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n8 [label="Làm mới cấu hình POS
-/ KDS", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n8 [label="Refresh POS /\nKDS configuration", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n10 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n8 -> n10 [style=invis, weight=20];
   }
@@ -51,8 +40,8 @@ yêu cầu sửa cấu hình", shape=rect, style="rounded,filled", fillcolor="wh
   n2 -> n3;
   n3 -> n4;
   n4 -> n5;
-  n5 -> n6 [xlabel="Có"];
-  n5 -> n9 [xlabel="Không"];
+  n5 -> n6 [xlabel="Yes"];
+  n5 -> n9 [xlabel="No"];
   n6 -> n7;
   n7 -> n8;
   n8 -> n10;

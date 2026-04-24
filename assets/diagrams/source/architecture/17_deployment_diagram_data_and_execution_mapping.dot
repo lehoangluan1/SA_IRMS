@@ -5,133 +5,136 @@ digraph G {
     newrank=true,
     bgcolor="white",
     pad=0.45,
-    nodesep=0.55,
-    ranksep=1.0,
+    nodesep=0.6,
+    ranksep=1.05,
     splines=polyline,
     fontname="DejaVu Sans",
     labelloc="t",
     label="Deployment Diagram - Data and Execution Mapping"
   ];
 
-  node [fontname="DejaVu Sans", fontsize=10.5, color="#334155", penwidth=1.1, style="filled"];
-  edge [fontname="DejaVu Sans", fontsize=9.4, color="#64748B", penwidth=1.0, arrowsize=0.72];
+  node [
+    fontname="DejaVu Sans",
+    fontsize=10.5,
+    color="#334155",
+    penwidth=1.1,
+    style="filled"
+  ];
+
+  edge [
+    fontname="DejaVu Sans",
+    fontsize=9.4,
+    color="#64748B",
+    penwidth=1.0,
+    arrowsize=0.72
+  ];
 
   subgraph cluster_appserver {
-    label="Backend Application Node";
+    label="Business Service Node";
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#EFF6FF";
-    apphost [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Backend IRMS Application Server"];
-    apprt [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
-IRMS Runtime"];
 
-    reservation [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Reservation & Seating Module"];
-    ordering    [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Ordering Module"];
-    kitchen     [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Kitchen Coordination Module"];
-    billing     [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Billing & Settlement Module"];
-    inventory   [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Inventory Monitoring Module"];
-    reporting   [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Reporting Module"];
-    iam         [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Identity & Access Module"];
-    audit       [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Audit Module"];
+    apphost [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nIRMS Application Node"
+    ];
 
-    apphost -> apprt [arrowhead=none, color="#94A3B8"];
-    apprt -> reservation [arrowhead=none, color="#94A3B8"];
-    apprt -> ordering    [arrowhead=none, color="#94A3B8"];
-    apprt -> kitchen     [arrowhead=none, color="#94A3B8"];
-    apprt -> billing     [arrowhead=none, color="#94A3B8"];
-    apprt -> inventory   [arrowhead=none, color="#94A3B8"];
-    apprt -> reporting   [arrowhead=none, color="#94A3B8"];
-    apprt -> iam         [arrowhead=none, color="#94A3B8"];
-    apprt -> audit       [arrowhead=none, color="#94A3B8"];
+    apprt [
+      shape=box3d,
+      fillcolor="#F8FAFC",
+      label="«executionEnvironment»\nService Runtime"
+    ];
+
+    ordering  [shape=note, label="«artifact»\nOrdering Service"];
+    billing   [shape=note, label="«artifact»\nBilling Service"];
+    kitchen   [shape=note, label="«artifact»\nKitchen Service"];
+    inventory [shape=note, label="«artifact»\nInventory Service"];
+    reporting [shape=note, label="«artifact»\nReporting Service"];
+    iam       [shape=note, label="«artifact»\nIAM Service"];
+
+    apphost -> apprt [arrowhead=none];
+    apprt -> ordering;
+    apprt -> billing;
+    apprt -> kitchen;
+    apprt -> inventory;
+    apprt -> reporting;
+    apprt -> iam;
   }
 
   subgraph cluster_worker {
-    label="Asynchronous Worker Node";
+    label="Event-Driven Worker Node";
     color="#C4B5FD";
     style="rounded,filled";
     fillcolor="#F5F3FF";
-    workerh [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Background Worker Host"];
-    workrt [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
-Worker Runtime"];
-    notifyj [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Notification Job Handler"];
-    receiptj[shape=note, fillcolor="#FFFFFF", label="«artifact»
-Receipt Job Handler"];
-    projj   [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Projection Refresh Handler"];
-    workerh -> workrt [arrowhead=none, color="#94A3B8"];
-    workrt -> notifyj [arrowhead=none, color="#94A3B8"];
-    workrt -> receiptj[arrowhead=none, color="#94A3B8"];
-    workrt -> projj   [arrowhead=none, color="#94A3B8"];
+
+    workerh [shape=box3d, fillcolor="#ECFEFF", label="«device»\nBackground Worker Node"];
+    workrt  [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»\nWorker Runtime"];
+
+    notifyj [shape=note, label="«artifact»\nNotification Handler"];
+    receiptj[shape=note, label="«artifact»\nReceipt Handler"];
+    projj   [shape=note, label="«artifact»\nProjection Handler"];
+
+    workerh -> workrt [arrowhead=none];
+    workrt -> notifyj;
+    workrt -> receiptj;
+    workrt -> projj;
   }
 
   subgraph cluster_db {
-    label="Operational RDBMS Node";
+    label="Operational Data Node";
     color="#FCA5A5";
     style="rounded,filled";
     fillcolor="#FEF2F2";
-    dbhost [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Database Server"];
-    pg [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
-PostgreSQL"];
 
-    schema_orders [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Orders / Bills / Payments Schema"];
-    schema_tables [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Tables / Reservations / Sessions Schema"];
-    schema_menu   [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Menu / Promotion / Price Rules Schema"];
-    schema_stock  [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Inventory / StockTransactions / Recipes Schema"];
-    schema_iam    [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Users / Roles / Permissions / Audit Logs Schema"];
-    rv            [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Reporting Views"];
+    dbhost [shape=box3d, fillcolor="#ECFEFF", label="«device»\nDatabase Node"];
+    pg     [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»\nPostgreSQL"];
 
-    dbhost -> pg [arrowhead=none, color="#94A3B8"];
-    pg -> schema_orders [arrowhead=none, color="#94A3B8"];
-    pg -> schema_tables [arrowhead=none, color="#94A3B8"];
-    pg -> schema_menu   [arrowhead=none, color="#94A3B8"];
-    pg -> schema_stock  [arrowhead=none, color="#94A3B8"];
-    pg -> schema_iam    [arrowhead=none, color="#94A3B8"];
-    pg -> rv            [arrowhead=none, color="#94A3B8"];
+    txdata [shape=note, label="«artifact»\nTransactional Data"];
+    readm  [shape=note, label="«artifact»\nRead Model / Reporting Views"];
+
+    outbox [shape=component, fillcolor="#FFF7ED", label="«queue»\nOutbox / Job Queue"];
+
+    dbhost -> pg;
+    pg -> txdata;
+    pg -> readm;
+    pg -> outbox;
   }
 
-  kds [shape=box3d, fillcolor="#FEFCE8", label="«device»
-Kitchen Display Client"];
-  printer [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Receipt Printer Gateway"];
-  payment [shape=box3d, fillcolor="#F8FAFC", label="«external»
-Payment Gateway"];
-  notify [shape=box3d, fillcolor="#F8FAFC", label="«external»
-Notification Service"];
+  subgraph cluster_external {
+    label="External Systems";
+    color="#CBD5E1";
+    style="rounded,dashed";
 
-  reservation -> schema_tables [label="reservations / sessions"];
-  ordering    -> schema_orders [label="orders"];
-  kitchen     -> schema_orders [label="ticket status"];
-  billing     -> schema_orders [label="bills / payments"];
-  inventory   -> schema_stock  [label="stock facts"];
-  reporting   -> rv            [label="read queries"];
-  iam         -> schema_iam    [label="access control"];
-  audit       -> schema_iam    [label="audit trail"];
+    payment [shape=box3d, label="«external»\nPayment Gateway"];
+    notify  [shape=box3d, label="«external»\nNotification Service"];
+    printer [shape=box3d, label="«external»\nReceipt Printer"];
+  }
 
-  apprt -> workrt [style=dashed, label="async jobs"];
-  projj -> rv [label="refresh read model"];
-  workrt -> notify [label="notification adapter"];
-  workrt -> printer [label="print adapter"];
-  billing -> payment [label="payment adapter"];
-  kitchen -> kds [label="ticket stream / poll API"];
+  // ===== SYNCHRONOUS PATH =====
+  ordering -> txdata [label="orders"];
+  billing  -> txdata [label="payments"];
+  kitchen  -> txdata [label="status"];
+  inventory-> txdata [label="stock"];
+  iam      -> txdata [label="auth / audit"];
+  reporting-> readm  [label="read queries"];
 
+  // ===== EVENT / ASYNC PATH =====
+  ordering -> outbox [style=dashed, label="publish event"];
+  billing  -> outbox [style=dashed];
+  kitchen  -> outbox [style=dashed];
+
+  outbox -> workrt [style=dashed, label="consume"];
+
+  projj -> readm [style=dashed, label="update projections"];
+  workrt -> notify [style=dashed, label="notifications"];
+  workrt -> printer [style=dashed, label="print jobs"];
+
+  // ===== EXTERNAL =====
+  billing -> payment [label="payment API"];
+
+  // layout
   apphost -> workerh [style=invis, weight=8];
-  workerh -> dbhost [style=invis, weight=8];
+  workerh -> dbhost  [style=invis, weight=8];
 }

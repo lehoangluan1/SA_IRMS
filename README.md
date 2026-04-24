@@ -52,6 +52,7 @@ Bạn cần cài:
 Mục đích:
 
 - dùng lệnh `dot` để render các file `.dot` thành `.png`
+- có thể render thêm `.pdf` khi cần đối chiếu hoặc xuất sơ đồ riêng
 
 Lưu ý:
 
@@ -153,6 +154,7 @@ Chứa script hỗ trợ:
 
 - `render-diagrams.ps1`
   - render toàn bộ sơ đồ `.dot` thành `.png`
+  - có thể render `.pdf` với tham số `-Format pdf`
 
 ### 4.8. Thư mục `legacy/`
 
@@ -243,10 +245,17 @@ Chạy:
 powershell -ExecutionPolicy Bypass -File .\scripts\render-diagrams.ps1
 ```
 
+Nếu cần render PDF của sơ đồ:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\render-diagrams.ps1 -Format pdf
+```
+
 Script sẽ:
 
 - quét toàn bộ file `.dot`
 - render lại các file `.png`
+- hoặc render các file `.pdf` nếu dùng `-Format pdf`
 - ghi vào đúng thư mục `assets/diagrams/rendered/` tương ứng
 
 ### Bước 3. Compile lại báo cáo

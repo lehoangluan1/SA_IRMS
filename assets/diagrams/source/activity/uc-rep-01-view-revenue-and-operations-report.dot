@@ -2,16 +2,15 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
   node [fontname="DejaVu Sans"];
   edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-REP-01 — Xem báo cáo doanh thu và vận hành";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-REP-01 -- View Revenue and Operations Report";
   subgraph cluster_l1 {
     style="rounded,filled";
     fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
-    label="Quản lý"; fontsize=14; labelloc="t"; labeljust="l";
+    label="Manager"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    n1 [label="Chọn thời gian, chi
-nhánh và bộ lọc", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n6 [label="Xuất PDF / CSV?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n1 [label="Choose time range, branch,\nand filters", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n6 [label="Export PDF / CSV?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
     n0 -> n1 -> n6 [style=invis, weight=20];
   }
   subgraph cluster_l2 {
@@ -19,16 +18,10 @@ nhánh và bộ lọc", shape=rect, style="rounded,filled", fillcolor="white", c
     fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
     label="Reporting Engine / IRMS"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n2 [label="Tải ReportSnapshot
-hoặc aggregate mới
-nhất", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n3 [label="Khối lượng truy vấn
-lớn?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
-    n4 [label="Hiển thị dashboard
-và drill-down", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n5 [label="Chạy truy vấn bất
-đồng bộ và báo thời
-điểm sẵn sàng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n2 [label="Load latest ReportSnapshot\nor aggregate view", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n3 [label="High query volume?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n4 [label="Show dashboard and\ndrill-down", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n5 [label="Run asynchronous query and notify\nwhen results are ready", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n2 -> n3 -> n4 -> n5 [style=invis, weight=20];
   }
   subgraph cluster_l3 {
@@ -36,19 +29,18 @@ và drill-down", shape=rect, style="rounded,filled", fillcolor="white", color="#
     fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
     label="Export Service"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n7 [label="Sinh file xuất báo
-cáo", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n7 [label="Generate report export\nfile", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n8 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n7 -> n8 [style=invis, weight=20];
   }
   n0 -> n1;
   n1 -> n2;
   n2 -> n3;
-  n3 -> n5 [xlabel="Có"];
-  n3 -> n4 [xlabel="Không"];
+  n3 -> n5 [xlabel="Yes"];
+  n3 -> n4 [xlabel="No"];
   n4 -> n6;
   n5 -> n8;
-  n6 -> n7 [xlabel="Có"];
-  n6 -> n8 [xlabel="Không"];
+  n6 -> n7 [xlabel="Yes"];
+  n6 -> n8 [xlabel="No"];
   n7 -> n8;
 }

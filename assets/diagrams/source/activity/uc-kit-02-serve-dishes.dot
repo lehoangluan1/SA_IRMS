@@ -2,51 +2,44 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
   node [fontname="DejaVu Sans"];
   edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-KIT-02 — Ra món cho bàn";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-KIT-02 -- Serve Dishes to Table";
   subgraph cluster_l1 {
     style="rounded,filled";
     fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
-    label="Phục vụ"; fontsize=14; labelloc="t"; labeljust="l";
+    label="Server"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n2 [label="Xác nhận nhận món từ
-bếp", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n4 [label="Giao món cho khách
-tại bàn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n5 [label="Món đúng bàn và đúng
-tùy biến?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
-    n6 [label="Đánh dấu Đã phục vụ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n2 [label="Confirm item pickup from\nthe kitchen", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n4 [label="Deliver dish to the guest\ntable", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n5 [label="Correct table and correct\ncustomization?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n6 [label="Mark item served", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n2 -> n4 -> n5 -> n6 [style=invis, weight=20];
   }
   subgraph cluster_l2 {
     style="rounded,filled";
     fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
-    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    label="IRMS"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    n1 [label="Thông báo món ở
-trạng thái Ready", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n3 [label="Hiển thị bàn, seat
-number và ghi chú", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n7 [label="Cập nhật Served và
-nhịp phục vụ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n1 [label="Show items in\nReady status", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n3 [label="Display table, seat\nnumber, and notes", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n7 [label="Update Served status and\nservice rhythm", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n9 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n0 -> n1 -> n3 -> n7 -> n9 [style=invis, weight=20];
   }
   subgraph cluster_l3 {
     style="rounded,filled";
     fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
-    label="Bếp"; fontsize=14; labelloc="t"; labeljust="l";
+    label="Kitchen"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n8 [label="Nhận món trả lại với
-lý do", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n8 [label="Receive returned dish with\nreason", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
   }
   n0 -> n1;
   n1 -> n2;
   n2 -> n3;
   n3 -> n4;
   n4 -> n5;
-  n5 -> n6 [xlabel="Có"];
-  n5 -> n8 [xlabel="Không"];
+  n5 -> n6 [xlabel="Yes"];
+  n5 -> n8 [xlabel="No"];
   n6 -> n7;
   n7 -> n9;
   n8 -> n9;

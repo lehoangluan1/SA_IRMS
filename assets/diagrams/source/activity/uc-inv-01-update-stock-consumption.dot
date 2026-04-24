@@ -2,23 +2,23 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.62, pad=0.25, dpi=170, bgcolor="white", fontname="DejaVu Sans"];
   node [fontname="DejaVu Sans"];
   edge [fontname="DejaVu Sans", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-INV-01 — Cập nhật tiêu hao tồn kho sau phục vụ";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="DejaVu Sans"; label="UC-INV-01 -- Update Stock Consumption After Service";
 
   subgraph cluster_l1 {
     style="rounded,filled";
     fillcolor="#FFF8DB"; color="#BBBBBB";
-    label="Hệ thống IRMS";
+    label="IRMS";
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    n1 [label="Nhận sự kiện món đã phục vụ\nhoặc yêu cầu điều chỉnh thủ công", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n2 [label="Điều chỉnh thủ công?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n4 [label="Tra RecipeLine của từng món\nđã phục vụ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n5 [label="Có ánh xạ công thức?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n6 [label="Tính lượng nguyên liệu tiêu hao\ntheo số lượng món", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n7 [label="Sinh StockTransaction theo từng\nnguyên liệu và cập nhật số lượng tồn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n8 [label="Số lượng tồn xuống dưới\nngưỡng cảnh báo?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n9 [label="Phát sự kiện cảnh báo\nmức tồn thấp", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n10 [label="Âm kho bất thường?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n11 [label="Tạo cảnh báo cấu hình hoặc\nchờ rà soát thủ công", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n1 [label="Consume served-item event or\nmanual adjustment request", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n2 [label="Manual adjustment?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n4 [label="Load RecipeLine for each\nserved item", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Recipe mapping available?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n6 [label="Calculate ingredient usage\nfrom served quantities", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n7 [label="Create StockTransaction per\ningredient and update on-hand stock", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="On-hand stock below\nalert threshold?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n9 [label="Publish InventoryLow", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Abnormal negative stock?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n11 [label="Create configuration alert or\nwait for manual review", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n12 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n0 -> n1 -> n2 -> n4 -> n5 -> n6 -> n7 -> n8 -> n9 -> n10 -> n11 -> n12 [style=invis, weight=20];
   }
@@ -26,28 +26,28 @@ digraph G {
   subgraph cluster_l2 {
     style="rounded,filled";
     fillcolor="#EAF3FF"; color="#BBBBBB";
-    label="Quản lý kho";
-    n3 [label="Nhập số lượng điều chỉnh\nvà lý do chuẩn hóa", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n13 [label="Rà soát nguyên nhân âm kho\nhoặc dữ liệu bất thường", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="Warehouse Manager";
+    n3 [label="Enter adjustment quantity\nand normalized reason", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n13 [label="Review negative stock cause\nor abnormal data", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n14 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n3 -> n13 -> n14 [style=invis, weight=20];
   }
 
   n0 -> n1;
   n1 -> n2;
-  n2 -> n3 [xlabel="Có"];
-  n2 -> n4 [xlabel="Không"];
+  n2 -> n3 [xlabel="Yes"];
+  n2 -> n4 [xlabel="No"];
   n3 -> n7;
   n4 -> n5;
-  n5 -> n6 [xlabel="Có"];
-  n5 -> n11 [xlabel="Không"];
+  n5 -> n6 [xlabel="Yes"];
+  n5 -> n11 [xlabel="No"];
   n6 -> n7;
   n7 -> n8;
-  n8 -> n9 [xlabel="Có"];
-  n8 -> n10 [xlabel="Không"];
+  n8 -> n9 [xlabel="Yes"];
+  n8 -> n10 [xlabel="No"];
   n9 -> n10;
-  n10 -> n13 [xlabel="Có"];
-  n10 -> n12 [xlabel="Không"];
+  n10 -> n13 [xlabel="Yes"];
+  n10 -> n12 [xlabel="No"];
   n11 -> n12;
   n13 -> n14;
 }

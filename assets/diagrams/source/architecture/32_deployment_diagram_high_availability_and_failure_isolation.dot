@@ -13,41 +13,94 @@ digraph G {
     label="Deployment Diagram - High Availability and Failure Isolation"
   ];
 
-  node [fontname="DejaVu Sans", fontsize=10.8, color="#334155", penwidth=1.1, style="filled"];
-  edge [fontname="DejaVu Sans", fontsize=9.4, color="#64748B", penwidth=1.0, arrowsize=0.72];
+  node [
+    fontname="DejaVu Sans",
+    fontsize=10.8,
+    color="#334155",
+    penwidth=1.1,
+    style="filled"
+  ];
+
+  edge [
+    fontname="DejaVu Sans",
+    fontsize=9.4,
+    color="#64748B",
+    penwidth=1.0,
+    arrowsize=0.72
+  ];
 
   subgraph cluster_clients {
     label="Restaurant Endpoints";
     color="#CBD5E1";
     style="rounded";
-    host [shape=box3d, fillcolor="#FEFCE8", label="«device»
-Host Tablet"];
-    server [shape=box3d, fillcolor="#FEFCE8", label="«device»
-Server Tablet"];
-    kitchen [shape=box3d, fillcolor="#FEFCE8", label="«device»
-Kitchen Display"];
-    cashier [shape=box3d, fillcolor="#FEFCE8", label="«device»
-Cashier Terminal"];
-    manager [shape=box3d, fillcolor="#FEFCE8", label="«device»
-Manager Console"];
+
+    host [
+      shape=box3d,
+      fillcolor="#FEFCE8",
+      label="«device»\nHost Tablet"
+    ];
+
+    server [
+      shape=box3d,
+      fillcolor="#FEFCE8",
+      label="«device»\nServer Tablet"
+    ];
+
+    kitchen [
+      shape=box3d,
+      fillcolor="#FEFCE8",
+      label="«device»\nKitchen Display"
+    ];
+
+    cashier [
+      shape=box3d,
+      fillcolor="#FEFCE8",
+      label="«device»\nCashier Terminal"
+    ];
+
+    manager [
+      shape=box3d,
+      fillcolor="#FEFCE8",
+      label="«device»\nManager Console"
+    ];
   }
 
-  lb [shape=box3d, fillcolor="#DBEAFE", color="#60A5FA", label="«device»
-Reverse Proxy / Load Balancer"];
+  lb [
+    shape=box3d,
+    fillcolor="#DBEAFE",
+    color="#60A5FA",
+    label="«device»\nReverse Proxy / Load Balancer"
+  ];
 
   subgraph cluster_app {
     label="Stateless Application Tier";
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#EFF6FF";
-    appA [shape=box3d, fillcolor="#ECFEFF", label="«device»
-IRMS App Node A"];
-    appB [shape=box3d, fillcolor="#ECFEFF", label="«device»
-IRMS App Node B"];
-    workerA [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Worker Node A"];
-    workerB [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Worker Node B"];
+
+    appA [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nIRMS App Node A"
+    ];
+
+    appB [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nIRMS App Node B"
+    ];
+
+    workerA [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nWorker Node A"
+    ];
+
+    workerB [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nWorker Node B"
+    ];
   }
 
   subgraph cluster_state {
@@ -55,26 +108,55 @@ Worker Node B"];
     color="#FCA5A5";
     style="rounded,filled";
     fillcolor="#FEF2F2";
-    queue [shape=box3d, fillcolor="#FEF3C7", color="#F59E0B", label="«executionEnvironment»
-Outbox / Job Queue"];
-    dbPrimary [shape=box3d, fillcolor="#ECFEFF", label="«device»
-PostgreSQL Primary"];
-    dbReplica [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Read Replica / Warm Standby"];
-    views [shape=note, fillcolor="#FFFFFF", label="«artifact»
-Reporting Read Model"];
+
+    queue [
+      shape=component,
+      fillcolor="#FEF3C7",
+      color="#F59E0B",
+      label="«queue»\nOutbox / Job Queue"
+    ];
+
+    dbPrimary [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nPostgreSQL Primary"
+    ];
+
+    dbReplica [
+      shape=box3d,
+      fillcolor="#ECFEFF",
+      label="«device»\nRead Replica / Warm Standby"
+    ];
+
+    views [
+      shape=note,
+      fillcolor="#FFFFFF",
+      label="«artifact»\nReporting Read Model"
+    ];
   }
 
   subgraph cluster_ext {
     label="External Systems";
     color="#CBD5E1";
     style="rounded,dashed";
-    pay [shape=box3d, fillcolor="#F8FAFC", label="«external»
-Payment Gateway"];
-    notif [shape=box3d, fillcolor="#F8FAFC", label="«external»
-Notification Service"];
-    printer [shape=box3d, fillcolor="#F8FAFC", label="«external»
-Receipt Printer Gateway"];
+
+    pay [
+      shape=box3d,
+      fillcolor="#F8FAFC",
+      label="«external»\nPayment Gateway"
+    ];
+
+    notif [
+      shape=box3d,
+      fillcolor="#F8FAFC",
+      label="«external»\nNotification Service"
+    ];
+
+    printer [
+      shape=box3d,
+      fillcolor="#F8FAFC",
+      label="«external»\nReceipt Printer Gateway"
+    ];
   }
 
   legend [shape=plaintext, label=<
@@ -90,8 +172,8 @@ Receipt Printer Gateway"];
   { rank=same; workerA; workerB; }
   { rank=same; dbPrimary; dbReplica; }
 
-  host -> lb [label="HTTPS"];
-  server -> lb [label="HTTPS"];
+  host    -> lb [label="HTTPS"];
+  server  -> lb [label="HTTPS"];
   kitchen -> lb [label="HTTPS"];
   cashier -> lb [label="HTTPS"];
   manager -> lb [label="HTTPS"];
@@ -99,12 +181,14 @@ Receipt Printer Gateway"];
   lb -> appA [label="HTTPS"];
   lb -> appB [label="HTTPS"];
 
-  appA -> dbPrimary [label="txn read/write"];
-  appB -> dbPrimary [label="txn read/write"];
+  appA -> dbPrimary [label="transactional read/write"];
+  appB -> dbPrimary [label="transactional read/write"];
+
   dbPrimary -> dbReplica [style=dashed, label="stream replication"];
 
   appA -> queue [style=dashed, label="publish jobs"];
   appB -> queue [style=dashed, label="publish jobs"];
+
   workerA -> queue [label="poll / lock jobs"];
   workerB -> queue [label="poll / lock jobs"];
 
@@ -115,12 +199,14 @@ Receipt Printer Gateway"];
 
   appA -> pay [label="payment calls"];
   appB -> pay [label="payment calls"];
+
   workerA -> notif [label="notifications"];
   workerB -> notif [label="notifications"];
+
   workerA -> printer [label="print jobs"];
   workerB -> printer [label="print jobs"];
 
-  appA -> appB [style=dashed, dir=both, label="stateless failover"];
+  appA -> appB [style=dashed, dir=both, label="failover (stateless)"];
   workerA -> workerB [style=dashed, dir=both, label="redundant consumers"];
 
   views -> legend [style=invis];

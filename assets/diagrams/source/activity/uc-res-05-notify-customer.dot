@@ -3,47 +3,47 @@ digraph G {
   graph [rankdir=TB, newrank=true, splines=polyline, nodesep=0.38, ranksep=0.68, pad=0.25, dpi=170, bgcolor="white", fontname="Arial"];
   node [fontname="Arial"];
   edge [fontname="Arial", fontsize=10, color="#444444", penwidth=1.15, arrowsize=0.75];
-  labelloc="t"; labeljust="c"; fontsize=20; fontname="Arial"; label="UC-RES-05 -- Gửi thông báo cho khách hàng";
+  labelloc="t"; labeljust="c"; fontsize=20; fontname="Arial"; label="UC-RES-05 -- Notify Customer";
 
   subgraph cluster_l1 {
     style="rounded,filled"; fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
-    label="Lễ tân / Quản lý"; fontsize=14; labelloc="t"; labeljust="l";
+    label="Host / Manager"; fontsize=14; labelloc="t"; labeljust="l";
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    n1 [label="Tạo sự kiện cần thông báo:\nđặt bàn mới, đổi giờ,\nđến lượt waitlist", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n8 [label="Xác nhận gửi tay hoặc\nchọn phương án dự phòng", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n1 [label="Create notification request:\nnew reservation, time change,\nwaitlist turn available", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n8 [label="Confirm manual fallback or\nchoose another channel", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
   }
 
   subgraph cluster_l2 {
     style="rounded,filled"; fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
-    label="Hệ thống IRMS"; fontsize=14; labelloc="t"; labeljust="l";
-    n2 [label="Xác định loại thông báo,\nmẫu nội dung và thời điểm gửi", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n3 [label="Có thông tin liên hệ hợp lệ?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n4 [label="Cá nhân hóa nội dung:\nmã đặt bàn, thời gian,\nkhung phản hồi", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n5 [label="Chọn kênh ưu tiên:\nSMS / Email / thông báo nội bộ", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n7 [label="Tạo bản ghi NotificationMessage", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n10 [label="Đánh dấu đã gửi,\nđã xếp hàng hoặc cần gọi tay", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="IRMS"; fontsize=14; labelloc="t"; labeljust="l";
+    n2 [label="Select notification type,\ntemplate, and send timing", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n3 [label="Valid contact information available?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n4 [label="Personalize content:\nreservation code, time,\nresponse window", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n5 [label="Choose preferred channel:\nSMS / Email / internal notice", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n7 [label="Create NotificationMessage record", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n10 [label="Mark as sent,\nqueued, or manual follow-up needed", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
   }
 
   subgraph cluster_l3 {
     style="rounded,filled"; fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
-    label="Dịch vụ thông báo / Khách hàng"; fontsize=14; labelloc="t"; labeljust="l";
-    n6 [label="Gửi thông điệp qua\nkênh đã chọn", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
-    n9 [label="Gửi thành công?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    n11 [label="Khách nhận thông báo\nhoặc hệ thống chờ retry", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    label="Notification Service / Customer"; fontsize=14; labelloc="t"; labeljust="l";
+    n6 [label="Send message through\nthe selected channel", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n9 [label="Sent successfully?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
+    n11 [label="Customer receives the notice\nor the system waits for retry", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n12 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
   }
 
   n0 -> n1;
   n1 -> n2;
   n2 -> n3;
-  n3 -> n4 [xlabel="Có"];
-  n3 -> n8 [xlabel="Không"];
+  n3 -> n4 [xlabel="Yes"];
+  n3 -> n8 [xlabel="No"];
   n4 -> n5;
   n5 -> n7;
   n7 -> n6;
   n6 -> n9;
-  n9 -> n10 [xlabel="Có"];
-  n9 -> n8 [xlabel="Không"];
+  n9 -> n10 [xlabel="Yes"];
+  n9 -> n8 [xlabel="No"];
   n8 -> n10;
   n10 -> n11;
   n11 -> n12;

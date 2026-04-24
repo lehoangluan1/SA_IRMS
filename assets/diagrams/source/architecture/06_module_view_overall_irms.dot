@@ -10,72 +10,72 @@ digraph G {
     splines=ortho,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="UML Package Diagram - Overall Module Structure of IRMS"
+    label="UML Package Diagram - Service Decomposition Overview of IRMS"
   ];
 
   node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.8, margin="0.14,0.08"];
   edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.2];
 
   subgraph cluster_model {
-    label="<<model>> Module View";
+    label="<<model>> Service Decomposition View";
     color="#94A3B8";
     penwidth=1.1;
     style="rounded";
 
     subgraph cluster_core {
-      label="<<package>> Core Transaction Modules";
+      label="<<package>> Core Business Services";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
-      reservation [label="Table and Reservation"];
-      menu [label="Menu"];
-      ordering [label="Ordering"];
-      kitchen [label="Kitchen Coordination"];
-      billing [label="Billing and Payment"];
+      reservation [label="Reservation & Seating\nService"];
+      menu [label="Menu Reference"];
+      ordering [label="Ordering & Menu\nService"];
+      kitchen [label="Kitchen Coordination\nService"];
+      billing [label="Billing & Settlement\nService"];
     }
 
     subgraph cluster_support {
-      label="<<package>> Support Modules";
+      label="<<package>> Supporting Services";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
-      inventory [label="Inventory"];
-      reporting [label="Reporting"];
-      notification [label="Notification"];
+      inventory [label="Inventory Monitoring\nService"];
+      reporting [label="Reporting\nService"];
+      notification [label="Notification\nService"];
     }
 
     subgraph cluster_governance {
-      label="<<package>> Governance Modules";
+      label="<<package>> Governance and Control Services";
       color="#BFDBFE";
       style="rounded,filled";
       fillcolor="#F8FBFF";
-      iam [label="Identity and Access Control"];
-      audit [label="Audit Log"];
+      iam [label="IAM & Audit\nService"];
+      audit [label="Audit Trail"];
     }
   }
 
   reservation -> ordering [label="table and session context"];
   menu -> ordering [label="item validation and pricing"];
-  ordering -> kitchen [label="confirmed order items"];
-  ordering -> billing [label="order snapshot"];
-  billing -> reservation [label="release session"];
+  ordering -> kitchen [label="OrderConfirmed"];
+  ordering -> billing [label="billable snapshot API"];
+  billing -> reservation [label="close table session"];
 
   inventory -> ordering [label="recipe and availability context"];
-  kitchen -> inventory [label="served item event"];
+  kitchen -> inventory [label="OrderItemPrepared"];
 
-  ordering -> reporting [label="sales facts"];
-  billing -> reporting [label="settlement facts"];
-  inventory -> reporting [label="stock facts"];
+  ordering -> reporting [label="OrderConfirmed"];
+  billing -> reporting [label="BillIssued / PaymentCaptured"];
+  inventory -> reporting [label="InventoryLow"];
 
-  reservation -> notification [label="reservation event"];
-  billing -> notification [label="receipt event"];
-  inventory -> notification [label="low-stock alert"];
+  reservation -> notification [label="ReservationConfirmed"];
+  billing -> notification [label="BillIssued"];
+  inventory -> notification [label="InventoryLow"];
 
   iam -> ordering [label="authorize"];
   iam -> billing [label="authorize"];
   iam -> reporting [label="authorize"];
 
   ordering -> audit [label="override trace"];
-  billing -> audit [label="refund trace"];
+  billing -> audit [label="RefundRequested"];
   iam -> audit [label="policy trace"];
 }

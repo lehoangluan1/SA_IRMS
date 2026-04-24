@@ -1,3 +1,8 @@
+param(
+    [ValidateSet("png", "pdf")]
+    [string]$Format = "png"
+)
+
 $ErrorActionPreference = "Stop"
 
 $dot = Get-Command dot -ErrorAction SilentlyContinue
@@ -36,7 +41,7 @@ Get-ChildItem -Path $sourceRoot -Recurse -Filter *.dot | ForEach-Object {
     $targetDir = if ($relativeDir) { Join-Path $renderRoot $relativeDir } else { $renderRoot }
     New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
 
-    $targetFile = Join-Path $targetDir ($_.BaseName + ".png")
+    $targetFile = Join-Path $targetDir ($_.BaseName + "." + $Format)
     $sourceText = Get-Content -LiteralPath $_.FullName -Raw
     $usesNeatoLayout = $sourceText -match 'layout\s*=\s*neato'
 
@@ -45,9 +50,9 @@ Get-ChildItem -Path $sourceRoot -Recurse -Filter *.dot | ForEach-Object {
             throw "The 'neato' command was not found. Install Graphviz with neato support to render fixed-layout diagrams."
         }
 
-        & $neato.Source -n2 -Tpng $_.FullName -o $targetFile
+        & $neato.Source -n2 "-T$Format" $_.FullName -o $targetFile
     } else {
-        & $dot.Source -Tpng $_.FullName -o $targetFile
+        & $dot.Source "-T$Format" $_.FullName -o $targetFile
     }
 
     Write-Host "Rendered $($_.Name) -> $targetFile"

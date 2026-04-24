@@ -51,7 +51,7 @@ Service", pos="215.00,470.50!", pin=true, width=1.7917, height=0.5694];
   }
 
   subgraph cluster_domain {
-    label="Domain Modules";
+    label="Business Service Domains";
     color="#93C5FD";
     style="rounded";
     reservationdomain [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»

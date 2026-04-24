@@ -6,7 +6,7 @@ node [fontname="Arial", shape=plaintext];
 edge [fontname="Arial", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
 
 labelloc="t";
-label="UML Class Diagram - Inventory and Notification Module";
+label="UML Class Diagram - Inventory Monitoring Service and Notification Service";
 rankdir=TB;
 InventoryItem [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
