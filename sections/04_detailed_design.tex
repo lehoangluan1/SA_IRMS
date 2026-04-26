@@ -376,7 +376,7 @@ Hình~\ref{fig:irms-class-governance-module} trình bày phần governance ở m
 \end{itemize}
 
 \FloatBarrier
-\subsection{Thiết kế hành vi dựa trên ca sử dụng}
+\subsection{Thiết kế hành vi}
 Phần này mở rộng trực tiếp từ các ca sử dụng đã đặc tả ở trên. Phần đặc tả ca sử dụng xác định tác nhân, mục tiêu, điều kiện và kết quả nghiệp vụ; còn sơ đồ hoạt động diễn đạt thứ tự xử lý, điểm rẽ nhánh và nơi phát sinh ngoại lệ trong từng luồng vận hành. Vì vậy, các sơ đồ dưới đây được xây dựng theo đúng ranh giới vận hành hiện tại của IRMS: lễ tân, phục vụ, bếp, thu ngân, quản lý và hệ thống IRMS.
 
 Một điểm quan trọng của nhóm sơ đồ này là mức độ chi tiết không hoàn toàn giống nhau. Những ca sử dụng nằm trên tuyến nghiệp vụ nóng như nhận khách, gọi món, gửi bếp, cập nhật chế biến, tạo hóa đơn, thanh toán, hoàn tiền và cập nhật tồn kho được mở rộng sâu hơn vì đây là các vị trí quyết định trực tiếp đến độ trễ phản hồi, độ tin cậy giao dịch và khả năng truy vết của toàn hệ thống.
@@ -491,28 +491,114 @@ Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \e
 
 \activitygroup{Nhóm quản trị cấu hình và vận hành}
 
-\activitydiagramfigure{uc-adm-01-manage-menu-and-pricing}{Sơ đồ hoạt động cho UC-ADM-01 -- Quản lý thực đơn và giá bán}{fig:activity-uc-adm-01-manage-menu-and-pricing}
-
-\activitydiagramfigure{uc-adm-02-manage-roles-and-permissions}{Sơ đồ hoạt động cho UC-ADM-02 -- Quản lý vai trò và phân quyền}{fig:activity-uc-adm-02-manage-roles-and-permissions}
-
-\activitydiagramfigure{uc-adm-03-review-audit-log}{Sơ đồ hoạt động cho UC-ADM-03 -- Xem nhật ký kiểm toán và truy vết thao tác nhạy cảm}{fig:activity-uc-adm-03-review-audit-log}
-
-\paragraph{Phân tích sơ đồ UC-ADM-03.}
-Phần hoạt động này làm rõ rằng nhật ký kiểm toán không chỉ là nơi hệ thống \enquote{ghi lại cho có}, mà là một luồng sử dụng thực sự của khối quản trị. Khi có hoàn tiền bất thường, hủy món sau khi gửi bếp, ghi đè giá, mở lại hóa đơn hoặc thay đổi quyền, quản lý cần một ca sử dụng riêng để truy ngược chuỗi hành động, xem trước--sau, lý do và mã liên kết tới giao dịch gốc. Nếu thiếu ca sử dụng đó, phần audit trong báo cáo sẽ dễ bị hiểu như một thuộc tính kỹ thuật thay vì một khả năng kiểm soát vận hành.
-
-Sơ đồ cũng nhấn mạnh rằng việc xem audit log nhạy cảm bản thân nó là một hành động cần kiểm soát. Đây là chi tiết quan trọng vì dữ liệu kiểm toán thường chạm vào thông tin nhân sự, quyết định tài chính và dấu vết thay đổi cấu hình. Do đó, mô hình hành vi không dừng ở bước \enquote{truy vấn log}, mà còn bổ sung bước kiểm tra quyền, làm mờ dữ liệu nhạy cảm và ghi nhận việc xem hoặc xuất log khi cần.
-
-\activitydiagramfigure{uc-ops-01-manage-staff-shifts}{Sơ đồ hoạt động cho UC-OPS-01 -- Quản lý ca làm nhân viên}{fig:activity-uc-ops-01-manage-staff-shifts}
-
+\activitydiagramfigure{menu}{Sơ đồ hoạt động -- Quản lý thực đơn và giá bán}{fig:menu}
+\begin{itemize}
+    \item Quản lý mở màn hình cấu hình thực đơn và chọn món hoặc danh mục cần chỉnh sửa.
+    
+    \item Hệ thống hiển thị thông tin chi tiết của món, bao gồm giá, trạng thái và các chương trình khuyến mãi hiện tại.
+    
+    \item Quản lý thực hiện chỉnh sửa thông tin món và có thể áp dụng khuyến mãi nếu cần.
+    
+    \item Khi lưu thay đổi, quản lý có thể chọn công bố ngay hoặc thiết lập thời điểm áp dụng theo lịch.
+    
+    \item Hệ thống kiểm tra dữ liệu cấu hình:
+    \begin{itemize}
+        \item Nếu thiếu thông tin bắt buộc, hệ thống yêu cầu bổ sung trước khi tiếp tục.
+        \item Nếu phát hiện xung đột lịch hiệu lực, hệ thống yêu cầu điều chỉnh thời gian áp dụng.
+    \end{itemize}
+    
+    \item Khi dữ liệu hợp lệ, hệ thống tạo phiên bản thực đơn mới và áp dụng thay đổi theo thời điểm đã xác định.
+    
+    \item Các đơn hàng đang mở vẫn giữ nguyên giá đã ghi nhận trước đó để đảm bảo tính nhất quán.
+\end{itemize}
+\activitydiagramfigure{role}{Sơ đồ hoạt động -- Quản lý vai trò và phân quyền}{fig:role}
+\begin{itemize}
+    \item Quản trị viên mở màn hình quản lý người dùng và tìm kiếm người dùng cần cập nhật quyền.
+    
+    \item Hệ thống hiển thị vai trò và danh sách quyền hiện tại của người dùng.
+    
+    \item Quản trị viên thực hiện gán hoặc điều chỉnh vai trò và quyền theo chính sách RBAC.
+    
+    \item Hệ thống xử lý các trường hợp mở rộng:
+    \begin{itemize}
+        \item Gán vai trò tạm thời: quản trị viên thiết lập thời gian hiệu lực và hệ thống áp dụng vai trò trong khoảng thời gian tương ứng.
+        \item Giới hạn theo khu vực: quản trị viên cấu hình phạm vi quyền (bếp, sảnh, quầy) và hệ thống áp dụng ràng buộc theo khu vực.
+    \end{itemize}
+    
+    \item Hệ thống kiểm tra tính hợp lệ của chính sách phân quyền:
+    \begin{itemize}
+        \item Nếu phát hiện xung đột chính sách RBAC, hệ thống yêu cầu quản trị viên điều chỉnh lại quyền.
+        \item Nếu thao tác dẫn đến việc gỡ bỏ quyền quản trị cuối cùng, hệ thống chặn thao tác để đảm bảo luôn tồn tại ít nhất một tài khoản quản trị.
+    \end{itemize}
+    
+    \item Khi dữ liệu hợp lệ, hệ thống lưu thay đổi phân quyền và cập nhật Authorization Policy tương ứng.
+    
+    \item Hệ thống yêu cầu người dùng đăng nhập lại để áp dụng quyền mới.
+    
+    \item Cuối cùng, hệ thống ghi nhận toàn bộ thay đổi vào audit log nhằm phục vụ truy vết và kiểm soát.
+\end{itemize}
+\activitydiagramfigure{log}{Sơ đồ hoạt động -- Xem nhật ký kiểm toán và truy vết thao tác nhạy cảm}{fig:log}
+\begin{itemize}
+    \item Người dùng có thẩm quyền mở màn hình nhật ký kiểm toán để thực hiện tra cứu.
+    
+    \item Hệ thống kiểm tra quyền truy cập:
+    \begin{itemize}
+        \item Nếu không đủ quyền, hệ thống từ chối truy cập hoặc chỉ hiển thị dữ liệu rút gọn.
+        \item Nếu hợp lệ, hệ thống cho phép tiếp tục truy vấn.
+    \end{itemize}
+    
+    \item Người dùng nhập bộ lọc tìm kiếm (thời gian, người thao tác, loại hành động, mã liên kết).
+    
+    \item Hệ thống truy vấn và hiển thị danh sách audit log:
+    \begin{itemize}
+        \item Nếu không có dữ liệu phù hợp, hệ thống thông báo và yêu cầu điều chỉnh bộ lọc.
+        \item Nếu người dùng không đủ quyền, hệ thống làm mờ hoặc ẩn thông tin nhạy cảm.
+    \end{itemize}
+    
+    \item Người dùng chọn một bản ghi để xem chi tiết, bao gồm giá trị trước và sau thay đổi, lý do và ngữ cảnh thực hiện.
+    
+    \item Người dùng có thể xuất báo cáo hoặc đánh dấu bản ghi cần theo dõi.
+    
+    \item Hệ thống ghi nhận hành vi truy cập và thao tác trên audit log nhằm phục vụ kiểm soát và truy vết sau này.
+\end{itemize}
+\activitydiagramfigure{calamviec}{Sơ đồ hoạt động -- Quản lý ca làm nhân viên}{fig:calamviec}
+\begin{itemize}
+    \item Quản lý mở màn hình lịch làm việc và chọn ngày, khu vực cùng loại ca cần phân công.
+    
+    \item Hệ thống hiển thị danh sách nhân viên khả dụng dựa trên vai trò và kỹ năng phù hợp.
+    
+    \item Quản lý thực hiện gán nhân viên vào ca và khu vực làm việc.
+    
+    \item Hệ thống hỗ trợ các trường hợp mở rộng:
+    \begin{itemize}
+        \item Sao chép lịch tuần trước: hệ thống tạo lịch mới dựa trên dữ liệu trước đó và cho phép chỉnh sửa.
+        \item Ca thiếu nhân sự: hệ thống đánh dấu ca chưa đủ người và đưa vào trạng thái chờ xác nhận hoặc bổ sung.
+    \end{itemize}
+    
+    \item Hệ thống kiểm tra các ràng buộc lập lịch:
+    \begin{itemize}
+        \item Nếu phát hiện trùng ca hoặc vượt giới hạn giờ làm, hệ thống chặn lưu và yêu cầu điều chỉnh.
+        \item Nếu nhân viên không thuộc phạm vi khu vực được chọn, hệ thống yêu cầu thay đổi phân công.
+    \end{itemize}
+    
+    \item Khi dữ liệu hợp lệ, quản lý lưu lịch làm việc.
+    
+    \item Hệ thống cập nhật ShiftAssignment và gửi thông báo đến các nhân viên liên quan.
+\end{itemize}
 \subsection{Phản tư về toàn bộ báo cáo và định hướng hiện thực}
-Điểm mạnh lớn nhất của báo cáo là đã duy trì được một đường chỉ đỏ tương đối nhất quán từ bối cảnh nghiệp vụ, yêu cầu phi chức năng, ca sử dụng, kiến trúc, sơ đồ lớp cho tới phần hành vi. Tài liệu không đặt các sơ đồ như những hình minh họa rời rạc, mà dùng mỗi góc nhìn để làm rõ một lớp quyết định riêng của cùng một hệ thống. Nhờ vậy, người đọc có thể lần theo một logic liên tục: từ áp lực vận hành của nhà hàng, sang nhu cầu tách miền nghiệp vụ, sang cách tổ chức mô-đun, thành phần, dữ liệu và các cơ chế xử lý nền.
+Điểm mạnh lớn nhất của báo cáo nằm ở việc duy trì một mạch lập luận nhất quán xuyên suốt từ bối cảnh nghiệp vụ tới yêu cầu phi chức năng, ca sử dụng, quyết định kiến trúc và thiết kế chi tiết. Các sơ đồ không xuất hiện như các minh họa rời rạc. Mỗi góc nhìn được sử dụng để làm rõ một quyết định cụ thể của hệ thống. Nhờ đó, người đọc có thể theo dõi một logic liên tục: áp lực vận hành của nhà hàng dẫn tới việc tách miền nghiệp vụ, từ đó hình thành cách tổ chức service, dữ liệu và luồng xử lý.
 
-Điểm mạnh thứ hai nằm ở việc báo cáo đưa \textbf{ranh giới năng lực nghiệp vụ} vào vị trí trung tâm. Các phần đặt bàn, gọi món, bếp, quyết toán, tồn kho, báo cáo, phân quyền và kiểm toán đều được mô tả như những miền có trách nhiệm riêng thay vì bị hòa thành một khối xử lý chung. Nhờ đó, góc nhìn mô-đun, góc nhìn thành phần và góc nhìn lớp hỗ trợ lẫn nhau khá chặt chẽ. Khi xuất hiện mô-đun \texttt{Billing \& Settlement} trong phần mô-đun, người đọc cũng thấy cụm lớp tương ứng trong phần lớp và thấy tuyến xử lý tương ứng trong phần thành phần. Sự nhất quán này làm cho lập luận kiến trúc có sức nặng hơn nhiều so với cách trình bày chỉ dừng ở danh sách chức năng.
+Một điểm mạnh quan trọng khác là việc đặt ranh giới năng lực nghiệp vụ làm trung tâm. Các miền như Reservation \& Seating, Ordering, Kitchen Coordination, Billing \& Settlement được xác định rõ trách nhiệm. Các ranh giới này được giữ nhất quán khi ánh xạ sang các service và luồng xử lý. Mỗi service sở hữu dữ liệu và logic riêng. Tương tác giữa các service đi qua giao diện công khai, không truy cập chéo vào chi tiết nội bộ. Cách tổ chức này giúp giảm phụ thuộc, đồng thời cho phép thay đổi từng phần mà không ảnh hưởng toàn hệ thống.
 
-Một kết quả tích cực khác là các nguyên lý \textbf{SOLID} không bị trình bày như một phần lý thuyết tách rời. \textbf{SRP} thể hiện ở việc mỗi mô-đun và mỗi lớp điều phối giữ một phạm vi trách nhiệm rõ ràng. \textbf{OCP} xuất hiện ở các điểm mở rộng như \texttt{PaymentGateway}, \texttt{NotificationSender}, \texttt{ReceiptPrinter} và các chính sách định giá, phân quyền. \textbf{LSP} được phản ánh qua yêu cầu mọi bộ kết nối cùng một vai trò phải giữ hợp đồng hành vi nhất quán. \textbf{ISP} thể hiện ở việc tránh tạo các giao diện lớn ôm mọi tích hợp ngoài. \textbf{DIP} là nguyên lý giúp giữ ổn định phần lõi khi các chi tiết công nghệ như cổng thanh toán, kênh thông báo hay cách lưu trữ thay đổi. Nhờ được gắn vào cấu trúc mô-đun, thành phần và lớp, SOLID ở đây mang ý nghĩa kiến trúc thực sự thay vì chỉ là phần diễn giải bổ sung.
+Bên cạnh đó, việc tách biệt luồng giao dịch chính và luồng xử lý bất đồng bộ là một quyết định mang tính nền tảng. Các thao tác tuyến đầu như gọi món, điều phối bếp, thanh toán được giữ trong chuỗi đồng bộ ngắn nhằm đảm bảo phản hồi nhanh và trạng thái nhất quán. Các hệ quả sau giao dịch như thông báo, cập nhật báo cáo, ghi nhận audit được chuyển sang xử lý qua cơ chế sự kiện và xử lý nền. Cách tiếp cận này phản ánh trực tiếp yêu cầu vận hành: tuyến phục vụ cần ổn định, các tác vụ phụ cần linh hoạt.
 
-Tuy nhiên, báo cáo cũng có những giới hạn cần được nhìn nhận thẳng thắn. Hệ thống được mô tả khá đầy đủ ở quy mô một nhà hàng hoặc một cụm nhỏ chi nhánh, nên các quyết định như modular monolith, mô hình đọc riêng cho báo cáo và bộ xử lý nền tách biệt là phù hợp. Dù vậy, khi quy mô tăng lên theo hướng nhiều chi nhánh, nhiều thiết bị, nhiều tích hợp thanh toán và nhiều chính sách giá khác nhau, kiến trúc sẽ cần tiến thêm một bước ở vùng triển khai, khả năng quan sát và chiến lược phân tách dữ liệu. Ngoài ra, một số phần như dự báo nhập hàng, điều phối bếp nâng cao hay xử lý sự cố tích hợp mới dừng ở mức kiến trúc và miền nghiệp vụ, chưa đi sâu tới mức thuật toán hoặc chính sách vận hành chi tiết.
+Các nguyên lý SOLID được thể hiện thông qua cấu trúc hệ thống thay vì tách thành phần lý thuyết. Trách nhiệm được phân tách rõ giữa lớp tiếp nhận yêu cầu, lớp điều phối và mô hình nghiệp vụ. Các tích hợp bên ngoài như thanh toán, thông báo được đặt sau các giao diện trừu tượng. Chiều phụ thuộc được kiểm soát để tránh ràng buộc trực tiếp vào công nghệ cụ thể. Nhờ đó, lõi nghiệp vụ giữ được tính ổn định trong khi các thành phần bên ngoài vẫn có thể thay đổi.
 
-Phần phản tư quan trọng nhất nằm ở kinh nghiệm tổ chức lập luận kiến trúc. Khi bám theo danh sách chức năng, tài liệu rất dễ dừng lại ở việc hệ thống có những gì. Khi chuyển trọng tâm sang giao dịch lõi, hệ quả phụ, biên mô-đun, điểm mở rộng và ranh giới dữ liệu, báo cáo mới bắt đầu thể hiện đúng bản chất của một tài liệu kiến trúc. Từ đó có thể rút ra một nguyên tắc rõ ràng: chất lượng báo cáo không nằm ở số lượng sơ đồ, mà nằm ở việc mỗi sơ đồ có bảo vệ được một quyết định thiết kế cụ thể hay không.
+Tuy nhiên, kiến trúc hiện tại phản ánh một bối cảnh vận hành tương đối tập trung. Khi mở rộng theo hướng nhiều chi nhánh hoặc nhiều tích hợp, các vấn đề về triển khai, quan sát hệ thống và quản lý dữ liệu giữa các service sẽ trở nên rõ rệt hơn. Một số năng lực như dự báo tồn kho, tối ưu điều phối bếp, xử lý lỗi tích hợp mới dừng ở mức kiến trúc, chưa đi sâu vào chiến lược vận hành chi tiết.
 
-Giá trị lâu dài của tài liệu này là tạo ra một khung quyết định có thể tiếp tục dùng trong giai đoạn hiện thực. Những ranh giới như \texttt{Reservation \& Seating}, \texttt{Ordering}, \texttt{Kitchen Coordination}, \texttt{Billing \& Settlement}, \texttt{Inventory}, \texttt{Reporting} và \texttt{IAM / Audit} đã được neo tương đối rõ; vì vậy, phần mã nguồn về sau có thể dùng chính các ranh giới đó làm chuẩn để tự kiểm tra chất lượng tổ chức mã. Nếu giữ được vai trò này, báo cáo không chỉ là tài liệu trình bày, mà còn là bản thiết kế có khả năng dẫn hướng cho việc phát triển hệ thống.
+Về mặt kinh nghiệm, giá trị quan trọng nhất của báo cáo nằm ở cách chuyển trọng tâm từ việc liệt kê chức năng sang việc làm rõ cách hệ thống vận hành. Khi lập luận xoay quanh giao dịch cốt lõi, ranh giới service, luồng đồng bộ và bất đồng bộ, tài liệu phản ánh đúng bản chất của thiết kế kiến trúc. Từ đó có thể rút ra một nguyên tắc: giá trị của báo cáo không nằm ở số lượng sơ đồ, mà nằm ở khả năng mỗi sơ đồ làm rõ một quyết định thiết kế cụ thể.
+
+Trong giai đoạn hiện thực, các quyết định kiến trúc có thể được sử dụng trực tiếp làm khung triển khai. Các service được hiện thực theo đúng ranh giới nghiệp vụ. Lớp API và cổng vào đảm nhiệm kiểm soát truy cập và điều phối yêu cầu. Cơ chế Outbox và xử lý nền được sử dụng để xử lý các sự kiện bất đồng bộ. Dữ liệu được tách giữa giao dịch và mô hình đọc nhằm cân bằng tính nhất quán và hiệu năng.
+
+Nếu các ranh giới service và nguyên tắc tách luồng xử lý được giữ vững, kiến trúc có thể đóng vai trò như một tiêu chuẩn kiểm soát chất lượng mã nguồn. Khi đó, báo cáo không chỉ là tài liệu mô tả, mà trở thành cơ sở dẫn hướng cho quá trình phát triển hệ thống.
+\pagebreak

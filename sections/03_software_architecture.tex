@@ -42,7 +42,7 @@ Nhìn tổng thể, kiến trúc IRMS hướng đến một cấu trúc rõ ràn
   \includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{21_logical_view_overview_business_capability_layers.pdf}
 }{
   \IfFileExists{21_logical_view_overview_business_capability_layers.png}{
-    \includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{21_logical_view_overview_business_capability_layers.png}
+    \includegraphics[width=\textwidth,height=0.82\textheight,keepaspectratio]{sodologictongquan.png}
   }{
     \fbox{\parbox{0.82\linewidth}{Thiếu file \texttt{21\_logical\_view\_overview\_business\_capability\_layers.(pdf/png)}.}}
   }
@@ -50,26 +50,21 @@ Nhìn tổng thể, kiến trúc IRMS hướng đến một cấu trúc rõ ràn
 \caption{Sơ đồ tổng quan cho góc nhìn logic của IRMS}
 \label{fig:irms-logical-overview-supplement}
 \end{figure}
-Hình~\ref{fig:irms-logical-overview-supplement} trình bày bức tranh tổng quan của góc nhìn logic trong hệ thống IRMS. Nếu góc nhìn chức năng tập trung vào việc hệ thống hỗ trợ những thao tác nào cho người dùng, thì góc nhìn logic tập trung vào việc xác định các năng lực nghiệp vụ nào tồn tại trong hệ thống và mối quan hệ giữa chúng. Nói cách khác, góc nhìn này mô tả cách hệ thống được phân rã thành các miền trách nhiệm nghiệp vụ trước khi được hiện thực hóa thành các service trong kiến trúc triển khai.
+Hình~\ref{fig:irms-logical-overview-supplement} trình bày góc nhìn logic của hệ thống IRMS dưới dạng UML Package, trong đó hệ thống được tổ chức dựa trên các năng lực nghiệp vụ (capabilities) thay vì theo giao diện người dùng hoặc cấu trúc kỹ thuật. Mục tiêu của góc nhìn này là xác định các miền nghiệp vụ độc lập, đồng thời thể hiện mối quan hệ tương tác giữa chúng trước khi được ánh xạ sang các service trong kiến trúc triển khai.
 
-Trong kiến trúc IRMS, góc nhìn logic được xây dựng theo hướng service-based architecture kết hợp event-driven interaction ở mức khái niệm. Mỗi năng lực nghiệp vụ được xem như một miền logic độc lập, có ranh giới trách nhiệm rõ ràng và có thể được ánh xạ sang một service hoặc một phần của service trong lớp backend. Các năng lực này tương tác với nhau thông qua hai cơ chế chính: gọi dịch vụ đồng bộ trong các luồng xử lý trực tiếp, và phát sinh sự kiện nghiệp vụ (domain events) để truyền tải thông tin và tách biệt trách nhiệm xử lý.
+Trong kiến trúc IRMS, góc nhìn logic được xây dựng theo hướng service-based architecture kết hợp với cơ chế event-driven interaction ở mức khái niệm. Mỗi package tương ứng với một miền năng lực có ranh giới rõ ràng. Sự tương tác giữa các miền được thể hiện thông qua hai cơ chế chính, bao gồm giao tiếp đồng bộ theo mô hình request/response trong luồng nghiệp vụ chính và giao tiếp bất đồng bộ thông qua domain events nhằm truyền tải thông tin vận hành mà không làm tăng mức độ phụ thuộc giữa các miền.
 
-Các nhóm năng lực chính trong hệ thống bao gồm:
+Từ cách tổ chức này, các năng lực nghiệp vụ trong hệ thống được phân nhóm theo vai trò trong kiến trúc tổng thể.
 
-\begin{itemize}
-    \item \textbf{Nhóm năng lực lõi}: gồm Table and Reservation, Ordering, Kitchen Coordination và Billing and Settlement. Đây là chuỗi năng lực trực tiếp phục vụ quy trình vận hành chính của nhà hàng, từ khi tiếp nhận khách đến khi hoàn tất thanh toán.
-    
-    \item \textbf{Nhóm năng lực tham chiếu và điều kiện vận hành}: gồm Menu Management và Inventory Monitoring. Nhóm này cung cấp dữ liệu và quy tắc nền cho các luồng nghiệp vụ chính như thông tin món ăn, giá bán và trạng thái tồn kho.
-    
-    \item \textbf{Nhóm năng lực hỗ trợ vận hành}: gồm Notification Integration và Reporting and Analytics. Các năng lực này xử lý thông tin vận hành theo hướng bất đồng bộ để phục vụ thông báo và báo cáo.
-    
-    \item \textbf{Nhóm năng lực kiểm soát hệ thống}: gồm Identity and Access Control và Audit and Compliance. Đây là lớp năng lực đảm bảo phân quyền, kiểm soát truy cập và ghi nhận lịch sử hoạt động của hệ thống.
-\end{itemize}
+\textbf{Thứ nhất, nhóm năng lực tham chiếu và điều kiện vận hành} đóng vai trò cung cấp dữ liệu nền và đảm bảo điều kiện cho các luồng nghiệp vụ chính. \textit{Menu Management} chịu trách nhiệm quản lý thông tin món ăn, giá bán và trạng thái hiển thị, trong khi \textit{Inventory Monitoring} theo dõi tình trạng tồn kho và phát hiện các điều kiện thiếu hụt nguyên liệu. Nhóm này không trực tiếp tham gia xử lý giao dịch nhưng ảnh hưởng đến tính hợp lệ của dữ liệu trong toàn bộ hệ thống.
 
-Việc phân nhóm năng lực như trên giúp làm rõ ranh giới nghiệp vụ giữa các miền, đồng thời tạo cơ sở cho việc ánh xạ sang các service trong kiến trúc service-based ở lớp triển khai. Các năng lực lõi được ưu tiên trong luồng đồng bộ, trong khi các năng lực hỗ trợ và kiểm soát thường được kích hoạt thông qua cơ chế sự kiện nhằm giảm phụ thuộc trực tiếp.
+\textbf{Thứ hai, chuỗi năng lực cốt lõi} phản ánh toàn bộ vòng đời phục vụ trong nhà hàng. \textit{Reservation \& Seating} đảm nhiệm việc quản lý đặt bàn và phân bổ chỗ ngồi, tạo ngữ cảnh cho \textit{Ordering} trong quá trình tiếp nhận đơn hàng. Sau đó, \textit{Kitchen Coordination} tiếp nhận thông tin từ đơn hàng để điều phối quá trình chế biến món ăn, trong khi \textit{Billing \& Settlement} thực hiện thanh toán và kết thúc phiên phục vụ. Các năng lực trong chuỗi này có quan hệ phụ thuộc logic rõ ràng nhằm đảm bảo luồng nghiệp vụ được xử lý nhất quán.
 
-Như vậy, góc nhìn logic đóng vai trò như một bản đồ năng lực nghiệp vụ của hệ thống IRMS, là nền tảng để triển khai các mô-đun, service và các luồng xử lý trong các góc nhìn kiến trúc tiếp theo.
+\textbf{Thứ ba, nhóm năng lực hỗ trợ và phân tích} chịu trách nhiệm xử lý thông tin vận hành theo hướng bất đồng bộ. \textit{Notification Integration} tiếp nhận các sự kiện phát sinh để thực hiện thông báo, trong khi \textit{Reporting \& Analytics} tổng hợp dữ liệu từ nhiều miền nghiệp vụ nhằm phục vụ thống kê và phân tích. Việc tách nhóm này giúp giảm tải cho luồng xử lý chính và tăng khả năng mở rộng hệ thống.
 
+\textbf{Thứ tư, nhóm năng lực kiểm soát hệ thống} đảm bảo các yêu cầu về bảo mật, phân quyền và truy vết. \textit{Identity \& Access Control} quản lý xác thực và phân quyền người dùng, trong khi \textit{Audit \& Compliance} ghi nhận lịch sử hoạt động để phục vụ kiểm toán và tuân thủ. Đây là các năng lực xuyên suốt toàn hệ thống nhưng không tham gia trực tiếp vào luồng nghiệp vụ chính.
+
+Tổng thể, góc nhìn logic đóng vai trò như bản đồ năng lực nghiệp vụ của hệ thống IRMS, giúp xác định rõ ranh giới giữa các miền chức năng và cách chúng tương tác với nhau. Đây cũng là nền tảng quan trọng để ánh xạ sang các service trong kiến trúc service-based và hỗ trợ triển khai mô hình event-driven trong các góc nhìn tiếp theo.
 \subsubsection{Tổng quan cho góc nhìn mô-đun}
 \noindent
 Trong báo cáo này, góc nhìn mô-đun được trình bày theo tinh thần \textbf{decomposition view} kết hợp với \textbf{uses/layered constraints}. Nói cách khác, phần mô-đun không chỉ liệt kê hệ thống có những khối nào, mà còn chỉ ra khối nào được phép phụ thuộc vào khối nào, thông tin nào là phụ thuộc tĩnh, và đâu là những liên hệ chỉ nên xuất hiện dưới dạng hệ quả sự kiện sau giao dịch.
@@ -202,8 +197,6 @@ Các năng lực được xác định dựa trên vòng đời vận hành củ
 
 \subsubsection{Sơ đồ phân rã năng lực logic ban đầu}
 
-Hình~{fig:irms-initial-components} thể hiện bước phân rã ban đầu các năng lực nghiệp vụ trong hệ thống IRMS. Ở giai đoạn này, hệ thống được nhìn dưới góc độ chức năng trực tiếp, phản ánh gần với thao tác người dùng và các quy trình vận hành thực tế trong nhà hàng.
-
 \begin{figure}[H]
 \centering
 \IfFileExists{04_initial_logical_components_cua_irms.pdf}{
@@ -218,6 +211,9 @@ Hình~{fig:irms-initial-components} thể hiện bước phân rã ban đầu c�
 \caption{Sơ đồ phân rã năng lực logic ban đầu của IRMS}
 \label{fig:irms-initial-components}
 \end{figure}
+
+Hình~\ref{fig:irms-initial-components} thể hiện bước phân rã ban đầu các năng lực nghiệp vụ trong hệ thống IRMS. Ở giai đoạn này, hệ thống được nhìn dưới góc độ chức năng trực tiếp, phản ánh gần với thao tác người dùng và các quy trình vận hành thực tế trong nhà hàng.
+
 Trong sơ đồ này, các năng lực được xác định theo hướng chức năng bề mặt như quản lý bàn, tiếp nhận đơn gọi món, điều phối bếp, thanh toán, quản lý tồn kho, báo cáo, kiểm soát truy cập và giám sát hệ thống. Cách phân rã này phù hợp trong giai đoạn đầu của quá trình phân tích, vì giúp đảm bảo bao phủ đầy đủ các yêu cầu nghiệp vụ và phản ánh trực tiếp các hoạt động chính của hệ thống.
 
 Mục tiêu của bước phân rã này không phải là tối ưu kiến trúc, mà là nhận diện đầy đủ phạm vi năng lực của hệ thống IRMS. Do đó, các năng lực được mô tả theo cách gần với quy trình vận hành thực tế để dễ kiểm tra và tránh bỏ sót chức năng quan trọng.
@@ -226,8 +222,6 @@ Tuy nhiên, ở mức phân rã này, các năng lực vẫn mang tính rời r�
 
 Vì vậy, sơ đồ này được xem là bước khởi tạo trong quá trình phân tích logic, đóng vai trò nền tảng để tiếp tục tái cấu trúc và gom nhóm các năng lực thành các miền nghiệp vụ ổn định hơn ở bước tiếp theo.
 \subsubsection{Sơ đồ phân rã năng lực logic hoàn chỉnh}
-
-Dựa trên quá trình tinh chỉnh và gom nhóm các năng lực nghiệp vụ, hệ thống IRMS được tái cấu trúc thành các miền năng lực ổn định hơn như thể hiện trong Hình~{fig:irms-refined-components}.
 
 \begin{figure}[H]
 \centering
@@ -243,6 +237,7 @@ Dựa trên quá trình tinh chỉnh và gom nhóm các năng lực nghiệp v�
 \caption{Sơ đồ phân rã năng lực logic của IRMS}
 \label{fig:irms-refined-components}
 \end{figure}
+Dựa trên quá trình tinh chỉnh và gom nhóm các năng lực nghiệp vụ, hệ thống IRMS được tái cấu trúc thành các miền năng lực ổn định hơn như thể hiện trong Hình~\ref{fig:irms-refined-components}.
 
 Trong cấu trúc này, các năng lực được tổ chức lại theo các miền nghiệp vụ có mức độ kết dính cao hơn và phản ánh đầy đủ vòng đời vận hành của nhà hàng, bao gồm:
 
@@ -266,8 +261,6 @@ Từ góc độ kiến trúc, đây là bước chuyển từ functional decompo
 Bên cạnh đó, cấu trúc này cũng tạo nền tảng cho mô hình event-driven processing trong các góc nhìn kiến trúc tiếp theo. Các miền năng lực có thể trao đổi thông tin thông qua sự kiện nghiệp vụ thay vì phụ thuộc trực tiếp lẫn nhau, từ đó giảm coupling giữa các thành phần và tăng khả năng mở rộng của hệ thống trong dài hạn.
 \subsubsection{Sơ đồ chuỗi phục vụ lõi}
 
-Hình~{fig:irms-logical-core-chain} mô tả cách các năng lực logic lõi tương tác với nhau trong chuỗi phục vụ chính của hệ thống IRMS.
-
 \begin{figure}[H]
 \centering
 \IfFileExists{34_logical_view_core_service_chain.pdf}{
@@ -282,6 +275,7 @@ Hình~{fig:irms-logical-core-chain} mô tả cách các năng lực logic lõi t
 \caption{Góc nhìn logic cho chuỗi phục vụ lõi của IRMS}
 \label{fig:irms-logical-core-chain}
 \end{figure}
+Hình~\ref{fig:irms-logical-core-chain} mô tả cách các năng lực logic lõi tương tác với nhau trong chuỗi phục vụ chính của hệ thống IRMS.
 
 Chuỗi này bao gồm bốn miền năng lực chính:
 
@@ -297,7 +291,7 @@ Sơ đồ thể hiện rằng hệ thống không vận hành như tập hợp c
 Trong chuỗi này, các miền nghiệp vụ chỉ trao đổi lượng thông tin tối thiểu cần thiết để đảm bảo tính nhất quán của luồng xử lý. Reservation \& Seating cung cấp ngữ cảnh phiên bàn hợp lệ; Ordering tạo và xác nhận thông tin đơn gọi món; Kitchen Coordination tiếp nhận và xử lý trạng thái chế biến; trong khi Billing \& Settlement sử dụng dữ liệu đã được chốt để thực hiện quyết toán và kết thúc phiên phục vụ.
 
 Cách tổ chức này giúp đảm bảo luồng nghiệp vụ chính có tính tuyến tính và dễ kiểm soát, đồng thời giảm thiểu sự phụ thuộc trực tiếp giữa các miền nghiệp vụ. Về mặt kiến trúc, đây là cơ sở để hiện thực hóa các tương tác giữa các năng lực thông qua cơ chế gọi dịch vụ đồng bộ trong luồng chính và cơ chế sự kiện nghiệp vụ (domain events) cho các tương tác mở rộng trong các góc nhìn triển khai phía sau.
-\subsection{Ý nghĩa kiến trúc của góc nhìn logic}
+\subsubsection{Ý nghĩa kiến trúc của góc nhìn logic}
 
 Góc nhìn logic đóng vai trò là lớp nền quan trọng trong kiến trúc service-based của IRMS. Thay vì mô tả hệ thống theo giao diện người dùng hoặc các thành phần kỹ thuật, góc nhìn này xác định các miền nghiệp vụ cốt lõi dưới dạng các capability độc lập, từ đó làm cơ sở trực tiếp cho việc thiết kế các service ở lớp backend.
 
