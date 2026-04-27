@@ -1,7 +1,7 @@
 \section{Mô hình hóa hệ thống}
 
-\subsection{Danh mục ca sử dụng}\label{sec:system-modeling-overview}
-Phần mô hình hóa này đóng vai trò cầu nối giữa Chương 1 và chương kiến trúc. Mục tiêu không chỉ là liệt kê chức năng, mà là khóa ba vấn đề tiền kiến trúc của IRMS: \textbf{biên hệ thống nằm ở đâu}, \textbf{những năng lực nghiệp vụ nào sẽ trở thành các service chính}, và \textbf{những luồng đầu-cuối nào phải được bảo vệ khi lựa chọn cấu trúc phần mềm}. Với hướng đọc dịch vụ, ba mô hình mở đầu được dùng để chốt ranh giới hệ thống, chốt các nhóm use case sẽ ánh xạ thành service theo năng lực nghiệp vụ, và chốt các điểm cần phối hợp đồng bộ hay bất đồng bộ. Việc đọc ba hình này cũng giúp phần đặc tả ca sử dụng phía sau bám sát toàn hệ thống thay vì bị nhìn như các kịch bản rời rạc; phần định vị và biện minh tương ứng được nối trực tiếp về Bảng~\ref{tab:appendix-traceability} và Bảng~\ref{tab:appendix-view-rationale} trong Phụ lục~\ref{appendix:traceability} và Phụ lục~\ref{appendix:view-rationale}.
+\subsection{Danh mục use cases}\label{sec:system-modeling-overview}
+Phần mô hình hóa này đóng vai trò cầu nối giữa Chương 1 và chương kiến trúc. Mục tiêu không chỉ là liệt kê chức năng, mà là khóa ba vấn đề tiền kiến trúc của IRMS: \textbf{biên hệ thống nằm ở đâu}, \textbf{những năng lực nghiệp vụ nào sẽ trở thành các miền trách nhiệm chính}, và \textbf{những luồng đầu-cuối nào phải được bảo vệ khi lựa chọn cấu trúc phần mềm}. Với hướng đọc service-based, ba mô hình mở đầu được dùng để chốt ranh giới hệ thống, chốt các nhóm use case sẽ ánh xạ thành domain service, và chốt các điểm cần phối hợp đồng bộ hay bất đồng bộ. Việc đọc ba hình này cũng giúp phần đặc tả use cases phía sau bám sát toàn hệ thống thay vì bị nhìn như các kịch bản rời rạc; phần định vị và biện minh tương ứng được nối trực tiếp về Bảng~\ref{tab:appendix-traceability} và Bảng~\ref{tab:appendix-view-rationale} trong Phụ lục~\ref{appendix:traceability} và Phụ lục~\ref{appendix:view-rationale}.
 
 \begin{figure}[H]
 \centering
@@ -37,14 +37,14 @@ Vì vậy, sơ đồ ngữ cảnh là nền cho mọi quyết định kiến tr�
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth,height=0.84\textheight,keepaspectratio]{02_use_case_overview_cua_irms.png}
-\caption{Sơ đồ tổng quan ca sử dụng của IRMS}
+\caption{Sơ đồ tổng quan use cases của IRMS}
 \label{fig:irms-usecase-overview}
 \end{figure}
 
 
-Hình~\ref{fig:irms-usecase-overview} trình bày tập ca sử dụng ở mức bao quát. Để giữ sơ đồ đủ khả năng đọc nhưng vẫn bám sát đặc tả use case, các use case được gom theo các cụm lớn bám theo dòng giá trị nghiệp vụ thay vì triển khai toàn bộ chi tiết mức đặc tả. Ở mức overview, hình nhấn mạnh các khối \textsf{Reservation and Seating}, \textsf{Ordering and Kitchen}, \textsf{Billing and Settlement}, \textsf{Inventory and Replenishment Support} và \textsf{Operations and Governance}. Cách nhóm này cũng là cơ sở trực tiếp để ánh xạ sang các service theo năng lực nghiệp vụ ở chương kiến trúc.
+Hình~\ref{fig:irms-usecase-overview} trình bày tập use cases ở mức bao quát. Để giữ sơ đồ đủ khả năng đọc nhưng vẫn bám sát đặc tả use case, các use cases được gom theo các cụm lớn bám theo dòng giá trị nghiệp vụ thay vì triển khai toàn bộ chi tiết mức đặc tả. Ở mức overview, hình nhấn mạnh các khối \texttt{Reservation and Seating}, \texttt{Ordering and Kitchen}, \texttt{Billing and Settlement}, \texttt{Inventory and Replenishment Support} và \texttt{Operations and Governance}. Cách nhóm này cũng là cơ sở trực tiếp để ánh xạ sang các domain service ở chương kiến trúc.
 
-Nhìn dưới góc độ kiến trúc, sơ đồ tổng quan ca sử dụng không chỉ trả lời \enquote{hệ thống có những chức năng gì}, mà còn chỉ ra \enquote{chức năng nào thuộc một miền dịch vụ riêng}, \enquote{chức năng nào nằm trên đường giao dịch nóng}, và \enquote{chức năng nào phù hợp hơn với luồng phản ứng theo sự kiện}. Đây là bước trung gian quan trọng trước khi ánh xạ các năng lực này sang góc nhìn logic, góc nhìn phân rã dịch vụ và góc nhìn thành phần--kết nối ở chương sau.
+Nhìn dưới góc độ kiến trúc, sơ đồ tổng quan use cases không chỉ trả lời \enquote{hệ thống có những chức năng gì}, mà còn chỉ ra \enquote{chức năng nào thuộc một miền dịch vụ riêng}, \enquote{chức năng nào nằm trên đường giao dịch nóng}, và \enquote{chức năng nào phù hợp hơn với luồng phản ứng theo sự kiện}. Đây là bước trung gian quan trọng trước khi ánh xạ các năng lực này sang logic view, module view và component-and-connector view ở chương sau.
 
 \paragraph{Các cụm năng lực cần đọc từ sơ đồ.}
 \begin{itemize}
@@ -55,7 +55,7 @@ Nhìn dưới góc độ kiến trúc, sơ đồ tổng quan ca sử dụng khô
   \item \textbf{Governance and Analytics}: bao phủ quản trị thực đơn, phân quyền, kiểm toán, báo cáo và điều hành vận hành; đây là phạm vi của \textsf{Reporting Service} và \textsf{IAM \& Audit Service}.
 \end{itemize}
 
-Việc gom theo cụm ở mức tổng quan giúp hình giữ được khả năng đọc, còn phần chi tiết của từng mã ca sử dụng được triển khai ngay sau đó. Cách trình bày này cũng tạo nhịp chuyển trực tiếp sang các góc nhìn logic và phân rã dịch vụ, nơi các cụm nghiệp vụ này được dùng như ranh giới trách nhiệm của từng service.
+Việc gom theo cụm ở mức tổng quan giúp hình giữ được khả năng đọc, còn phần chi tiết của từng mã usecases được triển khai ngay sau đó. Cách trình bày này cũng tạo nhịp chuyển trực tiếp sang các góc nhìn logic và mô-đun, nơi các cụm nghiệp vụ này được dùng như ranh giới trách nhiệm của từng service.
 
 \begin{figure}[H]
 \centering
@@ -79,10 +79,10 @@ Hình~\ref{fig:irms-activity-end-to-end} mô tả một vòng vận hành điể
 
 \begin{table}[H]
 \centering
-\caption{Danh mục 26 ca sử dụng chính được đặc tả chi tiết}
+\caption{Danh mục 26 use cases chính được đặc tả chi tiết}
 \begin{tabularx}{\textwidth}{>{\bfseries}p{4.0cm} X}
 \toprule
-Nhóm & Mã ca sử dụng \\
+Nhóm & Mã use case \\
 \midrule
 Nhóm đặt bàn và bàn ăn & UC-RES-01, UC-RES-02, UC-RES-03, UC-RES-04, UC-RES-05 \\
 Nhóm gọi món và điều phối bếp & UC-ORD-01, UC-ORD-02, UC-ORD-03, UC-KIT-01, UC-KIT-02, UC-KIT-03, UC-ORD-04 \\
@@ -93,7 +93,7 @@ Nhóm quản trị, kiểm toán và phân tích & UC-REP-01, UC-ADM-01, UC-ADM-
 \end{tabularx}
 \end{table}
 
-Năm ca sử dụng giữ vai trò khóa kín phạm vi ở phần này là \textsf{UC-RES-04}, \textsf{UC-RES-05}, \textsf{UC-KIT-03}, \textsf{UC-INV-03} và \textsf{UC-ADM-03}. Chúng làm rõ các mắt xích dễ bị xem nhẹ khi mô tả hệ thống nhà hàng ở mức khái quát: kết thúc vòng đời bàn sau thanh toán, giao tiếp chủ động với khách hàng, điều phối ưu tiên trong bếp, hỗ trợ quyết định nhập hàng từ dữ liệu tiêu hao lịch sử và truy vết thao tác nhạy cảm ở tầng quản trị.
+Năm use cases giữ vai trò khóa kín phạm vi ở phần này là \texttt{UC-RES-04}, \texttt{UC-RES-05}, \texttt{UC-KIT-03}, \texttt{UC-INV-03} và \texttt{UC-ADM-03}. Chúng làm rõ các mắt xích dễ bị xem nhẹ khi mô tả hệ thống nhà hàng ở mức khái quát: kết thúc vòng đời bàn sau thanh toán, giao tiếp chủ động với khách hàng, điều phối ưu tiên trong bếp, hỗ trợ quyết định nhập hàng từ dữ liệu tiêu hao lịch sử và truy vết thao tác nhạy cảm ở tầng quản trị.
 
 \subsection{Góc nhìn sử dụng}
 Góc nhìn sử dụng được dùng như bộ kịch bản kiểm chứng kiến trúc. Trong các tình huống chuỗi tương tác logic quá dài sẽ gây ra tình huống khó quản lý, vận hành. Bốn kịch bản dưới đây được chọn vì chạm vào bốn mối quan tâm kiến trúc lớn của IRMS: tính đúng đắn khi gán bàn, độ đáp ứng của luồng gọi món, độ tin cậy của thanh toán, và khả năng cô lập các luồng hỗ trợ như tồn kho và cảnh báo. Đồng thời, đây cũng là bốn kịch bản thể hiện rõ nhất điểm nào nên sử dụng API đồng bộ và điểm nào nên phối hợp theo sự kiện nội bộ.
@@ -277,7 +277,7 @@ Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và p
   \item Việc tách riêng tầng chính sách và tầng thông báo làm tăng khả năng thay đổi.
 \end{itemize}
 
-\subsection{Đặc tả ca sử dụng}
+\subsection{Đặc tả use cases}
 
 \renewcommand{\arraystretch}{1.3}
 
@@ -2482,11 +2482,6 @@ Người dùng có thẩm quyền mở màn hình kiểm toán để điều tra
 \item 4b. Người dùng điều chỉnh bộ lọc tìm kiếm.
 \end{itemize}
 
-\textbf{E3. Hệ thống audit chậm}
-\begin{itemize}
-\item 4a. Hệ thống chuyển sang chế độ đọc hạn chế.
-\item 4b. Thông báo tình trạng cho quản trị viên.
-\end{itemize}
 
 \vspace{0.3mm}
 \end{minipage}
