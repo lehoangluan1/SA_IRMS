@@ -388,9 +388,7 @@ Một điểm quan trọng của nhóm sơ đồ này là mức độ chi tiết
 \activitydiagramfigure{uc-res-02-checkin-and-seat}{Sơ đồ hoạt động cho UC-RES-02 -- Nhận khách và sắp bàn}{fig:activity-uc-res-02-checkin-and-seat}
 
 \paragraph{Phân tích sơ đồ UC-RES-02.}
-Luồng hoạt động trong trường hợp này bám sát thực tế tại quầy lễ tân: tìm đặt bàn, kiểm tra hiệu lực, đối chiếu số khách thực tế, xác định có cần đổi bàn hoặc ghép bàn hay không, sau đó mới mở \textsf{TableSession}. Việc \textbf{mở phiên phục vụ bàn} diễn ra sau bước kiểm tra bàn khả dụng, nhờ đó báo cáo giữ được bất biến quan trọng rằng một bàn không có hai phiên phục vụ hoạt động cùng lúc.
-
-Trong tình huống ngoại lệ đặt bàn quá giờ giữ chỗ, hệ thống không tự động bỏ qua mà chuyển sang bước phê duyệt của quản lý. Cách mô tả này bám sát phần đặc tả ca sử dụng phía trên và phản ánh đúng yêu cầu kiểm soát nghiệp vụ của IRMS.
+Luồng hoạt động trong trường hợp này bám sát thực tế tại quầy lễ tân: tìm đặt bàn, kiểm tra hiệu lực, đối chiếu số khách thực tế, xác định có cần đổi bàn hoặc ghép bàn hay không, sau đó mới mở \textsf{TableSession}. Việc \textbf{mở phiên phục vụ bàn} diễn ra sau bước kiểm tra bàn khả dụng, nhờ đó báo cáo giữ được bất biến quan trọng rằng một bàn không có hai phiên phục vụ hoạt động cùng lúc. Trong tình huống ngoại lệ đặt bàn quá giờ giữ chỗ, hệ thống không tự động bỏ qua mà chuyển sang bước phê duyệt của quản lý.
 
 \activitydiagramfigure{uc-res-03-manage-waitlist}{Sơ đồ hoạt động cho UC-RES-03 -- Quản lý danh sách chờ}{fig:activity-uc-res-03-manage-waitlist}
 
@@ -399,7 +397,7 @@ Trong tình huống ngoại lệ đặt bàn quá giờ giữ chỗ, hệ thốn
 \paragraph{Phân tích sơ đồ UC-RES-04.}
 Luồng này làm rõ phần nằm giữa \textbf{kết thúc phục vụ} và \textbf{bắt đầu vòng quay bàn mới}. Trong vận hành thực tế, việc một bàn trở thành \textsf{Available} phải đi qua chuỗi kiểm tra rõ ràng: còn phiên phục vụ nào đang mở không, còn split hoặc công nợ nào chưa tất toán không, bàn đã chuyển sang \textsf{Cleaning} chưa, và nhân viên đã xác nhận dọn xong chưa.
 
-Khi bàn được giải phóng thành công, hệ thống không chỉ đổi một nhãn trạng thái; nó còn cập nhật nền cho việc gọi khách tiếp theo, tính vòng quay bàn và tránh lỗi gán trùng trong giờ cao điểm.
+Khi bàn được giải phóng thành công, hệ thống đổi nhãn trạng thái, cập nhật nền cho việc gọi khách tiếp theo, tính vòng quay bàn và tránh lỗi gán trùng trong giờ cao điểm.
 
 \activitydiagramfigure{uc-res-05-notify-customer}{Sơ đồ hoạt động cho UC-RES-05 -- Gửi thông báo cho khách hàng}{fig:activity-uc-res-05-notify-customer}
 
@@ -417,7 +415,7 @@ Sơ đồ cũng giữ đúng ranh giới với ca sử dụng gửi bếp. Ở �
 \activitydiagramfigure{uc-ord-03-send-order-to-kitchen}{Sơ đồ hoạt động cho UC-ORD-03 -- Gửi đơn gọi món sang bếp}{fig:activity-uc-ord-03-send-order-to-kitchen}
 
 \paragraph{Phân tích sơ đồ UC-ORD-03.}
-Đây là một trong những sơ đồ hoạt động quan trọng nhất của báo cáo vì nó nằm đúng trên ranh giới giữa tuyến gọi món của phục vụ và tuyến điều phối của bếp. Luồng hoạt động này làm rõ các bước kiểm tra điều kiện gửi, tách riêng các dòng món gửi ngay và các dòng món phục vụ sau, kiểm tra quy tắc định tuyến theo trạm, tạo \textsf{KitchenTicket}, xếp hàng theo độ ưu tiên và cập nhật trạng thái đơn gọi món sau khi tạo phiếu.
+uồng hoạt động này làm rõ các bước kiểm tra điều kiện gửi, tách riêng các dòng món gửi ngay và các dòng món phục vụ sau, kiểm tra quy tắc định tuyến theo trạm, tạo \textsf{KitchenTicket}, xếp hàng theo độ ưu tiên và cập nhật trạng thái đơn gọi món sau khi tạo phiếu.
 
 Các nhánh ngoại lệ cũng được mô tả rõ ràng: nếu không xác định được trạm bếp hoặc màn hình bếp không khả dụng, hệ thống không được phép làm mất dữ liệu đã xác nhận mà phải chuyển sang hàng chờ gửi lại và phát cảnh báo cho phục vụ. Cách mô tả này phù hợp với yêu cầu phi chức năng về độ tin cậy và bảo toàn đơn đã xác nhận.
 
