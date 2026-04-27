@@ -388,30 +388,25 @@ Một điểm quan trọng của nhóm sơ đồ này là mức độ chi tiết
 \activitydiagramfigure{uc-res-02-checkin-and-seat}{Sơ đồ hoạt động cho UC-RES-02 -- Nhận khách và sắp bàn}{fig:activity-uc-res-02-checkin-and-seat}
 
 \paragraph{Phân tích sơ đồ UC-RES-02.}
-Luồng hoạt động trong trường hợp này bám sát thực tế tại quầy lễ tân: tìm đặt bàn, kiểm tra hiệu lực, đối chiếu số khách thực tế, xác định có cần đổi bàn hoặc ghép bàn hay không, sau đó mới mở \textsf{TableSession}. Điểm mấu chốt là việc \textbf{mở phiên phục vụ bàn} luôn diễn ra sau bước kiểm tra bàn khả dụng, nhờ đó báo cáo giữ được bất biến quan trọng rằng một bàn không có hai phiên phục vụ hoạt động cùng lúc.
-
-Ngoài ra, sơ đồ cũng làm rõ nhánh ngoại lệ khi đặt bàn đã quá giờ giữ chỗ. Trong tình huống này, hệ thống không tự động bỏ qua mà chuyển sang bước phê duyệt của quản lý. Cách mô tả này bám sát phần đặc tả ca sử dụng phía trên và phản ánh đúng yêu cầu kiểm soát nghiệp vụ của IRMS.
+Luồng hoạt động trong trường hợp này bám sát thực tế tại quầy lễ tân: tìm đặt bàn, kiểm tra hiệu lực, đối chiếu số khách thực tế, xác định có cần đổi bàn hoặc ghép bàn hay không, sau đó mới mở \textsf{TableSession}. Việc \textbf{mở phiên phục vụ bàn} diễn ra sau bước kiểm tra bàn khả dụng, nhờ đó báo cáo giữ được bất biến quan trọng rằng một bàn không có hai phiên phục vụ hoạt động cùng lúc. Trong tình huống ngoại lệ đặt bàn quá giờ giữ chỗ, hệ thống không tự động bỏ qua mà chuyển sang bước phê duyệt của quản lý.
 
 \activitydiagramfigure{uc-res-03-manage-waitlist}{Sơ đồ hoạt động cho UC-RES-03 -- Quản lý danh sách chờ}{fig:activity-uc-res-03-manage-waitlist}
 
 \activitydiagramfigure{uc-res-04-update-table-status-and-release}{Sơ đồ hoạt động cho UC-RES-04 -- Cập nhật trạng thái bàn và giải phóng bàn}{fig:activity-uc-res-04-update-table-status-and-release}
 
 \paragraph{Phân tích sơ đồ UC-RES-04.}
-Luồng này làm rõ phần nằm giữa \textbf{kết thúc phục vụ} và \textbf{bắt đầu vòng quay bàn mới}. Trong vận hành thực tế, việc một bàn trở thành \textsf{Available} không thể chỉ là hệ quả ngầm sau thanh toán. Nó phải đi qua chuỗi kiểm tra rõ ràng: còn phiên phục vụ nào đang mở không, còn split hoặc công nợ nào chưa tất toán không, bàn đã chuyển sang \textsf{Cleaning} chưa, và nhân viên đã xác nhận dọn xong chưa. Nhờ đó, trạng thái bàn trên sơ đồ vận hành phản ánh đúng thực tế thay vì chỉ là ước đoán theo cảm tính của từng bộ phận.
+Luồng này làm rõ phần nằm giữa \textbf{kết thúc phục vụ} và \textbf{bắt đầu vòng quay bàn mới}. Trong vận hành thực tế, việc một bàn trở thành \textsf{Available} phải đi qua chuỗi kiểm tra rõ ràng: còn phiên phục vụ nào đang mở không, còn split hoặc công nợ nào chưa tất toán không, bàn đã chuyển sang \textsf{Cleaning} chưa, và nhân viên đã xác nhận dọn xong chưa.
 
-Giá trị nổi bật của sơ đồ là khả năng nối được ba miền vốn thường bị mô tả rời nhau: \textsf{TableSession}, \textsf{Billing} và \textsf{Waitlist}. Khi bàn được giải phóng thành công, hệ thống không chỉ đổi một nhãn trạng thái; nó còn cập nhật nền cho việc gọi khách tiếp theo, tính vòng quay bàn và tránh lỗi gán trùng trong giờ cao điểm. Đây là lý do ca sử dụng này cần được tách riêng thay vì ẩn trong một mô tả chung về \enquote{đóng bàn}.
+Khi bàn được giải phóng thành công, hệ thống đổi nhãn trạng thái, cập nhật nền cho việc gọi khách tiếp theo, tính vòng quay bàn và tránh lỗi gán trùng trong giờ cao điểm.
 
 \activitydiagramfigure{uc-res-05-notify-customer}{Sơ đồ hoạt động cho UC-RES-05 -- Gửi thông báo cho khách hàng}{fig:activity-uc-res-05-notify-customer}
-
-\paragraph{Phân tích sơ đồ UC-RES-05.}
-Sơ đồ thông báo khách hàng cho thấy đây không phải một thao tác phụ có thể bỏ qua, mà là một luồng nghiệp vụ có đầu vào, điều kiện và trạng thái riêng. Trong IRMS, việc thông báo đặt bàn thành công, nhắc giờ đến, gọi khách từ danh sách chờ hay xác nhận thay đổi không nên được mô tả như vài dòng tích hợp kỹ thuật ở rìa hệ thống. Trái lại, nó cần được hiểu là \textbf{hệ quả được kiểm soát của sự kiện nghiệp vụ}. Cách mô tả này giúp tách rõ phần nào thuộc trách nhiệm của lõi nghiệp vụ, phần nào thuộc bộ kết nối gửi thông báo và phần nào cần cơ chế retry hoặc fallback.
 
 \activitygroup{Nhóm gọi món và điều phối bếp}
 
 \activitydiagramfigure{uc-ord-01-create-table-order}{Sơ đồ hoạt động cho UC-ORD-01 -- Tạo đơn gọi món tại bàn}{fig:activity-uc-ord-01-create-table-order}
 
 \paragraph{Phân tích sơ đồ UC-ORD-01.}
-Phần hoạt động này làm rõ các bước tải thực đơn, kiểm tra quyền thao tác trên phiên bàn, chọn món, kiểm tra trạng thái còn bán, quay lại vòng chọn món nếu món vừa hết hàng, tính tạm tính và tách rõ hai nhánh \enquote{lưu nháp} và \enquote{xác nhận đơn}. Điều này quan trọng vì ca sử dụng gọi món không chỉ là thao tác nhập dữ liệu; nó còn là điểm chụp trạng thái giá và tính hợp lệ của món tại thời điểm nhân viên phục vụ thao tác.
+Phần hoạt động này làm rõ các bước tải thực đơn, kiểm tra quyền thao tác trên phiên bàn, chọn món, kiểm tra trạng thái còn bán, quay lại vòng chọn món nếu món vừa hết hàng, tính tạm tính và tách rõ hai nhánh \enquote{lưu nháp} và \enquote{xác nhận đơn}. Điều này quan trọng vì ca sử dụng gọi món không chỉ là thao tác nhập dữ liệu; nó còn là điểm ghi lại trạng thái giá và tính hợp lệ của món tại thời điểm nhân viên phục vụ thao tác.
 
 Sơ đồ cũng giữ đúng ranh giới với ca sử dụng gửi bếp. Ở đây, đơn gọi món chỉ được tạo và xác nhận ở mức nghiệp vụ gọi món; việc tạo phiếu bếp và điều phối sang trạm bếp được tách sang sơ đồ riêng, nhờ đó ranh giới trách nhiệm giữa \textsf{Ordering} và \textsf{Kitchen Coordination} rõ ràng hơn.
 
@@ -420,23 +415,23 @@ Sơ đồ cũng giữ đúng ranh giới với ca sử dụng gửi bếp. Ở �
 \activitydiagramfigure{uc-ord-03-send-order-to-kitchen}{Sơ đồ hoạt động cho UC-ORD-03 -- Gửi đơn gọi món sang bếp}{fig:activity-uc-ord-03-send-order-to-kitchen}
 
 \paragraph{Phân tích sơ đồ UC-ORD-03.}
-Đây là một trong những sơ đồ hoạt động quan trọng nhất của báo cáo vì nó nằm đúng trên ranh giới giữa tuyến gọi món của phục vụ và tuyến điều phối của bếp. Luồng hoạt động này làm rõ các bước kiểm tra điều kiện gửi, tách riêng các dòng món gửi ngay và các dòng món phục vụ sau, kiểm tra quy tắc định tuyến theo trạm, tạo \textsf{KitchenTicket}, xếp hàng theo độ ưu tiên và cập nhật trạng thái đơn gọi món sau khi tạo phiếu.
+uồng hoạt động này làm rõ các bước kiểm tra điều kiện gửi, tách riêng các dòng món gửi ngay và các dòng món phục vụ sau, kiểm tra quy tắc định tuyến theo trạm, tạo \textsf{KitchenTicket}, xếp hàng theo độ ưu tiên và cập nhật trạng thái đơn gọi món sau khi tạo phiếu.
 
 Các nhánh ngoại lệ cũng được mô tả rõ ràng: nếu không xác định được trạm bếp hoặc màn hình bếp không khả dụng, hệ thống không được phép làm mất dữ liệu đã xác nhận mà phải chuyển sang hàng chờ gửi lại và phát cảnh báo cho phục vụ. Cách mô tả này phù hợp với yêu cầu phi chức năng về độ tin cậy và bảo toàn đơn đã xác nhận.
 
 \activitydiagramfigure{uc-kit-01-update-cooking-progress}{Sơ đồ hoạt động cho UC-KIT-01 -- Cập nhật tiến độ chế biến}{fig:activity-uc-kit-01-update-cooking-progress}
 
 \paragraph{Phân tích sơ đồ UC-KIT-01.}
-Luồng hoạt động ở đây bám đúng nhịp vận hành của bếp: nhận phiếu, kiểm tra trạm chịu trách nhiệm, đánh dấu bắt đầu, chuyển sang chế biến, ghi dấu thời gian cho từng lần đổi trạng thái, đánh giá nguy cơ chậm hạn và cuối cùng xác nhận món sẵn sàng. Mức chi tiết này giúp phần báo cáo không chỉ dừng ở mô tả \enquote{bếp cập nhật trạng thái}, mà còn cho thấy trạng thái nào cần được ghi nhận để phục vụ phân tích vận hành về sau.
+Luồng hoạt động ở đây bám đúng nhịp vận hành của bếp: nhận phiếu, kiểm tra trạm chịu trách nhiệm, đánh dấu bắt đầu, chuyển sang chế biến, ghi dấu thời gian cho từng lần đổi trạng thái, đánh giá nguy cơ chậm hạn và cuối cùng xác nhận món sẵn sàng.
 
-Phần nhánh \enquote{thiếu nguyên liệu hoặc bị chặn} cũng rất quan trọng. Trong trường hợp đó, hệ thống không được kết thúc im lặng mà phải đánh dấu chặn, phát cảnh báo và trả thông tin ngược về phía phục vụ. Điều này giữ cho luồng giao tiếp giữa bếp và khu vực phục vụ thống nhất với phần kiến trúc đã mô tả ở các góc nhìn trước.
+Trong trường hợp thiếu nguyên liệu hoặc bị chặn, hệ thống không được kết thúc im lặng mà phải đánh dấu chặn, phát cảnh báo và trả thông tin ngược về phía phục vụ. Điều này giữ cho luồng giao tiếp giữa bếp và khu vực phục vụ thống nhất với phần kiến trúc đã mô tả ở các góc nhìn trước.
 
 \activitydiagramfigure{uc-kit-02-serve-dishes}{Sơ đồ hoạt động cho UC-KIT-02 -- Ra món cho bàn}{fig:activity-uc-kit-02-serve-dishes}
 
 \activitydiagramfigure{uc-kit-03-prioritize-kitchen-queue}{Sơ đồ hoạt động cho UC-KIT-03 -- Ưu tiên hàng chờ bếp và xử lý món gấp}{fig:activity-uc-kit-03-prioritize-kitchen-queue}
 
 \paragraph{Phân tích sơ đồ UC-KIT-03.}
-Luồng này làm rõ một điểm thường được nhắc đến trong tài liệu nhà hàng nhưng ít được mô hình hóa đầy đủ: \textbf{bếp không chỉ nhận phiếu bếp, mà còn phải điều phối thứ tự thực thi}. Trong giờ cao điểm, nếu mọi ticket đều bị xử lý đúng theo thứ tự đến mà không xét SLA, cấu trúc course, khách VIP hay món sắp trễ hạn, hệ thống KDS sẽ chỉ là một bảng hiển thị thụ động. Vì vậy, ca sử dụng ưu tiên hàng chờ bếp được trình bày như một luồng độc lập để phản ánh đúng yêu cầu \enquote{prioritize queues} của đề bài.
+Luồng này làm rõ điểm \textbf{bếp không chỉ nhận phiếu bếp, mà còn phải điều phối thứ tự thực thi}. Trong giờ cao điểm, nếu mọi ticket đều bị xử lý đúng theo thứ tự đến mà không xét SLA, cấu trúc course, khách VIP hay món sắp trễ hạn, hệ thống KDS sẽ chỉ là một bảng hiển thị thụ động. Vì vậy, ca sử dụng ưu tiên hàng chờ bếp được trình bày như một luồng độc lập để phản ánh đúng yêu cầu \enquote{prioritize queues} của đề bài.
 
 Về mặt kiến trúc, sơ đồ cũng cho thấy quyết định ưu tiên phải đi qua chính sách có kiểm soát, có ghi lý do và có giới hạn quyền, chứ không phải bất kỳ nhân viên nào cũng có thể tùy ý đổi thứ tự chế biến. Điều này giúp IRMS vừa hỗ trợ vận hành linh hoạt, vừa giữ được khả năng truy vết khi có khiếu nại về món ra chậm hoặc món bị đẩy lùi không hợp lý.
 
