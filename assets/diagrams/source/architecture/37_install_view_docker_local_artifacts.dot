@@ -1,0 +1,132 @@
+digraph G {
+  graph [
+    rankdir=LR,
+    newrank=true,
+    compound=true,
+    bgcolor="white",
+    pad=0.42,
+    nodesep=0.62,
+    ranksep=0.95,
+    splines=ortho,
+    fontname="DejaVu Sans",
+    labelloc="t",
+    label="UML Deployment Diagram - Install View for Local Docker Runtime"
+  ];
+
+  node [
+    fontname="DejaVu Sans",
+    fontsize=9.6,
+    color="#475569",
+    penwidth=1.05,
+    style="filled",
+    fillcolor="#FFFFFF"
+  ];
+
+  edge [
+    fontname="DejaVu Sans",
+    fontsize=8.4,
+    color="#64748B",
+    penwidth=0.95,
+    arrowsize=0.70
+  ];
+
+  compose [
+    shape=note,
+    fillcolor="#F8FAFC",
+    label="<<deployment spec>>\ndocker-compose.yml\nservice profiles, ports,\nhealthchecks, depends_on"
+  ];
+
+  subgraph cluster_backend_image {
+    label="Backend Image";
+    color="#93C5FD";
+    style="rounded,filled";
+    fillcolor="#EFF6FF";
+
+    backend_image [shape=folder, fillcolor="#FFFFFF", label="<<artifact>>\nirms-backend:local"];
+    backend_jar [shape=component, fillcolor="#F8FAFC", label="<<artifact>>\n/app/irms.jar"];
+    app_props [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\napplication*.properties"];
+    migrations [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\ndb/migration/*.sql"];
+  }
+
+  subgraph cluster_frontend_image {
+    label="Frontend Image";
+    color="#93C5FD";
+    style="rounded,filled";
+    fillcolor="#EFF6FF";
+
+    frontend_image [shape=folder, fillcolor="#FFFFFF", label="<<artifact>>\nirms-frontend:local"];
+    nitro_output [shape=component, fillcolor="#F8FAFC", label="<<artifact>>\n.output/server/index.mjs"];
+    nitro_config [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\nnitro.config.ts\n/api proxy rule"];
+  }
+
+  subgraph cluster_runtime {
+    label="Docker Runtime Nodes";
+    color="#CBD5E1";
+    style="rounded,filled";
+    fillcolor="#F8FAFC";
+
+    frontend_node [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nirms-frontend\nNode 20 runtime\nPORT 80"];
+    gateway_node [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nirms-api-gateway\nSpring Boot\nSERVER_PORT 8080"];
+    service_nodes [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nSpring Boot service containers\nordering, kitchen, billing,\nreservation, inventory,\nnotification, reporting,\nidentity-audit"];
+    migration_node [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nirms-migration\nFlyway runtime"];
+  }
+
+  subgraph cluster_state {
+    label="Stateful Install Targets";
+    color="#FCA5A5";
+    style="rounded,filled";
+    fillcolor="#FEF2F2";
+
+    postgres_node [shape=box3d, fillcolor="#FFFFFF", label="<<node>>\nirms-postgres\npostgres:16"];
+    postgres_volume [shape=cylinder, fillcolor="#FFFFFF", label="<<artifact>>\npostgres-data volume"];
+    initdb_scripts [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\ndocker/postgres/initdb"];
+    rabbit_node [shape=box3d, fillcolor="#FFFFFF", label="<<node>>\nirms-rabbitmq\nrabbitmq:3-management"];
+    rabbit_volume [shape=cylinder, fillcolor="#FFFFFF", label="<<artifact>>\nrabbitmq-data volume"];
+  }
+
+  legend [shape=plaintext, label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
+      <TR><TD BGCOLOR="#F8FAFC"><B>Legend</B></TD></TR>
+      <TR><TD ALIGN="LEFT">solid = deployed artifact</TD></TR>
+      <TR><TD ALIGN="LEFT">dashed = startup/config dependency</TD></TR>
+    </TABLE>
+  >];
+
+  compose -> backend_image [style=dashed, label="build context ./backend"];
+  compose -> frontend_image [style=dashed, label="build context ./frontend"];
+  compose -> postgres_node [style=dashed, label="image and env"];
+  compose -> rabbit_node [style=dashed, label="image and env"];
+
+  backend_image -> backend_jar [label="contains"];
+  backend_image -> app_props [label="contains"];
+  backend_image -> migrations [label="contains"];
+  frontend_image -> nitro_output [label="contains"];
+  frontend_image -> nitro_config [label="uses"];
+
+  backend_jar -> gateway_node [label="deployed to"];
+  backend_jar -> service_nodes [label="deployed to"];
+  backend_jar -> migration_node [label="deployed to"];
+  app_props -> gateway_node [style=dashed, label="profiles"];
+  app_props -> service_nodes [style=dashed, label="profiles"];
+  app_props -> migration_node [style=dashed, label="migration profile"];
+  migrations -> migration_node [label="executed by"];
+
+  nitro_output -> frontend_node [label="deployed to"];
+  nitro_config -> frontend_node [style=dashed, label="proxy config"];
+
+  initdb_scripts -> postgres_node [label="mounted read-only"];
+  postgres_volume -> postgres_node [label="mounted"];
+  rabbit_volume -> rabbit_node [label="mounted"];
+
+  migration_node -> postgres_node [style=dashed, label="runs after healthy"];
+  gateway_node -> service_nodes [style=dashed, label="starts after healthy"];
+  frontend_node -> gateway_node [style=dashed, label="depends on healthy"];
+  service_nodes -> postgres_node [style=dashed, label="JDBC config"];
+  service_nodes -> rabbit_node [style=dashed, label="RabbitMQ config"];
+
+  { rank=same; backend_image; frontend_image; compose; }
+  { rank=same; frontend_node; gateway_node; service_nodes; migration_node; }
+  { rank=same; postgres_node; rabbit_node; }
+
+  rabbit_volume -> legend [style=invis];
+}

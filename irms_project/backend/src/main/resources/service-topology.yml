@@ -1,0 +1,41 @@
+serviceBasedTopology:
+  database: shared-postgresql
+  migrationOwner: irms-migration
+  gateway:
+    name: api-gateway
+    port: 8080
+    health: /actuator/health
+  services:
+    ordering-service:
+      port: 8081
+      owns: [menu, order creation, order updates, order confirmation, order line state projection]
+    kitchen-service:
+      port: 8082
+      owns: [ticket routing, station queues, kitchen ticket and item transitions, handoff]
+    billing-service:
+      port: 8083
+      owns: [bill issue, bill split, payment capture, refund execution, receipt workflow]
+    reservation-service:
+      port: 8084
+      owns: [reservations, waitlist, seating, table assignment, table session opening]
+    inventory-service:
+      port: 8085
+      owns: [stock levels, stock transactions, recipe consumption, low-stock detection]
+    notification-service:
+      port: 8086
+      owns: [user notifications, delivery channels, notification outbox consumption]
+    reporting-service:
+      port: 8087
+      owns: [dashboard projections, operational reports, exports]
+    identity-audit-service:
+      port: 8088
+      owns: [auth, sessions, token issuance, roles, permissions, identity policies, audit materialization, audit reads]
+  synchronousInteractions:
+    - gateway-to-domain-service REST calls for immediate UI actions
+    - kitchen-to-ordering order line projection updates via bounded REST port/client
+    - kitchen-to-inventory cooking-start stock deduction
+    - billing-to-ordering bill snapshot reads
+    - bounded domain-service-to-identity-audit token revocation introspection and policy/name lookup only when required
+  durableAsync:
+    mechanism: transactional-outbox
+    useFor: [audit intent materialization, notifications, reporting projections, audit follow-up, low-stock follow-up, receipt delivery, session touch, non-critical kitchen follow-up]

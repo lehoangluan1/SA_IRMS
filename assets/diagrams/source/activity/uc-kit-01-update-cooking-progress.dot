@@ -47,12 +47,12 @@ digraph G {
   n4 -> n5;
   n5 -> n6;
   n6 -> n7 [xlabel="Yes or pending"];
-  n7 -> n8 [xlabel="Yes"];
-  n7 -> n9 [xlabel="No"];
+  n7 -> n8 [xlabel="[yes]"];
+  n7 -> n9 [xlabel="[no]"];
   n8 -> n12;
   n9 -> n10;
-  n10 -> n5 [xlabel="No"];
-  n10 -> n11 [xlabel="Yes"];
+  n10 -> n5 [xlabel="[no]"];
+  n10 -> n11 [xlabel="[yes]"];
   n11 -> n13;
   n13 -> n14;
 }

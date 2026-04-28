@@ -7,15 +7,15 @@ digraph G {
     label="Client Applications";
     color="#CBD5E1";
     style="rounded";
-    hostui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    hostui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Host UI", pos="80.50,600.00!", pin=true, width=1.0972, height=0.5000];
-    serverui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    serverui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Server POS UI", pos="80.50,524.00!", pin=true, width=1.1111, height=0.5000];
-    kitchenui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    kitchenui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Kitchen Display UI", pos="80.50,448.00!", pin=true, width=1.4306, height=0.5000];
-    cashierui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    cashierui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Cashier UI", pos="80.50,372.00!", pin=true, width=1.0972, height=0.5000];
-    managerui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    managerui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Manager Portal", pos="80.50,296.00!", pin=true, width=1.2083, height=0.5000];
   }
 
@@ -23,9 +23,9 @@ Manager Portal", pos="80.50,296.00!", pin=true, width=1.2083, height=0.5000];
     label="Edge Boundary";
     color="#CBD5E1";
     style="rounded";
-    gateway [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    gateway [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 API Gateway", pos="244.50,448.00!", pin=true, width=1.0972, height=0.5000];
-    auth [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    auth [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Authentication and
 Policy Filter", pos="409.50,448.00!", pin=true, width=1.4583, height=0.5694];
   }
@@ -34,57 +34,56 @@ Policy Filter", pos="409.50,448.00!", pin=true, width=1.4583, height=0.5694];
     label="Backend Runtime";
     color="#93C5FD";
     style="rounded";
-    reservation [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    reservation [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Reservation & Seating
 Service", pos="698.50,170.00!", pin=true, width=1.6806, height=0.5694];
-    ordering [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    ordering [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Ordering Service", pos="698.50,785.02!", pin=true, width=1.3056, height=0.5000];
-    kitchen [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    kitchen [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Kitchen Coordination
 Service", pos="698.50,569.00!", pin=true, width=1.5972, height=0.5694];
-    billing [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    billing [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Billing & Settlement
 Service", pos="698.50,667.00!", pin=true, width=1.5417, height=0.5694];
-    inventory [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    inventory [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Inventory Monitoring
 Service", pos="698.50,448.00!", pin=true, width=1.5972, height=0.5694];
-    reporting [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    reporting [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Reporting Query
 Service", pos="698.50,54.00!", pin=true, width=1.2778, height=0.5694];
-    iam [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    iam [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 IAM / Authorization
 Service", pos="698.50,367.00!", pin=true, width=1.4722, height=0.5694];
-    audit [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    audit [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Audit Service", pos="698.50,249.00!", pin=true, width=1.0972, height=0.5000];
-    dispatcher [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    dispatcher [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Event Dispatcher", pos="964.51,527.00!", pin=true, width=1.3333, height=0.5000];
-    worker [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    worker [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Background Worker", pos="1265.47,451.00!", pin=true, width=1.4861, height=0.5000];
-    persistence [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    persistence [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Persistence Layer", pos="964.51,451.00!", pin=true, width=1.3750, height=0.5000];
   }
 
   subgraph cluster_external {
-    label="External Adapters";
+    label="Internal Adapter Ports";
     color="#CBD5E1";
     style="rounded";
-    payment [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Payment Gateway
-Adapter", pos="1539.50,788.98!", pin=true, width=1.4167, height=0.5694];
-    notification [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Notification Adapter", pos="1539.50,372.00!", pin=true, width=1.5278, height=0.5000];
-    printer [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Receipt Printer
-Adapter", pos="1539.50,707.00!", pin=true, width=1.1806, height=0.5694];
+    payment [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+PaymentGateway
+Interface", pos="1539.50,788.98!", pin=true, width=1.4167, height=0.5694];
+    notification [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+NotificationChannelAdapter", pos="1539.50,372.00!", pin=true, width=1.5278, height=0.5000];
+    receipt_adapter [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+ReceiptDeliveryAdapter", pos="1539.50,707.00!", pin=true, width=1.1806, height=0.5694];
   }
 
   subgraph cluster_data {
     label="Data Stores";
     color="#CBD5E1";
     style="rounded";
-    opdb [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«database»
+    opdb [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<database>>
 Operational Database", pos="1539.50,530.00!", pin=true, width=1.6528, height=0.5000];
-    readmodel [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«database»
+    readmodel [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<database>>
 Reporting Views", pos="1539.50,148.00!", pin=true, width=1.2778, height=0.5000];
   }
 
@@ -651,7 +650,7 @@ Reporting Views", pos="1539.50,148.00!", pin=true, width=1.2778, height=0.5000];
   e27_prov -> e27_tgt_port [color="#64748B", style="solid", dir=none];
   e27_lbl [shape=box, label="authorize / capture / refund", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1112.98,794.02!", pin=true];
 
-  // edge 28: billing -> printer
+  // edge 28: billing -> receipt_adapter
   e28_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="750.02,687.72!", pin=true];
   e28_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1489.75,707.50!", pin=true];
   e28_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="750.02,673.72!", pin=true];

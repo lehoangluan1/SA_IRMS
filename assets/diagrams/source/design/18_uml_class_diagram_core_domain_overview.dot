@@ -15,14 +15,12 @@ subgraph cluster_res {
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>Reservation</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+reservationId: UUID<BR ALIGN='LEFT'/>+channel: ReservationChannel<BR ALIGN='LEFT'/>+status: ReservationStatus<BR ALIGN='LEFT'/>+arrivalTime: DateTime</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+confirm()<BR ALIGN='LEFT'/>+checkIn()<BR ALIGN='LEFT'/>+cancel()</TD></TR>
 </TABLE>
 >];
  TableSession [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>TableSession</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+sessionId: UUID<BR ALIGN='LEFT'/>+guestCount: int<BR ALIGN='LEFT'/>+status: TableSessionStatus</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+open()<BR ALIGN='LEFT'/>+close()</TD></TR>
 </TABLE>
 >];
 }
@@ -33,14 +31,12 @@ subgraph cluster_order {
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>Order</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+orderId: UUID<BR ALIGN='LEFT'/>+status: OrderStatus<BR ALIGN='LEFT'/>+confirmedAt: DateTime</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+addItem()<BR ALIGN='LEFT'/>+confirm()</TD></TR>
 </TABLE>
 >];
  KitchenTicket [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>KitchenTicket</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+ticketId: UUID<BR ALIGN='LEFT'/>+station: String<BR ALIGN='LEFT'/>+status: KitchenTicketStatus</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+queue()<BR ALIGN='LEFT'/>+markReady()</TD></TR>
 </TABLE>
 >];
 }
@@ -51,14 +47,12 @@ subgraph cluster_bill {
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>Bill</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+billId: UUID<BR ALIGN='LEFT'/>+status: BillStatus<BR ALIGN='LEFT'/>+grandTotal: Money</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+generateFromOrder()<BR ALIGN='LEFT'/>+close()</TD></TR>
 </TABLE>
 >];
  Payment [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>Payment</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+paymentId: UUID<BR ALIGN='LEFT'/>+amount: Money<BR ALIGN='LEFT'/>+status: PaymentStatus</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+authorize()<BR ALIGN='LEFT'/>+capture()<BR ALIGN='LEFT'/>+refund()</TD></TR>
 </TABLE>
 >];
 }
@@ -69,14 +63,12 @@ subgraph cluster_inv {
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>MenuItem</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+menuItemId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+basePrice: Money</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+changeAvailability()</TD></TR>
 </TABLE>
 >];
  InventoryItem [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>InventoryItem</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+inventoryItemId: UUID<BR ALIGN='LEFT'/>+onHand: Decimal<BR ALIGN='LEFT'/>+threshold: Decimal</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+deduct()<BR ALIGN='LEFT'/>+isBelowThreshold()</TD></TR>
 </TABLE>
 >];
 }
@@ -87,21 +79,18 @@ subgraph cluster_gov {
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>User</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+userId: UUID<BR ALIGN='LEFT'/>+username: String<BR ALIGN='LEFT'/>+status: UserStatus</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+activate()<BR ALIGN='LEFT'/>+deactivate()</TD></TR>
 </TABLE>
 >];
  AuditLog [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>AuditLog</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+auditLogId: UUID<BR ALIGN='LEFT'/>+action: String<BR ALIGN='LEFT'/>+recordedAt: DateTime</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+record()</TD></TR>
 </TABLE>
 >];
  ReportSnapshot [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>ReportSnapshot</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+snapshotId: UUID<BR ALIGN='LEFT'/>+type: String<BR ALIGN='LEFT'/>+generatedAt: DateTime</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+refresh()</TD></TR>
 </TABLE>
 >];
 }
@@ -112,7 +101,7 @@ Order -> KitchenTicket [label="1 to many"];
 Order -> Bill [label="1 to 1"];
 Bill -> Payment [label="1 to 0..*"];
 Order -> MenuItem [style=dashed, label="references priced items"];
-Payment -> InventoryItem [style=dashed, label="finalized sale triggers stock deduction"];
+KitchenTicket -> InventoryItem [style=dashed, label="kitchen start triggers stock consumption"];
 User -> AuditLog [label="records"];
 Bill -> AuditLog [style=dashed, label="payment / refund trace"];
 Order -> AuditLog [style=dashed, label="cancel / override trace"];

@@ -12,8 +12,8 @@ digraph G {
     label="Extension Points That Must Stay Stable";
     color="#9BB5FF";
     style="rounded";
-    pay [label="Payment Adapter\nnew gateway or wallet"];
-    notif [label="Notification Channels\nemail, SMS, push"];
+    pay [label="PaymentGateway\nnew implementation"];
+    notif [label="NotificationChannelAdapter\nemail, SMS, in-app, print"];
     client [label="ReactJS / API Boundary\nkiosk, handheld, self-order"];
     rules [label="Service Policies\npricing, authorization,\nlow-stock rule"];
   }
@@ -22,7 +22,7 @@ digraph G {
     label="Scaling Paths";
     color="#9BB5FF";
     style="rounded";
-    appscale [label="Scale Request Path\nmore app nodes,\nmore cache capacity"];
+    appscale [label="Scale Request Path\nmore service containers"];
     workerscale [label="Scale Background Path\nmore worker nodes,\nmore queue consumers"];
     readscale [label="Scale Read Path\nmore projections,\nseparate read capacity"];
   }
@@ -42,11 +42,11 @@ digraph G {
     color="#9BB5FF";
     style="rounded";
     branch [label="Multi-Branch Governance\nbranch policy,\nshared catalog"];
-    analytics [label="Advanced Analytics\nforecasting,\nwaste control"];
-    ecosystem [label="External Ecosystem\nloyalty, delivery,\npartner integrations"];
+    analytics [label="Reporting Evolution\nusage trends,\nwaste control"];
+    ecosystem [label="Optional Integrations\nnot implemented in repo"];
   }
 
-  current -> pay [label="new payment provider"];
+  current -> pay [label="new payment method"];
   current -> notif [label="new notification channel"];
   current -> client [label="new device or app"];
   current -> rules [label="new policy"];

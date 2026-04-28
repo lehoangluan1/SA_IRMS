@@ -36,12 +36,12 @@ digraph G {
   n0 -> n1;
   n1 -> n2;
   n2 -> n3;
-  n3 -> n4 [xlabel="Yes"];
-  n3 -> n12 [xlabel="No"];
+  n3 -> n4 [xlabel="[yes]"];
+  n3 -> n12 [xlabel="[no]"];
   n4 -> n5;
   n5 -> n6;
-  n6 -> n8 [xlabel="Yes"];
-  n6 -> n7 [xlabel="No"];
+  n6 -> n8 [xlabel="[yes]"];
+  n6 -> n7 [xlabel="[no]"];
   n7 -> n12;
   n8 -> n9;
   n9 -> n10;

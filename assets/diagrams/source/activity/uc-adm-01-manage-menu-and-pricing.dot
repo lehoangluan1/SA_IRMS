@@ -11,7 +11,7 @@ digraph G {
     n0 [shape=circle, label="", width=0.18, height=0.18, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n1 [label="Open the menu or item\nconfiguration", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n3 [label="Edit price, sale\nstatus, and promotion", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n6 [label="Choose publish now\nor by schedule", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n6 [label="Submit menu\nchange", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n0 -> n1 -> n3 -> n6 [style=invis, weight=20];
   }
   subgraph cluster_l2 {
@@ -20,9 +20,9 @@ digraph G {
     label="IRMS"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
     n2 [label="Show menu version,\nprice, and\nmodifier setup", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n4 [label="Validate required fields\nand effective schedule", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n4 [label="Validate required fields,\ncategory, and recipe", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n5 [label="Ready to publish?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
-    n7 [label="Publish new menu version and\nwrite audit trail", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n7 [label="Persist menu change,\nrecipe, and audit trail", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n9 [label="Reject publish and request\nconfiguration changes", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n2 -> n4 -> n5 -> n7 -> n9 [style=invis, weight=20];
   }
@@ -31,7 +31,7 @@ digraph G {
     fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
     label="POS / KDS"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n8 [label="Refresh POS /\nKDS configuration", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n8 [label="Publish availability\nchange event when needed", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n10 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n8 -> n10 [style=invis, weight=20];
   }
@@ -40,8 +40,8 @@ digraph G {
   n2 -> n3;
   n3 -> n4;
   n4 -> n5;
-  n5 -> n6 [xlabel="Yes"];
-  n5 -> n9 [xlabel="No"];
+  n5 -> n6 [xlabel="[valid]"];
+  n5 -> n9 [xlabel="[invalid]"];
   n6 -> n7;
   n7 -> n8;
   n8 -> n10;

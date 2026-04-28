@@ -5,12 +5,10 @@ digraph G {
   "Order" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>Order</B></TD></TR>
 <TR><TD ALIGN="LEFT">+orderId: UUID<BR ALIGN="LEFT"/>+status: OrderStatus<BR ALIGN="LEFT"/>+channel: OrderChannel<BR ALIGN="LEFT"/>+createdAt: DateTime<BR ALIGN="LEFT"/>+confirmedAt: DateTime</TD></TR>
-<TR><TD ALIGN="LEFT">+addItem(item, qty, note)<BR ALIGN="LEFT"/>+applyModifier(option)<BR ALIGN="LEFT"/>+confirm()<BR ALIGN="LEFT"/>+cancel()<BR ALIGN="LEFT"/>+calculateSubtotal()</TD></TR>
 </TABLE>>];
   "OrderItem" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>OrderItem</B></TD></TR>
 <TR><TD ALIGN="LEFT">+orderItemId: UUID<BR ALIGN="LEFT"/>+quantity: int<BR ALIGN="LEFT"/>+unitPrice: Money<BR ALIGN="LEFT"/>+specialInstruction: String<BR ALIGN="LEFT"/>+allergyNote: String<BR ALIGN="LEFT"/>+lineStatus: OrderItemStatus</TD></TR>
-<TR><TD ALIGN="LEFT">+changeQuantity()<BR ALIGN="LEFT"/>+markPrepared()</TD></TR>
 </TABLE>>];
   "ModifierSelection" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>ModifierSelection</B></TD></TR>
@@ -25,17 +23,14 @@ digraph G {
   "KitchenTicket" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>KitchenTicket</B></TD></TR>
 <TR><TD ALIGN="LEFT">+ticketId: UUID<BR ALIGN="LEFT"/>+station: String<BR ALIGN="LEFT"/>+priority: int<BR ALIGN="LEFT"/>+status: KitchenTicketStatus</TD></TR>
-<TR><TD ALIGN="LEFT">+queue()<BR ALIGN="LEFT"/>+startCooking()<BR ALIGN="LEFT"/>+markReady()</TD></TR>
 </TABLE>>];
   "KitchenTicketItem" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>KitchenTicketItem</B></TD></TR>
 <TR><TD ALIGN="LEFT">+ticketItemId: UUID<BR ALIGN="LEFT"/>+quantity: int<BR ALIGN="LEFT"/>+status: KitchenTicketItemStatus</TD></TR>
-<TR><TD ALIGN="LEFT">+start()<BR ALIGN="LEFT"/>+ready()<BR ALIGN="LEFT"/>+served()</TD></TR>
 </TABLE>>];
-  "PreparationPolicy" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
-<TR><TD BGCOLOR="#E2E8F0"><B>PreparationPolicy</B></TD></TR>
-<TR><TD ALIGN="LEFT"> </TD></TR>
-<TR><TD ALIGN="LEFT">+groupByStation(items)<BR ALIGN="LEFT"/>+prioritize(ticket)</TD></TR>
+  "KitchenPriorityPolicy" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
+<TR><TD BGCOLOR="#E2E8F0"><B>KitchenPriorityPolicy</B></TD></TR>
+<TR><TD ALIGN="LEFT">+nextManualPriority(currentPriority)<BR ALIGN="LEFT"/>+score(priorityLabel)<BR ALIGN="LEFT"/>+automaticEscalation(...)</TD></TR>
 </TABLE>>];
   "TableSession" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>TableSession</B></TD></TR>
@@ -49,5 +44,5 @@ digraph G {
   "Order" -> "KitchenTicket" [taillabel="1", headlabel="1..*"];
   "KitchenTicket" -> "KitchenTicketItem" [taillabel="1", headlabel="1..*", arrowtail=diamond, dir=both, arrowhead=vee];
   "KitchenTicketItem" -> "OrderItem" [taillabel="*", headlabel="1"];
-  "KitchenTicket" -> "PreparationPolicy" [style=dashed];
+  "KitchenTicket" -> "KitchenPriorityPolicy" [style=dashed];
 }

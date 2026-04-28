@@ -13,45 +13,17 @@ digraph G {
     label="Deployment Diagram - Network Zones and Trust Boundaries"
   ];
 
-  node [
-    fontname="DejaVu Sans",
-    fontsize=11,
-    color="#334155",
-    penwidth=1.1,
-    style="filled"
-  ];
-
-  edge [
-    fontname="DejaVu Sans",
-    fontsize=9.8,
-    color="#64748B",
-    penwidth=1.0,
-    arrowsize=0.72
-  ];
+  node [fontname="DejaVu Sans", fontsize=11, color="#334155", penwidth=1.1, style="filled"];
+  edge [fontname="DejaVu Sans", fontsize=9.8, color="#64748B", penwidth=1.0, arrowsize=0.72];
 
   subgraph cluster_foh {
     label="Front-of-House Zone";
     color="#CBD5E1";
     style="rounded,filled";
     fillcolor="#FFFBEB";
-
-    host [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nHost Tablet"
-    ];
-
-    server [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nServer Tablet"
-    ];
-
-    cashier [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nCashier Terminal"
-    ];
+    host [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nHost Tablet"];
+    server [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nServer Tablet"];
+    cashier [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nCashier Terminal"];
   }
 
   subgraph cluster_boh {
@@ -59,18 +31,8 @@ digraph G {
     color="#CBD5E1";
     style="rounded,filled";
     fillcolor="#FFFBEB";
-
-    kds [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nKitchen Display Client"
-    ];
-
-    manager [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nManager Console"
-    ];
+    kds [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nKitchen Display Client"];
+    manager [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nManager Console"];
   }
 
   subgraph cluster_app {
@@ -78,128 +40,38 @@ digraph G {
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#EFF6FF";
-
-    proxy [
-      shape=box3d,
-      fillcolor="#DBEAFE",
-      color="#60A5FA",
-      label="«device»\nReverse Proxy / API Edge"
-    ];
-
-    backend [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nIRMS Application Node"
-    ];
-
-    runtime [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«executionEnvironment»\nApplication Runtime"
-    ];
-
-    worker [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nBackground Worker Node"
-    ];
-
-    workrt [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«executionEnvironment»\nWorker Runtime"
-    ];
-
-    proxy   -> backend [label="route + auth"];
-    backend -> runtime [arrowhead=none, color="#94A3B8"];
-    worker  -> workrt  [arrowhead=none, color="#94A3B8"];
+    frontend [shape=box3d, fillcolor="#DBEAFE", color="#60A5FA", label="<<node>>\nfrontend container"];
+    gateway [shape=box3d, fillcolor="#DBEAFE", color="#60A5FA", label="<<node>>\napi-gateway container"];
+    services [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nSpring Boot service containers"];
+    frontend -> gateway [label="/api proxy"];
+    gateway -> services [label="route REST"];
   }
 
   subgraph cluster_data {
-    label="Data Zone";
+    label="Data and Messaging Zone";
     color="#FCA5A5";
     style="rounded,filled";
     fillcolor="#FEF2F2";
-
-    db [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nOperational DB Node"
-    ];
-
-    dbms [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«executionEnvironment»\nPostgreSQL"
-    ];
-
-    txschema [
-      shape=note,
-      fillcolor="#FFFFFF",
-      label="«artifact»\nTransactional Schema"
-    ];
-
-    readm [
-      shape=note,
-      fillcolor="#FFFFFF",
-      label="«artifact»\nReporting Views / Read Model"
-    ];
-
-    objstore [
-      shape=note,
-      fillcolor="#FFFFFF",
-      label="«artifact»\nObject Storage\n(Receipts / Menu Assets)"
-    ];
-
-    db   -> dbms     [arrowhead=none, color="#94A3B8"];
-    dbms -> txschema [arrowhead=none, color="#94A3B8"];
-    dbms -> readm    [arrowhead=none, color="#94A3B8"];
-    dbms -> objstore [arrowhead=none, color="#94A3B8"];
-  }
-
-  subgraph cluster_external {
-    label="External Integration Zone";
-    color="#CBD5E1";
-    style="rounded,dashed";
-
-    payment [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«external»\nPayment Gateway"
-    ];
-
-    notify [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«external»\nNotification Service"
-    ];
-
-    printer [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«external»\nReceipt Printer Gateway"
-    ];
+    postgres [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nPostgreSQL container"];
+    rabbitmq [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nRabbitMQ container"];
+    txschema [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\nTransactional Schema"];
+    readm [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\nReporting tables and views"];
+    outbox [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\noutbox_events\nprocessed_events"];
+    postgres -> txschema [arrowhead=none];
+    postgres -> readm [arrowhead=none];
+    postgres -> outbox [arrowhead=none];
   }
 
   { rank=same; host; server; cashier; }
   { rank=same; kds; manager; }
-  { rank=same; proxy; backend; worker; db; payment; notify; printer; }
+  { rank=same; frontend; gateway; services; postgres; rabbitmq; }
 
-  host    -> proxy [label="HTTPS"];
-  server  -> proxy [label="HTTPS"];
-  cashier -> proxy [label="HTTPS"];
-  kds     -> proxy [label="HTTPS"];
-  manager -> proxy [label="HTTPS"];
+  host -> frontend [label="HTTP"];
+  server -> frontend [label="HTTP"];
+  cashier -> frontend [label="HTTP"];
+  kds -> frontend [label="HTTP"];
+  manager -> frontend [label="HTTP"];
 
-  backend -> db      [label="transactional data"];
-  backend -> worker  [style=dashed, label="async jobs / event handoff"];
-  worker  -> readm   [style=dashed, label="refresh read model"];
-  worker  -> objstore[style=dashed, label="write receipts / assets"];
-  backend -> payment [label="payment calls"];
-  worker  -> notify  [style=dashed, label="notifications"];
-  worker  -> printer [style=dashed, label="print jobs"];
-
-  proxy   -> backend [weight=8];
-  backend -> db      [weight=8];
-  backend -> worker  [weight=6];
+  services -> postgres [label="JDBC"];
+  services -> rabbitmq [style=dashed, label="publish / consume"];
 }

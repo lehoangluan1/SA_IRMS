@@ -31,14 +31,14 @@ digraph G {
   n0 -> n1;
   n1 -> n2;
   n2 -> n3;
-  n3 -> n6 [xlabel="Yes"];
-  n3 -> n4 [xlabel="No"];
+  n3 -> n6 [xlabel="[yes]"];
+  n3 -> n4 [xlabel="[no]"];
   n4 -> n5;
   n5 -> n6;
   n6 -> n7;
   n7 -> n8;
-  n8 -> n9 [xlabel="Yes"];
-  n8 -> n10 [xlabel="No"];
+  n8 -> n9 [xlabel="[yes]"];
+  n8 -> n10 [xlabel="[no]"];
   n9 -> n10;
   n10 -> n11;
   n11 -> n12;

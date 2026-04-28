@@ -12,14 +12,12 @@ InventoryItem [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>InventoryItem</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+inventoryItemId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+unit: String<BR ALIGN='LEFT'/>+onHand: Decimal<BR ALIGN='LEFT'/>+reservedQty: Decimal<BR ALIGN='LEFT'/>+threshold: Decimal</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+reserve(qty)<BR ALIGN='LEFT'/>+deduct(qty)<BR ALIGN='LEFT'/>+releaseReservation(qty)<BR ALIGN='LEFT'/>+isBelowThreshold()</TD></TR>
 </TABLE>
 >];
 Recipe [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>Recipe</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+recipeId: UUID<BR ALIGN='LEFT'/>+menuItemId: UUID<BR ALIGN='LEFT'/>+version: int<BR ALIGN='LEFT'/>+yieldUnit: String</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+activate()<BR ALIGN='LEFT'/>+retire()</TD></TR>
 </TABLE>
 >];
 RecipeLine [label=<
@@ -33,41 +31,36 @@ InventoryReservation [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>InventoryReservation</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+reservationId: UUID<BR ALIGN='LEFT'/>+sourceOrderId: UUID<BR ALIGN='LEFT'/>+qty: Decimal<BR ALIGN='LEFT'/>+status: InventoryReservationStatus</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+hold()<BR ALIGN='LEFT'/>+finalize()<BR ALIGN='LEFT'/>+cancel()</TD></TR>
 </TABLE>
 >];
 StockTransaction [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>StockTransaction</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+transactionId: UUID<BR ALIGN='LEFT'/>+delta: Decimal<BR ALIGN='LEFT'/>+reason: StockReason<BR ALIGN='LEFT'/>+sourceRef: UUID<BR ALIGN='LEFT'/>+occurredAt: DateTime</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+post()<BR ALIGN='LEFT'/>+reverse()</TD></TR>
 </TABLE>
 >];
 ReorderRule [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>ReorderRule</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+ruleId: UUID<BR ALIGN='LEFT'/>+threshold: Decimal<BR ALIGN='LEFT'/>+preferredVendor: String<BR ALIGN='LEFT'/>+targetQty: Decimal</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+shouldAlert()</TD></TR>
 </TABLE>
 >];
 LowStockAlert [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>LowStockAlert</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+alertId: UUID<BR ALIGN='LEFT'/>+severity: AlertSeverity<BR ALIGN='LEFT'/>+createdAt: DateTime<BR ALIGN='LEFT'/>+acknowledgedBy: UUID</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+raise()<BR ALIGN='LEFT'/>+acknowledge()<BR ALIGN='LEFT'/>+snooze()</TD></TR>
 </TABLE>
 >];
 NotificationMessage [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>NotificationMessage</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+messageId: UUID<BR ALIGN='LEFT'/>+channel: NotificationChannel<BR ALIGN='LEFT'/>+templateCode: String<BR ALIGN='LEFT'/>+payload: Json</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+render()</TD></TR>
 </TABLE>
 >];
-NotificationSender [label=<
+NotificationChannelAdapter [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#E7EEF9"><B>&lt;&lt;interface&gt;&gt; NotificationSender</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+send(message)<BR ALIGN='LEFT'/>+checkDeliveryStatus(id)</TD></TR>
+<TR><TD BGCOLOR="#E7EEF9"><B>&lt;&lt;interface&gt;&gt; NotificationChannelAdapter</B></TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+channel()<BR ALIGN='LEFT'/>+validate(command)</TD></TR>
 
 </TABLE>
 >];
@@ -79,6 +72,6 @@ InventoryReservation -> InventoryItem [label="holds qty"];
 ReorderRule -> InventoryItem [style=dashed, label="threshold rule"];
 InventoryItem -> LowStockAlert [style=dashed, label="below threshold"];
 LowStockAlert -> NotificationMessage [label="formats"];
-NotificationMessage -> NotificationSender [style=dashed, label="sends via adapter"];
+NotificationMessage -> NotificationChannelAdapter [style=dashed, label="delivers via channel"];
 StockTransaction -> LowStockAlert [style=dashed, label="evaluated after update"];
 }

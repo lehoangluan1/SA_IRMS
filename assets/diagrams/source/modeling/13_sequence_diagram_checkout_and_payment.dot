@@ -17,8 +17,8 @@ digraph G {
   cashier_actor_h [shape=none, image="actor_stickman.png", label="Cashier", labelloc=b, imagepos=tc, imagescale=true, pos="0,920!"];
   cashier_ui_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Cashier UI", pos="220,920!"];
   billing_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Billing Service", pos="460,920!"];
-  payment_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Payment Gateway Adapter", pos="700,920!"];
-  printer_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Receipt Printer Adapter", pos="940,920!"];
+  payment_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="PaymentGateway", pos="700,920!"];
+  receipt_adapter_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="ReceiptDeliveryAdapter", pos="940,920!"];
   notification_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="Notification Service", pos="1180,920!"];
   session_h [shape=box, style="rounded,filled", fillcolor="#F8FAFC", label="TableSession", pos="1420,920!"];
 
@@ -66,16 +66,16 @@ digraph G {
   payment_9 [shape=point, width=0.01, label="", pos="700,140!"];
   payment_10 [shape=point, width=0.01, label="", pos="700,60!"];
 
-  printer_1 [shape=point, width=0.01, label="", pos="940,780!"];
-  printer_2 [shape=point, width=0.01, label="", pos="940,700!"];
-  printer_3 [shape=point, width=0.01, label="", pos="940,620!"];
-  printer_4 [shape=point, width=0.01, label="", pos="940,540!"];
-  printer_5 [shape=point, width=0.01, label="", pos="940,460!"];
-  printer_6 [shape=point, width=0.01, label="", pos="940,380!"];
-  printer_7 [shape=point, width=0.01, label="", pos="940,300!"];
-  printer_8 [shape=point, width=0.01, label="", pos="940,220!"];
-  printer_9 [shape=point, width=0.01, label="", pos="940,140!"];
-  printer_10 [shape=point, width=0.01, label="", pos="940,60!"];
+  receipt_adapter_1 [shape=point, width=0.01, label="", pos="940,780!"];
+  receipt_adapter_2 [shape=point, width=0.01, label="", pos="940,700!"];
+  receipt_adapter_3 [shape=point, width=0.01, label="", pos="940,620!"];
+  receipt_adapter_4 [shape=point, width=0.01, label="", pos="940,540!"];
+  receipt_adapter_5 [shape=point, width=0.01, label="", pos="940,460!"];
+  receipt_adapter_6 [shape=point, width=0.01, label="", pos="940,380!"];
+  receipt_adapter_7 [shape=point, width=0.01, label="", pos="940,300!"];
+  receipt_adapter_8 [shape=point, width=0.01, label="", pos="940,220!"];
+  receipt_adapter_9 [shape=point, width=0.01, label="", pos="940,140!"];
+  receipt_adapter_10 [shape=point, width=0.01, label="", pos="940,60!"];
 
   notification_1 [shape=point, width=0.01, label="", pos="1180,780!"];
   notification_2 [shape=point, width=0.01, label="", pos="1180,700!"];
@@ -143,16 +143,16 @@ digraph G {
   payment_8 -> payment_9 [style=dashed, arrowhead=none];
   payment_9 -> payment_10 [style=dashed, arrowhead=none];
 
-  printer_h -> printer_1 [style=dashed, arrowhead=none];
-  printer_1 -> printer_2 [style=dashed, arrowhead=none];
-  printer_2 -> printer_3 [style=dashed, arrowhead=none];
-  printer_3 -> printer_4 [style=dashed, arrowhead=none];
-  printer_4 -> printer_5 [style=dashed, arrowhead=none];
-  printer_5 -> printer_6 [style=dashed, arrowhead=none];
-  printer_6 -> printer_7 [style=dashed, arrowhead=none];
-  printer_7 -> printer_8 [style=dashed, arrowhead=none];
-  printer_8 -> printer_9 [style=dashed, arrowhead=none];
-  printer_9 -> printer_10 [style=dashed, arrowhead=none];
+  receipt_adapter_h -> receipt_adapter_1 [style=dashed, arrowhead=none];
+  receipt_adapter_1 -> receipt_adapter_2 [style=dashed, arrowhead=none];
+  receipt_adapter_2 -> receipt_adapter_3 [style=dashed, arrowhead=none];
+  receipt_adapter_3 -> receipt_adapter_4 [style=dashed, arrowhead=none];
+  receipt_adapter_4 -> receipt_adapter_5 [style=dashed, arrowhead=none];
+  receipt_adapter_5 -> receipt_adapter_6 [style=dashed, arrowhead=none];
+  receipt_adapter_6 -> receipt_adapter_7 [style=dashed, arrowhead=none];
+  receipt_adapter_7 -> receipt_adapter_8 [style=dashed, arrowhead=none];
+  receipt_adapter_8 -> receipt_adapter_9 [style=dashed, arrowhead=none];
+  receipt_adapter_9 -> receipt_adapter_10 [style=dashed, arrowhead=none];
 
   notification_h -> notification_1 [style=dashed, arrowhead=none];
   notification_1 -> notification_2 [style=dashed, arrowhead=none];
@@ -183,7 +183,7 @@ digraph G {
   billing_5 -> payment_5 [label="5. Authorize or capture payment"];
   payment_6 -> billing_6 [style=dashed, label="6. Return transaction result"];
   billing_7 -> session_7 [label="7. Close table session when paid in full"];
-  billing_8 -> printer_8 [label="8. Issue receipt job"];
-  billing_9 -> notification_9 [label="9. Send e-receipt and payment notice"];
+  billing_8 -> receipt_adapter_8 [label="8. Issue receipt job"];
+  billing_9 -> notification_9 [label="9. Queue e-receipt and payment notice"];
   billing_10 -> cashier_ui_10 [style=dashed, label="10. Return settlement completed"];
 }

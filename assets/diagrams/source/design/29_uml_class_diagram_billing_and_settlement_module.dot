@@ -12,7 +12,6 @@ Bill [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>Bill</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+billId: UUID<BR ALIGN='LEFT'/>+status: BillStatus<BR ALIGN='LEFT'/>+subTotal: Money<BR ALIGN='LEFT'/>+taxAmount: Money<BR ALIGN='LEFT'/>+serviceFee: Money<BR ALIGN='LEFT'/>+tipAmount: Money<BR ALIGN='LEFT'/>+grandTotal: Money</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+generateFromOrder()<BR ALIGN='LEFT'/>+applyPromotion()<BR ALIGN='LEFT'/>+split()<BR ALIGN='LEFT'/>+calculateGrandTotal()<BR ALIGN='LEFT'/>+close()</TD></TR>
 </TABLE>
 >];
 BillLine [label=<
@@ -26,7 +25,6 @@ BillSplit [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>BillSplit</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+splitId: UUID<BR ALIGN='LEFT'/>+label: String<BR ALIGN='LEFT'/>+status: SplitStatus<BR ALIGN='LEFT'/>+allocatedTotal: Money</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+allocateLine()<BR ALIGN='LEFT'/>+markSettled()</TD></TR>
 </TABLE>
 >];
 SplitAllocation [label=<
@@ -40,21 +38,18 @@ Payment [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>Payment</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+paymentId: UUID<BR ALIGN='LEFT'/>+method: PaymentMethod<BR ALIGN='LEFT'/>+amount: Money<BR ALIGN='LEFT'/>+status: PaymentStatus<BR ALIGN='LEFT'/>+gatewayRef: String<BR ALIGN='LEFT'/>+paidAt: DateTime</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+authorize()<BR ALIGN='LEFT'/>+capture()<BR ALIGN='LEFT'/>+fail()<BR ALIGN='LEFT'/>+refund()</TD></TR>
 </TABLE>
 >];
 Refund [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>Refund</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+refundId: UUID<BR ALIGN='LEFT'/>+amount: Money<BR ALIGN='LEFT'/>+reason: String<BR ALIGN='LEFT'/>+status: RefundStatus<BR ALIGN='LEFT'/>+requestedBy: UUID</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+request()<BR ALIGN='LEFT'/>+approve()<BR ALIGN='LEFT'/>+complete()</TD></TR>
 </TABLE>
 >];
 Receipt [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>Receipt</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+receiptId: UUID<BR ALIGN='LEFT'/>+issuedAt: DateTime<BR ALIGN='LEFT'/>+deliveryChannel: ReceiptChannel<BR ALIGN='LEFT'/>+documentNo: String</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+issue()<BR ALIGN='LEFT'/>+reissue()</TD></TR>
 </TABLE>
 >];
 AppliedDiscount [label=<
@@ -68,13 +63,12 @@ TaxPolicy [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>TaxPolicy</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+taxRate: Decimal<BR ALIGN='LEFT'/>+serviceFeeRate: Decimal<BR ALIGN='LEFT'/>+tipEditable: bool</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+applyToBill()<BR ALIGN='LEFT'/>+roundMoney()</TD></TR>
 </TABLE>
 >];
 PaymentGateway [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#E7EEF9"><B>&lt;&lt;interface&gt;&gt; PaymentGateway</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+authorize(amount)<BR ALIGN='LEFT'/>+capture(reference)<BR ALIGN='LEFT'/>+refund(paymentId)</TD></TR>
+<TR><TD ALIGN="LEFT" BALIGN="LEFT">+supports(method)<BR ALIGN='LEFT'/>+authorize(method, amount, amountReceived, paymentId)<BR ALIGN='LEFT'/>+refund(payment, amount, refundId)</TD></TR>
 
 </TABLE>
 >];

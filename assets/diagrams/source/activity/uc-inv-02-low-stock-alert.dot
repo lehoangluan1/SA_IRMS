@@ -20,8 +20,8 @@ digraph G {
     fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
     label="Notification Service"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n4 [label="Send internal alert", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n5 [label="Sent successfully?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n4 [label="Record internal alert", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n5 [label="Request recorded?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
     n4 -> n5 [style=invis, weight=20];
   }
   subgraph cluster_l3 {
@@ -36,12 +36,12 @@ digraph G {
   }
   n0 -> n1;
   n1 -> n2;
-  n2 -> n3 [xlabel="Yes"];
-  n2 -> n9 [xlabel="No"];
+  n2 -> n3 [xlabel="[yes]"];
+  n2 -> n9 [xlabel="[no]"];
   n3 -> n4;
   n4 -> n5;
-  n5 -> n6 [xlabel="Yes"];
-  n5 -> n8 [xlabel="No"];
+  n5 -> n6 [xlabel="[yes]"];
+  n5 -> n8 [xlabel="[no]"];
   n6 -> n7;
   n7 -> n9;
   n8 -> n9;

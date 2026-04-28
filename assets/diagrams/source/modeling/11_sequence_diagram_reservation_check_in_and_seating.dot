@@ -160,7 +160,7 @@ digraph G {
   table_5 -> reservation_5 [style=dashed, label="5. Confirm table lock"];
   host_6 -> reservation_6 [label="6. Confirm arrival and selected table"];
   reservation_7 -> table_7 [label="7. Open active table session"];
-  reservation_8 -> notification_8 [label="8. Send seating confirmation"];
+  reservation_8 -> notification_8 [label="8. Queue seating confirmation"];
   reservation_9 -> server_9 [label="9. Publish opened table session"];
   server_10 -> host_10 [style=dashed, label="10. Return session visible to service staff"];
 }

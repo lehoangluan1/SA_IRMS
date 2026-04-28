@@ -18,8 +18,8 @@ digraph G {
     fillcolor="#FFF8DB"; color="#BBBBBB"; penwidth=1.0;
     label="IRMS"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n2 [label="Show available staff\nand skills", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n4 [label="Check shift overlap,\nmissing roles, and\nwork-hour limits", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n2 [label="Show existing staff\nand shifts", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n4 [label="Check end time and\nshift overlap", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n5 [label="Schedule valid?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
     n6 [label="Save ShiftAssignment", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n8 [label="Block save and show\nconflicts", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
@@ -30,7 +30,7 @@ digraph G {
     fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
     label="Notification Service"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n7 [label="Send shift schedule\nnotification", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n7 [label="Record shift schedule\nnotice", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
     n9 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
     n7 -> n9 [style=invis, weight=20];
   }
@@ -39,8 +39,8 @@ digraph G {
   n2 -> n3;
   n3 -> n4;
   n4 -> n5;
-  n5 -> n6 [xlabel="Yes"];
-  n5 -> n8 [xlabel="No"];
+  n5 -> n6 [xlabel="[valid]"];
+  n5 -> n8 [xlabel="[invalid]"];
   n6 -> n7;
   n7 -> n9;
   n8 -> n3;

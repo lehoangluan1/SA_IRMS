@@ -8,8 +8,8 @@ digraph G {
     fillcolor="#EAF3FF"; color="#BBBBBB"; penwidth=1.0;
     label="Cashier / Customer"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n2 [label="Choose paper print or\ndigital delivery", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n3 [label="Paper print?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n2 [label="Choose print or\ndigital delivery", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n3 [label="Print channel?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
     n2 -> n3 [style=invis, weight=20];
   }
   subgraph cluster_l2 {
@@ -27,22 +27,22 @@ digraph G {
   subgraph cluster_l3 {
     style="rounded,filled";
     fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
-    label="Printer and Notification Channels"; fontsize=14; labelloc="t"; labeljust="l";
+    label="Receipt Delivery and Notification Channels"; fontsize=14; labelloc="t"; labeljust="l";
     rank=same;
-    n4 [label="Print receipt", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n5 [label="Send digital receipt", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
-    n6 [label="Sent successfully?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
+    n4 [label="Use print delivery adapter", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n5 [label="Queue digital receipt request", shape=rect, style="rounded,filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=12, margin="0.12,0.08"];
+    n6 [label="Request queued?", shape=diamond, style="filled", fillcolor="white", color="#333333", penwidth=1.2, fontsize=11, width=1.2, height=0.7, margin="0.05,0.03"];
     n4 -> n5 -> n6 [style=invis, weight=20];
   }
   n0 -> n1;
   n1 -> n2;
   n2 -> n3;
-  n3 -> n4 [xlabel="Yes"];
-  n3 -> n5 [xlabel="No"];
+  n3 -> n4 [xlabel="[yes]"];
+  n3 -> n5 [xlabel="[no]"];
   n4 -> n7;
   n5 -> n6;
-  n6 -> n7 [xlabel="Yes"];
-  n6 -> n8 [xlabel="No"];
+  n6 -> n7 [xlabel="[yes]"];
+  n6 -> n8 [xlabel="[no]"];
   n7 -> n9;
   n8 -> n9;
 }

@@ -5,7 +5,6 @@ digraph G {
   "Bill" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>Bill</B></TD></TR>
 <TR><TD ALIGN="LEFT">+billId: UUID<BR ALIGN="LEFT"/>+status: BillStatus<BR ALIGN="LEFT"/>+subTotal: Money<BR ALIGN="LEFT"/>+taxAmount: Money<BR ALIGN="LEFT"/>+serviceFee: Money<BR ALIGN="LEFT"/>+discountAmount: Money<BR ALIGN="LEFT"/>+tipAmount: Money</TD></TR>
-<TR><TD ALIGN="LEFT">+generateFromOrder()<BR ALIGN="LEFT"/>+applyPromotion()<BR ALIGN="LEFT"/>+split()<BR ALIGN="LEFT"/>+calculateGrandTotal()<BR ALIGN="LEFT"/>+close()</TD></TR>
 </TABLE>>];
   "BillSplit" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>BillSplit</B></TD></TR>
@@ -15,22 +14,19 @@ digraph G {
   "Payment" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>Payment</B></TD></TR>
 <TR><TD ALIGN="LEFT">+paymentId: UUID<BR ALIGN="LEFT"/>+amount: Money<BR ALIGN="LEFT"/>+method: PaymentMethod<BR ALIGN="LEFT"/>+status: PaymentStatus<BR ALIGN="LEFT"/>+paidAt: DateTime</TD></TR>
-<TR><TD ALIGN="LEFT">+authorize()<BR ALIGN="LEFT"/>+capture()<BR ALIGN="LEFT"/>+fail()<BR ALIGN="LEFT"/>+refund()</TD></TR>
 </TABLE>>];
   "PaymentGateway" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>&lt;&lt;interface&gt;&gt; PaymentGateway</B></TD></TR>
 <TR><TD ALIGN="LEFT"> </TD></TR>
-<TR><TD ALIGN="LEFT">+authorize(amount)<BR ALIGN="LEFT"/>+capture(reference)<BR ALIGN="LEFT"/>+refund(paymentId)</TD></TR>
+<TR><TD ALIGN="LEFT">+supports(method)<BR ALIGN="LEFT"/>+authorize(method, amount, amountReceived, paymentId)<BR ALIGN="LEFT"/>+refund(payment, amount, refundId)</TD></TR>
 </TABLE>>];
   "Receipt" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>Receipt</B></TD></TR>
 <TR><TD ALIGN="LEFT">+receiptId: UUID<BR ALIGN="LEFT"/>+issuedAt: DateTime<BR ALIGN="LEFT"/>+deliveryChannel: ReceiptChannel</TD></TR>
-<TR><TD ALIGN="LEFT">+issue()</TD></TR>
 </TABLE>>];
   "InventoryItem" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>InventoryItem</B></TD></TR>
 <TR><TD ALIGN="LEFT">+inventoryItemId: UUID<BR ALIGN="LEFT"/>+name: String<BR ALIGN="LEFT"/>+unit: String<BR ALIGN="LEFT"/>+onHand: Decimal<BR ALIGN="LEFT"/>+threshold: Decimal</TD></TR>
-<TR><TD ALIGN="LEFT">+deduct()<BR ALIGN="LEFT"/>+isBelowThreshold()</TD></TR>
 </TABLE>>];
   "StockTransaction" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#F8FAFC">
 <TR><TD BGCOLOR="#E2E8F0"><B>StockTransaction</B></TD></TR>

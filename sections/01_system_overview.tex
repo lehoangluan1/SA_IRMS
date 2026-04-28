@@ -31,12 +31,12 @@ IRMS hỗ trợ tạo hóa đơn tự động, tính toán tổng chi phí bao g
 Hệ thống ghi nhận việc sử dụng nguyên liệu và cung cấp cảnh báo khi tồn kho xuống thấp. Ngoài ra, các báo cáo bán hàng và phân tích hoạt động giúp nhà quản lý đánh giá hiệu suất kinh doanh và đưa ra quyết định phù hợp.
 
 \item \textbf{Tạo nền tảng hệ thống linh hoạt và có khả năng mở rộng} \\
-Kiến trúc của IRMS được thiết kế theo hướng dịch vụ kết hợp điều phối bằng sự kiện. Các năng lực nghiệp vụ được đặt trong những service có trách nhiệm rõ ràng, giao tiếp đồng bộ qua API khi thao tác cần phản hồi trực tiếp và phát sinh event cho các hệ quả nghiệp vụ có thể xử lý bất đồng bộ. Cách tổ chức này cho phép mở rộng từng vùng chức năng, cô lập tích hợp ngoài và giảm phụ thuộc chéo giữa đặt bàn, gọi món, bếp, thanh toán, tồn kho, báo cáo và kiểm toán.
+Kiến trúc của IRMS được thiết kế theo hướng dịch vụ kết hợp điều phối bằng sự kiện. Các năng lực nghiệp vụ được đặt trong những service có trách nhiệm rõ ràng, giao tiếp đồng bộ qua API khi thao tác cần phản hồi trực tiếp và phát sinh event cho các hệ quả nghiệp vụ có thể xử lý bất đồng bộ. Cách tổ chức này cho phép mở rộng từng vùng chức năng, cô lập các adapter biên và giảm phụ thuộc chéo giữa đặt bàn, gọi món, bếp, thanh toán, tồn kho, báo cáo và kiểm toán.
 
 \end{enumerate}
 
 \subsection{Phạm vi hệ thống (IRMS)}
-Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ quy trình vận hành của một nhà hàng, từ khâu tiếp đón khách hàng, chế biến tại bếp đến quản lý kho và phân tích kinh doanh. Xét theo kiến trúc hướng dịch vụ, các nhóm chức năng này là cơ sở để phân rã IRMS thành các service theo năng lực nghiệp vụ như \textsf{Reservation \& Seating Service}, \textsf{Ordering \& Menu Service}, \textsf{Kitchen Coordination Service}, \textsf{Billing \& Settlement Service}, \textsf{Inventory Monitoring Service}, \textsf{Reporting Service}, \textsf{IAM \& Audit Service}, \textsf{Notification Service} và các adapter tích hợp ngoài. Cụ thể, hệ thống bao gồm các nhóm năng lực chính sau:
+Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ quy trình vận hành của một nhà hàng, từ khâu tiếp đón khách hàng, chế biến tại bếp đến quản lý kho và phân tích kinh doanh. Xét theo kiến trúc hướng dịch vụ, các nhóm chức năng này là cơ sở để phân rã IRMS thành các service theo năng lực nghiệp vụ như \textsf{Reservation \& Seating Service}, \textsf{Ordering \& Menu Service}, \textsf{Kitchen Coordination Service}, \textsf{Billing \& Settlement Service}, \textsf{Inventory Monitoring Service}, \textsf{Reporting Service}, \textsf{IAM \& Audit Service}, \textsf{Notification Service} và các adapter biên nội bộ. Cụ thể, hệ thống bao gồm các nhóm năng lực chính sau:
 
 \begin{itemize}
     \item \textbf{Phân hệ Phục vụ và Gọi món (Front-of-House)}
@@ -56,7 +56,7 @@ Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ
     \item \textbf{Phân hệ Thanh toán và Tài chính}
     \begin{itemize}
         \item \textbf{Xử lý hóa đơn linh hoạt}: Hỗ trợ tính phí dịch vụ, áp dụng chương trình khuyến mãi, tách hóa đơn và quản lý tiền tip.
-        \item \textbf{Đa dạng phương thức thanh toán}: Tích hợp với các cổng thanh toán thẻ, ví điện tử và tiền mặt, đồng thời kết nối trực tiếp với máy in hóa đơn.
+        \item \textbf{Đa dạng phương thức thanh toán}: Hỗ trợ tiền mặt, thẻ và ví điện tử thông qua \textsf{PaymentGateway} trong code, đồng thời phát hành biên lai qua \textsf{ReceiptDeliveryAdapter}.
     \end{itemize}
 
     \item \textbf{Phân hệ Quản trị và Kho vận}
@@ -66,15 +66,6 @@ Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ
         \item \textbf{Kiểm soát và Bảo mật}: Quản lý quyền truy cập dựa trên vai trò (RBAC) và lưu vết lịch sử (audit logs) cho các tác động quan trọng vào hệ thống.
     \end{itemize}
 \end{itemize}
-
-% \paragraph{Các thành phần mở rộng (Hợp lý \& Khả thi)}
-% Để hệ thống trở nên hoàn thiện và phù hợp với xu hướng công nghệ hiện nay, phạm vi có thể mở rộng thêm:
-% \begin{itemize}
-%     \item \textbf{Phân hệ Tự phục vụ (Self-Service)}: Cho phép khách hàng quét mã QR tại bàn để tự gọi món và thanh toán, giúp giảm tải cho nhân viên trong giờ cao điểm.
-%     \item \textbf{Tích hợp Đặt món trực tuyến (O2O)}: Kết nối với các nền tảng giao hàng bên thứ ba (GrabFood, ShopeeFood) để quản lý đơn hàng tập trung tại một hệ thống duy nhất.
-%     \item \textbf{Chăm sóc khách hàng thân thiết (Loyalty Program)}: Lưu trữ thông tin khách hàng, quản lý điểm thưởng và gửi thông báo khuyến mãi cá nhân hóa qua email/SMS.
-%     \item \textbf{Chế độ Offline (Graceful Degradation)}: Đảm bảo các thiết bị cầm tay vẫn có thể ghi nhận đơn hàng tạm thời khi mất kết nối internet và đồng bộ lại khi có mạng.
-% \end{itemize}
 
 \subsection{Các bên liên quan}
 \begin{table}[H]
@@ -124,10 +115,10 @@ Quản trị viên & Người dùng/đơn vị vận hành & \begin{itemize}
   \item Xử lý sự cố kỹ thuật, bảo đảm hệ thống luôn sẵn sàng hoạt động
   \item Cấu hình và bảo trì hệ thống bán hàng tại quầy
 \end{itemize} \\
-Cổng thanh toán & Hệ thống ngoài & \begin{itemize}
-  \item Xử lý giao dịch thẻ tín dụng/ghi nợ an toàn
-  \item Hỗ trợ ví điện tử (MoMo, ZaloPay, Apple Pay, …)
-  \item Trả về kết quả giao dịch (thành công/thất bại) cho hệ thống bán hàng tại quầy
+\textsf{PaymentGateway} & Port/adapter nội bộ & \begin{itemize}
+  \item Xử lý giao dịch thẻ hoặc ví điện tử ở mức hợp đồng thanh toán của hệ thống
+  \item Hỗ trợ nhánh tiền mặt và nhánh tham chiếu giao dịch đã hiện thực trong code
+  \item Trả về kết quả giao dịch cho hệ thống bán hàng tại quầy
 \end{itemize} \\
 \bottomrule
 \end{tabularx}
@@ -194,7 +185,7 @@ Service này chịu trách nhiệm theo dõi tồn kho, công thức nguyên li�
 
 \textsf{IAM \& Audit Service} quản lý định danh người dùng, phân quyền theo vai trò, phiên làm việc và nhật ký kiểm toán bất biến. Mọi thao tác nhạy cảm như hoàn tiền, hủy món đã gửi bếp, ghi đè giá, mở lại hóa đơn, thay đổi quyền truy cập hoặc điều chỉnh tồn kho thủ công đều cần được ghi nhận đầy đủ người thực hiện, thời điểm, giá trị trước, giá trị sau và lý do.
 
-\textsf{Notification Service} xử lý việc gửi xác nhận đặt bàn, nhắc lịch, cảnh báo tồn kho, thông báo món sẵn sàng và thông báo thanh toán. Service này tiêu thụ event thay vì được gọi trực tiếp bởi mọi service nghiệp vụ, nhờ đó kênh gửi thông báo có thể thay đổi hoặc lỗi tạm thời mà không làm hỏng giao dịch chính.
+\textsf{Notification Service} xử lý việc ghi nhận và điều phối xác nhận đặt bàn, nhắc lịch, cảnh báo tồn kho, thông báo món sẵn sàng và thông báo thanh toán. Service này tiêu thụ event thay vì được gọi trực tiếp bởi mọi service nghiệp vụ, nhờ đó adapter kênh thông báo có thể thay đổi hoặc lỗi tạm thời mà không làm hỏng giao dịch chính.
 
 \subsection{Yêu cầu phi chức năng ở góc nhìn toàn dự án}
 Khác với ca sử dụng vốn mô tả hành vi theo từng kịch bản, yêu cầu phi chức năng của IRMS phải được nhìn ở mức \textbf{toàn dự án}. Chúng quyết định kiến trúc hướng dịch vụ được tổ chức ra sao, service nào cần ranh giới trách nhiệm riêng, dữ liệu nào cần đồng bộ mạnh và hệ quả nào có thể xử lý bất đồng bộ qua event. Vì vậy, mỗi yêu cầu dưới đây đều được gắn với \textbf{số liệu mục tiêu}, \textbf{điều kiện áp dụng} và \textbf{cách đáp ứng trong kiến trúc}.
@@ -221,7 +212,7 @@ Hiệu năng \& độ phản hồi & Tra cứu thực đơn và trạng thái b�
 Độ tin cậy \& toàn vẹn giao dịch & Không làm mất đơn gọi món đã xác nhận; tỷ lệ tạo phiếu trùng hoặc ghi nhận thanh toán trùng phải thấp hơn 0.1\%; khôi phục sau lỗi một nút ứng dụng trong vòng tối đa 10 phút. & Áp dụng ở cả Điều kiện 1 và Điều kiện 2; vẫn phải giữ đúng khi mạng nội bộ gián đoạn ngắn hạn dưới 60 giây hoặc khi đối tác thanh toán phản hồi chậm. & Dùng giao dịch cục bộ theo dịch vụ, khóa chống xử lý lặp cho gọi món, thanh toán và hoàn tiền, khóa lạc quan khi cập nhật trạng thái, cùng hộp thư ra và bộ truyền sự kiện cho sự kiện miền để tránh vừa mất dữ liệu vừa xử lý lặp. \\
 Khả năng mở rộng & Hệ thống phải chịu được tối thiểu 1.5 lần tải của Điều kiện 2 trong các đợt cao điểm ngắn 10--15 phút mà không cần thiết kế lại; riêng các miền \textsf{Ordering}, \textsf{Kitchen Coordination} và \textsf{Billing} phải có thể tăng số phiên bản chạy độc lập khi tải tăng, báo cáo và phân tích không được kéo chậm tuyến giao dịch nóng. & Áp dụng cho bữa trưa, bữa tối, ngày cuối tuần hoặc các đơn đặt nhóm lớn & Chọn kiến trúc tách miền nghiệp vụ rõ ràng để phân bố tải theo nhu cầu thực tế; mở rộng theo chiều ngang các miền có nhu cầu cao; cô lập báo cáo bằng mô hình đọc và ảnh chụp dữ liệu để truy vấn phân tích không tranh chấp với cơ sở dữ liệu giao dịch. \\
 Bảo mật \& khả năng kiểm toán & 100\% thao tác hoàn tiền, hủy món đã gửi bếp, ghi đè giá, mở lại hóa đơn và thay đổi quyền phải có nhật ký người thực hiện, thời điểm, giá trị trước, giá trị sau và lý do; phiên thu ngân hoặc quản lý tự khóa sau 15 phút không hoạt động; hệ thống không lưu dữ liệu thẻ gốc. & Áp dụng liên tục trong toàn bộ vòng đời vận hành và đặc biệt quan trọng ở các ca đổi nhân sự, bàn giao ca hoặc xử lý khiếu nại sau thanh toán. & Dùng \textsf{IAM} tập trung, phân quyền theo vai trò, chính sách kiểm tra quyền trong từng dịch vụ, nhật ký kiểm toán bất biến cho hành động nhạy cảm, và tích hợp thanh toán qua đối tác ngoài để giới hạn phạm vi dữ liệu nhạy cảm nằm trong IRMS. \\
-Khả năng quan sát \& vận hành & 100\% yêu cầu ghi dữ liệu phải mang mã liên kết xuyên suốt; cảnh báo mức tồn thấp phải xuất hiện trong vòng 60 giây sau khi vượt ngưỡng; bảng điều khiển vận hành có độ trễ dữ liệu không quá 5 phút; lỗi ở cổng vào hoặc cổng thanh toán phải sinh cảnh báo vận hành trong vòng 1 phút. & Áp dụng cho cả thời gian phục vụ và giai đoạn chốt ca, khi quản lý cần đối chiếu chênh lệch đơn gọi món, hóa đơn, tồn kho và thao tác hoàn tiền. & Ghi nhật ký tập trung theo dịch vụ, truy vết xuyên suốt bằng mã liên kết, thu thập số đo cho độ trễ phiếu và thanh toán, tổng hợp bảng điều khiển từ mô hình đọc, cùng với dấu thời gian sự kiện để có thể truy vết một đơn từ lúc tạo đến lúc đóng hóa đơn. \\
+Khả năng quan sát \& vận hành & 100\% yêu cầu ghi dữ liệu phải mang mã liên kết xuyên suốt; cảnh báo mức tồn thấp phải xuất hiện trong vòng 60 giây sau khi vượt ngưỡng; bảng điều khiển vận hành có độ trễ dữ liệu không quá 5 phút; lỗi ở cổng vào hoặc \textsf{PaymentGateway} phải sinh cảnh báo vận hành trong vòng 1 phút. & Áp dụng cho cả thời gian phục vụ và giai đoạn chốt ca, khi quản lý cần đối chiếu chênh lệch đơn gọi món, hóa đơn, tồn kho và thao tác hoàn tiền. & Ghi nhật ký tập trung theo dịch vụ, truy vết xuyên suốt bằng mã liên kết, thu thập số đo cho độ trễ phiếu và thanh toán, tổng hợp bảng điều khiển từ mô hình đọc, cùng với dấu thời gian sự kiện để có thể truy vết một đơn từ lúc tạo đến lúc đóng hóa đơn. \\
 Khả năng bảo trì \& mở rộng & Khi thêm một phương thức thanh toán hoặc một kênh thông báo mới, thay đổi chủ yếu chỉ nằm ở bộ kết nối, cấu hình và kiểm thử tích hợp; thay đổi thực đơn, giá, khuyến mãi hoặc ngưỡng mức tồn thấp không được buộc sửa chéo bộ điều khiển, thanh toán và tồn kho cùng lúc. & Áp dụng trong suốt vòng đời dự án, đặc biệt khi nhà hàng đổi chính sách giá, khuyến mãi theo mùa hoặc cần thí điểm thêm kênh thanh toán mới. & Phân rã theo miền nghiệp vụ, áp dụng nguyên lý SOLID và đảo ngược phụ thuộc cho cổng ngoài, tách lớp điều phối ứng dụng khỏi quy tắc miền, chuẩn hóa hợp đồng giữa các dịch vụ để mỗi thay đổi được khu trú trong biên chức năng tương ứng. \\
 \bottomrule
 \end{longtable}

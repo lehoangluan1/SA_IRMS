@@ -181,7 +181,7 @@ digraph G {
   policy_3 -> inventory_3 [style=dashed, label="3. Return ingredient quantities"];
   inventory_4 -> policy_4 [label="4. Recalculate threshold and availability"];
   policy_5 -> notification_5 [label="5. Emit low-stock alert"];
-  notification_6 -> manager_actor_6 [label="6. Deliver low-stock alert"];
+  notification_6 -> manager_actor_6 [label="6. Record low-stock alert"];
   manager_actor_7 -> manager_ui_7 [label="7. Open alert details"];
   manager_ui_8 -> inventory_8 [label="8. Load stock status and suggested action"];
   inventory_9 -> manager_ui_9 [style=dashed, label="9. Return stock status and reorder plan"];

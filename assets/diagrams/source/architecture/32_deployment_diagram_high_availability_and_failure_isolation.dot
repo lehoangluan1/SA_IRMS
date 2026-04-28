@@ -10,7 +10,7 @@ digraph G {
     splines=polyline,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="Deployment Diagram - High Availability and Failure Isolation"
+    label="Deployment Diagram - Local Docker Runtime and Failure Isolation"
   ];
 
   node [
@@ -34,73 +34,29 @@ digraph G {
     color="#CBD5E1";
     style="rounded";
 
-    host [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nHost Tablet"
-    ];
-
-    server [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nServer Tablet"
-    ];
-
-    kitchen [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nKitchen Display"
-    ];
-
-    cashier [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nCashier Terminal"
-    ];
-
-    manager [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nManager Console"
-    ];
+    host [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nHost Tablet"];
+    server [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nServer Tablet"];
+    kitchen [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nKitchen Display"];
+    cashier [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nCashier Terminal"];
+    manager [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nManager Console"];
   }
 
-  lb [
+  frontend [
     shape=box3d,
     fillcolor="#DBEAFE",
     color="#60A5FA",
-    label="«device»\nReverse Proxy / Load Balancer"
+    label="<<node>>\nfrontend container\nReact UI and Nitro Proxy"
   ];
 
   subgraph cluster_app {
-    label="Stateless Application Tier";
+    label="Spring Boot Containers";
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#EFF6FF";
 
-    appA [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nIRMS App Node A"
-    ];
-
-    appB [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nIRMS App Node B"
-    ];
-
-    workerA [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nWorker Node A"
-    ];
-
-    workerB [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nWorker Node B"
-    ];
+    gateway [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\napi-gateway"];
+    services [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\ndomain services\nordering, kitchen, billing,\nreservation, inventory,\nnotification, reporting,\nidentity-audit"];
+    migration [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nirms-migration"];
   }
 
   subgraph cluster_state {
@@ -109,105 +65,42 @@ digraph G {
     style="rounded,filled";
     fillcolor="#FEF2F2";
 
-    queue [
-      shape=component,
-      fillcolor="#FEF3C7",
-      color="#F59E0B",
-      label="«queue»\nOutbox / Job Queue"
-    ];
-
-    dbPrimary [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nPostgreSQL Primary"
-    ];
-
-    dbReplica [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nRead Replica / Warm Standby"
-    ];
-
-    views [
-      shape=note,
-      fillcolor="#FFFFFF",
-      label="«artifact»\nReporting Read Model"
-    ];
-  }
-
-  subgraph cluster_ext {
-    label="External Systems";
-    color="#CBD5E1";
-    style="rounded,dashed";
-
-    pay [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«external»\nPayment Gateway"
-    ];
-
-    notif [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«external»\nNotification Service"
-    ];
-
-    printer [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«external»\nReceipt Printer Gateway"
-    ];
+    queue [shape=component, fillcolor="#FEF3C7", color="#F59E0B", label="<<artifact>>\noutbox_events and processed_events"];
+    dbPrimary [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nPostgreSQL container"];
+    broker [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nRabbitMQ container"];
+    views [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\nReporting tables and views"];
   }
 
   legend [shape=plaintext, label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
       <TR><TD BGCOLOR="#F8FAFC"><B>Legend</B></TD></TR>
       <TR><TD ALIGN="LEFT">solid = synchronous request path</TD></TR>
-      <TR><TD ALIGN="LEFT">dashed = async / replication / failover path</TD></TR>
+      <TR><TD ALIGN="LEFT">dashed = async event path or startup dependency</TD></TR>
     </TABLE>
   >];
 
   { rank=same; host; server; kitchen; cashier; manager; }
-  { rank=same; appA; appB; }
-  { rank=same; workerA; workerB; }
-  { rank=same; dbPrimary; dbReplica; }
+  { rank=same; gateway; services; migration; }
+  { rank=same; dbPrimary; broker; }
 
-  host    -> lb [label="HTTPS"];
-  server  -> lb [label="HTTPS"];
-  kitchen -> lb [label="HTTPS"];
-  cashier -> lb [label="HTTPS"];
-  manager -> lb [label="HTTPS"];
+  host    -> frontend [label="HTTP"];
+  server  -> frontend [label="HTTP"];
+  kitchen -> frontend [label="HTTP"];
+  cashier -> frontend [label="HTTP"];
+  manager -> frontend [label="HTTP"];
 
-  lb -> appA [label="HTTPS"];
-  lb -> appB [label="HTTPS"];
+  frontend -> gateway [label="/api proxy"];
+  gateway -> services [label="REST routing"];
 
-  appA -> dbPrimary [label="transactional read/write"];
-  appB -> dbPrimary [label="transactional read/write"];
+  services -> dbPrimary [label="transactional read/write"];
+  migration -> dbPrimary [label="Flyway migrations"];
+  migration -> services [style=dashed, label="start after migration"];
 
-  dbPrimary -> dbReplica [style=dashed, label="stream replication"];
-
-  appA -> queue [style=dashed, label="publish jobs"];
-  appB -> queue [style=dashed, label="publish jobs"];
-
-  workerA -> queue [label="poll / lock jobs"];
-  workerB -> queue [label="poll / lock jobs"];
-
-  workerA -> views [label="refresh projections"];
-  workerB -> views [label="refresh projections"];
-  dbReplica -> views [style=dashed, label="read source"];
-  queue -> views [style=dashed, label="decouple read refresh"];
-
-  appA -> pay [label="payment calls"];
-  appB -> pay [label="payment calls"];
-
-  workerA -> notif [label="notifications"];
-  workerB -> notif [label="notifications"];
-
-  workerA -> printer [label="print jobs"];
-  workerB -> printer [label="print jobs"];
-
-  appA -> appB [style=dashed, dir=both, label="failover (stateless)"];
-  workerA -> workerB [style=dashed, dir=both, label="redundant consumers"];
+  services -> queue [style=dashed, label="write / claim events"];
+  services -> broker [style=dashed, label="publish / consume events"];
+  services -> views [label="refresh projections"];
+  dbPrimary -> views [style=dashed, label="read source"];
+  broker -> views [style=dashed, label="projection events"];
 
   views -> legend [style=invis];
 }

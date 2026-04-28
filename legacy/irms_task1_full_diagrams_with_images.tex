@@ -1,5 +1,9 @@
 
 \documentclass[11pt,a4paper]{article}
+% Legacy snapshot only. This file is not included by main.tex or
+% irms_architecture_report.tex. The current architecture source of truth is
+% irms_project plus the refactored sections/ and assets/diagrams/source/
+% files; older statements below are kept only as historical draft material.
 \usepackage[margin=2.2cm,headheight=14pt]{geometry}
 \usepackage{fontspec}
 \setmainfont{Latin Modern Roman}
@@ -489,8 +493,8 @@ Vì thế, đây là nơi cần thời gian chờ rõ ràng, khóa chống xử 
 \begin{itemize}
   \item \textbf{Cashier UI}: là điểm điều khiển nghiệp vụ của thu ngân.
   \item \textbf{Billing Service}: giữ trung tâm của tuyến quyết toán.
-  \item \textbf{Payment Gateway Adapter}: đại diện cho tích hợp thanh toán ngoài hệ thống.
-  \item \textbf{Receipt Printer Adapter và TableSession}: kết thúc luồng bằng phát hành biên lai và đóng phiên bàn.
+  \item \textbf{PaymentGateway}: đại diện cho tích hợp thanh toán ngoài hệ thống.
+  \item \textbf{ReceiptDeliveryAdapter và TableSession}: kết thúc luồng bằng phát hành biên lai và đóng phiên bàn.
 \end{itemize}
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
@@ -577,7 +581,7 @@ Các ca sử dụng dưới đây được trình bày theo định dạng đón
   \item Hệ thống gợi ý bàn hoặc nhóm bàn đáp ứng sức chứa.
   \item Lễ tân xác nhận lựa chọn bàn và các ghi chú đặc biệt của khách.
   \item Hệ thống tạo đặt bàn, sinh mã đặt bàn và lưu lịch sử thao tác.
-  \item Hệ thống gửi thông báo xác nhận qua SMS/email hoặc in phiếu xác nhận.
+  \item Hệ thống ghi nhận yêu cầu thông báo xác nhận qua kênh đã chọn ở mức adapter nội bộ.
 \end{enumerate}
 
     \textbf{Luồng thay thế}
@@ -765,13 +769,13 @@ Các ca sử dụng dưới đây được trình bày theo định dạng đón
     \begin{itemize}[leftmargin=1.8em]
   \item Bản ghi đặt bàn hoặc danh sách chờ có thông tin liên hệ hợp lệ.
   \item Mẫu thông báo và kênh gửi đã được cấu hình.
-  \item Hệ thống có khả năng kết nối tới dịch vụ gửi thông báo hoặc hàng đợi retry.
+  \item Hệ thống có kênh thông báo nội bộ qua \textsf{NotificationChannelAdapter} và cơ chế xử lý lại khi cần.
 \end{itemize}
 
     \textbf{Hậu điều kiện}
     \begin{itemize}[leftmargin=1.8em]
   \item Một bản ghi \textsf{NotificationMessage} được tạo với trạng thái đã gửi, đã xếp hàng hoặc cần xử lý thủ công.
-  \item Khách hàng nhận được thông tin cần thiết qua SMS, email hoặc kênh đã chọn.
+  \item Thông tin cần thông báo được ghi nhận theo kênh khách đã chọn.
   \item Lịch sử gửi thông báo được lưu để tránh gửi trùng và để hỗ trợ truy vết.
 \end{itemize}
 
@@ -781,20 +785,20 @@ Các ca sử dụng dưới đây được trình bày theo định dạng đón
   \item Hệ thống xác định loại thông báo, mẫu nội dung và thời điểm gửi phù hợp.
   \item Hệ thống kiểm tra thông tin liên hệ của khách hàng và kênh gửi ưu tiên.
   \item Hệ thống cá nhân hóa nội dung bằng mã đặt bàn, thời gian, khu vực hoặc thông tin chờ.
-  \item Hệ thống tạo \textsf{NotificationMessage} và gửi thông báo qua kênh đã chọn.
-  \item Hệ thống ghi nhận kết quả gửi và cập nhật trạng thái của thông báo.
+  \item Hệ thống tạo \textsf{NotificationMessage} và ghi nhận yêu cầu thông báo qua kênh đã chọn.
+  \item Hệ thống ghi nhận kết quả xử lý adapter và cập nhật trạng thái của thông báo.
 \end{enumerate}
 
     \textbf{Luồng thay thế}
     \begin{itemize}[leftmargin=1.8em]
   \item Lễ tân có thể kích hoạt gửi lại thủ công nếu khách yêu cầu hoặc nếu cần xác nhận lại.
-  \item Nếu SMS lỗi nhưng email khả dụng, hệ thống có thể chuyển sang kênh dự phòng theo cấu hình.
+  \item Nếu adapter kênh ưu tiên lỗi nhưng kênh dự phòng khả dụng, hệ thống có thể chuyển sang kênh dự phòng theo cấu hình.
 \end{itemize}
 
     \textbf{Ngoại lệ}
     \begin{itemize}[leftmargin=1.8em]
   \item Thiếu số điện thoại hoặc email hợp lệ: hệ thống đánh dấu cần liên hệ thủ công.
-  \item Dịch vụ thông báo ngoài không phản hồi: hệ thống đưa thông báo vào hàng chờ retry và cảnh báo cho lễ tân khi cần.
+  \item Adapter kênh thông báo không phản hồi: hệ thống đưa thông báo vào hàng chờ retry và cảnh báo cho lễ tân khi cần.
   \item Thông báo bị chặn vì vượt ngưỡng chống spam: hệ thống bỏ qua bản gửi trùng và lưu lý do.
 \end{itemize}
 
@@ -1304,21 +1308,21 @@ Các ca sử dụng dưới đây được trình bày theo định dạng đón
     \textbf{Tiền điều kiện}
     \begin{itemize}[leftmargin=1.8em]
   \item Thanh toán đã được ghi nhận hợp lệ.
-  \item Kênh phát hành biên lai (in giấy, email, SMS) đã được cấu hình.
+  \item Kênh phát hành biên lai qua \textsf{ReceiptDeliveryAdapter} đã được cấu hình ở mức adapter nội bộ.
 \end{itemize}
 
     \textbf{Hậu điều kiện}
     \begin{itemize}[leftmargin=1.8em]
   \item Một \textsf{Receipt} được tạo và liên kết với hóa đơn/thanh toán.
-  \item Khách hàng nhận biên lai theo kênh đã chọn.
+  \item Yêu cầu phát hành biên lai được ghi nhận theo kênh đã chọn.
 \end{itemize}
 
     \textbf{Luồng chính}
     \begin{enumerate}[leftmargin=1.8em]
   \item Hệ thống tạo nội dung biên lai gồm món, giảm giá, phí, phương thức thanh toán và thời gian.
-  \item Thu ngân chọn in giấy hoặc gửi điện tử.
-  \item Hệ thống phát hành biên lai và cập nhật trạng thái thành công.
-  \item Nếu cần, hệ thống gửi bản sao tới email khách hàng hoặc số điện thoại đã lưu.
+  \item Thu ngân chọn print adapter hoặc kênh điện tử.
+  \item Hệ thống ghi nhận yêu cầu phát hành biên lai và cập nhật trạng thái xử lý.
+  \item Nếu cần, hệ thống ghi nhận yêu cầu phát hành bản sao tới kênh liên hệ đã lưu.
 \end{enumerate}
 
     \textbf{Luồng thay thế}
@@ -1329,8 +1333,8 @@ Các ca sử dụng dưới đây được trình bày theo định dạng đón
 
     \textbf{Ngoại lệ}
     \begin{itemize}[leftmargin=1.8em]
-  \item Máy in lỗi hoặc hết giấy: hệ thống gợi ý chuyển sang gửi điện tử hoặc in lại sau.
-  \item Email/SMS không gửi được: hệ thống vẫn lưu biên lai và cho phép gửi lại thủ công.
+  \item Adapter phát hành biên lai lỗi: hệ thống gợi ý chuyển sang kênh khác hoặc xử lý lại sau.
+  \item Kênh điện tử không xử lý được: hệ thống vẫn lưu biên lai và cho phép phát hành lại thủ công.
 \end{itemize}
 
     \textbf{Quy tắc nghiệp vụ}
@@ -1782,17 +1786,17 @@ Các ca sử dụng dưới đây được trình bày theo định dạng đón
 \section{Kiến trúc phần mềm}
 
 \subsection{Tổng quan kiến trúc}
-Hệ thống IRMS được tổ chức theo kiến trúc dịch vụ bám theo miền nghiệp vụ của nhà hàng. Ở phía ngoài, người dùng thao tác thông qua một ứng dụng web thống nhất được xây dựng bằng \textsf{ReactJS}. Mọi yêu cầu từ giao diện đều đi qua \textsf{Nginx} trước khi được định tuyến vào các dịch vụ nghiệp vụ ở phía sau. Các dịch vụ này được phát triển bằng \textsf{Spring Boot} và tách theo các vùng chức năng chính như đặt bàn và xếp bàn, gọi món, điều phối bếp, thanh toán, tồn kho, báo cáo và kiểm soát truy cập. Dữ liệu vận hành và dữ liệu đọc báo cáo được lưu trên \textsf{PostgreSQL}; các tích hợp như cổng thanh toán, kênh gửi thông báo và máy in biên lai được đặt ở rìa hệ thống.
+Hệ thống IRMS được tổ chức theo kiến trúc dịch vụ bám theo miền nghiệp vụ của nhà hàng. Ở phía ngoài, người dùng thao tác thông qua một ứng dụng web thống nhất được xây dựng bằng \textsf{ReactJS}. Mọi yêu cầu từ giao diện đi qua \textsf{Frontend Node Server} và \textsf{api-gateway} trước khi được định tuyến vào các dịch vụ nghiệp vụ ở phía sau. Các dịch vụ này được phát triển bằng \textsf{Spring Boot} và tách theo các vùng chức năng chính như đặt bàn và xếp bàn, gọi món, điều phối bếp, thanh toán, tồn kho, báo cáo và kiểm soát truy cập. Dữ liệu vận hành và dữ liệu đọc báo cáo được lưu trên \textsf{PostgreSQL}; các adapter biên như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter} được đặt ở rìa hệ thống.
 
 \begin{figure}[H]
 \centering
-\IfFileExists{33_architecture_overview_react_nginx_spring_postgresql.pdf}{
-  \includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{33_architecture_overview_react_nginx_spring_postgresql.pdf}
+\IfFileExists{33_architecture_overview_react_nitro_spring_postgresql.pdf}{
+  \includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{33_architecture_overview_react_nitro_spring_postgresql.pdf}
 }{
-  \IfFileExists{33_architecture_overview_react_nginx_spring_postgresql.png}{
-    \includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{33_architecture_overview_react_nginx_spring_postgresql.png}
+  \IfFileExists{33_architecture_overview_react_nitro_spring_postgresql.png}{
+    \includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{33_architecture_overview_react_nitro_spring_postgresql.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{33\_architecture\_overview\_react\_nginx\_spring\_postgresql.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{33\_architecture\_overview\_react\_nitro\_spring\_postgresql.(pdf/png)}.}}
   }
 }
 \caption{Sơ đồ tổng quan kiến trúc của IRMS}
@@ -1804,7 +1808,7 @@ Hình~\ref{fig:irms-architecture-overview} là sơ đồ nền tảng để đ�
 
 Ở lớp ngoài cùng, \textsf{ReactJS} đóng vai trò mặt trước thống nhất cho lễ tân, phục vụ, bếp, thu ngân và quản lý. Việc dùng một nền giao diện thống nhất không có nghĩa mọi vai trò dùng cùng một màn hình, mà có nghĩa mọi vai trò đi qua cùng một cơ chế xác thực, cùng quy tắc điều hướng và cùng cách đồng bộ trạng thái quan trọng như bàn, đơn gọi món, phiếu bếp và hóa đơn. Đây là quyết định quan trọng vì IRMS là hệ thống có nhiều điểm chạm nghiệp vụ nhưng cần một cảm giác vận hành liền mạch. Nếu mỗi vai trò bị tách thành những ứng dụng rời rạc ngay từ đầu, chi phí đồng bộ trạng thái, quản lý phiên làm việc và kiểm soát truy cập sẽ tăng rất nhanh.
 
-Ở lớp cổng vào, \textsf{Nginx} được đặt làm điểm tiếp nhận thống nhất. Vai trò của nó không chỉ là chuyển tiếp yêu cầu. Về kiến trúc, đây là nơi phù hợp để đặt các kiểm tra chung như xác thực sơ bộ, giới hạn lưu lượng, ghi nhật ký ở biên, chuẩn hóa tiêu đề yêu cầu và tách ứng dụng khách khỏi cấu trúc bên trong của hệ thống. Nhờ có lớp này, giao diện người dùng không cần biết trực tiếp từng mô-đun phía sau đang chạy ra sao, ở đâu, hay được tách thành bao nhiêu phần. Điều đó giúp cấu trúc bên trong được thay đổi dần theo thời gian mà không làm gãy các điểm chạm ở tuyến đầu.
+Ở lớp cổng vào, \textsf{Frontend Node Server} và \textsf{api-gateway} được đặt làm điểm tiếp nhận thống nhất. Vai trò của chúng không chỉ là chuyển tiếp yêu cầu. Về kiến trúc, đây là nơi phù hợp để đặt các kiểm tra chung như xác thực sơ bộ, ghi nhật ký ở biên, chuẩn hóa tiêu đề yêu cầu và tách ứng dụng khách khỏi cấu trúc bên trong của hệ thống. Nhờ có lớp này, giao diện người dùng không cần biết trực tiếp từng mô-đun phía sau đang chạy ra sao, ở đâu, hay được tách thành bao nhiêu phần. Điều đó giúp cấu trúc bên trong được thay đổi dần theo thời gian mà không làm gãy các điểm chạm ở tuyến đầu.
 
 Phần quan trọng nhất của hình là lớp dịch vụ xử lý phía sau. Ở đây, IRMS được tổ chức theo ranh giới nghiệp vụ thay vì theo tầng kỹ thuật thuần túy. \textsf{Reservation \& Seating Service} giữ bối cảnh đặt bàn, danh sách chờ và phiên bàn; \textsf{Ordering Service} giữ dữ liệu gọi món và ảnh chụp giá trị tại thời điểm xác nhận; \textsf{Kitchen Coordination Service} quản lý việc chuyển từ đơn gọi món sang thực thi tại bếp; \textsf{Billing Service} chịu trách nhiệm cho toàn bộ chuỗi lập hóa đơn, tách hóa đơn, thanh toán và hoàn tiền; \textsf{Inventory Service} xử lý mức tồn, quy tắc cảnh báo và lịch sử biến động; \textsf{Reporting Service} xây dựng phía đọc phục vụ quản trị; còn \textsf{IAM / Access Service} bảo vệ biên truy cập và các quyết định nhạy cảm. Cách chia này làm rõ một nguyên tắc quan trọng: phần mềm phải phản ánh cách nhà hàng vận hành ngoài đời, không phản ánh cách nhóm lập trình thuận tay chia thư mục mã nguồn.
 
@@ -1814,7 +1818,7 @@ Cuối cùng, các tích hợp ngoài như cổng thanh toán, kênh gửi thôn
 
 \begin{enumerate}
   \item \textbf{Lớp giao diện người dùng (\textsf{ReactJS}).} Đây là nơi tối ưu cho thao tác nhanh, ít bước và nhất quán giữa nhiều vai trò vận hành. Kiến trúc lựa chọn một nền giao diện chung để giảm chi phí học hệ thống, giữ một mô hình điều hướng thống nhất và đơn giản hóa quản lý phiên làm việc theo ca.
-  \item \textbf{Cổng vào giao diện lập trình ứng dụng (\textsf{Nginx}).} Thành phần này tạo một biên truy cập rõ ràng, là nơi phù hợp để gom các kiểm tra chung trước khi yêu cầu đi sâu vào lõi nghiệp vụ. Nó cũng giúp che giấu cấu trúc bên trong khỏi ứng dụng khách.
+  \item \textbf{Cổng vào giao diện lập trình ứng dụng (\textsf{Frontend Node Server} / \textsf{api-gateway}).} Thành phần này tạo một biên truy cập rõ ràng, là nơi phù hợp để gom các kiểm tra chung trước khi yêu cầu đi sâu vào lõi nghiệp vụ. Nó cũng giúp che giấu cấu trúc bên trong khỏi ứng dụng khách.
   \item \textbf{Các dịch vụ xử lý phía sau (\textsf{Spring Boot}).} Mỗi dịch vụ giữ một ranh giới trách nhiệm rõ, nhờ đó thay đổi ở vùng gọi món không tự động làm vỡ vùng thanh toán, còn thay đổi ở vùng tồn kho không ép vùng đặt bàn phải sửa theo.
   \item \textbf{Kho dữ liệu (\textsf{PostgreSQL}).} Dữ liệu nghiệp vụ cốt lõi và dữ liệu đọc phục vụ báo cáo được lưu trên \textsf{PostgreSQL}. Việc tách dữ liệu giao dịch khỏi dữ liệu đọc giúp truy vấn quản trị không làm nặng tuyến giao dịch nóng như gọi món, điều phối bếp và thanh toán.
   \item \textbf{Các tích hợp ngoài.} Những điểm phụ thuộc đối tác được đặt ở rìa kiến trúc để dễ thay thế, dễ cô lập lỗi và không làm ô nhiễm mô hình miền nghiệp vụ.
@@ -2018,7 +2022,7 @@ Hình~\ref{fig:irms-allocation-overview} là phần tổng quan còn thiếu cho
   \item \textbf{Lớp biên và thiết bị}: là nơi phát sinh thao tác nghiệp vụ thực tế như máy của lễ tân, máy của phục vụ, màn hình bếp, máy thu ngân và màn hình quản lý.
   \item \textbf{Lớp phân bổ thực thi}: gồm nút giao diện lập trình ứng dụng, bộ xử lý nền và dịch vụ truy vấn báo cáo; đây là nơi các năng lực được hiện thực thành tiến trình hoặc vùng thực thi cụ thể.
   \item \textbf{Lớp phân bổ dữ liệu}: gồm \textsf{Operational RDBMS}, \textsf{Reporting Views / Read Model} và \textsf{Outbox / Job Queue}; chúng tách dữ liệu giao dịch, dữ liệu đọc tổng hợp và hàng đợi xử lý nền.
-  \item \textbf{Lớp hệ thống ngoài}: gồm \textsf{Payment Gateway}, \textsf{Notification Service} và \textsf{Receipt Printer}; chúng là các điểm tích hợp nằm ngoài lõi IRMS.
+  \item \textbf{Lớp adapter biên}: gồm \textsf{PaymentGateway}, \textsf{Notification Service} và \textsf{ReceiptDeliveryAdapter}; chúng là các điểm tích hợp nội bộ nằm ở rìa lõi IRMS.
 \end{itemize}
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
@@ -2285,7 +2289,7 @@ Hình~\ref{fig:irms-cc-overall} cho thấy cấu trúc thực thi tổng quan c�
 \begin{itemize}
   \item Việc đặt \textbf{Cổng vào giao diện lập trình ứng dụng} ở phía trước giúp thống nhất xác thực, kiểm tra yêu cầu và ghi nhật ký ở biên thay vì lặp lại ở mọi điểm vào.
   \item Việc tách \textbf{Các dịch vụ ứng dụng} khỏi \textbf{Các mô-đun miền nghiệp vụ} giúp phần điều phối ca sử dụng không lẫn với luật nghiệp vụ cốt lõi.
-  \item Việc đẩy \textbf{Các bộ kết nối ngoài} ra rìa giúp miền nghiệp vụ không phụ thuộc trực tiếp vào cổng thanh toán, dịch vụ gửi thông báo hay thiết bị in.
+  \item Việc đẩy \textbf{Các adapter biên} ra rìa giúp miền nghiệp vụ không phụ thuộc trực tiếp vào cách hiện thực thanh toán, thông báo hay phát hành biên lai.
   \item Việc tách \textbf{Bộ phát sự kiện và bộ xử lý nền} thành thành phần riêng giúp các tác vụ phụ không làm chậm các thao tác đang diễn ra trực tiếp trước khách hàng.
 \end{itemize}
 
@@ -2362,14 +2366,14 @@ Hình~\ref{fig:irms-component-operational-command} được đưa vào để gi�
 
 Điểm quan trọng thứ hai là sơ đồ tách rất rõ giữa \textbf{hoàn thành giao dịch lõi} và \textbf{xử lý hệ quả phụ}. Một thao tác như xác nhận đơn gọi món hay ghi nhận thanh toán phải đạt trạng thái bền vững trước. Chỉ sau khi phần đó an toàn, hệ thống mới nên phát thông tin sang bếp, làm mới báo cáo, gửi thông báo hoặc cập nhật phần đọc. Cách tổ chức này là nền tảng của luận điểm \enquote{lõi đồng bộ, hỗ trợ bất đồng bộ}. Nó cho phép IRMS phản hồi nhanh ở tuyến đầu mà không đánh đổi tính đúng đắn của dữ liệu.
 
-Điểm đáng đọc thứ ba là vị trí của các bộ kết nối như \textsf{Payment Gateway Adapter}, \textsf{Receipt Printer Adapter} và \textsf{Notification Adapter}. Chúng xuất hiện ở rìa thay vì ở giữa. Điều đó nói lên rằng cổng thanh toán, máy in hay kênh gửi thông báo không được phép định hình cấu trúc miền nghiệp vụ. Miền nghiệp vụ chỉ biết các năng lực mà nó cần; cách kết nối cụ thể được để cho lớp ngoài đảm nhiệm. Đây chính là điều làm cho thiết kế giữ được khả năng thay thế nhà cung cấp và cô lập lỗi khi tích hợp ngoài gặp trục trặc.
+Điểm đáng đọc thứ ba là vị trí của các bộ kết nối như \textsf{PaymentGateway}, \textsf{ReceiptDeliveryAdapter} và \textsf{Notification Adapter}. Chúng xuất hiện ở rìa thay vì ở giữa. Điều đó nói lên rằng cách thanh toán, phát hành biên lai hay kênh thông báo không được phép định hình cấu trúc miền nghiệp vụ. Miền nghiệp vụ chỉ biết các năng lực mà nó cần; cách kết nối cụ thể được để cho lớp ngoài đảm nhiệm. Đây chính là điều làm cho thiết kế giữ được khả năng thay thế adapter và cô lập lỗi khi tích hợp biên gặp trục trặc.
 
 \paragraph{Các thành phần chính thể hiện trong hình.}
 \begin{itemize}
   \item \textbf{Cổng vào giao diện lập trình ứng dụng và lớp bộ điều khiển} cùng \textbf{bộ lọc xác thực / kiểm tra chính sách}: tiếp nhận yêu cầu, chuẩn hóa dữ liệu vào, xác thực và chặn hành vi vượt quyền trước khi đi vào lõi.
   \item \textbf{Các dịch vụ ứng dụng} của từng vùng \textsf{Reservation}, \textsf{Ordering}, \textsf{Kitchen} và \textsf{Billing}: điều phối ca sử dụng, gọi đúng thành phần miền nghiệp vụ và kiểm soát biên giao dịch.
   \item \textbf{Các thành phần miền nghiệp vụ} và \textbf{kho lưu trữ}: hiện thực quy tắc miền và nơi lưu trạng thái bền vững.
-  \item \textbf{Hộp thư ra / bộ phát sự kiện} cùng các bộ kết nối như \textsf{Payment Gateway Adapter}, \textsf{Receipt Printer Adapter} và \textsf{Notification Adapter}: tách bước chốt giao dịch khỏi bước tích hợp hoặc xử lý nền.
+  \item \textbf{Hộp thư ra / bộ phát sự kiện} cùng các adapter như \textsf{PaymentGateway}, \textsf{ReceiptDeliveryAdapter} và \textsf{Notification Adapter}: tách bước chốt giao dịch khỏi bước xử lý biên hoặc xử lý nền.
 \end{itemize}
 
 \paragraph{Lý do cần thêm sơ đồ này.}
@@ -2528,7 +2532,7 @@ Phương án này mạnh ở chỗ đơn giản và dễ vận hành, rất phù
 
 Hình~\ref{fig:irms-deploy-network} bổ sung góc nhìn mà sơ đồ vật lý tổng quan chưa đủ làm rõ: \textbf{ranh giới tin cậy}. Với một hệ thống như IRMS, bảo mật không chỉ là câu chuyện tài khoản và mật khẩu. Nó còn là câu chuyện thành phần nào được đặt ở vùng mạng nào, ai được phép nói chuyện trực tiếp với ai, và dữ liệu nhạy cảm nằm ở đâu trong toàn bộ mặt bằng triển khai.
 
-Việc tách thành vùng phục vụ phía trước, vùng bếp, vùng ứng dụng, vùng dữ liệu và vùng tích hợp ngoài giúp kiến trúc thể hiện rõ những lớp bảo vệ khác nhau. Thiết bị ở hiện trường phải đủ gần nghiệp vụ để thao tác nhanh, nhưng không nên có quyền đi thẳng tới cơ sở dữ liệu. Cơ sở dữ liệu lại phải ở một vùng được bảo vệ hơn, tránh truy cập trực tiếp từ thiết bị đầu cuối hoặc từ các kết nối ngoài. Các hệ thống đối tác như cổng thanh toán hay dịch vụ gửi thông báo nằm ngoài biên tin cậy nội bộ, nên mọi lưu lượng đi qua chúng đều phải được kiểm soát, ghi nhật ký và hạn chế quyền truy cập. Nhờ vậy, sơ đồ này làm nổi bật một nguyên tắc quan trọng: không có \enquote{một vùng an toàn duy nhất}, mà có nhiều lớp biên, mỗi lớp có mức tin cậy khác nhau.
+Việc tách thành vùng phục vụ phía trước, vùng bếp, vùng ứng dụng, vùng dữ liệu và vùng adapter biên giúp kiến trúc thể hiện rõ những lớp bảo vệ khác nhau. Thiết bị ở hiện trường phải đủ gần nghiệp vụ để thao tác nhanh, nhưng không nên có quyền đi thẳng tới cơ sở dữ liệu. Cơ sở dữ liệu lại phải ở một vùng được bảo vệ hơn, tránh truy cập trực tiếp từ thiết bị đầu cuối hoặc từ các adapter biên. Các adapter như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter} nằm ở rìa lõi nghiệp vụ, nên mọi lưu lượng đi qua chúng đều phải được kiểm soát, ghi nhật ký và hạn chế quyền truy cập. Nhờ vậy, sơ đồ này làm nổi bật một nguyên tắc quan trọng: không có \enquote{một vùng an toàn duy nhất}, mà có nhiều lớp biên, mỗi lớp có mức tin cậy khác nhau.
 
 Sơ đồ còn có giá trị vận hành thực tế. Khi xảy ra sự cố, cách chia vùng giúp khoanh nhanh câu hỏi: lỗi nằm ở lớp thiết bị hiện trường, ở vùng ứng dụng hay ở kết nối với hệ ngoài. Tương tự, khi thiết kế tường lửa, mã hóa đường truyền, nhật ký truy cập hay chính sách cấp quyền mạng, chính sơ đồ vùng mạng là cơ sở để quyết định cái gì phải bị chặn tuyệt đối, cái gì được phép đi qua một cổng duy nhất và cái gì chỉ được mở từ một vùng đã kiểm soát.
 
@@ -2538,7 +2542,7 @@ Sơ đồ còn có giá trị vận hành thực tế. Khi xảy ra sự cố, c
   \item \textbf{Vùng bếp}: chứa màn hình bếp và các thiết bị phục vụ chế biến.
   \item \textbf{Vùng ứng dụng}: chứa cổng vào, khối xử lý phía sau và bộ xử lý nền.
   \item \textbf{Vùng dữ liệu}: chứa cơ sở dữ liệu giao dịch, mô hình đọc và kho lưu trữ đối tượng.
-  \item \textbf{Vùng tích hợp ngoài}: chứa cổng thanh toán, dịch vụ gửi thông báo và các hệ thống ngoài khác.
+  \item \textbf{Vùng adapter biên}: chứa các adapter thanh toán, thông báo và phát hành biên lai.
 \end{itemize}
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
@@ -2566,7 +2570,7 @@ Sơ đồ còn có giá trị vận hành thực tế. Khi xảy ra sự cố, c
 \end{figure}
 
 
-Hình~\ref{fig:irms-deploy-data} là sơ đồ có ý nghĩa quyết định khi cần biện minh kiểu kiến trúc được chọn ở mức thực thi. Nó cho thấy các miền nghiệp vụ được đóng gói như các mô-đun trong cùng một khối xử lý trực tuyến, trong khi bộ xử lý nền đảm nhiệm các công việc chấp nhận độ trễ nhỏ hơn như gửi thông báo, phát hành biên lai điện tử và làm mới mô hình đọc. Nói cách khác, đây là sơ đồ chứng minh IRMS đi theo \textbf{đơn khối theo mô-đun} ở mức thực thi, chứ không phải một hệ phân tán nặng ngay từ đầu.
+Hình~\ref{fig:irms-deploy-data} là sơ đồ có ý nghĩa quyết định khi cần biện minh kiểu kiến trúc được chọn ở mức thực thi. Nó cho thấy các miền nghiệp vụ được đóng gói thành các service Spring Boot riêng trong cùng môi trường \textsf{Docker Compose}, trong khi bộ xử lý nền đảm nhiệm các công việc chấp nhận độ trễ nhỏ hơn như ghi nhận thông báo, phát hành biên lai điện tử và làm mới mô hình đọc. Nói cách khác, đây là sơ đồ chứng minh IRMS đi theo hướng service-based vừa đủ cho phạm vi hiện tại, chứ không phải một hệ phân tán nặng ngay từ đầu.
 
 Điểm mạnh nhất của cách bố trí này là giữ được cả hai lợi ích tưởng như khó đi cùng nhau. Một mặt, ranh giới mô-đun vẫn rõ nên hệ thống không trượt thành một khối mã hỗn loạn. Mặt khác, các giao dịch lõi như tạo đơn gọi món, cập nhật trạng thái bếp, lập hóa đơn và thanh toán vẫn diễn ra trong một không gian thực thi tập trung hơn, từ đó tránh được rất nhiều phức tạp của giao dịch phân tán, đồng bộ lược đồ và phối hợp lỗi qua nhiều tiến trình mạng. Đây là lựa chọn rất hợp lý cho bối cảnh bài toán và quy mô dự án.
 
@@ -2614,7 +2618,7 @@ Hình~\ref{fig:irms-deployment-ha-supplement} đi sâu vào một câu hỏi th�
 
 Điểm đầu tiên cần rút ra là \textbf{tuyến yêu cầu trực tuyến} và \textbf{tuyến xử lý nền} đều có phương án dự phòng. Bộ chuyển tiếp ngược hoặc bộ cân bằng tải đặt trước các nút ứng dụng giúp ứng dụng khách không gắn cứng vào một nút cụ thể. Nếu một nút ứng dụng lỗi, lưu lượng có thể được đưa sang nút còn lại mà không làm người dùng phải thay đổi điểm truy cập. Tương tự, việc có nhiều nút bộ xử lý nền giúp các tác vụ không bị tắc nghẽn toàn bộ khi một bộ tiêu thụ gặp lỗi.
 
-Điểm thứ hai là sơ đồ làm rõ cách dữ liệu được bảo vệ. \textsf{PostgreSQL Primary} kết hợp với \textsf{Read Replica / Warm Standby} cho thấy dữ liệu giao dịch lõi không nên chỉ có một nơi duy nhất. Đồng thời, phần đọc báo cáo và phần xử lý nền được đi qua hàng đợi hoặc hộp thư ra, nhờ đó sự cố ở bảng điều khiển hoặc một nhiệm vụ nền không làm sập ngay tuyến giao dịch. Đây là một dạng cô lập lỗi rất quan trọng trong nhà hàng: nếu kênh thông báo bị chậm, khách vẫn phải thanh toán được; nếu báo cáo chưa kịp làm mới, bàn vẫn phải mở và món vẫn phải ra đúng.
+Điểm thứ hai là sơ đồ làm rõ cách dữ liệu được bảo vệ trong phạm vi hiện trạng. Repo hiện tại thể hiện một \textsf{PostgreSQL container} dùng cho dữ liệu giao dịch và dữ liệu đọc báo cáo; chưa có bằng chứng cấu hình read replica hoặc warm standby. Đồng thời, phần đọc báo cáo và phần xử lý nền được đi qua hàng đợi hoặc hộp thư ra, nhờ đó sự cố ở bảng điều khiển hoặc một nhiệm vụ nền không làm sập ngay tuyến giao dịch. Đây là một dạng cô lập lỗi rất quan trọng trong nhà hàng: nếu kênh thông báo bị chậm, khách vẫn phải thanh toán được; nếu báo cáo chưa kịp làm mới, bàn vẫn phải mở và món vẫn phải ra đúng.
 
 Điểm thứ ba là sơ đồ thể hiện rõ \textbf{đường suy giảm dịch vụ chấp nhận được}. Không phải mọi lỗi đều phải dẫn tới dừng toàn hệ thống. Một số lỗi chỉ nên làm chậm phần đọc, làm chậm thông báo hoặc chuyển một số tác vụ sang hàng chờ. Khả năng chấp nhận suy giảm có kiểm soát như vậy mới là dấu hiệu của một hệ thống vận hành trưởng thành.
 
@@ -2622,14 +2626,14 @@ Hình~\ref{fig:irms-deployment-ha-supplement} đi sâu vào một câu hỏi th�
 \begin{itemize}
   \item \textbf{Bộ chuyển tiếp ngược / bộ cân bằng tải} tách lớp ứng dụng khách khỏi từng nút ứng dụng riêng lẻ, nên lỗi một nút không đồng nghĩa lỗi toàn bộ điểm vào.
   \item \textbf{IRMS App Node A/B} cùng \textbf{Worker Node A/B} cho phép dự phòng ở cả tuyến xử lý yêu cầu và tuyến xử lý nền.
-  \item \textbf{PostgreSQL Primary} cùng \textbf{bản sao đọc / nút dự phòng ấm} hỗ trợ tách truy vấn đọc hoặc phục hồi nhanh hơn sau lỗi nút chính.
+  \item \textbf{PostgreSQL container} cùng \textbf{bản sao đọc / nút dự phòng ấm} hỗ trợ tách truy vấn đọc hoặc phục hồi nhanh hơn sau lỗi nút chính.
   \item \textbf{Outbox / Job Queue} ngăn các tác vụ nền và việc làm mới mô hình chiếu làm nghẽn trực tiếp tuyến giao dịch.
 \end{itemize}
 
 \paragraph{Vì sao sơ đồ này cần có trong góc nhìn triển khai.}
 \begin{itemize}
   \item Góc nhìn triển khai không chỉ nên cho thấy hệ thống đặt ở đâu, mà còn phải cho thấy nó phản ứng ra sao khi có lỗi.
-  \item Với IRMS, nếu cổng thanh toán hoặc dịch vụ gửi thông báo chậm, hệ thống vẫn phải giữ đúng giao dịch đã hoàn tất trong lõi; sơ đồ này minh họa chính xác cơ chế tách biệt đó.
+  \item Với IRMS, nếu adapter thanh toán hoặc adapter thông báo chậm, hệ thống vẫn phải giữ đúng giao dịch đã hoàn tất trong lõi; sơ đồ này minh họa chính xác cơ chế tách biệt đó.
   \item Nó cũng làm rõ hướng mở rộng sau này: có thể tăng số nút ứng dụng, nút bộ xử lý nền hoặc năng lực đọc mà không phải thiết kế lại mô hình miền nghiệp vụ.
 \end{itemize}
 
@@ -2658,7 +2662,7 @@ Trách nhiệm đơn nhất & tách trách nhiệm theo ca sử dụng, thực t
 \hline
 Đóng để ổn định, mở để mở rộng & mở các điểm mở rộng qua chiến lược, chính sách và bộ kết nối & thêm phương thức thanh toán, kênh thông báo hoặc quy tắc khuyến mãi mà không phải sửa lõi giao dịch \\
 \hline
-Thay thế tương thích & thiết kế hợp đồng rõ cho các lớp trừu tượng tích hợp & mọi cách hiện thực của \textsf{PaymentGateway}, \textsf{NotificationSender}, \textsf{ReceiptPrinter} phải thay thế được nhau mà không làm đổi hành vi mong đợi của lớp dùng chúng \\
+Thay thế tương thích & thiết kế hợp đồng rõ cho các lớp trừu tượng tích hợp & mọi cách hiện thực của \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter}, \textsf{ReceiptDeliveryAdapter} phải thay thế được nhau mà không làm đổi hành vi mong đợi của lớp dùng chúng \\
 \hline
 Phân tách giao diện & tránh giao diện lớn kiểu \enquote{làm mọi thứ} & \textsf{Billing} chỉ phụ thuộc cổng thanh toán và biên lai; \textsf{Inventory} chỉ phụ thuộc cổng cảnh báo; \textsf{Reporting} chỉ phụ thuộc giao diện truy vấn phù hợp \\
 \hline
@@ -2671,10 +2675,10 @@ Phân tách giao diện & tránh giao diện lớn kiểu \enquote{làm mọi th
 Nguyên lý này được áp dụng theo nhiều lớp khác nhau. Ở biên hệ thống, bộ điều khiển chỉ làm nhiệm vụ nhận yêu cầu, kiểm tra sơ bộ và chuyển cho dịch vụ ứng dụng; nó không chứa quy tắc nghiệp vụ cốt lõi. Ở lớp điều phối, mỗi dịch vụ ứng dụng chỉ chịu trách nhiệm cho một nhóm hành vi gần nhau: \textsf{OrderingApplicationService} không xử lý hoàn tiền, còn \textsf{BillingApplicationService} không làm nhiệm vụ điều phối bếp. Ở miền nghiệp vụ, các thực thể gốc như \textsf{Order}, \textsf{Bill} hay \textsf{InventoryItem} giữ bất biến của riêng mình thay vì đẩy toàn bộ quy tắc vào một lớp trung tâm khổng lồ. Nhờ vậy, khi một chính sách thay đổi, phạm vi sửa đổi được khoanh gọn đúng nơi có trách nhiệm.
 
 \subsubsection{Nguyên lý đóng để ổn định, mở để mở rộng}
-IRMS có nhiều điểm biến động cao: đối tác thanh toán, kênh gửi thông báo, cách phát hành biên lai, quy tắc khuyến mãi, quy tắc cảnh báo mức tồn thấp. Nếu lõi nghiệp vụ gọi thẳng từng nhà cung cấp hoặc mã hóa cứng từng biến thể, mỗi thay đổi sẽ buộc phải sửa phần trung tâm. Thiết kế vì thế ưu tiên các lớp trừu tượng như \textsf{PaymentGateway}, \textsf{NotificationSender}, \textsf{ReceiptPrinter}, cùng các chính sách riêng cho định giá, khả dụng và phân quyền. Nhờ đó, hệ thống mở cho mở rộng nhưng vẫn giữ được phần lõi ổn định.
+IRMS có nhiều điểm biến động cao: đối tác thanh toán, kênh gửi thông báo, cách phát hành biên lai, quy tắc khuyến mãi, quy tắc cảnh báo mức tồn thấp. Nếu lõi nghiệp vụ gọi thẳng từng nhà cung cấp hoặc mã hóa cứng từng biến thể, mỗi thay đổi sẽ buộc phải sửa phần trung tâm. Thiết kế vì thế ưu tiên các lớp trừu tượng như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter}, \textsf{ReceiptDeliveryAdapter}, cùng các chính sách riêng cho định giá, khả dụng và phân quyền. Nhờ đó, hệ thống mở cho mở rộng nhưng vẫn giữ được phần lõi ổn định.
 
 \subsubsection{Nguyên lý thay thế tương thích}
-Nguyên lý này đặc biệt quan trọng ở các bộ kết nối tích hợp. Một cách hiện thực mới của \textsf{PaymentGateway} phải tuân thủ cùng một hợp đồng hành vi về giao dịch thành công, thất bại, hoàn tiền, tính chống xử lý lặp và mã tham chiếu. Tương tự, một \textsf{NotificationSender} mới có thể gửi thư điện tử, tin nhắn hay thông báo đẩy, nhưng không được khiến dịch vụ ứng dụng phải viết nhánh xử lý đặc biệt chỉ dành riêng cho nó. Khi một lớp trừu tượng được thiết kế đúng, lớp dùng nó không cần biết bộ kết nối phía sau là nhà cung cấp nào.
+Nguyên lý này đặc biệt quan trọng ở các bộ kết nối tích hợp. Một cách hiện thực mới của \textsf{PaymentGateway} phải tuân thủ cùng một hợp đồng hành vi về giao dịch thành công, thất bại, hoàn tiền, tính chống xử lý lặp và mã tham chiếu. Tương tự, một \textsf{NotificationChannelAdapter} mới có thể gửi thư điện tử, tin nhắn hay thông báo đẩy, nhưng không được khiến dịch vụ ứng dụng phải viết nhánh xử lý đặc biệt chỉ dành riêng cho nó. Khi một lớp trừu tượng được thiết kế đúng, lớp dùng nó không cần biết bộ kết nối phía sau là nhà cung cấp nào.
 
 \subsubsection{Nguyên lý phân tách giao diện}
 IRMS tránh các giao diện khổng lồ kiểu \enquote{dịch vụ tiện ích tổng hợp} hoặc \enquote{quản lý mọi hệ ngoài}. Thay vào đó, mỗi mô-đun chỉ phụ thuộc vào đúng giao diện mà nó cần. \textsf{Billing} chỉ cần cổng thanh toán và cổng biên lai. \textsf{Inventory} chỉ cần cổng cảnh báo. \textsf{Reporting} chỉ cần giao diện truy vấn hoặc giao diện làm mới mô hình đọc phù hợp. Cách chia này làm cho việc kiểm thử đơn vị gọn hơn, giảm phụ thuộc chéo và tránh việc mô-đun tuyến đầu phải nhìn thấy những giao diện quản trị không liên quan.
@@ -2738,7 +2742,7 @@ Hình~\ref{fig:irms-class-core} là sơ đồ lớp ở mức nhìn toàn hệ t
 \begin{itemize}
   \item Sơ đồ tổng thể được giữ ở mức đủ rộng để người đọc thấy ranh giới giữa các miền nghiệp vụ, nhưng chưa đi quá sâu vào chi tiết cài đặt của từng mô-đun.
   \item Các quan hệ được chọn theo tiêu chí nghiệp vụ trước, nghĩa là chỉ thể hiện các liên kết thực sự có ý nghĩa vận hành như đặt bàn gắn với bàn ăn, phiên bàn sinh đơn gọi món, đơn gọi món sinh phiếu bếp, và hóa đơn quyết toán phiên bàn.
-  \item Các điểm mở rộng như \textsf{PaymentGateway}, \textsf{NotificationSender} và \textsf{AuthorizationPolicy} được giữ lại ngay trong sơ đồ tổng thể để chứng minh rằng mô hình lớp không chỉ nói về dữ liệu, mà còn nói về \textbf{ranh giới mở rộng và kiểm soát}.
+  \item Các điểm mở rộng như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{AuthorizationPolicy} được giữ lại ngay trong sơ đồ tổng thể để chứng minh rằng mô hình lớp không chỉ nói về dữ liệu, mà còn nói về \textbf{ranh giới mở rộng và kiểm soát}.
 \end{itemize}
 
 Điểm mạnh của sơ đồ tổng thể là giúp kiểm tra nhanh xem bài làm có thực sự bao phủ đủ phạm vi IRMS hay chưa. Nếu thiếu một cụm lớp ở hình này, khả năng rất cao là cụm nghiệp vụ tương ứng cũng sẽ bị trình bày thiếu ở các phần sau. Theo nghĩa đó, đây là sơ đồ dùng để khóa phạm vi thiết kế trước khi đi vào chi tiết.
@@ -2800,14 +2804,14 @@ Hình~\ref{fig:irms-class-billing-inventory} tập trung vào vùng nhạy cảm
 \paragraph{Các lớp trọng tâm thể hiện trong hình.}
 \begin{itemize}
   \item \textbf{Cụm quyết toán}: \textsf{Bill}, \textsf{BillSplit}, \textsf{AppliedDiscount} và \textsf{PromotionCampaign} cùng nhau biểu diễn logic tổng hợp tiền, tách hóa đơn và áp dụng khuyến mãi.
-  \item \textbf{Cụm thanh toán}: \textsf{Payment}, \textsf{Refund}, \textsf{Receipt} và \textsf{PaymentGateway} mô tả việc thu tiền, hoàn tiền, phát hành biên lai và giao tiếp với hệ thống ngoài qua giao diện trừu tượng.
-  \item \textbf{Cụm tồn kho}: \textsf{InventoryItem}, \textsf{RecipeLine}, \textsf{StockTransaction}, \textsf{LowStockRule} và \textsf{NotificationSender} mô tả đường suy diễn từ món bán ra tới biến động tồn kho và cảnh báo mức tồn thấp.
+  \item \textbf{Cụm thanh toán}: \textsf{Payment}, \textsf{Refund}, \textsf{Receipt} và \textsf{PaymentGateway} mô tả việc thu tiền, hoàn tiền, phát hành biên lai và giao tiếp với adapter biên qua giao diện trừu tượng.
+  \item \textbf{Cụm tồn kho}: \textsf{InventoryItem}, \textsf{RecipeLine}, \textsf{StockTransaction}, \textsf{LowStockRule} và \textsf{NotificationChannelAdapter} mô tả đường suy diễn từ món bán ra tới biến động tồn kho và cảnh báo mức tồn thấp.
   \item \textbf{Cụm quản trị và kiểm soát}: \textsf{User}, \textsf{Role}, \textsf{Permission}, \textsf{AuditLog}, \textsf{AuthorizationPolicy}, \textsf{ShiftAssignment} và \textsf{ReportSnapshot} tạo nền cho phân quyền, kiểm toán, lịch ca và báo cáo.
 \end{itemize}
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
 \begin{itemize}
-  \item Đặt \textsf{PaymentGateway} và \textsf{NotificationSender} dưới dạng giao diện để miền nghiệp vụ không phụ thuộc trực tiếp vào một nhà cung cấp cụ thể.
+  \item Đặt \textsf{PaymentGateway} và \textsf{NotificationChannelAdapter} dưới dạng giao diện để miền nghiệp vụ không phụ thuộc trực tiếp vào một nhà cung cấp cụ thể.
   \item Tách \textsf{Refund} ra khỏi \textsf{Payment} để phản ánh đúng việc hoàn tiền là một hành động nghiệp vụ riêng, có lý do, ngưỡng phê duyệt và trạng thái theo dõi riêng.
   \item Đưa \textsf{AuditLog} và \textsf{AuthorizationPolicy} vào cùng sơ đồ với giao dịch để nhấn mạnh rằng kiểm soát quyền và truy vết không phải phần phụ, mà là một phần của thiết kế lõi.
   \item Giữ \textsf{ReportSnapshot} ở cụm này để thể hiện rõ dữ liệu báo cáo được suy diễn từ dữ liệu vận hành, thay vì can thiệp trực tiếp vào tuyến giao dịch nóng.
@@ -3011,7 +3015,7 @@ Hình~\ref{fig:irms-class-inventory-module} mở rộng phần tồn kho theo h�
   \item \textbf{Số dư và giao dịch kho}: \textsf{InventoryItem} và \textsf{StockTransaction} giữ trạng thái kho hiện tại và lịch sử biến động.
   \item \textbf{Suy diễn mức tiêu hao}: \textsf{Recipe} và \textsf{RecipeLine} nối món bán ra với nguyên liệu cần dùng.
   \item \textbf{Giữ chỗ và chốt trừ}: \textsf{InventoryReservation} cho phép mô tả giai đoạn giữ tạm nguyên liệu trước khi thanh toán hoàn tất hoặc đơn gọi món được chốt.
-  \item \textbf{Cảnh báo và kênh gửi}: \textsf{ReorderRule}, \textsf{LowStockAlert}, \textsf{NotificationMessage} và giao diện \textsf{NotificationSender} tách rõ điều kiện phát cảnh báo khỏi hạ tầng chuyển thông báo.
+  \item \textbf{Cảnh báo và kênh gửi}: \textsf{ReorderRule}, \textsf{LowStockAlert}, \textsf{NotificationMessage} và giao diện \textsf{NotificationChannelAdapter} tách rõ điều kiện phát cảnh báo khỏi hạ tầng chuyển thông báo.
 \end{itemize}
 
 \paragraph{Giải thích chi tiết theo từng cụm lớp.}
@@ -3019,7 +3023,7 @@ Hình~\ref{fig:irms-class-inventory-module} mở rộng phần tồn kho theo h�
   \item \textbf{Recipe là cầu nối giữa thực đơn và kho.} Nếu thiếu nó, phần tiêu hao nguyên liệu sẽ bị mã hóa cứng vào logic gọi món hoặc quyết toán.
   \item \textbf{InventoryReservation giúp mô hình linh hoạt hơn.} Một số đội triển khai muốn trừ kho ngay khi xác nhận đơn gọi món, số khác chỉ chốt hẳn khi thanh toán hoàn tất; có lớp giữ chỗ giúp mở cả hai chiến lược.
   \item \textbf{StockTransaction là bằng chứng, không chỉ là lịch sử phụ.} Nó cho phép giải thích vì sao tồn kho thay đổi, giúp reconciliation và audit sau ca.
-  \item \textbf{Notification phải đi qua lớp trừu tượng.} Cảnh báo tồn thấp là nghiệp vụ; gửi email, SMS hay thông báo đẩy lại là bài toán của bộ kết nối.
+  \item \textbf{Notification phải đi qua lớp trừu tượng.} Cảnh báo tồn thấp là nghiệp vụ; xử lý kênh email, SMS hay in-app lại là bài toán của \textsf{NotificationChannelAdapter}.
 \end{itemize}
 
 \paragraph{Lý do thiết kế của sơ đồ này.}
@@ -3150,7 +3154,7 @@ Sơ đồ cũng thể hiện rõ nhánh chặn phát hành khi dữ liệu chưa
 \activitydiagramfigure{uc-pay-01-process-payment}{Sơ đồ hoạt động cho UC-PAY-01 -- Xử lý thanh toán}{fig:activity-uc-pay-01-process-payment}
 
 \paragraph{Phân tích sơ đồ UC-PAY-01.}
-Đây là sơ đồ hoạt động có ý nghĩa kiểm soát cao nhất trong toàn bộ phần hành vi. Sơ đồ mới làm rõ hai tuyến thanh toán khác nhau: thanh toán điện tử qua \textsf{Payment Gateway} và thanh toán tiền mặt tại quầy. Với thanh toán điện tử, hệ thống phải tạo yêu cầu giao dịch, gửi sang cổng thanh toán, nhận kết quả, lưu mã tham chiếu và xử lý riêng các trạng thái thành công, thất bại hoặc chờ rà soát. Với thanh toán tiền mặt, hệ thống tính số tiền thối rồi mới cập nhật số dư còn lại.
+Đây là sơ đồ hoạt động có ý nghĩa kiểm soát cao nhất trong toàn bộ phần hành vi. Sơ đồ mới làm rõ hai tuyến thanh toán khác nhau: thanh toán điện tử qua \textsf{PaymentGateway} và thanh toán tiền mặt tại quầy. Với thanh toán điện tử, hệ thống phải tạo yêu cầu giao dịch, gửi sang cổng thanh toán, nhận kết quả, lưu mã tham chiếu và xử lý riêng các trạng thái thành công, thất bại hoặc chờ rà soát. Với thanh toán tiền mặt, hệ thống tính số tiền thối rồi mới cập nhật số dư còn lại.
 
 Sau bước ghi nhận thanh toán, hệ thống còn phải đánh giá hóa đơn đã được thanh toán đủ hay chưa. Nếu chưa đủ, hóa đơn vẫn mở; nếu đủ, hóa đơn được đóng và luồng phát hành biên lai mới được mở ra. Cách chi tiết này bám đúng kiến trúc hiện tại của IRMS và tránh nhập nhằng giữa \enquote{đã có một giao dịch thanh toán} và \enquote{đã tất toán hóa đơn}.
 
@@ -3159,7 +3163,7 @@ Sau bước ghi nhận thanh toán, hệ thống còn phải đánh giá hóa đ
 \activitydiagramfigure{uc-pay-03-refund}{Sơ đồ hoạt động cho UC-PAY-03 -- Hoàn tiền}{fig:activity-uc-pay-03-refund}
 
 \paragraph{Phân tích sơ đồ UC-PAY-03.}
-Sơ đồ hoàn tiền hiện đã thể hiện đầy đủ hơn các điểm kiểm soát bắt buộc: chọn giao dịch gốc, kiểm tra số tiền còn được hoàn, nhập lý do, so ngưỡng phê duyệt, xin xác nhận của quản lý nếu cần, gửi yêu cầu hoàn tiền tới \textsf{Payment Gateway} hoặc ghi nhận hoàn tiền thủ công, rồi mới cập nhật sổ kiểm toán. Điều này rất quan trọng vì hoàn tiền là thao tác nhạy cảm nhất của vùng thanh toán.
+Sơ đồ hoàn tiền hiện đã thể hiện đầy đủ hơn các điểm kiểm soát bắt buộc: chọn giao dịch gốc, kiểm tra số tiền còn được hoàn, nhập lý do, so ngưỡng phê duyệt, xin xác nhận của quản lý nếu cần, gửi yêu cầu hoàn tiền tới \textsf{PaymentGateway} hoặc ghi nhận hoàn tiền thủ công, rồi mới cập nhật sổ kiểm toán. Điều này rất quan trọng vì hoàn tiền là thao tác nhạy cảm nhất của vùng thanh toán.
 
 Một chi tiết đáng chú ý là sơ đồ đã tách rõ nhánh \enquote{chờ rà soát} khi cổng thanh toán không chấp nhận hoặc phản hồi không rõ ràng. Nhờ đó báo cáo có thể giải thích trạng thái nghiệp vụ chặt chẽ hơn, thay vì gom mọi trường hợp không thành công vào một nhãn lỗi duy nhất.
 

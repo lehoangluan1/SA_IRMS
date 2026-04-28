@@ -21,35 +21,32 @@ digraph G {
   cashier [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nCashier Terminal"];
   manager [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nManager Console"];
 
-  api_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nAPI Server\n\n<<artifact>> Reservation & Seating Service\n<<artifact>> Ordering & Menu Service\n<<artifact>> Kitchen Coordination Service\n<<artifact>> Billing & Settlement Service\n<<artifact>> Inventory Monitoring Service\n<<artifact>> IAM & Audit Service"];
-  worker_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nBackground Worker\n\n<<artifact>> Outbox Dispatcher\n<<artifact>> Notification Worker\n<<artifact>> Projection Worker\n<<artifact>> Receipt Job Processor"];
-  query_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nReporting Query Node\n\n<<artifact>> Reporting Service"];
+  frontend_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nfrontend container\n\n<<artifact>> React UI\n<<artifact>> Nitro API Proxy"];
+  gateway_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\napi-gateway container\n\n<<artifact>> ApiGatewayApplication\n<<artifact>> GatewayProxyController"];
+  service_nodes [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nSpring Boot service containers\n\n<<artifact>> ordering-service\n<<artifact>> kitchen-service\n<<artifact>> billing-service\n<<artifact>> reservation-service\n<<artifact>> inventory-service\n<<artifact>> notification-service\n<<artifact>> reporting-service\n<<artifact>> identity-audit-service"];
+  migration_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nirms-migration container\n\n<<artifact>> MigrationApplication"];
 
-  operational_db [shape=cylinder, fillcolor="#F8FBFF", label="<<database>>\nOperational RDBMS\nreservations, orders,\nbills, stock, users, audit"];
-  read_model [shape=cylinder, fillcolor="#F8FBFF", label="<<database>>\nReporting Read Model"];
-  outbox [shape=cylinder, fillcolor="#F8FBFF", label="<<queue>>\nOutbox and Job Queue"];
-
-  payment_gateway [shape=box, style="rounded,filled", fillcolor="#F8FBFF", label="<<external system>>\nPayment Gateway"];
-  receipt_printer [shape=box3d, fillcolor="#F8FBFF", label="<<device>>\nReceipt Printer"];
-  notification_service [shape=box, style="rounded,filled", fillcolor="#F8FBFF", label="<<external system>>\nNotification Service"];
+  operational_db [shape=cylinder, fillcolor="#F8FBFF", label="<<database>>\nPostgreSQL container\nshared operational schema"];
+  rabbitmq [shape=box3d, fillcolor="#F8FBFF", label="<<node>>\nRabbitMQ container\nbroker queues"];
+  read_model [shape=cylinder, fillcolor="#F8FBFF", label="<<artifact>>\nReporting tables and views"];
+  outbox [shape=cylinder, fillcolor="#F8FBFF", label="<<artifact>>\noutbox_events and processed_events"];
 
   { rank=same; host; server; kitchen_display; cashier; manager; }
-  { rank=same; api_node; worker_node; query_node; }
-  { rank=same; operational_db; outbox; read_model; }
+  { rank=same; frontend_node; gateway_node; service_nodes; migration_node; }
+  { rank=same; operational_db; rabbitmq; outbox; read_model; }
 
-  host -> api_node [label="HTTPS"];
-  server -> api_node [label="HTTPS"];
-  kitchen_display -> api_node [label="HTTPS"];
-  cashier -> api_node [label="HTTPS"];
-  manager -> api_node [label="HTTPS"];
+  host -> frontend_node [label="HTTP"];
+  server -> frontend_node [label="HTTP"];
+  kitchen_display -> frontend_node [label="HTTP"];
+  cashier -> frontend_node [label="HTTP"];
+  manager -> frontend_node [label="HTTP"];
 
-  api_node -> operational_db [label="transactional read and write"];
-  api_node -> outbox [label="write outbox events"];
-  worker_node -> outbox [label="consume events and jobs"];
-  worker_node -> read_model [label="refresh reporting projections"];
-  query_node -> read_model [label="query reports"];
+  frontend_node -> gateway_node [label="/api proxy"];
+  gateway_node -> service_nodes [label="REST routing"];
 
-  api_node -> payment_gateway [label="payment adapter API"];
-  worker_node -> receipt_printer [label="receipt printer adapter"];
-  worker_node -> notification_service [label="notification adapter"];
+  service_nodes -> operational_db [label="JDBC"];
+  service_nodes -> outbox [label="write / claim events"];
+  service_nodes -> rabbitmq [label="publish / consume"];
+  service_nodes -> read_model [label="refresh and query"];
+  migration_node -> operational_db [label="Flyway migrations"];
 }

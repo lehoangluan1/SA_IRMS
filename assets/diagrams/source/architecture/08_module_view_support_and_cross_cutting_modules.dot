@@ -5,102 +5,80 @@ digraph G {
     compound=true,
     bgcolor="white",
     pad=0.34,
-    nodesep=0.56,
-    ranksep=0.96,
+    nodesep=0.52,
+    ranksep=0.88,
     splines=polyline,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="UML Package Diagram - Supporting and Cross-Cutting Services of IRMS"
+    label="Component Diagram - Supporting Async and Cross-Cutting Runtime"
   ];
 
-  node [
-    shape=folder,
-    style="filled",
-    fillcolor="#FFFFFF",
-    color="#64748B",
-    penwidth=1.0,
-    fontname="DejaVu Sans",
-    fontsize=9.5,
-    margin="0.14,0.08"
-  ];
+  node [shape=component, style="rounded,filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=8.6, margin="0.10,0.06"];
+  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=7.8];
 
-  edge [
-    style=dashed,
-    arrowhead=vee,
-    color="#64748B",
-    penwidth=0.9,
-    fontname="DejaVu Sans",
-    fontsize=8.0
-  ];
-
-  subgraph cluster_model {
-    label="<<model>> Service Decomposition View";
-    color="#94A3B8";
-    penwidth=1.1;
-    style="rounded";
-
-    subgraph cluster_sources {
-      label="<<package>> Operational Service Sources";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-
-      reservation_source [label="Reservation & Seating Service\nReservationConfirmed,\nwaitlist state,\nTableSessionOpened"];
-      ordering_source [label="Ordering & Menu Service\nOrderConfirmed,\nmodifier updates,\nstate transitions"];
-      kitchen_source [label="Kitchen Coordination Service\nKitchenTicketCreated,\nOrderItemPrepared,\nstation updates"];
-      billing_source [label="Billing & Settlement Service\nBillIssued,\nPaymentCaptured,\nRefundRequested"];
-    }
-
-    subgraph cluster_support {
-      label="<<package>> Supporting Services";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-
-      contracts [label="Shared Event Contracts\nReservationConfirmed,\nOrderConfirmed,\nOrderItemPrepared,\nPaymentCaptured"];
-      inventory_support [label="Inventory Monitoring Service\nstock projection,\nrecipe usage,\nthreshold policy"];
-      reporting_support [label="Reporting Service\nread-model projection,\nKPI query,\ntrend analysis"];
-      notification_support [label="Notification Service\nreservation message,\nInventoryLow alert,\nreceipt delivery"];
-    }
-
-    subgraph cluster_governance {
-      label="<<package>> Governance and Control Services";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-
-      iam_package [label="IAM & Audit Service\naccess policy,\nauthorization decision,\naudit trigger"];
-      audit_package [label="Audit Trail Projection\ntrace enrichment,\ncompliance query"];
-    }
-
-    subgraph cluster_boundary {
-      label="<<package>> Boundary and Adapter Packages";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-
-      payment_adapter [label="Payment Gateway Adapter"];
-      receipt_adapter [label="Receipt Printer Adapter"];
-      notification_adapter [label="Notification Sender Adapter"];
-    }
+  subgraph cluster_sources {
+    label="Event Sources";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    ReservationService [label="ReservationService\nreservation events"];
+    OrderingService [label="OrderingService\norder events"];
+    KitchenService [label="KitchenService\nkitchen events"];
+    BillingService [label="BillingService\nbilling events"];
+    InventoryService [label="InventoryService\nstock events"];
   }
 
-  reservation_source -> contracts [label="publish domain event"];
-  ordering_source -> contracts [label="publish domain event"];
-  kitchen_source -> contracts [label="publish domain event"];
-  billing_source -> contracts [label="publish domain event"];
+  subgraph cluster_messaging {
+    label="Messaging";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    RabbitMqEventPublisher [label="RabbitMqEventPublisher"];
+    ManualAckConsumerSupport [label="ManualAckConsumerSupport"];
+  }
 
-  contracts -> inventory_support [label="consume event"];
-  contracts -> reporting_support [label="consume event"];
-  contracts -> notification_support [label="consume event"];
-  contracts -> audit_package [label="consume event"];
+  subgraph cluster_consumers {
+    label="Consumers";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    InventoryStockChangedConsumer [label="InventoryStockChangedConsumer\nRabbit listener"];
+    ReportingProjectionConsumer [label="ReportingProjectionConsumer\nRabbit listener"];
+    NotificationRequestedConsumer [label="NotificationRequestedConsumer\nRabbit listener"];
+    AuditRecordingRequestedConsumer [label="AuditRecordingRequestedConsumer\nRabbit listener"];
+  }
 
-  iam_package -> reservation_source [label="authorize"];
-  iam_package -> ordering_source [label="authorize"];
-  iam_package -> kitchen_source [label="authorize"];
-  iam_package -> billing_source [label="authorize"];
+  subgraph cluster_adapters {
+    label="Adapters and Policies";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    LowStockSeverityPolicy [label="LowStockSeverityPolicy"];
+    ReorderRecommendationStrategy [label="ReorderRecommendationStrategy\ninterface"];
+    EmailNotificationChannelAdapter [label="EmailNotificationChannelAdapter"];
+    SmsNotificationChannelAdapter [label="SmsNotificationChannelAdapter"];
+    InAppNotificationChannelAdapter [label="InAppNotificationChannelAdapter"];
+    PrintNotificationChannelAdapter [label="PrintNotificationChannelAdapter"];
+    AuditReadService [label="AuditReadService"];
+  }
 
-  billing_source -> payment_adapter [label="capture / refund API"];
-  billing_source -> receipt_adapter [label="print receipt"];
-  notification_support -> notification_adapter [label="dispatch notification"];
+  ReservationService -> RabbitMqEventPublisher;
+  OrderingService -> RabbitMqEventPublisher;
+  KitchenService -> RabbitMqEventPublisher;
+  BillingService -> RabbitMqEventPublisher;
+  InventoryService -> RabbitMqEventPublisher;
+
+  RabbitMqEventPublisher -> ManualAckConsumerSupport;
+  ManualAckConsumerSupport -> InventoryStockChangedConsumer;
+  ManualAckConsumerSupport -> ReportingProjectionConsumer;
+  ManualAckConsumerSupport -> NotificationRequestedConsumer;
+  ManualAckConsumerSupport -> AuditRecordingRequestedConsumer;
+
+  InventoryStockChangedConsumer -> LowStockSeverityPolicy;
+  InventoryStockChangedConsumer -> ReorderRecommendationStrategy;
+  NotificationRequestedConsumer -> EmailNotificationChannelAdapter;
+  NotificationRequestedConsumer -> SmsNotificationChannelAdapter;
+  NotificationRequestedConsumer -> InAppNotificationChannelAdapter;
+  NotificationRequestedConsumer -> PrintNotificationChannelAdapter;
+  AuditRecordingRequestedConsumer -> AuditReadService;
 }

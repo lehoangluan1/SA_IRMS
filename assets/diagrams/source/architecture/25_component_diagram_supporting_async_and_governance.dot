@@ -7,17 +7,17 @@ digraph G {
     label="Transactional Event Sources";
     color="#93C5FD";
     style="rounded";
-    reservation [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    reservation [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Reservation Service", pos="466.00,695.50!", pin=true, width=1.5278, height=0.5000];
-    ordering [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    ordering [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Ordering Service", pos="608.00,695.50!", pin=true, width=1.3056, height=0.5000];
-    kitchen [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    kitchen [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Kitchen Coordination
 Service", pos="752.98,695.50!", pin=true, width=1.5972, height=0.5694];
-    billing [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    billing [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Billing & Settlement
 Service", pos="905.98,695.50!", pin=true, width=1.5417, height=0.5694];
-    inventory [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    inventory [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Inventory Monitoring
 Service", pos="1058.98,695.50!", pin=true, width=1.5972, height=0.5694];
   }
@@ -26,43 +26,42 @@ Service", pos="1058.98,695.50!", pin=true, width=1.5972, height=0.5694];
     label="Event Relay";
     color="#CBD5E1";
     style="rounded";
-    outbox [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Outbox Table", pos="752.98,551.00!", pin=true, width=1.0972, height=0.5000];
-    relay [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Background Dispatcher", pos="776.02,437.00!", pin=true, width=1.7500, height=0.5000];
-    eventbus [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Internal Event Bus", pos="767.02,323.00!", pin=true, width=1.4167, height=0.5000];
+    outbox [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+outbox_events", pos="752.98,551.00!", pin=true, width=1.0972, height=0.5000];
+    relay [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+RabbitMqOutboxRelay
+RabbitMqEventPublisher", pos="776.02,437.00!", pin=true, width=1.7500, height=0.5000];
+    eventbus [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<broker>>
+RabbitMQ", pos="767.02,323.00!", pin=true, width=1.4167, height=0.5000];
   }
 
   subgraph cluster_async {
     label="Async Workers";
     color="#CBD5E1";
     style="rounded";
-    projection [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Projection Refresh
-Worker", pos="474.00,178.50!", pin=true, width=1.4167, height=0.5694];
-    stockconsumer [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Inventory Projection
-Worker", pos="767.02,178.50!", pin=true, width=1.5417, height=0.5694];
-    notification [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Notification Sender", pos="618.00,178.50!", pin=true, width=1.4722, height=0.5000];
-    audit [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Audit Service", pos="902.02,178.50!", pin=true, width=1.0972, height=0.5000];
+    projection [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+ReportingProjectionConsumer", pos="474.00,178.50!", pin=true, width=1.4167, height=0.5694];
+    stockconsumer [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+InventoryStockChangedConsumer", pos="767.02,178.50!", pin=true, width=1.5417, height=0.5694];
+    notification [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+NotificationRequestedConsumer", pos="618.00,178.50!", pin=true, width=1.4722, height=0.5000];
+    audit [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+AuditRecordingRequestedConsumer", pos="902.02,178.50!", pin=true, width=1.0972, height=0.5000];
   }
 
   subgraph cluster_read {
     label="Read Side and Governance";
     color="#CBD5E1";
     style="rounded";
-    reportingquery [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    reportingquery [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Reporting Query
 Service", pos="191.00,178.50!", pin=true, width=1.2778, height=0.5694];
-    reportingread [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«database»
+    reportingread [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<database>>
 Reporting Views", pos="255.00,34.00!", pin=true, width=1.2778, height=0.5000];
-    stockprojection [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«database»
+    stockprojection [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<database>>
 Inventory Stock
 Projection", pos="60.00,178.50!", pin=true, width=1.2361, height=0.5694];
-    iam [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    iam [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 IAM / Authorization
 Service", pos="330.00,178.50!", pin=true, width=1.4722, height=0.5694];
   }
@@ -71,9 +70,9 @@ Service", pos="330.00,178.50!", pin=true, width=1.4722, height=0.5694];
     label="Operational Consumers";
     color="#CBD5E1";
     style="rounded";
-    dashboard [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    dashboard [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Operations Dashboard", pos="468.00,34.00!", pin=true, width=1.6806, height=0.5000];
-    console [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    console [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Manager / Admin Console", pos="638.00,34.00!", pin=true, width=1.9167, height=0.5000];
   }
 

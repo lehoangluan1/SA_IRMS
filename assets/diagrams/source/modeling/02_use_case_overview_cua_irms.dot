@@ -36,9 +36,6 @@ digraph G {
 
   manager [shape=none, image="actor_stickman.png", label="Manager", labelloc=b, imagepos=tc, imagescale=true, pos="1640,860!"];
   admin [shape=none, image="actor_stickman.png", label="Administrator", labelloc=b, imagepos=tc, imagescale=true, pos="1640,670!"];
-  notification_service [shape=none, image="actor_stickman.png", label="Notification Service", labelloc=b, imagepos=tc, imagescale=true, pos="1640,500!"];
-  receipt_printer [shape=none, image="actor_stickman.png", label="Receipt Printer", labelloc=b, imagepos=tc, imagescale=true, pos="1640,320!"];
-  payment_gateway [shape=none, image="actor_stickman.png", label="Payment Gateway", labelloc=b, imagepos=tc, imagescale=true, pos="1640,140!"];
 
   node [shape=ellipse, style="filled", fillcolor="#FFFFFF", color="#94A3B8", fontsize=8.2, margin="0.06,0.03", pin=true];
 
@@ -46,7 +43,7 @@ digraph G {
   uc_checkin [label="Check In and Seat Guest", pos="340,770!"];
   uc_waitlist [label="Manage Waitlist", pos="340,680!"];
   uc_table_status [label="Update Table Status", pos="560,770!"];
-  uc_notify [label="Send Reservation Update", pos="560,680!"];
+  uc_notify [label="Queue Reservation Update", pos="560,680!"];
 
   uc_order [label="Create Table Order", pos="320,490!"];
   uc_customize [label="Capture Item Customization\\nand Allergy Note", pos="320,390!"];
@@ -61,6 +58,7 @@ digraph G {
   uc_reorder [label="Analyze Consumption and\\nReorder Support", pos="940,800!"];
 
   uc_menu [label="Manage Menu and Pricing", pos="1110,860!"];
+  uc_create_item [label="Create Menu Item", pos="1110,950!"];
   uc_report [label="View Operations Report", pos="1110,770!"];
   uc_shift [label="Manage Staff Shifts", pos="1110,680!"];
   uc_roles [label="Manage Roles and Permissions", pos="1310,860!"];
@@ -85,9 +83,11 @@ digraph G {
   cashier -> uc_bill;
   cashier -> uc_split;
   cashier -> uc_payment;
+  cashier -> uc_receipt;
   cashier -> uc_refund;
 
   manager -> uc_menu;
+  manager -> uc_create_item;
   manager -> uc_stock_alert;
   manager -> uc_reorder;
   manager -> uc_report;
@@ -95,24 +95,5 @@ digraph G {
   manager -> uc_audit;
   admin -> uc_roles;
   admin -> uc_audit;
-  notification_service -> uc_notify;
-  receipt_printer -> uc_receipt;
-  payment_gateway -> uc_payment;
-  payment_gateway -> uc_refund;
-
-  edge [style=dashed, arrowhead=open, fontsize=7.3];
-  uc_reserve -> uc_notify [label="<<include>>"];
-  uc_waitlist -> uc_notify [label="<<include>>"];
-  uc_checkin -> uc_table_status [label="<<include>>"];
-  uc_customize -> uc_order [label="<<extend>>"];
-  uc_order -> uc_dispatch [label="<<include>>"];
-  uc_adjust -> uc_dispatch [label="<<include>>"];
-  uc_queue -> uc_progress [label="<<extend>>"];
-  uc_serve -> uc_stock_consumption [label="<<include>>"];
-  uc_stock_consumption -> uc_stock_alert [label="<<extend>>"];
-  uc_stock_alert -> uc_reorder [label="<<extend>>"];
-  uc_bill -> uc_split [label="<<extend>>"];
-  uc_payment -> uc_receipt [label="<<include>>"];
-  uc_refund -> uc_audit [label="<<include>>"];
-  uc_roles -> uc_audit [label="<<include>>"];
+  host -> uc_notify;
 }

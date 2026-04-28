@@ -19,7 +19,6 @@ MenuItem [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>MenuItem</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+menuItemId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+basePrice: Money<BR ALIGN='LEFT'/>+station: String<BR ALIGN='LEFT'/>+availability: ItemAvailability</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+rename()<BR ALIGN='LEFT'/>+changeBasePrice()<BR ALIGN='LEFT'/>+markUnavailable()</TD></TR>
 </TABLE>
 >];
 ModifierGroup [label=<
@@ -40,28 +39,24 @@ AvailabilityRule [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>AvailabilityRule</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+ruleId: UUID<BR ALIGN='LEFT'/>+effectiveFrom: DateTime<BR ALIGN='LEFT'/>+effectiveTo: DateTime<BR ALIGN='LEFT'/>+outOfStockHidesItem: bool</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+isSellable(menuItem, context)</TD></TR>
 </TABLE>
 >];
 PricingPolicy [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>PricingPolicy</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+policyId: UUID<BR ALIGN='LEFT'/>+serviceChargeRate: Decimal<BR ALIGN='LEFT'/>+supportsHappyHour: bool</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+priceMenuItem()<BR ALIGN='LEFT'/>+priceOrderLine()</TD></TR>
 </TABLE>
 >];
 Order [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>Order</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+orderId: UUID<BR ALIGN='LEFT'/>+channel: OrderChannel<BR ALIGN='LEFT'/>+status: OrderStatus<BR ALIGN='LEFT'/>+createdAt: DateTime<BR ALIGN='LEFT'/>+confirmedAt: DateTime</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+addItem()<BR ALIGN='LEFT'/>+applyModifier()<BR ALIGN='LEFT'/>+confirm()<BR ALIGN='LEFT'/>+cancel()<BR ALIGN='LEFT'/>+calculateSubtotal()</TD></TR>
 </TABLE>
 >];
 OrderItem [label=<
 <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
 <TR><TD BGCOLOR="#DDE5F0"><B>OrderItem</B></TD></TR>
 <TR><TD ALIGN="LEFT" BALIGN="LEFT">+orderItemId: UUID<BR ALIGN='LEFT'/>+quantity: int<BR ALIGN='LEFT'/>+unitPrice: Money<BR ALIGN='LEFT'/>+specialInstruction: String<BR ALIGN='LEFT'/>+lineStatus: OrderItemStatus</TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+changeQuantity()<BR ALIGN='LEFT'/>+snapshotName()<BR ALIGN='LEFT'/>+markPrepared()</TD></TR>
 </TABLE>
 >];
 OrderItemModifier [label=<

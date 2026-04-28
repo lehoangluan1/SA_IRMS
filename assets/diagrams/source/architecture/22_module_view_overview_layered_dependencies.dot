@@ -5,91 +5,86 @@ digraph G {
     compound=true,
     bgcolor="white",
     pad=0.34,
-    nodesep=0.58,
-    ranksep=0.96,
+    nodesep=0.54,
+    ranksep=0.88,
     splines=polyline,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="UML Package Diagram - Layered Service Dependencies of IRMS"
+    label="Component Diagram - Layered Runtime Entry and Service Dependencies"
   ];
 
-  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.6, margin="0.14,0.08"];
-  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9];
+  node [shape=component, style="rounded,filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.2, margin="0.10,0.06"];
+  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.0];
 
-  subgraph cluster_model {
-    label="<<model>> Service Decomposition View";
-    color="#94A3B8";
-    penwidth=1.1;
-    style="rounded";
-
-    subgraph cluster_presentation {
-      label="<<package>> Presentation Layer";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      frontline_ui [label="Frontline Interfaces"];
-      management_ui [label="Management Interfaces"];
-      gateway [label="API Entry and Policy Gate"];
-    }
-
-    subgraph cluster_business {
-      label="<<package>> Business Service Layer";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      reservation [label="Reservation & Seating\nService"];
-      menu [label="Menu Reference"];
-      ordering [label="Ordering & Menu\nService"];
-      kitchen [label="Kitchen Coordination\nService"];
-      billing [label="Billing & Settlement\nService"];
-      inventory [label="Inventory Monitoring\nService"];
-      reporting [label="Reporting\nService"];
-      notification [label="Notification\nService"];
-      governance [label="IAM & Audit\nService"];
-    }
-
-    subgraph cluster_platform {
-      label="<<package>> Shared Platform Capabilities";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      repositories [label="Repository Contracts"];
-      events [label="Event Bus and Outbox"];
-      readmodel [label="Read Model"];
-      adapters [label="External Adapters"];
-    }
+  subgraph cluster_gateway {
+    label="Gateway";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    ApiGatewayApplication [label="ApiGatewayApplication"];
+    GatewayProxyController [label="GatewayProxyController"];
+    GatewayRouteLocator [label="GatewayRouteLocator"];
   }
 
-  frontline_ui -> gateway;
-  management_ui -> gateway;
+  subgraph cluster_api {
+    label="API Controllers";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    ReservationController [label="ReservationController\n/api/reservations"];
+    OrdersController [label="OrdersController\n/api/orders"];
+    KitchenController [label="KitchenController\n/api/kitchen"];
+    BillsController [label="BillsController\n/api/bills"];
+    InventoryController [label="InventoryController\n/api/inventory"];
+    ReportingController [label="ReportingController\n/api/reports"];
+    AuthController [label="AuthController\n/api/auth"];
+    AuditController [label="AuditController\n/api/audit"];
+  }
 
-  gateway -> reservation;
-  gateway -> ordering;
-  gateway -> kitchen;
-  gateway -> billing;
-  gateway -> reporting;
-  gateway -> governance;
+  subgraph cluster_application {
+    label="Application Services";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    ReservationService [label="ReservationService"];
+    OrderingService [label="OrderingService"];
+    KitchenService [label="KitchenService"];
+    BillingService [label="BillingService"];
+    InventoryService [label="InventoryService"];
+    ReportingQueryService [label="ReportingQueryService"];
+    AuthService [label="AuthService"];
+    AuditReadService [label="AuditReadService"];
+  }
 
-  reservation -> ordering;
-  menu -> ordering;
-  ordering -> kitchen [label="OrderConfirmed"];
-  ordering -> billing [label="billable snapshot API"];
-  kitchen -> inventory [label="OrderItemPrepared"];
-  billing -> notification [label="BillIssued"];
-  inventory -> notification [label="InventoryLow"];
+  subgraph cluster_platform {
+    label="Shared Platform Components";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    RabbitMqEventPublisher [label="RabbitMqEventPublisher"];
+    OutboxRelayScheduler [label="OutboxRelayScheduler"];
+    ManualAckConsumerSupport [label="ManualAckConsumerSupport"];
+    RestClientConfiguration [label="RestClientConfiguration"];
+  }
 
-  reservation -> repositories;
-  ordering -> repositories;
-  billing -> repositories;
-  inventory -> repositories;
-  governance -> repositories;
+  ApiGatewayApplication -> GatewayProxyController;
+  GatewayProxyController -> GatewayRouteLocator;
+  GatewayProxyController -> RestClientConfiguration;
 
-  reservation -> events;
-  ordering -> events;
-  billing -> events;
-  inventory -> events;
+  ReservationController -> ReservationService;
+  OrdersController -> OrderingService;
+  KitchenController -> KitchenService;
+  BillsController -> BillingService;
+  InventoryController -> InventoryService;
+  ReportingController -> ReportingQueryService;
+  AuthController -> AuthService;
+  AuditController -> AuditReadService;
 
-  reporting -> readmodel;
-  notification -> adapters;
-  billing -> adapters;
+  ReservationService -> RabbitMqEventPublisher;
+  OrderingService -> RabbitMqEventPublisher;
+  KitchenService -> RabbitMqEventPublisher;
+  BillingService -> RabbitMqEventPublisher;
+  InventoryService -> RabbitMqEventPublisher;
+  OutboxRelayScheduler -> RabbitMqEventPublisher;
+  ManualAckConsumerSupport -> RabbitMqEventPublisher;
 }

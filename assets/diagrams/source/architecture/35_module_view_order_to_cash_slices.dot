@@ -5,100 +5,98 @@ digraph G {
     compound=true,
     bgcolor="white",
     pad=0.34,
-    nodesep=0.54,
-    ranksep=0.96,
+    nodesep=0.50,
+    ranksep=0.88,
     splines=ortho,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="UML Package Diagram - Reservation-to-Settlement Service Slices of IRMS"
+    label="Component Diagram - Reservation to Settlement Runtime Collaboration"
   ];
 
-  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.3, margin="0.14,0.08"];
-  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.0];
+  node [shape=component, style="rounded,filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=8.8, margin="0.10,0.06"];
+  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=7.8];
 
-  subgraph cluster_model {
-    label="<<model>> Service Decomposition View";
-    color="#94A3B8";
-    penwidth=1.1;
-    style="rounded";
-
-    subgraph cluster_reservation {
-      label="<<package>> Reservation & Seating Service Slice";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      r_app [label="Application"];
-      r_domain [label="Domain"];
-      r_infra [label="Infrastructure"];
-    }
-
-    subgraph cluster_ordering {
-      label="<<package>> Ordering & Menu Service Slice";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      o_app [label="Application"];
-      o_domain [label="Domain"];
-      o_infra [label="Infrastructure"];
-    }
-
-    subgraph cluster_kitchen {
-      label="<<package>> Kitchen Coordination Service Slice";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      k_app [label="Application"];
-      k_domain [label="Domain"];
-      k_infra [label="Infrastructure"];
-    }
-
-    subgraph cluster_billing {
-      label="<<package>> Billing & Settlement Service Slice";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      b_app [label="Application"];
-      b_domain [label="Domain"];
-      b_infra [label="Infrastructure"];
-    }
-
-    subgraph cluster_shared {
-      label="<<package>> Shared Event Contracts and Downstream Services";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      outbox [label="Outbox and Event Contracts"];
-      inventory [label="Inventory Projection"];
-      reporting [label="Reporting Projection"];
-      notification [label="Notification Service"];
-      payment [label="Payment Adapter"];
-      audit [label="IAM & Audit Service"];
-    }
+  subgraph cluster_reservation {
+    label="Reservation";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    ReservationCheckInService [label="ReservationCheckInService"];
+    ReservationTableAssignmentService [label="ReservationTableAssignmentService"];
+    ReservationSeatingMediator [label="ReservationSeatingMediator"];
+    ReservationTableAssignmentRepository [label="ReservationTableAssignmentRepository\ninterface"];
   }
 
-  r_app -> r_domain [label="invoke"];
-  r_domain -> r_infra [label="persist"];
-  o_app -> o_domain [label="invoke"];
-  o_domain -> o_infra [label="persist"];
-  k_app -> k_domain [label="invoke"];
-  k_domain -> k_infra [label="persist"];
-  b_app -> b_domain [label="invoke"];
-  b_domain -> b_infra [label="persist"];
+  subgraph cluster_ordering {
+    label="Ordering";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    OrdersController [label="OrdersController\n/api/orders"];
+    OrderingService [label="OrderingService"];
+    OrderRepository [label="OrderRepository\ninterface"];
+    RemoteKitchenOrderRoutingClient [label="RemoteKitchenOrderRoutingClient"];
+  }
 
-  r_app -> o_app [label="table context"];
-  o_app -> k_app [label="OrderConfirmed"];
-  o_app -> b_app [label="billable snapshot API"];
-  k_app -> b_app [label="OrderItemPrepared"];
-  b_app -> r_app [label="close table session"];
+  subgraph cluster_kitchen {
+    label="Kitchen";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    KitchenIntegrationController [label="KitchenIntegrationController\n/internal/kitchen"];
+    KitchenOrderRoutingService [label="KitchenOrderRoutingService"];
+    KitchenTicketItemWorkflowService [label="KitchenTicketItemWorkflowService"];
+    RemoteInventoryConsumptionClient [label="RemoteInventoryConsumptionClient"];
+  }
 
-  r_infra -> outbox [label="publish domain event"];
-  o_infra -> outbox [label="publish domain event"];
-  k_infra -> outbox [label="publish domain event"];
-  b_infra -> outbox [label="publish domain event"];
+  subgraph cluster_billing {
+    label="Billing";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    BillsController [label="BillsController\n/api/bills"];
+    BillingBillCreationService [label="BillingBillCreationService"];
+    BillingPaymentService [label="BillingPaymentService"];
+    PaymentGateway [label="PaymentGateway\ninterface"];
+    CashPaymentGateway [label="CashPaymentGateway"];
+    ExternalReferencePaymentGateway [label="ExternalReferencePaymentGateway"];
+  }
 
-  outbox -> inventory [label="stock projection"];
-  outbox -> reporting [label="reporting projection"];
-  outbox -> notification [label="notification job"];
-  outbox -> audit [label="write audit trail"];
-  b_app -> payment [label="authorize / capture / refund API"];
+  subgraph cluster_async {
+    label="Asynchronous Support";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    RabbitMqEventPublisher [label="RabbitMqEventPublisher"];
+    ReportingProjectionConsumer [label="ReportingProjectionConsumer\nRabbit listener"];
+    NotificationRequestedConsumer [label="NotificationRequestedConsumer\nRabbit listener"];
+    AuditRecordingRequestedConsumer [label="AuditRecordingRequestedConsumer\nRabbit listener"];
+  }
+
+  ReservationCheckInService -> ReservationSeatingMediator;
+  ReservationSeatingMediator -> ReservationTableAssignmentService;
+  ReservationTableAssignmentService -> ReservationTableAssignmentRepository;
+
+  OrdersController -> OrderingService;
+  OrderingService -> OrderRepository;
+  OrderingService -> RemoteKitchenOrderRoutingClient;
+  OrderingService -> RabbitMqEventPublisher;
+
+  RemoteKitchenOrderRoutingClient -> KitchenIntegrationController;
+  KitchenIntegrationController -> KitchenOrderRoutingService;
+  KitchenOrderRoutingService -> KitchenTicketItemWorkflowService;
+  KitchenTicketItemWorkflowService -> RemoteInventoryConsumptionClient;
+  KitchenTicketItemWorkflowService -> RabbitMqEventPublisher;
+
+  BillsController -> BillingBillCreationService;
+  BillsController -> BillingPaymentService;
+  BillingPaymentService -> PaymentGateway;
+  CashPaymentGateway -> PaymentGateway [arrowhead=empty, style=dashed];
+  ExternalReferencePaymentGateway -> PaymentGateway [arrowhead=empty, style=dashed];
+  BillingBillCreationService -> RabbitMqEventPublisher;
+  BillingPaymentService -> RabbitMqEventPublisher;
+
+  RabbitMqEventPublisher -> ReportingProjectionConsumer;
+  RabbitMqEventPublisher -> NotificationRequestedConsumer;
+  RabbitMqEventPublisher -> AuditRecordingRequestedConsumer;
 }

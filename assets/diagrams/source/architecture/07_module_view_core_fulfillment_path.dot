@@ -5,66 +5,36 @@ digraph G {
     compound=true,
     bgcolor="white",
     pad=0.34,
-    nodesep=0.56,
-    ranksep=1.02,
+    nodesep=0.52,
+    ranksep=0.92,
     splines=polyline,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="UML Package Diagram - Core Service Fulfillment Path of IRMS"
+    label="Component Diagram - Core Fulfillment Path"
   ];
 
-  node [
-    shape=folder,
-    style="filled",
-    fillcolor="#FFFFFF",
-    color="#64748B",
-    penwidth=1.0,
-    fontname="DejaVu Sans",
-    fontsize=9.7,
-    margin="0.14,0.08"
-  ];
+  node [shape=component, style="rounded,filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=8.8, margin="0.10,0.06"];
+  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=7.8];
 
-  edge [
-    style=dashed,
-    arrowhead=vee,
-    color="#64748B",
-    penwidth=0.9,
-    fontname="DejaVu Sans",
-    fontsize=8.1
-  ];
+  ReservationCheckInService [label="ReservationCheckInService"];
+  ReservationTableAssignmentService [label="ReservationTableAssignmentService"];
+  OrdersController [label="OrdersController\n/api/orders"];
+  OrderingService [label="OrderingService"];
+  MenuService [label="MenuService"];
+  RemoteKitchenOrderRoutingClient [label="RemoteKitchenOrderRoutingClient"];
+  KitchenIntegrationController [label="KitchenIntegrationController\n/internal/kitchen"];
+  KitchenOrderRoutingService [label="KitchenOrderRoutingService"];
+  BillsController [label="BillsController\n/api/bills"];
+  BillingBillCreationService [label="BillingBillCreationService"];
+  BillingPaymentService [label="BillingPaymentService"];
 
-  subgraph cluster_model {
-    label="<<model>> Service Decomposition View";
-    color="#94A3B8";
-    penwidth=1.1;
-    style="rounded";
-
-    subgraph cluster_context {
-      label="<<package>> Service Contexts";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-
-      reservation_context [label="Reservation & Seating\nservice context,\nreservation state,\nseating rules"];
-      menu_reference [label="Ordering & Menu\ncatalog,\nmodifier rules,\npricing policy"];
-    }
-
-    subgraph cluster_execution {
-      label="<<package>> Core Service Flow";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-
-      ordering_package [label="Ordering & Menu Service\ncommands,\norder aggregate,\nprice snapshot"];
-      kitchen_package [label="Kitchen Coordination Service\nticket routing,\nstation queue,\npreparation state"];
-      billing_package [label="Billing & Settlement Service\nbill issue,\nsettlement,\nreceipt closure"];
-    }
-  }
-
-  reservation_context -> ordering_package [label="table-session context"];
-  menu_reference -> ordering_package [label="item, modifier and price basis"];
-  ordering_package -> kitchen_package [label="OrderConfirmed"];
-  ordering_package -> billing_package [label="billable snapshot API"];
-  kitchen_package -> billing_package [label="OrderItemPrepared"];
-  billing_package -> reservation_context [label="close table session"];
+  ReservationCheckInService -> ReservationTableAssignmentService [label="table assignment"];
+  OrdersController -> OrderingService [label="order command"];
+  OrderingService -> MenuService [label="menu validation"];
+  OrderingService -> RemoteKitchenOrderRoutingClient [label="route confirmed order"];
+  RemoteKitchenOrderRoutingClient -> KitchenIntegrationController [label="REST"];
+  KitchenIntegrationController -> KitchenOrderRoutingService [label="create ticket"];
+  BillsController -> BillingBillCreationService [label="create bill"];
+  BillsController -> BillingPaymentService [label="pay bill"];
+  BillingBillCreationService -> OrderingService [label="billable snapshot"];
 }

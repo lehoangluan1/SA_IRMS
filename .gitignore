@@ -1,17 +1,48 @@
+# Node / frontend
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/build/
+**/.output/
+**/.nitro/
+**/.tanstack/
+**/.vinxi/
+coverage/
+
+# Java / Maven
+**/target/
+
+# Environment and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Logs and temp files
+logs/
+*.log
+*.out
+*.tmp
+*.bak
+tmp/
+temp/
+
+# LaTeX build outputs
 *.aux
 *.fdb_latexmk
 *.fls
-*.log
-*.out
-*.synctex.gz
-*.toc
 *.lof
 *.lot
+*.synctex.gz
+*.toc
 *.xdv
-*.tmp
-*.bak
-*.gz
 
-# Local editor/system files
+# Editor / OS files
 .DS_Store
 Thumbs.db
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.suo
+*.sw?

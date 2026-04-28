@@ -13,56 +13,18 @@ digraph G {
     label="Deployment Diagram - Physical Deployment Overview"
   ];
 
-  node [
-    fontname="DejaVu Sans",
-    fontsize=11,
-    color="#334155",
-    penwidth=1.1,
-    style="filled"
-  ];
-
-  edge [
-    fontname="DejaVu Sans",
-    fontsize=10,
-    color="#64748B",
-    penwidth=1.0,
-    arrowsize=0.72
-  ];
+  node [fontname="DejaVu Sans", fontsize=11, color="#334155", penwidth=1.1, style="filled"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#64748B", penwidth=1.0, arrowsize=0.72];
 
   subgraph cluster_clients {
     label="Restaurant Endpoints";
     color="#CBD5E1";
     style="rounded";
-
-    host [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nHost Tablet"
-    ];
-
-    server [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nServer Tablet"
-    ];
-
-    kitchen [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nKitchen Display Station"
-    ];
-
-    cashier [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nCashier Terminal"
-    ];
-
-    manager [
-      shape=box3d,
-      fillcolor="#FEFCE8",
-      label="«device»\nManager Console"
-    ];
+    host [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nHost Tablet"];
+    server [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nServer Tablet"];
+    kitchen [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nKitchen Display Station"];
+    cashier [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nCashier Terminal"];
+    manager [shape=box3d, fillcolor="#FEFCE8", label="<<device>>\nManager Console"];
   }
 
   subgraph cluster_edge {
@@ -70,136 +32,65 @@ digraph G {
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#EFF6FF";
-
-    proxy [
-      shape=box3d,
-      fillcolor="#DBEAFE",
-      color="#60A5FA",
-      label="«device»\nReverse Proxy / Web Server"
-    ];
+    frontend [shape=box3d, fillcolor="#DBEAFE", color="#60A5FA", label="<<node>>\nfrontend container\nReact UI and Nitro Proxy"];
+    gateway [shape=box3d, fillcolor="#DBEAFE", color="#60A5FA", label="<<node>>\napi-gateway container"];
   }
 
   subgraph cluster_core {
-    label="Central Application Tier";
+    label="Spring Boot Service Containers";
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#F8FAFC";
-
-    apphost [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nIRMS Application Node"
-    ];
-
-    apprt [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«executionEnvironment»\nApplication Runtime"
-    ];
-
-    workerh [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nBackground Worker Node"
-    ];
-
-    workrt [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«executionEnvironment»\nWorker Runtime"
-    ];
-
-    printer [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nReceipt Printer Gateway"
-    ];
-
-    apphost -> apprt [arrowhead=none, color="#94A3B8"];
-    workerh -> workrt [arrowhead=none, color="#94A3B8"];
+    ordering [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nordering-service"];
+    kitchen_service [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nkitchen-service"];
+    billing [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nbilling-service"];
+    reservation [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nreservation-service"];
+    inventory [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\ninventory-service"];
+    support [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nnotification, reporting,\nidentity-audit"];
+    migration [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nirms-migration"];
   }
 
   subgraph cluster_data {
-    label="Data Tier";
+    label="Data and Messaging Tier";
     color="#FCA5A5";
     style="rounded,filled";
     fillcolor="#FEF2F2";
-
-    dbhost [
-      shape=box3d,
-      fillcolor="#ECFEFF",
-      label="«device»\nOperational Database Node"
-    ];
-
-    pg [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«executionEnvironment»\nPostgreSQL"
-    ];
-
-    opdb [
-      shape=note,
-      fillcolor="#FFF7ED",
-      color="#FDBA74",
-      label="«artifact»\nOperational Schema"
-    ];
-
-    readm [
-      shape=note,
-      fillcolor="#FFF7ED",
-      color="#FDBA74",
-      label="«artifact»\nReporting Views / Read Model"
-    ];
-
-    objstore [
-      shape=note,
-      fillcolor="#FFF7ED",
-      color="#FDBA74",
-      label="«artifact»\nObject Storage\n(Receipts / Menu Assets)"
-    ];
-
-    dbhost -> pg [arrowhead=none, color="#94A3B8"];
-    pg -> opdb [arrowhead=none, color="#94A3B8"];
-    pg -> readm [arrowhead=none, color="#94A3B8"];
-    pg -> objstore [arrowhead=none, color="#94A3B8"];
-  }
-
-  subgraph cluster_external {
-    label="External Services";
-    color="#CBD5E1";
-    style="rounded,dashed";
-
-    payment [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«external»\nPayment Gateway Service"
-    ];
-
-    notify [
-      shape=box3d,
-      fillcolor="#F8FAFC",
-      label="«external»\nNotification Service"
-    ];
+    postgres [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nPostgreSQL container\npostgres-data volume"];
+    rabbitmq [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nRabbitMQ container\nrabbitmq-data volume"];
+    outbox [shape=note, fillcolor="#FFF7ED", color="#FDBA74", label="<<artifact>>\noutbox_events and processed_events"];
+    readm [shape=note, fillcolor="#FFF7ED", color="#FDBA74", label="<<artifact>>\nReporting tables and views"];
   }
 
   { rank=same; host; server; kitchen; cashier; manager; }
-  { rank=same; proxy; apphost; workerh; dbhost; payment; notify; }
+  { rank=same; frontend; gateway; }
+  { rank=same; ordering; kitchen_service; billing; reservation; inventory; support; migration; }
+  { rank=same; postgres; rabbitmq; outbox; readm; }
 
-  host    -> proxy [label="HTTPS"];
-  server  -> proxy [label="HTTPS"];
-  kitchen -> proxy [label="HTTPS"];
-  cashier -> proxy [label="HTTPS"];
-  manager -> proxy [label="HTTPS"];
+  host -> frontend [label="HTTP"];
+  server -> frontend [label="HTTP"];
+  kitchen -> frontend [label="HTTP"];
+  cashier -> frontend [label="HTTP"];
+  manager -> frontend [label="HTTP"];
 
-  proxy   -> apphost [label="route + auth"];
-  apphost -> dbhost  [label="transactional data"];
-  apphost -> workerh [label="async jobs / event handoff", style=dashed];
-  workerh -> dbhost  [label="job state / refresh reporting views", style=dashed];
-  apphost -> payment [label="payment calls"];
-  workerh -> notify  [label="notifications"];
-  workerh -> printer [label="print jobs"];
+  frontend -> gateway [label="/api proxy"];
+  gateway -> ordering [label="REST"];
+  gateway -> kitchen_service [label="REST"];
+  gateway -> billing [label="REST"];
+  gateway -> reservation [label="REST"];
+  gateway -> inventory [label="REST"];
+  gateway -> support [label="REST"];
 
-  proxy  -> apphost [weight=8];
-  apphost -> workerh [weight=6];
-  workerh -> dbhost [weight=6];
+  ordering -> postgres [label="JDBC"];
+  kitchen_service -> postgres [label="JDBC"];
+  billing -> postgres [label="JDBC"];
+  reservation -> postgres [label="JDBC"];
+  inventory -> postgres [label="JDBC"];
+  support -> postgres [label="JDBC"];
+  migration -> postgres [label="Flyway"];
+  ordering -> rabbitmq [style=dashed, label="events"];
+  kitchen_service -> rabbitmq [style=dashed, label="events"];
+  billing -> rabbitmq [style=dashed, label="events"];
+  inventory -> rabbitmq [style=dashed, label="events"];
+  postgres -> outbox [arrowhead=none];
+  postgres -> readm [arrowhead=none];
 }

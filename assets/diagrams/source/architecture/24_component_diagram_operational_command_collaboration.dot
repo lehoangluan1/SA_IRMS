@@ -7,15 +7,15 @@ digraph G {
     label="Operational Clients";
     color="#CBD5E1";
     style="rounded";
-    hostui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    hostui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Host UI", pos="74.50,647.00!", pin=true, width=1.0972, height=0.5000];
-    serverui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    serverui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Server POS UI", pos="74.50,568.00!", pin=true, width=1.1111, height=0.5000];
-    kitchenui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    kitchenui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Kitchen Display UI", pos="74.50,489.00!", pin=true, width=1.4306, height=0.5000];
-    cashierui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    cashierui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Cashier UI", pos="74.50,410.00!", pin=true, width=1.0972, height=0.5000];
-    managerui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    managerui [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Manager Portal", pos="74.50,331.00!", pin=true, width=1.2083, height=0.5000];
   }
 
@@ -23,9 +23,9 @@ Manager Portal", pos="74.50,331.00!", pin=true, width=1.2083, height=0.5000];
     label="Edge Control";
     color="#CBD5E1";
     style="rounded";
-    gateway [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    gateway [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 API Gateway", pos="253.50,489.00!", pin=true, width=1.0972, height=0.5000];
-    policy [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    policy [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Authentication and
 Policy Guard", pos="418.50,489.00!", pin=true, width=1.4583, height=0.5694];
   }
@@ -34,25 +34,25 @@ Policy Guard", pos="418.50,489.00!", pin=true, width=1.4583, height=0.5694];
     label="Command Components";
     color="#93C5FD";
     style="rounded";
-    reservationcmd [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    reservationcmd [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Reservation Command
 Service", pos="726.98,447.00!", pin=true, width=1.7222, height=0.5694];
-    orderingcmd [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    orderingcmd [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Ordering Command
 Service", pos="726.98,651.00!", pin=true, width=1.5000, height=0.5694];
-    kitchencmd [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    kitchencmd [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Kitchen Command
 Service", pos="726.98,767.02!", pin=true, width=1.4306, height=0.5694];
-    billingcmd [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    billingcmd [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Billing Command
 Service", pos="726.98,331.00!", pin=true, width=1.3472, height=0.5694];
-    ticketfactory [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    ticketfactory [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Kitchen Ticket
 Factory", pos="1129.97,697.00!", pin=true, width=1.1389, height=0.5694];
-    snapshot [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    snapshot [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Billable Order
 Snapshot Query", pos="1129.97,533.00!", pin=true, width=1.2500, height=0.5694];
-    outbox [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    outbox [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Outbox Writer", pos="1129.97,615.00!", pin=true, width=1.1250, height=0.5000];
   }
 
@@ -60,24 +60,22 @@ Outbox Writer", pos="1129.97,615.00!", pin=true, width=1.1250, height=0.5000];
     label="Persistence and Integration";
     color="#CBD5E1";
     style="rounded";
-    reservationrepo [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    reservationrepo [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Reservation Repository", pos="1489.54,407.00!", pin=true, width=1.7639, height=0.5000];
-    orderrepo [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    orderrepo [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Order Repository", pos="1489.54,804.02!", pin=true, width=1.3194, height=0.5000];
-    kitchenrepo [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    kitchenrepo [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Kitchen Ticket
 Repository", pos="1489.54,893.02!", pin=true, width=1.1389, height=0.5694];
-    billrepo [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
+    billrepo [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
 Bill Repository", pos="1489.54,18.00!", pin=true, width=1.1667, height=0.5000];
-    payment [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Payment Gateway
-Adapter", pos="1489.54,216.00!", pin=true, width=1.4167, height=0.5694];
-    printer [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Receipt Printer
-Adapter", pos="1489.54,132.00!", pin=true, width=1.1806, height=0.5694];
-    notification [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="«component»
-Notification
-Adapter", pos="1489.54,300.00!", pin=true, width=1.0972, height=0.5694];
+    payment [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+PaymentGateway
+Interface", pos="1489.54,216.00!", pin=true, width=1.4167, height=0.5694];
+    receipt_adapter [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+ReceiptDeliveryAdapter", pos="1489.54,132.00!", pin=true, width=1.1806, height=0.5694];
+    notification [shape=component, style="filled,rounded", fillcolor="#F8FAFC", color="#475569", penwidth=1.1, label="<<component>>
+NotificationChannelAdapter", pos="1489.54,300.00!", pin=true, width=1.0972, height=0.5694];
   }
 
   // edge 1: hostui -> gateway
@@ -537,7 +535,7 @@ state", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fo
   e22_prov -> e22_tgt_port [color="#64748B", style="solid", dir=none];
   e22_lbl [shape=box, label="authorize / capture / refund", style="filled", fillcolor="white", color="white", margin="0.03,0.02", fontsize=9, pos="1129.97,215.00!", pin=true];
 
-  // edge 23: billingcmd -> printer
+  // edge 23: billingcmd -> receipt_adapter
   e23_src_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="743.98,310.45!", pin=true];
   e23_tgt_port [shape=box, label="", style="filled", fillcolor="white", color="#475569", penwidth=1.4, fixedsize=true, width=0.1389, height=0.1389, pos="1439.71,132.00!", pin=true];
   e23_req [shape=circle, label="", fixedsize=true, width=0.2500, height=0.2500, style="filled", fillcolor="white", color="#475569", penwidth=1.8, pos="743.98,324.45!", pin=true];

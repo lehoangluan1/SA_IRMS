@@ -16,7 +16,7 @@ digraph G {
   node [fontname="DejaVu Sans", fontsize=10.8, color="#334155", penwidth=1.1, style="filled"];
   edge [fontname="DejaVu Sans", fontsize=9.6, color="#64748B", penwidth=1.0, arrowsize=0.72];
 
-  browser [shape=box3d, fillcolor="#FEFCE8", label="«device»
+  browser [shape=box3d, fillcolor="#FEFCE8", label="<<device>>
 Restaurant Client Device
 (browser / tablet / terminal)"];
 
@@ -25,14 +25,14 @@ Restaurant Client Device
     color="#CBD5E1";
     style="rounded,filled";
     fillcolor="#F8FAFC";
-    edgehost [shape=box3d, fillcolor="#ECFEFF", label="«device»
+    edgehost [shape=box3d, fillcolor="#ECFEFF", label="<<device>>
 Edge Host"];
-    nginx [shape=box3d, fillcolor="#FFF7ED", color="#FDBA74", label="«executionEnvironment»
-Nginx Reverse Proxy"];
-    ui    [shape=note, fillcolor="#FFFFFF", label="«artifact»
+    frontend_node [shape=box3d, fillcolor="#FFF7ED", color="#FDBA74", label="<<executionEnvironment>>
+Frontend Node Server"];
+    ui    [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
 Unified Web Client Assets"];
-    edgehost -> nginx [arrowhead=none, color="#94A3B8"];
-    nginx -> ui [arrowhead=none, color="#94A3B8"];
+    edgehost -> frontend_node [arrowhead=none, color="#94A3B8"];
+    frontend_node -> ui [arrowhead=none, color="#94A3B8"];
   }
 
   subgraph cluster_appserver {
@@ -40,15 +40,15 @@ Unified Web Client Assets"];
     color="#93C5FD";
     style="rounded,filled";
     fillcolor="#EFF6FF";
-    apphost [shape=box3d, fillcolor="#ECFEFF", label="«device»
+    apphost [shape=box3d, fillcolor="#ECFEFF", label="<<device>>
 Backend IRMS Application Server"];
-    apprt [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+    apprt [shape=box3d, fillcolor="#F8FAFC", label="<<executionEnvironment>>
 Spring Boot IRMS Runtime"];
-    api   [shape=note, fillcolor="#FFFFFF", label="«artifact»
+    api   [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
 IRMS Web/API Artifact"];
-    core  [shape=note, fillcolor="#FFFFFF", label="«artifact»
+    core  [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
 IRMS Business Services"];
-    adapt [shape=note, fillcolor="#FFFFFF", label="«artifact»
+    adapt [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
 IRMS Boundary Adapters"];
     apphost -> apprt [arrowhead=none, color="#94A3B8"];
     apprt -> api [arrowhead=none, color="#94A3B8"];
@@ -61,15 +61,15 @@ IRMS Boundary Adapters"];
     color="#C4B5FD";
     style="rounded,filled";
     fillcolor="#F5F3FF";
-    workerh [shape=box3d, fillcolor="#ECFEFF", label="«device»
+    workerh [shape=box3d, fillcolor="#ECFEFF", label="<<device>>
 Background Worker Host"];
-    workrt [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+    workrt [shape=box3d, fillcolor="#F8FAFC", label="<<executionEnvironment>>
 Worker Runtime"];
-    jobs1  [shape=note, fillcolor="#FFFFFF", label="«artifact»
+    jobs1  [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
 Notification Job Handler"];
-    jobs2  [shape=note, fillcolor="#FFFFFF", label="«artifact»
+    jobs2  [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
 Receipt Print Handler"];
-    jobs3  [shape=note, fillcolor="#FFFFFF", label="«artifact»
+    jobs3  [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
 Projection Refresh Handler"];
     workerh -> workrt [arrowhead=none, color="#94A3B8"];
     workrt -> jobs1 [arrowhead=none, color="#94A3B8"];
@@ -82,30 +82,27 @@ Projection Refresh Handler"];
     color="#FCA5A5";
     style="rounded,filled";
     fillcolor="#FEF2F2";
-    dbhost [shape=box3d, fillcolor="#ECFEFF", label="«device»
+    dbhost [shape=box3d, fillcolor="#ECFEFF", label="<<device>>
 Relational Database Server"];
-    pg [shape=box3d, fillcolor="#F8FAFC", label="«executionEnvironment»
+    pg [shape=box3d, fillcolor="#F8FAFC", label="<<executionEnvironment>>
 PostgreSQL"];
-    schema1 [shape=note, fillcolor="#FFFFFF", label="«artifact»
+    schema1 [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
 Operational Schema"];
-    schema2 [shape=note, fillcolor="#FFFFFF", label="«artifact»
+    schema2 [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
 Reporting Views"];
     dbhost -> pg [arrowhead=none, color="#94A3B8"];
     pg -> schema1 [arrowhead=none, color="#94A3B8"];
     pg -> schema2 [arrowhead=none, color="#94A3B8"];
   }
 
-  printer [shape=box3d, fillcolor="#ECFEFF", label="«device»
-Receipt Printer Adapter Gateway"];
-
   subgraph cluster_external {
-    label="External Adapters and Providers";
+    label="Internal Adapter Ports";
     color="#CBD5E1";
     style="rounded,dashed";
-    pay [shape=box3d, fillcolor="#F8FAFC", label="«external»
-Payment Gateway Service"];
-    ns  [shape=box3d, fillcolor="#F8FAFC", label="«external»
-Notification Service"];
+    adapters [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
+PaymentGateway
+ReceiptDeliveryAdapter
+NotificationChannelAdapter"];
   }
 
   browser -> edgehost [label="HTTPS"];
@@ -113,12 +110,11 @@ Notification Service"];
   apphost -> dbhost [label="JDBC / SQL"];
   apphost -> workerh [style=dashed, label="outbox event dispatch"];
   workerh -> dbhost [label="projection / outbox state"];
-  apphost -> pay [label="payment adapter HTTPS"];
-  workerh -> ns [label="notification adapter HTTPS"];
-  workerh -> printer [label="receipt printer adapter"];
+  apphost -> adapters [label="payment and receipt ports"];
+  workerh -> adapters [label="notification port"];
 
   edgehost -> apphost [weight=8];
   apphost -> workerh [style=invis, weight=8];
   workerh -> dbhost [style=invis, weight=8];
-  dbhost -> pay [style=invis, weight=8];
+  dbhost -> adapters [style=invis, weight=8];
 }

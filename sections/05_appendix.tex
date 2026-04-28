@@ -15,6 +15,12 @@ và \textbf{hệ quả thiết kế} của phương án cuối cùng.
 Cách trình bày này giúp phụ lục đóng vai trò như một hồ sơ giải thích quyết định,
 thay vì chỉ là phần bổ sung hình thức cho báo cáo chính.
 
+Hồ sơ quyết định dạng file được lưu tại \texttt{docs/adr/}. Các hộp ADR trong phụ lục
+giữ vai trò trình bày ngắn gọn trong báo cáo, còn file ADR tương ứng ghi rõ
+bằng chứng code/config và các hệ quả đánh đổi. Cách tách này giúp phần chính vẫn
+dễ đọc, đồng thời tránh việc các quyết định kiến trúc chỉ xuất hiện như mô tả
+không có nguồn kiểm chứng.
+
 Các mục trong phụ lục này không đứng riêng với thân báo cáo mà được dùng để giải thích ngược
 cho phần mô hình hóa ở Mục~\ref{sec:system-modeling-overview},
 phần tổng quan và các góc nhìn kiến trúc ở Mục 3.1 và Mục~\ref{sec:architecture-views},
@@ -42,7 +48,7 @@ có nguy cơ chồng lấn trách nhiệm nếu chỉ bám vào cấu trúc
 \textbf{Service-Based phân tán}
 &
 Cho phép tổ chức hệ thống theo các service tương ứng với từng năng lực nghiệp vụ;
-thuận lợi cho mở rộng theo miền và tích hợp hệ ngoài.
+thuận lợi cho mở rộng theo miền và tích hợp qua adapter biên.
 &
 Làm tăng độ phức tạp trong giao tiếp qua mạng, truy vết liên service,
 quản lý hợp đồng dữ liệu và phối hợp triển khai.
@@ -93,7 +99,7 @@ Song song với đó, các tác vụ không yêu cầu phản hồi ngay
 cho phép tách biệt tuyến giao dịch chính với các hệ quả phụ như
 gửi thông báo, cập nhật báo cáo và ghi nhận kiểm toán.
 
-\begin{adrbox}[title={ADR-01: Lựa chọn kiến trúc service-based kết hợp event-driven cho IRMS}]
+\begin{adrbox}[title={ADR-0001: Lựa chọn kiến trúc service-based kết hợp event-driven cho IRMS}]
 \begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
   \item \textbf{Bối cảnh:}
   IRMS cần hỗ trợ nhiều luồng nghiệp vụ có tính chất khác nhau:
@@ -127,26 +133,33 @@ gửi thông báo, cập nhật báo cáo và ghi nhận kiểm toán.
   Layered monolith bị loại do không phản ánh rõ ranh giới nghiệp vụ;
   microservices bị loại do chi phí vận hành cao;
   event-driven thuần bị loại do không phù hợp với giao dịch cần phản hồi tức thời.
+
+  \item \textbf{Bản ghi ADR:}
+  \texttt{docs/adr/ADR-0001-service-based-event-driven-architecture.md}.
 \end{enumerate}
 \end{adrbox}
 
-\begin{adrbox}[title={ADR-02: Sử dụng API Gateway làm điểm vào thống nhất}]
+\begin{adrbox}[title={ADR-0002: Sử dụng Frontend Node Server và API Gateway làm điểm vào thống nhất}]
 \begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
   \item \textbf{Bối cảnh:}
   Hệ thống phục vụ nhiều loại client như POS, KDS và ứng dụng quản lý.
 
   \item \textbf{Quyết định:}
-  Sử dụng \textbf{API Gateway} làm điểm vào chung cho mọi client.
+  Sử dụng \textbf{Frontend Node Server} của TanStack Start/Nitro để phục vụ React
+  và proxy \texttt{/api}, sau đó dùng \textbf{API Gateway} trong backend làm điểm vào chung cho các service.
 
   \item \textbf{Lý do lựa chọn:}
-  Tập trung hóa xác thực, định tuyến và kiểm soát truy cập.
+  Tập trung hóa định tuyến ở biên, giữ frontend không phụ thuộc trực tiếp vào từng service backend.
 
   \item \textbf{Hệ quả:}
   Giảm phụ thuộc giữa client và backend,
   đồng thời chuẩn hóa giao tiếp ở biên hệ thống.
+
+  \item \textbf{Bản ghi ADR:}
+  \texttt{docs/adr/ADR-0002-use-nitro-proxy-and-api-gateway.md}.
 \end{enumerate}
 \end{adrbox}
-\begin{adrbox}[title={ADR-03: Kết hợp giao tiếp đồng bộ và bất đồng bộ}]
+\begin{adrbox}[title={ADR-0003: Kết hợp REST đồng bộ với RabbitMQ, Outbox và manual ack}]
 \begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
   \item \textbf{Bối cảnh:}
   IRMS bao gồm hai loại tương tác chính:
@@ -155,7 +168,8 @@ gửi thông báo, cập nhật báo cáo và ghi nhận kiểm toán.
 
   \item \textbf{Quyết định:}
   Sử dụng \textbf{giao tiếp đồng bộ} (REST) cho các thao tác tuyến đầu,
-  đồng thời sử dụng \textbf{sự kiện miền bất đồng bộ}
+  đồng thời sử dụng \textbf{sự kiện miền bất đồng bộ} qua \textsf{RabbitMQ},
+  \textsf{outbox\_events}, \textsf{processed\_events} và consumer manual ack
   cho các tác vụ không yêu cầu phản hồi ngay.
 
   \item \textbf{Trạng thái:}
@@ -165,6 +179,7 @@ gửi thông báo, cập nhật báo cáo và ghi nhận kiểm toán.
   Cách kết hợp này đảm bảo trải nghiệm người dùng nhanh và rõ ràng về trạng thái lỗi,
   đồng thời cho phép các tác vụ nền được xử lý độc lập,
   có thể retry và mở rộng mà không ảnh hưởng đến luồng chính.
+  \textsf{RabbitMQ} là broker có bằng chứng trong code/config hiện tại; không có bằng chứng về Kafka hay Redis Streams.
 
   \item \textbf{Hệ quả kiến trúc:}
   Hệ thống cần hỗ trợ cơ chế \textbf{idempotency},
@@ -176,18 +191,21 @@ gửi thông báo, cập nhật báo cáo và ghi nhận kiểm toán.
     \item Tuyến đồng bộ: \texttt{CreateOrder}, \texttt{CreateBill}, \texttt{ProcessPayment}.
     \item Tuyến bất đồng bộ: \texttt{OrderConfirmed}, \texttt{DishReady}, \texttt{LowStockDetected}, \texttt{ReportRefreshRequested}.
   \end{itemize}
+
+  \item \textbf{Bản ghi ADR:}
+  \texttt{docs/adr/ADR-0003-use-rabbitmq-outbox-and-manual-ack.md}.
 \end{enumerate}
 \end{adrbox}
 
-\begin{adrbox}[title={ADR-04: Tách dữ liệu theo miền nghiệp vụ và sử dụng read model cho báo cáo}]
+\begin{adrbox}[title={ADR-0004: Sử dụng PostgreSQL dùng chung theo miền dữ liệu và read model cho báo cáo}]
 \begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
   \item \textbf{Bối cảnh:}
   Các miền như Ordering, Billing, Inventory và Reporting có đặc điểm truy cập dữ liệu khác nhau.
-  Nếu dùng chung một lược đồ cho mọi mục đích,
+  Nếu dùng chung một nhóm bảng cho mọi mục đích,
   truy vấn báo cáo có thể ảnh hưởng trực tiếp đến hiệu năng giao dịch.
 
   \item \textbf{Quyết định:}
-  Mỗi service sở hữu dữ liệu giao dịch của miền tương ứng.
+  Các service sở hữu phần dữ liệu theo miền trong PostgreSQL dùng chung của runtime hiện tại.
   Phần báo cáo sử dụng \textbf{read model} riêng,
   được cập nhật thông qua sự kiện hoặc các tiến trình nền.
 
@@ -207,10 +225,57 @@ gửi thông báo, cập nhật báo cáo và ghi nhận kiểm toán.
   \item \textbf{Phạm vi áp dụng:}
   Áp dụng cho các báo cáo như doanh thu,
   hiệu suất bếp, vòng quay bàn và cảnh báo tồn kho.
+
+  \item \textbf{Bản ghi ADR:}
+  \texttt{docs/adr/ADR-0004-use-postgresql-shared-database-and-reporting-read-models.md}.
 \end{enumerate}
 \end{adrbox}
 
-\begin{adrbox}[title={ADR-05: Kiểm soát truy cập và ghi nhận kiểm toán}]
+\begin{adrbox}[title={ADR-0005: Cô lập thanh toán, thông báo và biên lai qua adapter nội bộ}]
+\begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
+  \item \textbf{Bối cảnh:}
+  Thanh toán, thông báo và phát hành biên lai là các điểm dễ thay đổi theo chính sách vận hành.
+  Code hiện tại có các interface \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter}
+  và \textsf{ReceiptDeliveryAdapter}, nhưng chưa có cấu hình provider thanh toán, SMS/Email hay máy in vật lý bên ngoài.
+
+  \item \textbf{Quyết định:}
+  Giữ các biến thể này sau adapter nội bộ, để lõi nghiệp vụ chỉ phụ thuộc vào năng lực cần dùng
+  thay vì phụ thuộc trực tiếp vào provider cụ thể.
+
+  \item \textbf{Trạng thái:}
+  \textbf{Đã phê duyệt.}
+
+  \item \textbf{Hệ quả kiến trúc:}
+  Hệ thống dễ thay đổi kênh xử lý hơn, nhưng tài liệu phải phân biệt rõ adapter nội bộ
+  với hệ thống ngoài đã triển khai thật.
+
+  \item \textbf{Bản ghi ADR:}
+  \texttt{docs/adr/ADR-0005-use-boundary-adapters-for-payment-notification-and-receipts.md}.
+\end{enumerate}
+\end{adrbox}
+
+\begin{adrbox}[title={ADR-0006: Triển khai runtime hiện tại bằng Docker Compose}]
+\begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
+  \item \textbf{Bối cảnh:}
+  Repo hiện tại mô tả runtime bằng \textsf{docker-compose.yml}, gồm frontend, api-gateway,
+  các service Spring Boot, PostgreSQL, RabbitMQ và container migration.
+
+  \item \textbf{Quyết định:}
+  Sử dụng Docker Compose làm mô hình triển khai hiện trạng trong báo cáo.
+  Các cơ chế như load balancer, Kubernetes, read replica hoặc warm standby chỉ được xem là hướng mở rộng nếu chưa có cấu hình trong repo.
+
+  \item \textbf{Trạng thái:}
+  \textbf{Đã phê duyệt.}
+
+  \item \textbf{Hệ quả kiến trúc:}
+  Góc nhìn triển khai phải bám vào các container thật và không mô tả khả năng sẵn sàng cao như đã hiện thực.
+
+  \item \textbf{Bản ghi ADR:}
+  \texttt{docs/adr/ADR-0006-use-docker-compose-for-current-runtime-deployment.md}.
+\end{enumerate}
+\end{adrbox}
+
+\begin{adrbox}[title={ADR-0007: Kiểm soát truy cập và ghi nhận kiểm toán}]
 \begin{enumerate}[leftmargin=1.9em,label=\arabic*.]
   \item \textbf{Bối cảnh:}
   IRMS chứa nhiều thao tác nhạy cảm như hoàn tiền,
@@ -241,6 +306,9 @@ gửi thông báo, cập nhật báo cáo và ghi nhận kiểm toán.
     \item thay đổi giá phải được ghi log;
     \item truy cập audit log yêu cầu quyền riêng.
   \end{itemize}
+
+  \item \textbf{Bản ghi ADR:}
+  \texttt{docs/adr/ADR-0007-use-rbac-authorization-policy-and-audit-log.md}.
 \end{enumerate}
 \end{adrbox}
 
@@ -270,8 +338,8 @@ Mục 3.1
 Vì sao IRMS được mô tả như một kiến trúc service-based theo năng lực nghiệp vụ,
 kết hợp lớp biên web, tuyến xử lý nền và mô hình đọc tách riêng.
 &
-Phụ lục~\ref{appendix:architecture-rationale} chứa các ADR về kiểu kiến trúc,
-điểm vào, kiểu kết nối và dữ liệu đọc;
+Phụ lục~\ref{appendix:architecture-rationale} chứa các ADR-0001, ADR-0002,
+ADR-0003 và ADR-0004 về kiểu kiến trúc, điểm vào, kiểu kết nối và dữ liệu đọc;
 Phụ lục~\ref{appendix:component-rationale} giải thích vì sao dùng các thành phần nền tương ứng.
 \\
 \hline
@@ -360,44 +428,49 @@ Các thuật ngữ được sử dụng nhất quán với quyết định kiế
 & Xuất hiện trong Mục~3.1 như lớp biên người dùng và là điểm vào các kịch bản nghiệp vụ ở Mục~\ref{sec:system-modeling-overview}. \\
 \hline
 
-\texttt{Nginx} / API edge boundary 
-& Đóng vai trò lớp biên hệ thống, thực hiện routing, giới hạn truy cập, chuẩn hóa request/response và tách biệt client khỏi các service nội bộ. 
-& Biện minh cho ADR-02 trong Phụ lục~\ref{appendix:architecture-rationale} và xuất hiện trong sơ đồ kiến trúc tổng quan. \\
+\texttt{Frontend Node Server} / \texttt{api-gateway} edge boundary 
+& Đóng vai trò lớp biên hệ thống: \texttt{Frontend Node Server} phục vụ giao diện React và chuyển tiếp \texttt{/api}, còn \texttt{api-gateway} định tuyến request đến các service nội bộ. 
+& Biện minh cho ADR-0002 trong Phụ lục~\ref{appendix:architecture-rationale} và xuất hiện trong sơ đồ kiến trúc tổng quan đã cập nhật. \\
 \hline
 
 Service-based architecture + event-driven communication 
 & Hệ thống được phân rã thành các service theo miền nghiệp vụ, giao tiếp chủ yếu qua event để giảm coupling và hỗ trợ mở rộng độc lập từng chức năng như order, kitchen, payment. Cách tiếp cận này phù hợp với các luồng nghiệp vụ nhiều bước và có tính bất đồng bộ cao. 
-& Là trục chính của ADR-01; thể hiện xuyên suốt trong Mục~3.1 và Mục~\ref{sec:architecture-views}. \\
+& Là trục chính của ADR-0001; thể hiện xuyên suốt trong Mục~3.1 và Mục~\ref{sec:architecture-views}. \\
 \hline
 
-Outbox pattern / background workers 
+RabbitMQ / Outbox pattern / background workers 
 & Đảm bảo tính nhất quán giữa giao dịch chính và việc phát event, đồng thời xử lý các tác vụ nền như gửi thông báo, cập nhật read model và xử lý retry một cách bất đồng bộ. 
-& Biện minh cho ADR-03 và xuất hiện trong các sơ đồ kiến trúc, thành phần và triển khai. \\
+& Biện minh cho ADR-0003 và xuất hiện trong các sơ đồ kiến trúc, thành phần và triển khai. \\
 \hline
 
 \texttt{PostgreSQL} giao dịch 
 & Đảm bảo tính nhất quán dữ liệu mạnh cho các thao tác quan trọng như xác nhận đơn, thanh toán, hoàn tiền và ghi nhận audit. 
-& Gắn với ADR-04 và các sơ đồ dữ liệu và triển khai trong Mục~\ref{sec:architecture-views}. \\
+& Gắn với ADR-0004 và các sơ đồ dữ liệu và triển khai trong Mục~\ref{sec:architecture-views}. \\
 \hline
 
 Read model cho báo cáo 
 & Tách biệt luồng đọc và luồng ghi nhằm tối ưu hiệu năng truy vấn báo cáo, giảm tải hệ thống giao dịch chính và chấp nhận độ trễ nhất định trong đồng bộ dữ liệu. 
-& Biện minh bởi ADR-04; liên kết với các sơ đồ phân tích và triển khai. \\
+& Biện minh bởi ADR-0004; liên kết với các sơ đồ phân tích và triển khai. \\
 \hline
 
-Payment gateway adapter (service integration) 
-& Cô lập tích hợp với bên thứ ba thanh toán, giúp hệ thống linh hoạt thay đổi nhà cung cấp hoặc cơ chế xử lý mà không ảnh hưởng đến domain logic. 
-& Xuất hiện trong Mục~3.1 và Mục~\ref{sec:detailed-design-class-view} như một integration boundary. \\
+\texttt{PaymentGateway} 
+& Cô lập cách xử lý thanh toán sau một interface nội bộ, giúp hệ thống linh hoạt thay đổi cơ chế xử lý mà không ảnh hưởng đến domain logic. 
+& Xuất hiện trong Mục~3.1 và Mục~\ref{sec:detailed-design-class-view} như một adapter boundary; repo hiện tại chưa có provider thanh toán ngoài được cấu hình; gắn với ADR-0005. \\
 \hline
 
-Notification service / printer service integration 
-& Tách các hệ thống phụ trợ như thông báo và in ấn thành các integration service độc lập, cho phép xử lý retry và fallback mà không ảnh hưởng luồng nghiệp vụ chính. 
-& Liên kết giữa kiến trúc tổng quan và thiết kế chi tiết ở Mục~\ref{sec:detailed-design-clusters}. \\
+\texttt{NotificationChannelAdapter} / \texttt{ReceiptDeliveryAdapter} 
+& Tách kênh thông báo và phát hành biên lai khỏi luồng nghiệp vụ chính, cho phép xử lý nền hoặc thay đổi adapter mà không làm ảnh hưởng giao dịch lõi. 
+& Liên kết giữa kiến trúc tổng quan và thiết kế chi tiết ở Mục~\ref{sec:detailed-design-clusters}; code hiện tại thể hiện adapter nội bộ, chưa có printer vật lý hay provider SMS/Email ngoài; gắn với ADR-0005. \\
+\hline
+
+\texttt{Docker Compose} runtime 
+& Phản ánh đúng cách repo hiện tại chạy các container frontend, api-gateway, service Spring Boot, PostgreSQL, RabbitMQ và migration; tránh mô tả nhầm thành Kubernetes hay hạ tầng cloud chưa có bằng chứng. 
+& Gắn với ADR-0006 và các sơ đồ triển khai trong Mục~\ref{sec:architecture-views}. \\
 \hline
 
 RBAC + \texttt{AuthorizationPolicy} + audit log 
 & Đảm bảo kiểm soát truy cập theo vai trò và ghi nhận lịch sử thao tác cho các hành vi nhạy cảm như hoàn tiền, thay đổi giá và truy cập dữ liệu quản trị. 
-& Được biện minh bởi ADR-05 và áp dụng trong cả kiến trúc và thiết kế chi tiết. \\
+& Được biện minh bởi ADR-0007 và áp dụng trong cả kiến trúc và thiết kế chi tiết. \\
 \hline
 
 \end{tabularx}

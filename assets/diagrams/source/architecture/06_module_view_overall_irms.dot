@@ -5,77 +5,87 @@ digraph G {
     compound=true,
     bgcolor="white",
     pad=0.34,
-    nodesep=0.58,
-    ranksep=1.02,
+    nodesep=0.52,
+    ranksep=0.92,
     splines=ortho,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="UML Package Diagram - Service Decomposition Overview of IRMS"
+    label="Component Diagram - IRMS Runtime Dependency Overview"
   ];
 
-  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.8, margin="0.14,0.08"];
-  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.2];
+  node [shape=component, style="rounded,filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=8.8, margin="0.10,0.06"];
+  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=7.8];
 
-  subgraph cluster_model {
-    label="<<model>> Service Decomposition View";
-    color="#94A3B8";
-    penwidth=1.1;
-    style="rounded";
-
-    subgraph cluster_core {
-      label="<<package>> Core Business Services";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      reservation [label="Reservation & Seating\nService"];
-      menu [label="Menu Reference"];
-      ordering [label="Ordering & Menu\nService"];
-      kitchen [label="Kitchen Coordination\nService"];
-      billing [label="Billing & Settlement\nService"];
-    }
-
-    subgraph cluster_support {
-      label="<<package>> Supporting Services";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      inventory [label="Inventory Monitoring\nService"];
-      reporting [label="Reporting\nService"];
-      notification [label="Notification\nService"];
-    }
-
-    subgraph cluster_governance {
-      label="<<package>> Governance and Control Services";
-      color="#BFDBFE";
-      style="rounded,filled";
-      fillcolor="#F8FBFF";
-      iam [label="IAM & Audit\nService"];
-      audit [label="Audit Trail"];
-    }
+  subgraph cluster_frontend {
+    label="Frontend";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    ApiClient [label="apiFetch"];
+    Endpoints [label="ENDPOINTS"];
+    PermissionRules [label="permissions.ts"];
   }
 
-  reservation -> ordering [label="table and session context"];
-  menu -> ordering [label="item validation and pricing"];
-  ordering -> kitchen [label="OrderConfirmed"];
-  ordering -> billing [label="billable snapshot API"];
-  billing -> reservation [label="close table session"];
+  subgraph cluster_gateway {
+    label="Gateway";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    GatewayProxyController [label="GatewayProxyController"];
+    GatewayRouteLocator [label="GatewayRouteLocator"];
+  }
 
-  inventory -> ordering [label="recipe and availability context"];
-  kitchen -> inventory [label="OrderItemPrepared"];
+  subgraph cluster_core {
+    label="Core Application Services";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    ReservationService [label="ReservationService"];
+    OrderingService [label="OrderingService"];
+    KitchenService [label="KitchenService"];
+    BillingService [label="BillingService"];
+    InventoryService [label="InventoryService"];
+  }
 
-  ordering -> reporting [label="OrderConfirmed"];
-  billing -> reporting [label="BillIssued / PaymentCaptured"];
-  inventory -> reporting [label="InventoryLow"];
+  subgraph cluster_support {
+    label="Supporting Services";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    ReportingQueryService [label="ReportingQueryService"];
+    NotificationService [label="NotificationService"];
+    AuthService [label="AuthService"];
+    AuditReadService [label="AuditReadService"];
+  }
 
-  reservation -> notification [label="ReservationConfirmed"];
-  billing -> notification [label="BillIssued"];
-  inventory -> notification [label="InventoryLow"];
+  subgraph cluster_async {
+    label="Shared Event Infrastructure";
+    color="#BFDBFE";
+    style="rounded,filled";
+    fillcolor="#F8FBFF";
+    RabbitMqEventPublisher [label="RabbitMqEventPublisher"];
+    OutboxRelayScheduler [label="OutboxRelayScheduler"];
+  }
 
-  iam -> ordering [label="authorize"];
-  iam -> billing [label="authorize"];
-  iam -> reporting [label="authorize"];
+  ApiClient -> Endpoints;
+  ApiClient -> GatewayProxyController;
+  PermissionRules -> ApiClient;
+  GatewayProxyController -> GatewayRouteLocator;
 
-  ordering -> audit [label="override trace"];
-  billing -> audit [label="RefundRequested"];
-  iam -> audit [label="policy trace"];
+  GatewayProxyController -> ReservationService;
+  GatewayProxyController -> OrderingService;
+  GatewayProxyController -> KitchenService;
+  GatewayProxyController -> BillingService;
+  GatewayProxyController -> InventoryService;
+  GatewayProxyController -> ReportingQueryService;
+  GatewayProxyController -> NotificationService;
+  GatewayProxyController -> AuthService;
+  GatewayProxyController -> AuditReadService;
+
+  ReservationService -> RabbitMqEventPublisher;
+  OrderingService -> RabbitMqEventPublisher;
+  KitchenService -> RabbitMqEventPublisher;
+  BillingService -> RabbitMqEventPublisher;
+  InventoryService -> RabbitMqEventPublisher;
+  OutboxRelayScheduler -> RabbitMqEventPublisher;
 }

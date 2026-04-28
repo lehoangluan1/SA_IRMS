@@ -7,7 +7,8 @@ digraph G {
     pad=0.35,
     fontname="DejaVu Sans",
     labelloc="t",
-    label="System Context Diagram - IRMS"
+    label="System Context Diagram - IRMS",
+    imagepath="C:/Users/LUAN/Downloads/SA_BTL/assets/images/misc"
   ];
 
   node [
@@ -43,17 +44,14 @@ digraph G {
     label="0\nIRMS\nIntegrated Restaurant\nManagement System"
   ];
 
-  customer [pos="620,790!", label="Customer"];
-  host [pos="110,660!", label="Host / Reception"];
-  server [pos="110,500!", label="Server / Floor Staff"];
-  kitchen [pos="110,340!", label="Kitchen Operations"];
-  cashier [pos="110,180!", label="Cashier"];
+  customer [shape=none, image="actor_stickman.png", label="Customer", labelloc=b, imagepos=tc, imagescale=true, pos="620,790!"];
+  host [shape=none, image="actor_stickman.png", label="Host", labelloc=b, imagepos=tc, imagescale=true, pos="110,660!"];
+  server [shape=none, image="actor_stickman.png", label="Server", labelloc=b, imagepos=tc, imagescale=true, pos="110,500!"];
+  kitchen [shape=none, image="actor_stickman.png", label="Chef", labelloc=b, imagepos=tc, imagescale=true, pos="110,340!"];
+  cashier [shape=none, image="actor_stickman.png", label="Cashier", labelloc=b, imagepos=tc, imagescale=true, pos="110,180!"];
 
-  manager [pos="1130,660!", label="Manager"];
-  admin [pos="1130,500!", label="System Administrator"];
-  payment [pos="1130,340!", label="Payment Gateway"];
-  notification [pos="1130,180!", label="Notification Service"];
-  printer [pos="620,45!", label="Receipt Printer"];
+  manager [shape=none, image="actor_stickman.png", label="Manager", labelloc=b, imagepos=tc, imagescale=true, pos="1130,660!"];
+  admin [shape=none, image="actor_stickman.png", label="System Administrator", labelloc=b, imagepos=tc, imagescale=true, pos="1130,500!"];
 
   customer -> irms [
     tailport=s,
@@ -130,38 +128,5 @@ digraph G {
     tailport=se,
     headport=sw,
     label="access matrix,\naudit trail,\ncompliance evidence"
-  ];
-
-  irms -> payment [
-    tailport=e,
-    headport=w,
-    label="authorize,\ncapture,\nrefund request"
-  ];
-  payment -> irms [
-    tailport=w,
-    headport=e,
-    label="transaction result,\nreference code,\nfailure reason"
-  ];
-
-  irms -> notification [
-    tailport=e,
-    headport=w,
-    label="reservation notice,\nwaitlist call,\nalert dispatch"
-  ];
-  notification -> irms [
-    tailport=w,
-    headport=e,
-    label="delivery status,\nbounce report,\nprovider error"
-  ];
-
-  irms -> printer [
-    tailport=s,
-    headport=n,
-    label="receipt print job,\nbill payload"
-  ];
-  printer -> irms [
-    tailport=nw,
-    headport=sw,
-    label="print status,\nprinter fault"
   ];
 }

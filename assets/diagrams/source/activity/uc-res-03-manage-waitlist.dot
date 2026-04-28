@@ -30,7 +30,7 @@ digraph G {
   subgraph cluster_l3 {
     style="rounded,filled"; fillcolor="#EAFBF1"; color="#BBBBBB"; penwidth=1.0;
     label="Notification Service"; fontsize=14; labelloc="t"; labeljust="l";
-    n9 [label="Send waitlist hold notification", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    n9 [label="Queue waitlist hold notice", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     n13 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
   }
 
@@ -40,13 +40,13 @@ digraph G {
   n3 -> n4;
   n4 -> n5;
   n5 -> n6;
-  n6 -> n7 [xlabel="Yes"];
-  n6 -> n5 [xlabel="No"];
+  n6 -> n7 [xlabel="[yes]"];
+  n6 -> n5 [xlabel="[no]"];
   n7 -> n8;
   n8 -> n9;
   n9 -> n10;
-  n10 -> n11 [xlabel="Yes"];
-  n10 -> n12 [xlabel="No"];
+  n10 -> n11 [xlabel="[yes]"];
+  n10 -> n12 [xlabel="[no]"];
   n11 -> n13;
   n12 -> n13;
 }

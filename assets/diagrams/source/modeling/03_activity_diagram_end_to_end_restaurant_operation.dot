@@ -20,7 +20,7 @@ digraph G {
     label="IRMS System";
     s1 [label="Validate reservation,\nhold window and table availability", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     s2 [label="Suitable table\navailable?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
-    s3 [label="Open TableSession and\nupdate table status", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
+    sys_open_session [label="Open TableSession and\nupdate table status", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     s4 [label="Load menu and current\nsellable item status", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     s5 [label="Validate item, modifier,\nnote and current price", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     s6 [label="Order request\nvalid?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
@@ -35,7 +35,7 @@ digraph G {
     s15 [label="Issue receipt, close TableSession\nand release table", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     s16 [label="Refresh reports,\naudit trail and alerts", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     s17 [shape=doublecircle, label="", width=0.24, height=0.24, fixedsize=true, style=filled, fillcolor="#222222", color="#222222"];
-    s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> s7 -> s8 -> s9 -> s10 -> s11 -> s12 -> s13 -> s14 -> s15 -> s16 -> s17 [style=invis, weight=20];
+    s1 -> s2 -> sys_open_session -> s4 -> s5 -> s6 -> s7 -> s8 -> s9 -> s10 -> s11 -> s12 -> s13 -> s14 -> s15 -> s16 -> s17 [style=invis, weight=20];
   }
 
   subgraph cluster_server {
@@ -73,7 +73,7 @@ digraph G {
   subgraph cluster_gateway {
     style="rounded,filled";
     fillcolor="#ECFDF5"; color="#BBBBBB";
-    label="Payment Gateway";
+    label="PaymentGateway";
     g1 [label="Process electronic\ntransaction", shape=rect, style="rounded,filled", fillcolor="white", color="#333333"];
     g2 [label="Transaction\nsuccessful?", shape=diamond, style="filled", fillcolor="white", color="#333333"];
     g1 -> g2 [style=invis, weight=20];
@@ -83,8 +83,8 @@ digraph G {
   h1 -> s1;
   s2 -> h2 [xlabel="Yes"];
   s2 -> s17 [xlabel="No"];
-  h2 -> s3;
-  s3 -> p1;
+  h2 -> sys_open_session;
+  sys_open_session -> p1;
   p1 -> s4;
   s4 -> s5;
   s5 -> s6;
