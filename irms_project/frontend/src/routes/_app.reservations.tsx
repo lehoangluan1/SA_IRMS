@@ -75,6 +75,13 @@ interface NotificationTargetState {
 
 type ReservationTab = "reservations" | "tables" | "waitlist";
 
+function formatDateInputValue(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 const tableStatusColor: Record<TableStatus, string> = {
   available: "bg-emerald-50 border-emerald-300 text-emerald-700",
   reserved: "bg-amber-50 border-amber-300 text-amber-700",
@@ -96,10 +103,15 @@ function ReservationsPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<ReservationTab>("reservations");
   const [reservationSearch, setReservationSearch] = useState("");
+  const todayDate = useMemo(() => formatDateInputValue(new Date()), []);
+  const [selectedReservationDate, setSelectedReservationDate] = useState(todayDate);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["reservations"],
-    queryFn: () => apiFetch<ReservationOverviewResponse>(ENDPOINTS.reservations.overview),
+    queryKey: ["reservations", selectedReservationDate],
+    queryFn: () => {
+      const params = new URLSearchParams({ date: selectedReservationDate });
+      return apiFetch<ReservationOverviewResponse>(`${ENDPOINTS.reservations.overview}?${params.toString()}`);
+    },
   });
 
   const overview = data ? mapReservationData(data) : null;
@@ -176,6 +188,7 @@ function ReservationsPage() {
       ),
     [reservationSearch, reservations],
   );
+  const reservationsHeading = selectedReservationDate === todayDate ? "Today's Reservations" : `Reservations for ${selectedReservationDate}`;
 
   const availableTables = recommendation?.candidateTables ?? tables.filter((table) => table.status === "available" && table.capacity >= newRes.party);
   const canManageReservations = hasPermission(user, "reservations.manage");
@@ -238,6 +251,7 @@ function ReservationsPage() {
   const reservationsBusy = actionMutation.isPending || tableStatusMutation.isPending;
 
   const handleCreateReservation = () => {
+    const reservationDate = newRes.date;
     void actionMutation.mutate({
       path: ENDPOINTS.reservations.list,
       body: {
@@ -253,6 +267,7 @@ function ReservationsPage() {
       },
       successMessage: "Reservation created",
     });
+    setSelectedReservationDate(reservationDate);
     setNewRes({ guest: "", phone: "", email: "", party: 2, date: "", time: "", notes: "", tableId: null });
     setShowNewReservation(false);
   };
@@ -471,22 +486,34 @@ function ReservationsPage() {
 
       {activeTab === "reservations" && (
         <div className="bg-card rounded-xl border border-border p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-foreground">Today's Reservations</h2>
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+            <h2 className="text-sm font-semibold text-foreground">{reservationsHeading}</h2>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <Input
-                className="pl-8 w-56 h-8 text-sm"
-                placeholder="Search guest..."
-                value={reservationSearch}
-                onChange={(event) => setReservationSearch(event.target.value)}
+                className="h-8 text-sm sm:w-40"
+                type="date"
+                value={selectedReservationDate}
+                onChange={(event) => setSelectedReservationDate(event.target.value || todayDate)}
               />
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  className="pl-8 h-8 text-sm sm:w-56"
+                  placeholder="Search guest..."
+                  value={reservationSearch}
+                  onChange={(event) => setReservationSearch(event.target.value)}
+                />
+              </div>
             </div>
           </div>
           {isLoading ? (
             <div className="py-10 text-center text-sm text-muted-foreground">Loading reservations...</div>
           ) : filteredReservations.length === 0 ? (
-            <EmptyState icon={CalendarDays} title="No reservations today" description="Create a new reservation to get started" />
+            <EmptyState
+              icon={CalendarDays}
+              title={selectedReservationDate === todayDate ? "No reservations today" : "No reservations for this date"}
+              description="Create a new reservation to get started"
+            />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
