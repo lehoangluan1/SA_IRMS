@@ -15,4 +15,5 @@ public interface InventoryLowStockAlertRepository {
 
     record LowStockSnapshot(UUID inventoryItemId, String name, BigDecimal current, BigDecimal minimum) {
     }
+    void resolveOpenAlerts(UUID inventoryItemId);
 }
