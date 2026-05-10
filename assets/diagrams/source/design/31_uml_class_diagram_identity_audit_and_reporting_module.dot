@@ -1,86 +1,131 @@
-
 digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.35, nodesep=0.65, ranksep=0.9, splines=polyline, fontname="Arial", labelloc="t", label="UML Class Diagram - Identity, Audit and Reporting Support"];
+  node [shape=plain, fontname="Arial", fontsize=9];
+  edge [color="#64748B", fontname="Arial", fontsize=8.5, arrowsize=0.7];
 
-graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.55", ranksep="0.9", splines=ortho, fontname="Arial"];
-node [fontname="Arial", shape=plaintext];
-edge [fontname="Arial", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+  AuthController [label=<
 
-labelloc="t";
-label="UML Class Diagram - IAM & Audit Service and Reporting Service";
-rankdir=LR;
-User [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>User</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+userId: UUID<BR ALIGN='LEFT'/>+username: String<BR ALIGN='LEFT'/>+displayName: String<BR ALIGN='LEFT'/>+status: UserStatus</TD></TR>
-</TABLE>
->];
-Role [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Role</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+roleId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+scope: RoleScope</TD></TR>
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
 
-</TABLE>
->];
-Permission [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Permission</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+permissionId: UUID<BR ALIGN='LEFT'/>+code: String<BR ALIGN='LEFT'/>+description: String</TD></TR>
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>AuthController</B></TD></TR>
 
-</TABLE>
->];
-UserSession [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>UserSession</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+sessionId: UUID<BR ALIGN='LEFT'/>+startedAt: DateTime<BR ALIGN='LEFT'/>+expiresAt: DateTime<BR ALIGN='LEFT'/>+deviceId: String<BR ALIGN='LEFT'/>+status: SessionStatus</TD></TR>
-</TABLE>
->];
-AuthorizationPolicy [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>AuthorizationPolicy</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+policyId: UUID<BR ALIGN='LEFT'/>+requiresReasonForOverride: bool<BR ALIGN='LEFT'/>+maxRefundLimit: Money</TD></TR>
-</TABLE>
->];
-AuditLog [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>AuditLog</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+auditLogId: UUID<BR ALIGN='LEFT'/>+action: String<BR ALIGN='LEFT'/>+entityType: String<BR ALIGN='LEFT'/>+entityId: UUID<BR ALIGN='LEFT'/>+recordedAt: DateTime</TD></TR>
-</TABLE>
->];
-AuditDetail [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>AuditDetail</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+detailId: UUID<BR ALIGN='LEFT'/>+fieldName: String<BR ALIGN='LEFT'/>+beforeValue: String<BR ALIGN='LEFT'/>+afterValue: String</TD></TR>
+      <TR><TD ALIGN="LEFT">- authService: AuthService</TD></TR>
 
-</TABLE>
->];
-ShiftAssignment [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>ShiftAssignment</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+shiftAssignmentId: UUID<BR ALIGN='LEFT'/>+shiftDate: Date<BR ALIGN='LEFT'/>+startAt: Time<BR ALIGN='LEFT'/>+endAt: Time<BR ALIGN='LEFT'/>+position: String</TD></TR>
-</TABLE>
->];
-ReportSnapshot [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>ReportSnapshot</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+snapshotId: UUID<BR ALIGN='LEFT'/>+type: ReportType<BR ALIGN='LEFT'/>+periodStart: DateTime<BR ALIGN='LEFT'/>+periodEnd: DateTime<BR ALIGN='LEFT'/>+generatedAt: DateTime</TD></TR>
-</TABLE>
->];
-ReportQuery [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>ReportQuery</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+queryId: UUID<BR ALIGN='LEFT'/>+filters: Json<BR ALIGN='LEFT'/>+groupBy: String<BR ALIGN='LEFT'/>+measure: String</TD></TR>
-</TABLE>
->];
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ login(body, request)<BR ALIGN="LEFT"/>+ logout(request)<BR ALIGN="LEFT"/>+ me(request)</TD></TR>
 
-User -> Role [label="many to many"];
-Role -> Permission [label="many to many"];
-User -> UserSession [label="1 to many"];
-AuthorizationPolicy -> Role [style=dashed, label="evaluates grants"];
-AuthorizationPolicy -> Permission [style=dashed];
-User -> AuditLog [style=dashed, label="actor"];
-AuditLog -> AuditDetail [label="1 to many"];
-User -> ShiftAssignment [label="0..* shifts"];
-ReportQuery -> ReportSnapshot [label="reads"];
-AuditLog -> ReportSnapshot [style=dashed, label="compliance facts"];
-ShiftAssignment -> ReportSnapshot [style=dashed, label="labor facts"];
+    </TABLE>
+
+  >];
+  AuditController [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>AuditController</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- auditService: AuditService</TD></TR>
+      <TR><TD ALIGN="LEFT">+ audit(search, filters, request)<BR ALIGN="LEFT"/>+ export(request)<BR ALIGN="LEFT"/>+ followUp(auditLogId, body, request)</TD></TR>
+    </TABLE>
+  >];
+  ReportingController [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>ReportingController</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- reportingQueryService: ReportingQueryService</TD></TR>
+      <TR><TD ALIGN="LEFT">+ reports(type, from, to, request)<BR ALIGN="LEFT"/>+ export(type, from, to, request)</TD></TR>
+    </TABLE>
+  >];
+  DashboardController [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>DashboardController</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- reportingQueryService: ReportingQueryService</TD></TR>
+      <TR><TD ALIGN="LEFT">+ dashboard(request)</TD></TR>
+    </TABLE>
+  >];
+  AuthService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>AuthService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ login(email, password, requestedRole, deviceId, ipAddress)<BR ALIGN="LEFT"/>+ logout(user)<BR ALIGN="LEFT"/>+ currentUser(user)</TD></TR>
+    </TABLE>
+  >];
+  AuditService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>AuditService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ record(...)<BR ALIGN="LEFT"/>+ search(searchTerm, actionFilter, actorRole, startDate, endDate, limit, viewer)<BR ALIGN="LEFT"/>+ exportCsv(auditRows)<BR ALIGN="LEFT"/>+ recordAccess(actor, action, correlationId, ipAddress, filters)</TD></TR>
+    </TABLE>
+  >];
+  AuditEventMaterializer [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>AuditEventMaterializer</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ record(envelope)</TD></TR>
+    </TABLE>
+  >];
+  AuditRecordingRequestedConsumer [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;consumer&gt;&gt;</I><BR/><B>AuditRecordingRequestedConsumer</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ auditRequested(message, channel)<BR ALIGN="LEFT"/>+ orderConfirmedAudit(message, channel)<BR ALIGN="LEFT"/>+ paymentAudit(message, channel)</TD></TR>
+    </TABLE>
+  >];
+  ReportingQueryService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>ReportingQueryService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ operationsDashboard()<BR ALIGN="LEFT"/>+ typedReport(type, from, to)<BR ALIGN="LEFT"/>+ exportReport(type, from, to)</TD></TR>
+    </TABLE>
+  >];
+  ReportingProjectionConsumer [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;consumer&gt;&gt;</I><BR/><B>ReportingProjectionConsumer</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ consume(message, channel)</TD></TR>
+    </TABLE>
+  >];
+  IdentityRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;repository&gt;&gt;</I><BR/><B>IdentityRepository</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ findUserAccountByEmail(email)<BR ALIGN="LEFT"/>+ findUserAccountById(userId)<BR ALIGN="LEFT"/>+ createSession(...)<BR ALIGN="LEFT"/>+ expireIdleSessions(idleBefore, now)</TD></TR>
+    </TABLE>
+  >];
+  IdentityPolicyRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;repository&gt;&gt;</I><BR/><B>IdentityPolicyRepository</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ getPolicySnapshot()<BR ALIGN="LEFT"/>+ updateSeatingPolicy(...)<BR ALIGN="LEFT"/>+ updateAuthorizationRefundWindow(...)</TD></TR>
+    </TABLE>
+  >];
+  IdentityViews [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;view records&gt;&gt;</I><BR/><B>IdentityViews</B></TD></TR>
+      <TR><TD ALIGN="LEFT">LoginResult<BR ALIGN="LEFT"/>UserView<BR ALIGN="LEFT"/>StaffView<BR ALIGN="LEFT"/>RoleView<BR ALIGN="LEFT"/>AuditView</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+  TypedReportViews [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;view records&gt;&gt;</I><BR/><B>TypedReportViews</B></TD></TR>
+      <TR><TD ALIGN="LEFT">SalesReportView<BR ALIGN="LEFT"/>RevenueReportView<BR ALIGN="LEFT"/>KitchenBottleneckReportView<BR ALIGN="LEFT"/>InventoryUsageReportView</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+  DynamicReportView [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;record&gt;&gt;</I><BR/><B>DynamicReportView</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ title<BR ALIGN="LEFT"/>+ columns<BR ALIGN="LEFT"/>+ rows<BR ALIGN="LEFT"/>+ metrics</TD></TR>
+      <TR><TD ALIGN="LEFT">+ column(key)</TD></TR>
+    </TABLE>
+  >];
+
+  AuthController -> AuthService [arrowhead=none];
+  AuditController -> AuditService [arrowhead=none];
+  ReportingController -> ReportingQueryService [arrowhead=none];
+  DashboardController -> ReportingQueryService [arrowhead=none];
+  AuthService -> IdentityRepository [style=dashed, arrowhead=open];
+  AuthService -> IdentityViews [style=dashed, arrowhead=open];
+  AuditService -> IdentityRepository [style=dashed, arrowhead=open];
+  AuditEventMaterializer -> AuditService [style=dashed, arrowhead=open];
+  AuditRecordingRequestedConsumer -> AuditEventMaterializer [arrowhead=none];
+  ReportingProjectionConsumer -> ReportingQueryService [style=dashed, arrowhead=open];
+  ReportingQueryService -> TypedReportViews [style=dashed, arrowhead=open];
+  ReportingQueryService -> DynamicReportView [style=dashed, arrowhead=open];
+  IdentityPolicyRepository -> IdentityRepository [style=dashed, arrowhead=open];
 }

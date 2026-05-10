@@ -22,14 +22,14 @@ Hình~\ref{fig:irms-context-overview} khóa rõ biên hệ thống theo đúng t
   \item \textsf{IAM \& Audit Service}
   \item \textsf{Notification Service}
 \end{itemize}
-cùng các adapter biên đã hiện thực trong code như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter}.
+cùng các adapter biên nội bộ như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter}.
 
 \paragraph{Các điểm cần đọc từ sơ đồ ngữ cảnh.}
 \begin{itemize}
   \item \textbf{Các vai trò vận hành trực tiếp} gồm \textsf{Customer}, \textsf{Host / Reception}, \textsf{Server / Floor Staff}, \textsf{Kitchen Operations}, \textsf{Cashier}, \textsf{Manager} và \textsf{System Administrator}. Đây là những điểm chạm sinh ra tải tương tác và quyết định yêu cầu phản hồi của hệ thống.
-  \item \textbf{Các vai trò không phải hệ thống ngoài}: repo hiện tại chưa có bằng chứng cấu hình cho cổng thanh toán, nhà cung cấp thông báo hay máy in biên lai bên ngoài, nên sơ đồ chỉ thể hiện các actor con người và giữ các adapter đó ở bên trong IRMS.
-  \item \textbf{Các luồng đều có tên gọi nghiệp vụ rõ ràng} như \enquote{reservation request}, \enquote{kitchen ticket}, \enquote{transaction state} hay \enquote{audit trail}. Điều này giúp khóa trách nhiệm của IRMS ở mức trao đổi dữ liệu, không chỉ ở mức vai trò sử dụng.
-  \item \textbf{Ranh giới trách nhiệm được làm rõ từ sớm}: IRMS chịu trách nhiệm điều phối đặt bàn, gọi món, bếp, hóa đơn, tồn kho và quản trị; các chi tiết như thanh toán, thông báo và biên lai được xử lý qua service hoặc adapter nội bộ đã có trong code.
+  \item \textbf{Các vai trò không phải hệ thống ngoài}: các kênh thanh toán, thông báo và biên lai được xem là adapter biên nội bộ; sơ đồ không mô tả chúng như hệ thống ngoài độc lập trong phạm vi hiện tại.
+  \item \textbf{Các luồng đều có tên gọi nghiệp vụ rõ ràng} như \enquote{reservation request}, \enquote{kitchen ticket}, \enquote{transaction state} hay \enquote{dấu vết kiểm toán}. Điều này giúp khóa trách nhiệm của IRMS ở mức trao đổi dữ liệu, không chỉ ở mức vai trò sử dụng.
+  \item \textbf{Ranh giới trách nhiệm được làm rõ từ sớm}: IRMS chịu trách nhiệm điều phối đặt bàn, gọi món, bếp, hóa đơn, tồn kho và quản trị; các chi tiết như thanh toán, thông báo và biên lai được xử lý qua service hoặc adapter biên nội bộ.
 \end{itemize}
 
 Vì vậy, sơ đồ ngữ cảnh là nền cho mọi quyết định kiến trúc phía sau: chỉ khi biên hệ thống được khóa rõ thì việc phân rã thành dịch vụ, thành phần hay kênh tích hợp ở Mục~\ref{sec:architecture-overview} mới có cơ sở vững chắc.
@@ -44,7 +44,7 @@ Vì vậy, sơ đồ ngữ cảnh là nền cho mọi quyết định kiến tr�
 
 Hình~\ref{fig:irms-usecase-overview} trình bày tập use cases ở mức bao quát. Để giữ sơ đồ đủ khả năng đọc nhưng vẫn bám sát đặc tả use case, các use cases được gom theo các cụm lớn bám theo dòng giá trị nghiệp vụ thay vì triển khai toàn bộ chi tiết mức đặc tả. Ở mức overview, hình nhấn mạnh các khối \texttt{Reservation and Seating}, \texttt{Ordering and Kitchen}, \texttt{Billing and Settlement}, \texttt{Inventory and Replenishment Support} và \texttt{Operations and Governance}. Cách nhóm này cũng là cơ sở trực tiếp để ánh xạ sang các domain service ở chương kiến trúc.
 
-Nhìn dưới góc độ kiến trúc, sơ đồ tổng quan use cases không chỉ trả lời \enquote{hệ thống có những chức năng gì}, mà còn chỉ ra \enquote{chức năng nào thuộc một miền dịch vụ riêng}, \enquote{chức năng nào nằm trên đường giao dịch nóng}, và \enquote{chức năng nào phù hợp hơn với luồng phản ứng theo sự kiện}. Đây là bước trung gian quan trọng trước khi ánh xạ các năng lực này sang logic view, module view và component-and-connector view ở chương sau.
+Nhìn dưới góc độ kiến trúc, sơ đồ tổng quan use cases không chỉ trả lời \enquote{hệ thống có những chức năng gì}, mà còn chỉ ra \enquote{chức năng nào thuộc một miền dịch vụ riêng}, \enquote{chức năng nào nằm trên đường giao dịch nóng}, và \enquote{chức năng nào phù hợp hơn với luồng phản ứng theo sự kiện}. Đây là bước trung gian quan trọng trước khi ánh xạ các năng lực này sang bản đồ năng lực hỗ trợ, Module View và Component-and-Connector View ở chương sau.
 
 \paragraph{Các cụm năng lực cần đọc từ sơ đồ.}
 \begin{itemize}
@@ -55,7 +55,7 @@ Nhìn dưới góc độ kiến trúc, sơ đồ tổng quan use cases không ch
   \item \textbf{Governance and Analytics}: bao phủ quản trị thực đơn, phân quyền, kiểm toán, báo cáo và điều hành vận hành; đây là phạm vi của \textsf{Reporting Service} và \textsf{IAM \& Audit Service}.
 \end{itemize}
 
-Việc gom theo cụm ở mức tổng quan giúp hình giữ được khả năng đọc, còn phần chi tiết của từng mã usecases được triển khai ngay sau đó. Cách trình bày này cũng tạo nhịp chuyển trực tiếp sang các góc nhìn logic và mô-đun, nơi các cụm nghiệp vụ này được dùng như ranh giới trách nhiệm của từng service.
+Việc gom theo cụm ở mức tổng quan giúp hình giữ được khả năng đọc, còn phần chi tiết của từng mã usecases được triển khai ngay sau đó. Cách trình bày này cũng tạo nhịp chuyển trực tiếp sang bản đồ năng lực hỗ trợ và Module View, nơi các cụm nghiệp vụ này được dùng như ranh giới trách nhiệm của từng service.
 
 \begin{figure}[H]
 \centering
@@ -119,7 +119,7 @@ Góc nhìn sử dụng được dùng như bộ kịch bản kiểm chứng ki�
 \begin{enumerate}
   \item Thu ngân hoặc phục vụ gom các đơn gọi món của bàn thành hóa đơn.
   \item \textsf{Billing \& Settlement Service} áp dụng khuyến mãi, tiền boa và tách hóa đơn nếu cần.
-  \item Thanh toán được thực hiện qua tiền mặt hoặc qua \textsf{PaymentGateway} đã hiện thực trong code.
+  \item Thanh toán được thực hiện qua tiền mặt hoặc qua \textsf{PaymentGateway}.
   \item Khi thanh toán đủ, hệ thống ghi nhận \textsf{PaymentCompleted}, phát hành biên lai và chuyển \textsf{TableSession} sang chuẩn bị đóng.
 \end{enumerate}
 
@@ -191,7 +191,7 @@ Hình~\ref{fig:irms-usage-reservation} được chọn để kiểm tra một qu
 
 Hình~\ref{fig:irms-usage-order-kitchen} là kịch bản quan trọng nhất để kiểm chứng \textbf{khả năng đáp ứng} của IRMS. Nguyên tắc chủ đạo ở đây là \emph{xác nhận đơn thành công trước, rồi mới lan truyền sang bếp và các luồng hỗ trợ}. Cách tổ chức này rút ngắn thời gian phản hồi tại màn hình gọi món và bảo vệ đơn đã chốt khi một thành phần phía sau như KDS hoặc đồng bộ trạng thái gặp trục trặc tạm thời.
 
-Đổi lại, hệ thống phải chấp nhận và quản lý các trạng thái trung gian có kiểm soát: đơn đã xác nhận nhưng phiếu chưa hiện ngay trên màn hình bếp; bếp đã cập nhật trạng thái nhưng POS chưa nhận bản sao mới nhất; tiêu hao nguyên liệu được ghi nhận sau sự kiện món đã phục vụ. Kịch bản này giúp chứng minh cho việc dùng nhất quán trễ ở những đoạn không trực tiếp quyết định trải nghiệm đặt món trước mặt khách hàng.
+Đổi lại, hệ thống phải chấp nhận và quản lý các trạng thái trung gian có kiểm soát: đơn đã xác nhận nhưng phiếu chưa hiện ngay trên màn hình bếp; bếp đã cập nhật trạng thái nhưng màn hình phục vụ chưa nhận bản sao mới nhất; tiêu hao nguyên liệu được ghi nhận sau sự kiện món đã phục vụ. Kịch bản này giúp làm rõ cho việc dùng nhất quán trễ ở những đoạn không trực tiếp quyết định trải nghiệm đặt món trước mặt khách hàng.
 
 \paragraph{Các điểm kiến trúc đọc được từ sơ đồ.}
 \begin{itemize}
@@ -889,7 +889,7 @@ Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và p
 \textbf{Postconditions} &
 \begin{itemize}[leftmargin=*, noitemsep]
   \item Trạng thái món và phiếu bếp được cập nhật.
-  \item POS nhận được tiến độ mới nhất.
+  \item Màn hình phục vụ nhận được tiến độ mới nhất.
 \end{itemize} \\ \hline
 
 \textbf{Normal Flow} &
@@ -899,7 +899,7 @@ Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và p
   \item Hệ thống ghi nhận thời gian cho từng trạng thái.
   \item Hệ thống so sánh thời gian chế biến với SLA.
   \item Khi tất cả món hoàn tất, hệ thống chuyển phiếu sang \textsf{Ready}.
-  \item Hệ thống gửi thông báo đến POS để phục vụ ra món.
+  \item Hệ thống gửi thông báo đến màn hình phục vụ để ra món.
 \end{enumerate} \\ \hline
 
 \textbf{Alternative Flows} &
@@ -2108,7 +2108,7 @@ Quản lý mở dashboard báo cáo hoặc yêu cầu xuất báo cáo theo kho�
 \vspace{0.3mm}
 \begin{enumerate}
 \item Quản lý chọn khoảng thời gian và bộ lọc báo cáo.
-\item Hệ thống truy xuất dữ liệu báo cáo từ read model.
+\item Hệ thống truy xuất dữ liệu báo cáo từ mô hình đọc.
 \item Hệ thống hiển thị doanh thu, món bán chạy, giờ cao điểm và hiệu suất phục vụ.
 \item Quản lý xem chi tiết theo ca, khu vực hoặc bếp.
 \item Quản lý chọn xuất báo cáo nếu cần.
@@ -2322,7 +2322,7 @@ Quản trị viên mở màn hình quản lý người dùng hoặc phân quyề
 \begin{itemize}
 \item Người dùng được gán vai trò và quyền truy cập phù hợp.
 \item Hệ thống cập nhật AuthorizationPolicy cho các thao tác liên quan.
-\item Thay đổi quyền được ghi nhận trong audit log.
+\item Thay đổi quyền được ghi nhận trong nhật ký kiểm toán.
 \end{itemize}
 \vspace{0.3mm}
 \end{minipage}
@@ -2337,7 +2337,7 @@ Quản trị viên mở màn hình quản lý người dùng hoặc phân quyề
 \item Quản trị viên gán hoặc thay đổi vai trò/quyền theo chính sách.
 \item Hệ thống lưu thay đổi phân quyền.
 \item Hệ thống yêu cầu người dùng đăng nhập lại.
-\item Hệ thống ghi nhận thay đổi vào audit log.
+\item Hệ thống ghi nhận thay đổi vào nhật ký kiểm toán.
 \end{enumerate}
 \vspace{0.3mm}
 \end{minipage}
@@ -2426,7 +2426,7 @@ Người dùng có thẩm quyền mở màn hình kiểm toán để điều tra
 \begin{itemize}
 \item Hệ thống hiển thị chuỗi hành động liên quan đến truy vấn.
 \item Có thể xuất báo cáo hoặc đánh dấu bản ghi cần theo dõi.
-\item Hành vi truy cập audit log được ghi lại.
+\item Hành vi truy cập nhật ký kiểm toán được ghi lại.
 \end{itemize}
 \vspace{0.3mm}
 \end{minipage}
@@ -2439,7 +2439,7 @@ Người dùng có thẩm quyền mở màn hình kiểm toán để điều tra
 \item Người dùng mở màn hình nhật ký kiểm toán.
 \item Hệ thống kiểm tra quyền truy cập.
 \item Người dùng nhập bộ lọc tìm kiếm (thời gian, người thao tác, loại hành động, mã liên kết).
-\item Hệ thống truy vấn và hiển thị danh sách audit log.
+\item Hệ thống truy vấn và hiển thị danh sách nhật ký kiểm toán.
 \item Người dùng chọn một bản ghi để xem chi tiết (giá trị trước, sau, lý do, ngữ cảnh).
 \item Người dùng xuất báo cáo hoặc gắn cờ theo dõi nếu cần.
 \end{enumerate}
@@ -2453,7 +2453,7 @@ Người dùng có thẩm quyền mở màn hình kiểm toán để điều tra
 
 \textbf{A1. Truy vết từ giao dịch}
 \begin{itemize}
-\item 3a. Người dùng truy xuất audit log từ hóa đơn/ payment/order.
+\item 3a. Người dùng truy xuất nhật ký kiểm toán từ hóa đơn/ payment/order.
 \item 3b. Hệ thống hiển thị toàn bộ chuỗi liên quan.
 \end{itemize}
 

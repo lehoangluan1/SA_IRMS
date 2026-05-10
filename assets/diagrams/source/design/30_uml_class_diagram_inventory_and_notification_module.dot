@@ -1,77 +1,147 @@
-
 digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.35, nodesep=0.65, ranksep=0.9, splines=polyline, fontname="Arial", labelloc="t", label="UML Class Diagram - Inventory and Notification Support"];
+  node [shape=plain, fontname="Arial", fontsize=9];
+  edge [color="#64748B", fontname="Arial", fontsize=8.5, arrowsize=0.7];
 
-graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.5", ranksep="0.82", splines=ortho, fontname="Arial"];
-node [fontname="Arial", shape=plaintext];
-edge [fontname="Arial", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+  InventoryController [label=<
 
-labelloc="t";
-label="UML Class Diagram - Inventory Monitoring Service and Notification Service";
-rankdir=TB;
-InventoryItem [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>InventoryItem</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+inventoryItemId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+unit: String<BR ALIGN='LEFT'/>+onHand: Decimal<BR ALIGN='LEFT'/>+reservedQty: Decimal<BR ALIGN='LEFT'/>+threshold: Decimal</TD></TR>
-</TABLE>
->];
-Recipe [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Recipe</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+recipeId: UUID<BR ALIGN='LEFT'/>+menuItemId: UUID<BR ALIGN='LEFT'/>+version: int<BR ALIGN='LEFT'/>+yieldUnit: String</TD></TR>
-</TABLE>
->];
-RecipeLine [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>RecipeLine</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+recipeLineId: UUID<BR ALIGN='LEFT'/>+inventoryItemId: UUID<BR ALIGN='LEFT'/>+requiredQty: Decimal<BR ALIGN='LEFT'/>+wasteFactor: Decimal</TD></TR>
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
 
-</TABLE>
->];
-InventoryReservation [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>InventoryReservation</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+reservationId: UUID<BR ALIGN='LEFT'/>+sourceOrderId: UUID<BR ALIGN='LEFT'/>+qty: Decimal<BR ALIGN='LEFT'/>+status: InventoryReservationStatus</TD></TR>
-</TABLE>
->];
-StockTransaction [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>StockTransaction</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+transactionId: UUID<BR ALIGN='LEFT'/>+delta: Decimal<BR ALIGN='LEFT'/>+reason: StockReason<BR ALIGN='LEFT'/>+sourceRef: UUID<BR ALIGN='LEFT'/>+occurredAt: DateTime</TD></TR>
-</TABLE>
->];
-ReorderRule [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>ReorderRule</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+ruleId: UUID<BR ALIGN='LEFT'/>+threshold: Decimal<BR ALIGN='LEFT'/>+preferredVendor: String<BR ALIGN='LEFT'/>+targetQty: Decimal</TD></TR>
-</TABLE>
->];
-LowStockAlert [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>LowStockAlert</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+alertId: UUID<BR ALIGN='LEFT'/>+severity: AlertSeverity<BR ALIGN='LEFT'/>+createdAt: DateTime<BR ALIGN='LEFT'/>+acknowledgedBy: UUID</TD></TR>
-</TABLE>
->];
-NotificationMessage [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>NotificationMessage</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+messageId: UUID<BR ALIGN='LEFT'/>+channel: NotificationChannel<BR ALIGN='LEFT'/>+templateCode: String<BR ALIGN='LEFT'/>+payload: Json</TD></TR>
-</TABLE>
->];
-NotificationChannelAdapter [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#E7EEF9"><B>&lt;&lt;interface&gt;&gt; NotificationChannelAdapter</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+channel()<BR ALIGN='LEFT'/>+validate(command)</TD></TR>
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>InventoryController</B></TD></TR>
 
-</TABLE>
->];
+      <TR><TD ALIGN="LEFT">- inventoryService: InventoryService</TD></TR>
 
-Recipe -> RecipeLine [label="1 to many"];
-RecipeLine -> InventoryItem [label="consumes"];
-InventoryItem -> StockTransaction [label="1 to many"];
-InventoryReservation -> InventoryItem [label="holds qty"];
-ReorderRule -> InventoryItem [style=dashed, label="threshold rule"];
-InventoryItem -> LowStockAlert [style=dashed, label="below threshold"];
-LowStockAlert -> NotificationMessage [label="formats"];
-NotificationMessage -> NotificationChannelAdapter [style=dashed, label="delivers via channel"];
-StockTransaction -> LowStockAlert [style=dashed, label="evaluated after update"];
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ inventory(request)<BR ALIGN="LEFT"/>+ createIngredient(body, request)<BR ALIGN="LEFT"/>+ updateIngredient(inventoryItemId, body, request)<BR ALIGN="LEFT"/>+ acknowledgeAlert(alertId, request)</TD></TR>
+
+    </TABLE>
+
+  >];
+  InventoryIntegrationController [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>InventoryIntegrationController</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- inventoryService: InventoryService</TD></TR>
+      <TR><TD ALIGN="LEFT">+ consumeForKitchenStart(body)</TD></TR>
+    </TABLE>
+  >];
+  InventoryService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>InventoryService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ load()<BR ALIGN="LEFT"/>+ createIngredient(request)<BR ALIGN="LEFT"/>+ updateIngredient(inventoryItemId, request, actorUserId, metadata)<BR ALIGN="LEFT"/>+ acknowledgeAlert(alertId, actorUserId)<BR ALIGN="LEFT"/>+ consumeForKitchenStart(orderItemId, actorUserId, correlationId)</TD></TR>
+    </TABLE>
+  >];
+  InventoryIngredientService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>InventoryIngredientService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createIngredient(request)<BR ALIGN="LEFT"/>+ updateIngredient(inventoryItemId, request, actorUserId, metadata)<BR ALIGN="LEFT"/>+ deleteIngredient(inventoryItemId)</TD></TR>
+    </TABLE>
+  >];
+  InventoryStockService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>InventoryStockService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ acknowledgeAlert(alertId, actorUserId)<BR ALIGN="LEFT"/>+ recordManualAdjustment(inventoryItemId, delta, actorUserId, correlationId)<BR ALIGN="LEFT"/>+ consumeForKitchenStart(orderItemId, actorUserId, correlationId)</TD></TR>
+    </TABLE>
+  >];
+  InventoryAlertMediator [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;workflow&gt;&gt;</I><BR/><B>InventoryAlertMediator</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ handleStockChanged(event)<BR ALIGN="LEFT"/>+ handleReorderSuggestion(event)</TD></TR>
+    </TABLE>
+  >];
+  EvaluateLowStockStep [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;workflow step&gt;&gt;</I><BR/><B>EvaluateLowStockStep</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ evaluate(inventoryItemId)</TD></TR>
+    </TABLE>
+  >];
+  LowStockSeverityPolicy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;policy&gt;&gt;</I><BR/><B>LowStockSeverityPolicy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ alertSeverity(current, minimum)<BR ALIGN="LEFT"/>+ notificationPriority(current, minimum)</TD></TR>
+    </TABLE>
+  >];
+  UsageBasedReorderRecommendationStrategy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;strategy&gt;&gt;</I><BR/><B>UsageBasedReorderRecommendationStrategy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ compute(stockLevel)</TD></TR>
+    </TABLE>
+  >];
+  NotificationRequestedConsumer [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;consumer&gt;&gt;</I><BR/><B>NotificationRequestedConsumer</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ consume(message, channel)<BR ALIGN="LEFT"/>+ lowStockNotification(message, channel)</TD></TR>
+    </TABLE>
+  >];
+  NotificationRequestMaterializer [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>NotificationRequestMaterializer</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ materialize(envelope)</TD></TR>
+    </TABLE>
+  >];
+  NotificationChannelAdapter [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>NotificationChannelAdapter</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ channel()<BR ALIGN="LEFT"/>+ validate(command)</TD></TR>
+    </TABLE>
+  >];
+  EmailNotificationChannelAdapter [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;adapter&gt;&gt;</I><BR/><B>EmailNotificationChannelAdapter</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ channel()<BR ALIGN="LEFT"/>+ validate(command)</TD></TR>
+    </TABLE>
+  >];
+  SmsNotificationChannelAdapter [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;adapter&gt;&gt;</I><BR/><B>SmsNotificationChannelAdapter</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ channel()<BR ALIGN="LEFT"/>+ validate(command)</TD></TR>
+    </TABLE>
+  >];
+  InAppNotificationChannelAdapter [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;adapter&gt;&gt;</I><BR/><B>InAppNotificationChannelAdapter</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ channel()<BR ALIGN="LEFT"/>+ validate(command)</TD></TR>
+    </TABLE>
+  >];
+  PrintNotificationChannelAdapter [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;adapter&gt;&gt;</I><BR/><B>PrintNotificationChannelAdapter</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ channel()<BR ALIGN="LEFT"/>+ validate(command)</TD></TR>
+    </TABLE>
+  >];
+  InventoryViews [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;view records&gt;&gt;</I><BR/><B>InventoryViews</B></TD></TR>
+      <TR><TD ALIGN="LEFT">InventoryOverview<BR ALIGN="LEFT"/>IngredientView<BR ALIGN="LEFT"/>TransactionView<BR ALIGN="LEFT"/>AlertView</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+
+  InventoryController -> InventoryService [arrowhead=none];
+  InventoryIntegrationController -> InventoryService [arrowhead=none];
+  InventoryService -> InventoryIngredientService [arrowhead=none];
+  InventoryService -> InventoryStockService [arrowhead=none];
+  InventoryStockService -> InventoryAlertMediator [style=dashed, arrowhead=open];
+  InventoryAlertMediator -> EvaluateLowStockStep [arrowhead=none];
+  EvaluateLowStockStep -> LowStockSeverityPolicy [style=dashed, arrowhead=open];
+  EvaluateLowStockStep -> UsageBasedReorderRecommendationStrategy [style=dashed, arrowhead=open];
+  NotificationRequestedConsumer -> NotificationRequestMaterializer [arrowhead=none];
+  NotificationRequestMaterializer -> NotificationChannelAdapter [style=dashed, arrowhead=open];
+  EmailNotificationChannelAdapter -> NotificationChannelAdapter [style=dashed, arrowhead=empty];
+  SmsNotificationChannelAdapter -> NotificationChannelAdapter [style=dashed, arrowhead=empty];
+  InAppNotificationChannelAdapter -> NotificationChannelAdapter [style=dashed, arrowhead=empty];
+  PrintNotificationChannelAdapter -> NotificationChannelAdapter [style=dashed, arrowhead=empty];
+  InventoryService -> InventoryViews [style=dashed, arrowhead=open];
 }

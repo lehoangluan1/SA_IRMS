@@ -1,90 +1,38 @@
 digraph G {
   graph [
     rankdir=TB,
-    newrank=true,
     compound=true,
     bgcolor="white",
-    pad=0.34,
-    nodesep=0.54,
-    ranksep=0.88,
-    splines=polyline,
-    fontname="DejaVu Sans",
+    pad=0.35,
+    nodesep=0.55,
+    ranksep=0.9,
+    splines=ortho,
+    fontname="Arial",
     labelloc="t",
-    label="Component Diagram - Layered Runtime Entry and Service Dependencies"
+    label="Module View - Layered Dependencies in Backend Services"
   ];
 
-  node [shape=component, style="rounded,filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=9.2, margin="0.10,0.06"];
-  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=8.0];
+  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.1, fontname="Arial", fontsize=10];
+  edge [color="#64748B", fontname="Arial", fontsize=9, arrowsize=0.7];
 
-  subgraph cluster_gateway {
-    label="Gateway";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    ApiGatewayApplication [label="ApiGatewayApplication"];
-    GatewayProxyController [label="GatewayProxyController"];
-    GatewayRouteLocator [label="GatewayRouteLocator"];
-  }
+  api [label="*.api\nSpring REST controllers"];
+  application [label="*.application\nuse-case services, workflows, views"];
+  domain [label="*.domain\npolicies, strategies, records"];
+  ports [label="*.application.port.out\nrepository and integration interfaces"];
+  infrastructure [label="*.infrastructure\nJDBC adapters, messaging adapters"];
+  integration [label="*.integration\nbounded REST clients"];
+  common [label="SA.irms.common\nsecurity, outbox, messaging, workflow, errors"];
+  runtime [label="SA.irms.runtime / gateway\nSpring Boot entrypoints and routing"];
 
-  subgraph cluster_api {
-    label="API Controllers";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    ReservationController [label="ReservationController\n/api/reservations"];
-    OrdersController [label="OrdersController\n/api/orders"];
-    KitchenController [label="KitchenController\n/api/kitchen"];
-    BillsController [label="BillsController\n/api/bills"];
-    InventoryController [label="InventoryController\n/api/inventory"];
-    ReportingController [label="ReportingController\n/api/reports"];
-    AuthController [label="AuthController\n/api/auth"];
-    AuditController [label="AuditController\n/api/audit"];
-  }
-
-  subgraph cluster_application {
-    label="Application Services";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    ReservationService [label="ReservationService"];
-    OrderingService [label="OrderingService"];
-    KitchenService [label="KitchenService"];
-    BillingService [label="BillingService"];
-    InventoryService [label="InventoryService"];
-    ReportingQueryService [label="ReportingQueryService"];
-    AuthService [label="AuthService"];
-    AuditReadService [label="AuditReadService"];
-  }
-
-  subgraph cluster_platform {
-    label="Shared Platform Components";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    RabbitMqEventPublisher [label="RabbitMqEventPublisher"];
-    OutboxRelayScheduler [label="OutboxRelayScheduler"];
-    ManualAckConsumerSupport [label="ManualAckConsumerSupport"];
-    RestClientConfiguration [label="RestClientConfiguration"];
-  }
-
-  ApiGatewayApplication -> GatewayProxyController;
-  GatewayProxyController -> GatewayRouteLocator;
-  GatewayProxyController -> RestClientConfiguration;
-
-  ReservationController -> ReservationService;
-  OrdersController -> OrderingService;
-  KitchenController -> KitchenService;
-  BillsController -> BillingService;
-  InventoryController -> InventoryService;
-  ReportingController -> ReportingQueryService;
-  AuthController -> AuthService;
-  AuditController -> AuditReadService;
-
-  ReservationService -> RabbitMqEventPublisher;
-  OrderingService -> RabbitMqEventPublisher;
-  KitchenService -> RabbitMqEventPublisher;
-  BillingService -> RabbitMqEventPublisher;
-  InventoryService -> RabbitMqEventPublisher;
-  OutboxRelayScheduler -> RabbitMqEventPublisher;
-  ManualAckConsumerSupport -> RabbitMqEventPublisher;
+  runtime -> api;
+  runtime -> common [style=dashed];
+  api -> application;
+  api -> common [style=dashed];
+  application -> domain;
+  application -> ports;
+  application -> common [style=dashed];
+  ports -> infrastructure [style=dashed, arrowhead=open];
+  application -> integration;
+  integration -> common [style=dashed];
+  infrastructure -> common [style=dashed];
 }

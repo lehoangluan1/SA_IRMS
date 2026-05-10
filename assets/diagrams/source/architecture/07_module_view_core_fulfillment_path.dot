@@ -1,40 +1,68 @@
 digraph G {
   graph [
     rankdir=LR,
-    newrank=true,
     compound=true,
     bgcolor="white",
-    pad=0.34,
-    nodesep=0.52,
-    ranksep=0.92,
-    splines=polyline,
-    fontname="DejaVu Sans",
+    pad=0.35,
+    nodesep=0.55,
+    ranksep=0.9,
+    splines=ortho,
+    fontname="Arial",
     labelloc="t",
-    label="Component Diagram - Core Fulfillment Path"
+    label="Module View - Core fulfillment package dependencies"
   ];
 
-  node [shape=component, style="rounded,filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=8.8, margin="0.10,0.06"];
-  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=7.8];
+  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.1, fontname="Arial", fontsize=10];
+  edge [color="#64748B", fontname="Arial", fontsize=9, arrowsize=0.7];
 
-  ReservationCheckInService [label="ReservationCheckInService"];
-  ReservationTableAssignmentService [label="ReservationTableAssignmentService"];
-  OrdersController [label="OrdersController\n/api/orders"];
-  OrderingService [label="OrderingService"];
-  MenuService [label="MenuService"];
-  RemoteKitchenOrderRoutingClient [label="RemoteKitchenOrderRoutingClient"];
-  KitchenIntegrationController [label="KitchenIntegrationController\n/internal/kitchen"];
-  KitchenOrderRoutingService [label="KitchenOrderRoutingService"];
-  BillsController [label="BillsController\n/api/bills"];
-  BillingBillCreationService [label="BillingBillCreationService"];
-  BillingPaymentService [label="BillingPaymentService"];
+  reservation_api [label="reservation.api\nReservationController\nTableController\nWaitlistController"];
+  reservation_app [label="reservation.application\nReservationService\nReservationCheckInService\nReservationSeatingMediator"];
+  reservation_port [label="reservation.application.port.out\nReservation*Port"];
+  reservation_infra [label="reservation.infrastructure.persistence\nJdbcReservation*Adapter"];
 
-  ReservationCheckInService -> ReservationTableAssignmentService [label="table assignment"];
-  OrdersController -> OrderingService [label="order command"];
-  OrderingService -> MenuService [label="menu validation"];
-  OrderingService -> RemoteKitchenOrderRoutingClient [label="route confirmed order"];
-  RemoteKitchenOrderRoutingClient -> KitchenIntegrationController [label="REST"];
-  KitchenIntegrationController -> KitchenOrderRoutingService [label="create ticket"];
-  BillsController -> BillingBillCreationService [label="create bill"];
-  BillsController -> BillingPaymentService [label="pay bill"];
-  BillingBillCreationService -> OrderingService [label="billable snapshot"];
+  ordering_api [label="ordering.api\nOrdersController\nMenuItemController\nOrderingIntegrationController"];
+  ordering_app [label="ordering.application\nOrdersService\nOrderCreationService\nOrderDraftConfirmationService"];
+  ordering_domain [label="ordering.domain\nOrderStatusPolicy\nOrderItemStatusPolicy\nComboPricingPolicy"];
+  ordering_port [label="ordering.application.port.out\nOrderRepository\nKitchenCoordinationPort"];
+  ordering_infra [label="ordering.infrastructure.persistence\nJdbcOrderRepository\nJdbcOrderQueryRepository"];
+  ordering_integration [label="ordering.integration\nRemoteKitchenOrderRoutingClient"];
+
+  kitchen_api [label="kitchen.api\nKitchenController\nKitchenIntegrationController"];
+  kitchen_app [label="kitchen.application\nKitchenService\nKitchenOrderRoutingService\nKitchenTicketItemWorkflowService"];
+  kitchen_domain [label="kitchen.domain\nKitchenStatusPolicy\nKitchenPriorityPolicy\nKitchenTicketTransitionPolicy"];
+  kitchen_port [label="kitchen.application.port.out\nKitchen*Port\nOrderingStatusSyncPort"];
+  kitchen_infra [label="kitchen.infrastructure.persistence\nJdbcKitchen*Adapter"];
+  kitchen_integration [label="kitchen.integration\nRemoteOrderStateUpdateClient\nRemoteInventoryConsumptionClient"];
+
+  billing_api [label="billing.api\nBillsController\nPaymentsController"];
+  billing_app [label="billing.application\nBillingService\nBillingBillCreationService\nBillingPaymentService"];
+  billing_port [label="billing.application.port.out\nBillIssueRepository\nBillPaymentRepository"];
+  billing_infra [label="billing.infrastructure.persistence\nJdbcBillIssueRepository\nJdbcBillPaymentRepository"];
+
+  common [label="common\nDomainEventPublisher\nPermissionGuard\nWorkflowExecutionSupport"];
+
+  reservation_api -> reservation_app;
+  reservation_app -> reservation_port;
+  reservation_port -> reservation_infra [label="implemented by", style=dashed];
+  reservation_app -> common;
+
+  ordering_api -> ordering_app;
+  ordering_app -> ordering_domain;
+  ordering_app -> ordering_port;
+  ordering_app -> ordering_integration [label="bounded REST client"];
+  ordering_port -> ordering_infra [label="implemented by", style=dashed];
+  ordering_app -> common;
+
+  ordering_integration -> kitchen_api [label="REST /internal/kitchen"];
+  kitchen_api -> kitchen_app;
+  kitchen_app -> kitchen_domain;
+  kitchen_app -> kitchen_port;
+  kitchen_port -> kitchen_infra [label="implemented by", style=dashed];
+  kitchen_app -> kitchen_integration [label="bounded REST client"];
+  kitchen_app -> common;
+
+  billing_api -> billing_app;
+  billing_app -> billing_port;
+  billing_port -> billing_infra [label="implemented by", style=dashed];
+  billing_app -> common;
 }

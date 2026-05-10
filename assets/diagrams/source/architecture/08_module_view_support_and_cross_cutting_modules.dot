@@ -1,84 +1,51 @@
 digraph G {
   graph [
     rankdir=TB,
-    newrank=true,
     compound=true,
     bgcolor="white",
-    pad=0.34,
-    nodesep=0.52,
-    ranksep=0.88,
-    splines=polyline,
-    fontname="DejaVu Sans",
+    pad=0.35,
+    nodesep=0.55,
+    ranksep=0.9,
+    splines=ortho,
+    fontname="Arial",
     labelloc="t",
-    label="Component Diagram - Supporting Async and Cross-Cutting Runtime"
+    label="Module View - Supporting and cross-cutting packages"
   ];
 
-  node [shape=component, style="rounded,filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=8.6, margin="0.10,0.06"];
-  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=7.8];
+  node [shape=folder, style="filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.1, fontname="Arial", fontsize=10];
+  edge [color="#64748B", fontname="Arial", fontsize=9, arrowsize=0.7];
 
-  subgraph cluster_sources {
-    label="Event Sources";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    ReservationService [label="ReservationService\nreservation events"];
-    OrderingService [label="OrderingService\norder events"];
-    KitchenService [label="KitchenService\nkitchen events"];
-    BillingService [label="BillingService\nbilling events"];
-    InventoryService [label="InventoryService\nstock events"];
-  }
+  common_outbox [label="common.outbox\nTransactionalOutboxPublisher\nRabbitMqOutboxRelay"];
+  common_messaging [label="common.messaging\nRabbitMqEventPublisher\nManualAckConsumerSupport"];
+  common_notification [label="common.notification\nNotificationCommandPublisher"];
+  common_identity [label="common.identity\nSharedIdentity*Port\nRemoteSharedIdentity*Client"];
+  common_workflow [label="common.workflow\nWorkflowExecutionSupport"];
 
-  subgraph cluster_messaging {
-    label="Messaging";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    RabbitMqEventPublisher [label="RabbitMqEventPublisher"];
-    ManualAckConsumerSupport [label="ManualAckConsumerSupport"];
-  }
+  inventory_workflow [label="inventory.application.workflow\nInventoryStockChangedConsumer\nInventoryAlertMediator"];
+  notification_msg [label="notification.infrastructure.messaging\nNotificationRequestedConsumer"];
+  notification_app [label="notification.application\nNotificationRequestMaterializer\nNotificationChannelAdapter"];
+  reporting_msg [label="reporting.infrastructure.messaging\nReportingProjectionConsumer"];
+  reporting_app [label="reporting.application\nReportingQueryService\nReportingProjectionHandler"];
+  identity_msg [label="identity.infrastructure.messaging\nAuditRecordingRequestedConsumer\nSessionTouchRequestedConsumer"];
+  identity_app [label="identity.application\nAuthService\nAuditService\nSettingsService"];
+  identity_persistence [label="identity.persistence\nIdentityRepository\nIdentityPolicyRepository"];
 
-  subgraph cluster_consumers {
-    label="Consumers";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    InventoryStockChangedConsumer [label="InventoryStockChangedConsumer\nRabbit listener"];
-    ReportingProjectionConsumer [label="ReportingProjectionConsumer\nRabbit listener"];
-    NotificationRequestedConsumer [label="NotificationRequestedConsumer\nRabbit listener"];
-    AuditRecordingRequestedConsumer [label="AuditRecordingRequestedConsumer\nRabbit listener"];
-  }
+  common_outbox -> common_messaging [label="publishes through"];
+  common_messaging -> inventory_workflow [label="manual ack support"];
+  common_messaging -> notification_msg [label="manual ack support"];
+  common_messaging -> reporting_msg [label="manual ack support"];
+  common_messaging -> identity_msg [label="manual ack support"];
 
-  subgraph cluster_adapters {
-    label="Adapters and Policies";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    LowStockSeverityPolicy [label="LowStockSeverityPolicy"];
-    ReorderRecommendationStrategy [label="ReorderRecommendationStrategy\ninterface"];
-    EmailNotificationChannelAdapter [label="EmailNotificationChannelAdapter"];
-    SmsNotificationChannelAdapter [label="SmsNotificationChannelAdapter"];
-    InAppNotificationChannelAdapter [label="InAppNotificationChannelAdapter"];
-    PrintNotificationChannelAdapter [label="PrintNotificationChannelAdapter"];
-    AuditReadService [label="AuditReadService"];
-  }
+  inventory_workflow -> common_outbox [label="low-stock follow-up"];
+  notification_msg -> notification_app;
+  notification_app -> common_notification;
+  reporting_msg -> reporting_app;
+  identity_msg -> identity_app;
+  identity_app -> identity_persistence;
 
-  ReservationService -> RabbitMqEventPublisher;
-  OrderingService -> RabbitMqEventPublisher;
-  KitchenService -> RabbitMqEventPublisher;
-  BillingService -> RabbitMqEventPublisher;
-  InventoryService -> RabbitMqEventPublisher;
-
-  RabbitMqEventPublisher -> ManualAckConsumerSupport;
-  ManualAckConsumerSupport -> InventoryStockChangedConsumer;
-  ManualAckConsumerSupport -> ReportingProjectionConsumer;
-  ManualAckConsumerSupport -> NotificationRequestedConsumer;
-  ManualAckConsumerSupport -> AuditRecordingRequestedConsumer;
-
-  InventoryStockChangedConsumer -> LowStockSeverityPolicy;
-  InventoryStockChangedConsumer -> ReorderRecommendationStrategy;
-  NotificationRequestedConsumer -> EmailNotificationChannelAdapter;
-  NotificationRequestedConsumer -> SmsNotificationChannelAdapter;
-  NotificationRequestedConsumer -> InAppNotificationChannelAdapter;
-  NotificationRequestedConsumer -> PrintNotificationChannelAdapter;
-  AuditRecordingRequestedConsumer -> AuditReadService;
+  reporting_app -> common_identity [label="name / policy lookup"];
+  notification_app -> common_identity [label="user context"];
+  inventory_workflow -> common_workflow;
+  reporting_app -> common_workflow;
+  identity_app -> common_workflow;
 }

@@ -1,73 +1,108 @@
-
 digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.35, nodesep=0.65, ranksep=0.9, splines=polyline, fontname="Arial", labelloc="t", label="UML Class Diagram - Reservation Module Structure"];
+  node [shape=plain, fontname="Arial", fontsize=9];
+  edge [color="#64748B", fontname="Arial", fontsize=8.5, arrowsize=0.7];
 
-graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.55", ranksep="0.9", splines=ortho, fontname="Helvetica"];
-node [fontname="Helvetica", shape=plaintext];
-edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+  ReservationController [label=<
 
-labelloc="t";
-label="UML Class Diagram - Reservation & Seating Service";
-rankdir=LR;
-Reservation [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Reservation</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+reservationId: UUID<BR ALIGN='LEFT'/>+arrivalAt: DateTime<BR ALIGN='LEFT'/>+partySize: int<BR ALIGN='LEFT'/>+status: ReservationStatus<BR ALIGN='LEFT'/>+source: ReservationSource</TD></TR>
-</TABLE>
->];
-WaitlistEntry [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>WaitlistEntry</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+waitlistEntryId: UUID<BR ALIGN='LEFT'/>+partySize: int<BR ALIGN='LEFT'/>+quotedWaitMin: int<BR ALIGN='LEFT'/>+status: WaitlistStatus</TD></TR>
-</TABLE>
->];
-DiningTable [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>DiningTable</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+tableId: UUID<BR ALIGN='LEFT'/>+code: String<BR ALIGN='LEFT'/>+capacity: int<BR ALIGN='LEFT'/>+zone: String<BR ALIGN='LEFT'/>+status: TableStatus</TD></TR>
-</TABLE>
->];
-TableSession [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>TableSession</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+sessionId: UUID<BR ALIGN='LEFT'/>+openedAt: DateTime<BR ALIGN='LEFT'/>+guestCount: int<BR ALIGN='LEFT'/>+status: TableSessionStatus</TD></TR>
-</TABLE>
->];
-SeatingPreference [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>SeatingPreference</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+windowSide: bool<BR ALIGN='LEFT'/>+indoorOnly: bool<BR ALIGN='LEFT'/>+highChairCount: int<BR ALIGN='LEFT'/>+tableAreaHint: String</TD></TR>
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
 
-</TABLE>
->];
-TableAssignment [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>TableAssignment</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+assignmentId: UUID<BR ALIGN='LEFT'/>+assignedAt: DateTime<BR ALIGN='LEFT'/>+reason: AssignmentReason<BR ALIGN='LEFT'/>+score: Decimal</TD></TR>
-</TABLE>
->];
-SeatingPolicy [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>SeatingPolicy</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+maxHoldMinutes: int<BR ALIGN='LEFT'/>+walkInBias: Decimal<BR ALIGN='LEFT'/>+reservationGraceMinutes: int</TD></TR>
-</TABLE>
->];
-ReservationContact [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>ReservationContact</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+name: String<BR ALIGN='LEFT'/>+phone: String<BR ALIGN='LEFT'/>+email: String<BR ALIGN='LEFT'/>+notificationChannel: Channel</TD></TR>
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>ReservationController</B></TD></TR>
 
-</TABLE>
->];
+      <TR><TD ALIGN="LEFT">- reservationService: ReservationService<BR ALIGN="LEFT"/>- permissionGuard: PermissionGuard</TD></TR>
 
-Reservation -> ReservationContact [arrowhead=vee, label="1 to 1"];
-Reservation -> SeatingPreference [arrowhead=vee, label="1 to 0..1"];
-Reservation -> TableAssignment [arrowhead=vee, label="0..1 assignment"];
-TableAssignment -> DiningTable [arrowhead=vee, label="assigns"];
-TableAssignment -> TableSession [arrowhead=vee, label="opens"];
-WaitlistEntry -> SeatingPreference [arrowhead=vee, label="0..1"];
-WaitlistEntry -> TableAssignment [style=dashed, label="fulfilled by"];
-DiningTable -> TableSession [label="1 to 0..1 current session"];
-SeatingPolicy -> Reservation [style=dashed, label="validate party / time"];
-SeatingPolicy -> WaitlistEntry [style=dashed, label="prioritize queue"];
-SeatingPolicy -> DiningTable [style=dashed, label="capacity / merge rules"];
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ overview(date, request)<BR ALIGN="LEFT"/>+ createReservation(body, request)<BR ALIGN="LEFT"/>+ checkIn(reservationId, body, request)<BR ALIGN="LEFT"/>+ noShow(reservationId, request)</TD></TR>
+
+    </TABLE>
+
+  >];
+  TableController [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>TableController</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- reservationService: ReservationService</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createTable(body, request)<BR ALIGN="LEFT"/>+ updateTable(tableId, body, request)<BR ALIGN="LEFT"/>+ updateStatus(tableId, body, request)</TD></TR>
+    </TABLE>
+  >];
+  WaitlistController [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>WaitlistController</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- reservationService: ReservationService</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createWaitlist(body, request)<BR ALIGN="LEFT"/>+ notifyWaitlist(waitlistEntryId, request)<BR ALIGN="LEFT"/>+ seatWaitlist(waitlistEntryId, request)</TD></TR>
+    </TABLE>
+  >];
+  ReservationService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>ReservationService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ load(date)<BR ALIGN="LEFT"/>+ recommend(date, time, party)<BR ALIGN="LEFT"/>+ createReservation(request, actor, correlationId, metadata)<BR ALIGN="LEFT"/>+ checkIn(reservationId, request, actor, correlationId, metadata)</TD></TR>
+    </TABLE>
+  >];
+  ReservationCheckInService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>ReservationCheckInService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ checkIn(reservationId, request, actor, correlationId, metadata)</TD></TR>
+    </TABLE>
+  >];
+  ReservationWaitlistService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>ReservationWaitlistService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createWaitlistEntry(request, actor, correlationId, metadata)<BR ALIGN="LEFT"/>+ notifyWaitlist(waitlistEntryId, actor, correlationId, metadata)<BR ALIGN="LEFT"/>+ seatWaitlist(waitlistEntryId, actor, correlationId, metadata)</TD></TR>
+    </TABLE>
+  >];
+  ReservationSeatingMediator [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;workflow&gt;&gt;</I><BR/><B>ReservationSeatingMediator</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ seatReservation(reservationId, tableId, correlationId)<BR ALIGN="LEFT"/>+ handleWaitlistUpdated(event)<BR ALIGN="LEFT"/>+ updateWaitlist(waitlistEntryId, status, correlationId)</TD></TR>
+    </TABLE>
+  >];
+  ReservationLifecycleCommandPort [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>ReservationLifecycleCommandPort</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createReservation(...)<BR ALIGN="LEFT"/>+ updateReservation(...)<BR ALIGN="LEFT"/>+ confirmReservation(reservationId)<BR ALIGN="LEFT"/>+ markReservationNoShow(reservationId)</TD></TR>
+    </TABLE>
+  >];
+  ReservationTableCommandPort [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>ReservationTableCommandPort</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createTable(...)<BR ALIGN="LEFT"/>+ updateTable(...)<BR ALIGN="LEFT"/>+ updateTableStatus(tableId, targetStatus)</TD></TR>
+    </TABLE>
+  >];
+  JdbcReservationLifecycleCommandAdapter [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;repository adapter&gt;&gt;</I><BR/><B>JdbcReservationLifecycleCommandAdapter</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createReservation(...)<BR ALIGN="LEFT"/>+ confirmReservation(reservationId)<BR ALIGN="LEFT"/>+ markReservationNoShow(reservationId)</TD></TR>
+    </TABLE>
+  >];
+  JdbcReservationTableCommandAdapter [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;repository adapter&gt;&gt;</I><BR/><B>JdbcReservationTableCommandAdapter</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createTable(...)<BR ALIGN="LEFT"/>+ updateTable(...)<BR ALIGN="LEFT"/>+ updateTableStatus(tableId, targetStatus)</TD></TR>
+    </TABLE>
+  >];
+  ReservationViews [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;view records&gt;&gt;</I><BR/><B>ReservationViews</B></TD></TR>
+      <TR><TD ALIGN="LEFT">ReservationOverview<BR ALIGN="LEFT"/>ReservationView<BR ALIGN="LEFT"/>WaitlistView<BR ALIGN="LEFT"/>TableView<BR ALIGN="LEFT"/>RecommendedTable</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+
+  ReservationController -> ReservationService [arrowhead=none];
+  TableController -> ReservationService [arrowhead=none];
+  WaitlistController -> ReservationService [arrowhead=none];
+  ReservationService -> ReservationCheckInService [arrowhead=none];
+  ReservationService -> ReservationWaitlistService [arrowhead=none];
+  ReservationCheckInService -> ReservationLifecycleCommandPort [style=dashed, arrowhead=open];
+  ReservationCheckInService -> ReservationSeatingMediator [style=dashed, arrowhead=open];
+  ReservationWaitlistService -> ReservationSeatingMediator [style=dashed, arrowhead=open];
+  ReservationService -> ReservationViews [style=dashed, arrowhead=open];
+  JdbcReservationLifecycleCommandAdapter -> ReservationLifecycleCommandPort [style=dashed, arrowhead=empty];
+  JdbcReservationTableCommandAdapter -> ReservationTableCommandPort [style=dashed, arrowhead=empty];
 }

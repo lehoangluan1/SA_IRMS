@@ -55,10 +55,10 @@ digraph G {
     color="#FCA5A5";
     style="rounded,filled";
     fillcolor="#FEF2F2";
-    postgres [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nPostgreSQL container\npostgres-data volume"];
+    postgres [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nPostgreSQL container\nsingle physical database\npostgres-data volume"];
     rabbitmq [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nRabbitMQ container\nrabbitmq-data volume"];
-    outbox [shape=note, fillcolor="#FFF7ED", color="#FDBA74", label="<<artifact>>\noutbox_events and processed_events"];
-    readm [shape=note, fillcolor="#FFF7ED", color="#FDBA74", label="<<artifact>>\nReporting tables and views"];
+    outbox [shape=note, fillcolor="#FFF7ED", color="#FDBA74", label="<<artifact>>\nlogical tables:\noutbox_events and processed_events"];
+    readm [shape=note, fillcolor="#FFF7ED", color="#FDBA74", label="<<artifact>>\nlogical tables:\nreporting projections"];
   }
 
   { rank=same; host; server; kitchen; cashier; manager; }

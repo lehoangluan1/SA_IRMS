@@ -1,71 +1,114 @@
-
 digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.35, nodesep=0.65, ranksep=0.9, splines=polyline, fontname="Arial", labelloc="t", label="UML Class Diagram - Kitchen Coordination Module Structure"];
+  node [shape=plain, fontname="Arial", fontsize=9];
+  edge [color="#64748B", fontname="Arial", fontsize=8.5, arrowsize=0.7];
 
-graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.5", ranksep="0.82", splines=ortho, fontname="Arial"];
-node [fontname="Arial", shape=plaintext];
-edge [fontname="Arial", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+  KitchenController [label=<
 
-labelloc="t";
-label="UML Class Diagram - Kitchen Coordination Service";
-rankdir=TB;
-KitchenStation [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>KitchenStation</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+stationId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+kind: StationKind<BR ALIGN='LEFT'/>+maxParallelTickets: int</TD></TR>
-</TABLE>
->];
-KitchenTicket [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>KitchenTicket</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+ticketId: UUID<BR ALIGN='LEFT'/>+priority: int<BR ALIGN='LEFT'/>+status: KitchenTicketStatus<BR ALIGN='LEFT'/>+createdAt: DateTime<BR ALIGN='LEFT'/>+readyAt: DateTime</TD></TR>
-</TABLE>
->];
-KitchenTicketItem [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>KitchenTicketItem</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+ticketItemId: UUID<BR ALIGN='LEFT'/>+quantity: int<BR ALIGN='LEFT'/>+status: KitchenTicketItemStatus<BR ALIGN='LEFT'/>+fireAt: DateTime</TD></TR>
-</TABLE>
->];
-PreparationPolicy [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>PreparationPolicy</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+groupByStation: bool<BR ALIGN='LEFT'/>+supportsBatching: bool<BR ALIGN='LEFT'/>+rushThresholdMin: int</TD></TR>
-</TABLE>
->];
-RoutePlan [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>RoutePlan</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+routePlanId: UUID<BR ALIGN='LEFT'/>+createdFromOrderId: UUID<BR ALIGN='LEFT'/>+notes: String</TD></TR>
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
 
-</TABLE>
->];
-ExpediteRule [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>ExpediteRule</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+ruleId: UUID<BR ALIGN='LEFT'/>+vipBoost: int<BR ALIGN='LEFT'/>+lateThresholdMin: int</TD></TR>
-</TABLE>
->];
-ServeHandoff [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>ServeHandoff</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+handoffId: UUID<BR ALIGN='LEFT'/>+serverId: UUID<BR ALIGN='LEFT'/>+handedOffAt: DateTime<BR ALIGN='LEFT'/>+acceptedAt: DateTime</TD></TR>
-</TABLE>
->];
-DishStatusEvent [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>DishStatusEvent</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+eventId: UUID<BR ALIGN='LEFT'/>+type: DishStatusType<BR ALIGN='LEFT'/>+occurredAt: DateTime<BR ALIGN='LEFT'/>+sourceStation: String</TD></TR>
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>KitchenController</B></TD></TR>
 
-</TABLE>
->];
+      <TR><TD ALIGN="LEFT">- kitchenService: KitchenService</TD></TR>
 
-KitchenStation -> KitchenTicket [label="1 to many queued tickets"];
-KitchenTicket -> KitchenTicketItem [label="1 to many lines"];
-PreparationPolicy -> KitchenTicket [style=dashed, label="priority / batching"];
-PreparationPolicy -> RoutePlan [style=dashed, label="derive station route"];
-RoutePlan -> KitchenStation [label="targets"];
-ExpediteRule -> KitchenTicket [style=dashed, label="speed-up candidate"];
-KitchenTicket -> ServeHandoff [label="0..1 handoff"];
-KitchenTicketItem -> DishStatusEvent [style=dashed, label="emits status"];
-ServeHandoff -> DishStatusEvent [style=dashed, label="served event"];
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ overview(station, request)<BR ALIGN="LEFT"/>+ updateTicketStatus(ticketId, body, request)<BR ALIGN="LEFT"/>+ updateItemStatus(ticketItemId, body, request)<BR ALIGN="LEFT"/>+ serveTicket(ticketId, request)</TD></TR>
+
+    </TABLE>
+
+  >];
+  KitchenService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>KitchenService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ load(stationFilter)<BR ALIGN="LEFT"/>+ updateTicketStatus(ticketId, targetStatus, actor, correlationId)<BR ALIGN="LEFT"/>+ updateItemStatus(ticketItemId, targetStatus, reason, actor, correlationId, metadata)<BR ALIGN="LEFT"/>+ serveTicket(ticketId, actor, correlationId)</TD></TR>
+    </TABLE>
+  >];
+  KitchenOrderRoutingService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>KitchenOrderRoutingService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ queueConfirmedItems(orderId, items, notes)<BR ALIGN="LEFT"/>+ holdOrderItemForService(orderItemId)<BR ALIGN="LEFT"/>+ releaseHeldOrderItem(orderId, item, notes)</TD></TR>
+    </TABLE>
+  >];
+  KitchenTicketItemWorkflowService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>KitchenTicketItemWorkflowService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ moveItemToCooking(ticketItemId, actorUserId, correlationId)<BR ALIGN="LEFT"/>+ markItemReady(ticketItemId, correlationId)<BR ALIGN="LEFT"/>+ markInventoryDeducted(ticketItemId)</TD></TR>
+    </TABLE>
+  >];
+  KitchenWorkflowMediator [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;workflow&gt;&gt;</I><BR/><B>KitchenWorkflowMediator</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ handleDishStatusChanged(envelope)<BR ALIGN="LEFT"/>+ transitionTicket(ticketId, currentState, targetState, event, payload)<BR ALIGN="LEFT"/>+ calculateDeadline(preparationMinutes, itemCount, priority, peakHour)</TD></TR>
+    </TABLE>
+  >];
+  KitchenStatusPolicy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;policy&gt;&gt;</I><BR/><B>KitchenStatusPolicy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ normalize(status)<BR ALIGN="LEFT"/>+ ensureValidTicketTransition(currentStatus, targetStatus, everyItemReady)<BR ALIGN="LEFT"/>+ deriveTicketStatus(itemStatuses)</TD></TR>
+    </TABLE>
+  >];
+  KitchenPriorityPolicy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;policy&gt;&gt;</I><BR/><B>KitchenPriorityPolicy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ nextManualPriority(currentPriority)<BR ALIGN="LEFT"/>+ score(priorityLabel)<BR ALIGN="LEFT"/>+ automaticEscalation(currentPriority, targetServiceAt, rushCutoff, expediteCutoff)</TD></TR>
+    </TABLE>
+  >];
+  KitchenTicketTransitionPolicy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;policy&gt;&gt;</I><BR/><B>KitchenTicketTransitionPolicy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ ensureValidTransition(currentState, targetState)<BR ALIGN="LEFT"/>+ toPersistentStatus(state)</TD></TR>
+    </TABLE>
+  >];
+  KitchenOrderRoutingRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>KitchenOrderRoutingRepository</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createRoutePlan(orderId, notes)<BR ALIGN="LEFT"/>+ createTicket(orderId, routePlanId, stationId)<BR ALIGN="LEFT"/>+ createTicketItem(ticketId, item)</TD></TR>
+    </TABLE>
+  >];
+  KitchenTicketItemCommandPort [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>KitchenTicketItemCommandPort</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ moveItemToCooking(ticketItemId, nextActionAt)<BR ALIGN="LEFT"/>+ markItemReady(ticketItemId)<BR ALIGN="LEFT"/>+ blockItem(ticketItemId, reason)</TD></TR>
+    </TABLE>
+  >];
+  OrderingStatusSyncPort [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>OrderingStatusSyncPort</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ refreshOrder(orderId)<BR ALIGN="LEFT"/>+ applyKitchenLineStatuses(orderId, lineStatuses)</TD></TR>
+    </TABLE>
+  >];
+  RemoteOrderStateUpdateClient [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;adapter&gt;&gt;</I><BR/><B>RemoteOrderStateUpdateClient</B></TD></TR>
+      <TR><TD ALIGN="LEFT">implements OrderingStatusSyncPort</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+  KitchenViews [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;view records&gt;&gt;</I><BR/><B>KitchenViews</B></TD></TR>
+      <TR><TD ALIGN="LEFT">KitchenOverview<BR ALIGN="LEFT"/>TicketView<BR ALIGN="LEFT"/>TicketItemView</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+
+  KitchenController -> KitchenService [arrowhead=none];
+  KitchenService -> KitchenTicketItemWorkflowService [arrowhead=none];
+  KitchenService -> KitchenStatusPolicy [style=dashed, arrowhead=open];
+  KitchenService -> KitchenPriorityPolicy [style=dashed, arrowhead=open];
+  KitchenOrderRoutingService -> KitchenOrderRoutingRepository [style=dashed, arrowhead=open];
+  KitchenTicketItemWorkflowService -> KitchenTicketItemCommandPort [style=dashed, arrowhead=open];
+  KitchenWorkflowMediator -> KitchenTicketTransitionPolicy [style=dashed, arrowhead=open];
+  KitchenWorkflowMediator -> OrderingStatusSyncPort [style=dashed, arrowhead=open];
+  RemoteOrderStateUpdateClient -> OrderingStatusSyncPort [style=dashed, arrowhead=empty];
+  KitchenService -> KitchenViews [style=dashed, arrowhead=open];
 }

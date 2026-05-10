@@ -77,11 +77,11 @@ digraph G {
     style="rounded,filled";
     fillcolor="#FEF2F2";
 
-    postgres_node [shape=box3d, fillcolor="#FFFFFF", label="<<node>>\nirms-postgres\npostgres:16"];
-    postgres_volume [shape=cylinder, fillcolor="#FFFFFF", label="<<artifact>>\npostgres-data volume"];
+    postgres_node [shape=box3d, fillcolor="#FFFFFF", label="<<node>>\nirms-postgres\npostgres:16\nsingle physical database\n\nlogical table groups:\ntransaction tables\noutbox_events / processed_events\nreporting projections\nidentity and audit data"];
+    postgres_volume [shape=folder, fillcolor="#FFFFFF", label="<<artifact>>\npostgres-data volume"];
     initdb_scripts [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\ndocker/postgres/initdb"];
     rabbit_node [shape=box3d, fillcolor="#FFFFFF", label="<<node>>\nirms-rabbitmq\nrabbitmq:3-management"];
-    rabbit_volume [shape=cylinder, fillcolor="#FFFFFF", label="<<artifact>>\nrabbitmq-data volume"];
+    rabbit_volume [shape=folder, fillcolor="#FFFFFF", label="<<artifact>>\nrabbitmq-data volume"];
   }
 
   legend [shape=plaintext, label=<
@@ -92,10 +92,10 @@ digraph G {
     </TABLE>
   >];
 
-  compose -> backend_image [style=dashed, label="build context ./backend"];
-  compose -> frontend_image [style=dashed, label="build context ./frontend"];
-  compose -> postgres_node [style=dashed, label="image and env"];
-  compose -> rabbit_node [style=dashed, label="image and env"];
+  compose -> backend_image [style=dashed];
+  compose -> frontend_image [style=dashed];
+  compose -> postgres_node [style=dashed];
+  compose -> rabbit_node [style=dashed];
 
   backend_image -> backend_jar [label="contains"];
   backend_image -> app_props [label="contains"];
@@ -106,23 +106,23 @@ digraph G {
   backend_jar -> gateway_node [label="deployed to"];
   backend_jar -> service_nodes [label="deployed to"];
   backend_jar -> migration_node [label="deployed to"];
-  app_props -> gateway_node [style=dashed, label="profiles"];
-  app_props -> service_nodes [style=dashed, label="profiles"];
-  app_props -> migration_node [style=dashed, label="migration profile"];
+  app_props -> gateway_node [style=dashed];
+  app_props -> service_nodes [style=dashed];
+  app_props -> migration_node [style=dashed];
   migrations -> migration_node [label="executed by"];
 
   nitro_output -> frontend_node [label="deployed to"];
-  nitro_config -> frontend_node [style=dashed, label="proxy config"];
+  nitro_config -> frontend_node [style=dashed];
 
   initdb_scripts -> postgres_node [label="mounted read-only"];
   postgres_volume -> postgres_node [label="mounted"];
   rabbit_volume -> rabbit_node [label="mounted"];
 
-  migration_node -> postgres_node [style=dashed, label="runs after healthy"];
-  gateway_node -> service_nodes [style=dashed, label="starts after healthy"];
-  frontend_node -> gateway_node [style=dashed, label="depends on healthy"];
-  service_nodes -> postgres_node [style=dashed, label="JDBC config"];
-  service_nodes -> rabbit_node [style=dashed, label="RabbitMQ config"];
+  migration_node -> postgres_node [style=dashed];
+  gateway_node -> service_nodes [style=dashed];
+  frontend_node -> gateway_node [style=dashed];
+  service_nodes -> postgres_node [style=dashed];
+  service_nodes -> rabbit_node [style=dashed];
 
   { rank=same; backend_image; frontend_image; compose; }
   { rank=same; frontend_node; gateway_node; service_nodes; migration_node; }

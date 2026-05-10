@@ -56,14 +56,14 @@ Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ
     \item \textbf{Phân hệ Thanh toán và Tài chính}
     \begin{itemize}
         \item \textbf{Xử lý hóa đơn linh hoạt}: Hỗ trợ tính phí dịch vụ, áp dụng chương trình khuyến mãi, tách hóa đơn và quản lý tiền tip.
-        \item \textbf{Đa dạng phương thức thanh toán}: Hỗ trợ tiền mặt, thẻ và ví điện tử thông qua \textsf{PaymentGateway} trong code, đồng thời phát hành biên lai qua \textsf{ReceiptDeliveryAdapter}.
+        \item \textbf{Đa dạng phương thức thanh toán}: Hỗ trợ tiền mặt, thẻ và ví điện tử thông qua \textsf{PaymentGateway}, đồng thời phát hành biên lai qua \textsf{ReceiptDeliveryAdapter}.
     \end{itemize}
 
     \item \textbf{Phân hệ Quản trị và Kho vận}
     \begin{itemize}
         \item \textbf{Quản lý kho tự động}: Tự động khấu trừ nguyên liệu khi có đơn hàng và phát thông báo cảnh báo khi lượng tồn kho xuống thấp.
         \item \textbf{Báo cáo và Phân tích (Analytics)}: Cung cấp hệ thống dashboard về doanh thu, các món bán chạy, hiệu suất nhân viên và nhận diện các điểm nghẽn trong vận hành.
-        \item \textbf{Kiểm soát và Bảo mật}: Quản lý quyền truy cập dựa trên vai trò (RBAC) và lưu vết lịch sử (audit logs) cho các tác động quan trọng vào hệ thống.
+        \item \textbf{Kiểm soát và Bảo mật}: Quản lý quyền truy cập dựa trên vai trò (RBAC) và lưu vết lịch sử (nhật ký kiểm toáns) cho các tác động quan trọng vào hệ thống.
     \end{itemize}
 \end{itemize}
 
@@ -117,7 +117,7 @@ Quản trị viên & Người dùng/đơn vị vận hành & \begin{itemize}
 \end{itemize} \\
 \textsf{PaymentGateway} & Port/adapter nội bộ & \begin{itemize}
   \item Xử lý giao dịch thẻ hoặc ví điện tử ở mức hợp đồng thanh toán của hệ thống
-  \item Hỗ trợ nhánh tiền mặt và nhánh tham chiếu giao dịch đã hiện thực trong code
+  \item Hỗ trợ nhánh tiền mặt và nhánh tham chiếu giao dịch trong phạm vi xử lý thanh toán của hệ thống
   \item Trả về kết quả giao dịch cho hệ thống bán hàng tại quầy
 \end{itemize} \\
 \bottomrule
@@ -149,7 +149,7 @@ Trong hai điều kiện trên, dự án chịu các ràng buộc thực tế sa
     \item \textbf{Ràng buộc mạng}: mạng nội bộ có thể chập chờn ngắn hạn trong phạm vi dưới 60 giây; hệ thống được phép thử lại nhưng không được làm mất đơn gọi món đã xác nhận hoặc tạo phiếu trùng.
     \item \textbf{Ràng buộc thanh toán}: thanh toán điện tử luôn đi qua cổng đối tác ngoài; IRMS không lưu dữ liệu thẻ thô mà chỉ lưu kết quả giao dịch và mã tham chiếu.
     \item \textbf{Ràng buộc kiểm soát}: dữ liệu nghiệp vụ phải được lưu tập trung và có nhật ký kiểm toán cho hoàn tiền, hủy bỏ, ghi đè hoặc thay đổi nhạy cảm.
-    \item \textbf{Ràng buộc học phần}: phạm vi hiện thực có thể tập trung vào một phần phân hệ lõi, nhưng kiến trúc vẫn phải phản ánh đầy đủ bức tranh hệ thống để chứng minh tư duy thiết kế tổng thể.
+    \item \textbf{Ràng buộc học phần}: phạm vi hiện thực có thể tập trung vào một phần phân hệ lõi, nhưng kiến trúc vẫn phải phản ánh đầy đủ bức tranh hệ thống để làm rõ tư duy thiết kế tổng thể.
 \end{itemize}
 
 \subsection{Yêu cầu chức năng}
@@ -173,7 +173,7 @@ Service này chịu trách nhiệm biến đơn gọi món đã xác nhận thà
 \subsubsection*{4. \textsf{Billing \& Settlement Service}}
 Service này chịu trách nhiệm toàn bộ vùng quyết toán, bao gồm lập hóa đơn, tách hóa đơn, tính thuế, phí phục vụ, tiền boa, áp mã khuyến mãi, ghi nhận thanh toán, phát hành biên lai và xử lý hoàn tiền. Các thao tác như lập hóa đơn, ghi nhận thanh toán hoặc hoàn tiền cần phản hồi rõ ràng nên được xử lý qua API đồng bộ.
 
-\textbf{Lập hóa đơn và thanh toán} sử dụng ảnh chụp đáng tin cậy của các món đã gọi và đã phục vụ để tạo nghĩa vụ tài chính. Sau khi hóa đơn được phát hành hoặc thanh toán được ghi nhận, service phát event \textsf{BillIssued}, \textsf{PaymentCaptured} hoặc \textsf{RefundRequested}. Các event này phục vụ in biên lai, ghi audit, cập nhật báo cáo và đồng bộ trạng thái bàn mà không buộc service quyết toán phải gọi trực tiếp mọi service phụ trợ.
+\textbf{Lập hóa đơn và thanh toán} sử dụng ảnh chụp đáng tin cậy của các món đã gọi và đã phục vụ để tạo nghĩa vụ tài chính. Sau khi hóa đơn được phát hành hoặc thanh toán được ghi nhận, service phát event \textsf{BillIssued}, \textsf{PaymentCaptured} hoặc \textsf{RefundRequested}. Các event này phục vụ in biên lai, ghi kiểm toán, cập nhật báo cáo và đồng bộ trạng thái bàn mà không buộc service quyết toán phải gọi trực tiếp mọi service phụ trợ.
 
 \subsubsection*{5. \textsf{Inventory Monitoring Service}}
 Service này chịu trách nhiệm theo dõi tồn kho, công thức nguyên liệu, giao dịch kho, quy tắc cảnh báo và trạng thái mức tồn thấp. Thành phần này không nằm trên tuyến phản hồi trực tiếp của thao tác gọi món hoặc thanh toán, mà chủ yếu tiêu thụ event nghiệp vụ để cập nhật biến động kho theo nhịp bất đồng bộ có kiểm soát.
@@ -181,7 +181,7 @@ Service này chịu trách nhiệm theo dõi tồn kho, công thức nguyên li�
 \textbf{Cập nhật tồn kho và cảnh báo} được kích hoạt từ các event như \textsf{OrderConfirmed}, \textsf{OrderItemPrepared} hoặc \textsf{PaymentCaptured}. Khi mức tồn giảm dưới ngưỡng an toàn, service phát \textsf{InventoryLow} để \textsf{Notification Service}, \textsf{Reporting Service} hoặc giao diện quản lý xử lý tiếp. Cách tổ chức này giúp tồn kho phản ánh tiêu hao thực tế nhưng không làm nghẽn thao tác gọi món ở tuyến đầu.
 
 \subsubsection*{6. \textsf{Reporting Service}, \textsf{IAM \& Audit Service} và \textsf{Notification Service}}
-\textsf{Reporting Service} tổng hợp dữ liệu vận hành thành mô hình đọc phục vụ báo cáo doanh thu, món bán chạy, khung giờ cao điểm, điểm nghẽn bếp, tỷ lệ hoàn tiền và hiệu suất nhân viên. Dữ liệu báo cáo được làm mới thông qua event và \textsf{Background Worker}, nhờ đó truy vấn quản trị không gây áp lực trực tiếp lên dữ liệu giao dịch nóng.
+\textsf{Reporting Service} tổng hợp dữ liệu vận hành thành mô hình đọc phục vụ báo cáo doanh thu, món bán chạy, khung giờ cao điểm, điểm nghẽn bếp, tỷ lệ hoàn tiền và hiệu suất nhân viên. Dữ liệu báo cáo được làm mới thông qua event và \textsf{bộ xử lý nền}, nhờ đó truy vấn quản trị không gây áp lực trực tiếp lên dữ liệu giao dịch nóng.
 
 \textsf{IAM \& Audit Service} quản lý định danh người dùng, phân quyền theo vai trò, phiên làm việc và nhật ký kiểm toán bất biến. Mọi thao tác nhạy cảm như hoàn tiền, hủy món đã gửi bếp, ghi đè giá, mở lại hóa đơn, thay đổi quyền truy cập hoặc điều chỉnh tồn kho thủ công đều cần được ghi nhận đầy đủ người thực hiện, thời điểm, giá trị trước, giá trị sau và lý do.
 
@@ -217,3 +217,40 @@ Khả năng bảo trì \& mở rộng & Khi thêm một phương thức thanh to
 \bottomrule
 \end{longtable}
 \normalsize
+
+\subsection{Lựa chọn kiến trúc chủ đạo}\label{sec:system-architecture-choice}
+
+Từ bối cảnh vận hành ở các giờ cao điểm, yêu cầu chức năng theo từng miền nghiệp vụ và các yêu cầu phi chức năng ở mức toàn dự án, kiến trúc chủ đạo của IRMS được xác định là \textbf{service-based architecture theo miền nghiệp vụ}, kết hợp \textbf{event-driven processing} cho các hệ quả nền. Trong lựa chọn này, service-based là kiểu kiến trúc chính: hệ thống được chia theo các năng lực nghiệp vụ ổn định như \textsf{Reservation \& Seating}, \textsf{Ordering \& Menu}, \textsf{Kitchen Coordination}, \textsf{Billing \& Settlement}, \textsf{Inventory Monitoring}, \textsf{Reporting}, \textsf{IAM \& Audit} và \textsf{Notification}. Event-driven không thay thế cấu trúc service-based, mà đóng vai trò bổ trợ để tách các tác vụ không cần phản hồi tức thời khỏi tuyến giao dịch nóng.
+
+Cách tổ chức này phù hợp với bản chất nghiệp vụ của nhà hàng. Các thao tác như nhận khách, mở \textsf{TableSession}, xác nhận đơn gọi món, cập nhật trạng thái món, lập hóa đơn, ghi nhận thanh toán và hoàn tiền đều cần phản hồi rõ ràng cho người dùng vận hành. Những thao tác này được xử lý bằng giao tiếp đồng bộ qua API để trạng thái nghiệp vụ không bị nhập nhằng. Ngược lại, các hệ quả phụ như phát thông báo, cập nhật mô hình đọc báo cáo, ghi nhận kiểm toán, xử lý cảnh báo tồn kho hoặc đồng bộ trạng thái phụ trợ có thể được xử lý bất đồng bộ qua sự kiện, miễn là không làm sai lệch trạng thái phục vụ trước mặt khách hàng.
+
+\begin{table}[H]
+\centering
+\caption{Cơ sở lựa chọn kiến trúc chủ đạo của IRMS}
+\label{tab:system-architecture-choice-rationale}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}p{5.1cm} X}
+\toprule
+\textbf{Cơ sở từ yêu cầu} & \textbf{Hàm ý kiến trúc} & \textbf{Lựa chọn tương ứng} \\
+\midrule
+Luồng gọi món, bếp và thanh toán cần phản hồi nhanh, đặc biệt trong giờ cao điểm. & Tuyến giao dịch chính phải ngắn, rõ trạng thái thành công/thất bại và không bị kéo dài bởi các tác vụ phụ. & Dùng API đồng bộ cho các use case tuyến đầu; giữ logic nghiệp vụ trong service theo miền. \\
+\addlinespace
+Các miền đặt bàn, gọi món, bếp, thanh toán, tồn kho, báo cáo và kiểm toán có trách nhiệm khác nhau. & Cần ranh giới trách nhiệm rõ để tránh một service hoặc một lớp kỹ thuật ôm quá nhiều nghiệp vụ. & Chọn service-based architecture theo miền nghiệp vụ làm kiểu kiến trúc chính. \\
+\addlinespace
+Thông báo, báo cáo, cảnh báo tồn kho và kiểm toán không luôn cần phản hồi ngay cho thao tác chính. & Các hệ quả phụ nên được tách khỏi tuyến giao dịch nóng để giảm độ trễ và giảm phụ thuộc chéo giữa các miền. & Dùng event-driven processing, 	extsf{RabbitMQ}, outbox và bộ xử lý sự kiện nền cho các luồng bất đồng bộ. \\
+\addlinespace
+Hệ thống cần toàn vẹn dữ liệu cho đơn gọi món, hóa đơn, thanh toán, hoàn tiền và kiểm toán. & Không nên dùng event-driven thuần cho mọi thao tác vì nhiều bước cần xác nhận đồng bộ và kiểm soát lỗi trực tiếp. & Duy trì giao dịch cục bộ trong từng service; phát event sau khi trạng thái chính đã được ghi nhận. \\
+\addlinespace
+Báo cáo và dashboard có thể chấp nhận độ trễ có kiểm soát. & Truy vấn phân tích không nên gây áp lực trực tiếp lên dữ liệu giao dịch nóng. & Dùng mô hình đọc được cập nhật qua sự kiện hoặc tiến trình nền. \\
+\addlinespace
+Thanh toán, thông báo và biên lai là các điểm dễ thay đổi theo chính sách vận hành. & Lõi nghiệp vụ không nên phụ thuộc trực tiếp vào nhà cung cấp cụ thể hoặc thiết bị vật lý. & Đặt \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter} sau các adapter nội bộ. \\
+\bottomrule
+\end{tabularx}
+\normalsize
+\end{table}
+
+Các phương án khác không phù hợp bằng trong phạm vi IRMS hiện tại. Kiến trúc phân lớp tập trung thuần dễ khởi tạo nhưng có nguy cơ gom các nghiệp vụ khác bản chất vào cùng một cấu trúc kỹ thuật, làm mờ ranh giới giữa gọi món, bếp, thanh toán, tồn kho và báo cáo. Microservices đầy đủ đem lại mức cô lập triển khai mạnh hơn, nhưng kéo theo chi phí vận hành, quan sát, giao dịch phân tán và quản lý hợp đồng dịch vụ vượt quá nhu cầu của một hệ thống nhà hàng đơn lẻ trong giai đoạn hiện tại. Event-driven thuần cũng không phù hợp vì các thao tác như tạo đơn gọi món, lập hóa đơn và thanh toán cần phản hồi tức thời, có trạng thái lỗi rõ ràng và có cơ chế kiểm soát trùng lặp chặt chẽ.
+
+Vì vậy, kiến trúc được chọn là một cấu trúc lai có trọng tâm rõ ràng: \textbf{service-based là nền tảng phân rã và tổ chức hệ thống}, còn \textbf{event-driven là cơ chế phối hợp cho các hệ quả bất đồng bộ}. Quyết định này liên kết trực tiếp với sơ đồ tổng quan kiến trúc ở Mục~3.1, nơi các service nghiệp vụ nằm ở lõi hệ thống, PostgreSQL đóng vai trò cơ sở dữ liệu vật lý duy nhất với nhiều nhóm bảng logic, RabbitMQ/outbox hỗ trợ phát sự kiện, còn các adapter biên cô lập thanh toán, thông báo và phát hành biên lai khỏi logic nghiệp vụ chính.
+

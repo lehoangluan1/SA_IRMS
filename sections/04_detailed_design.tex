@@ -1,22 +1,9 @@
 \subsection{Góc nhìn lớp}
 \label{sec:detailed-design-class-view}
-Góc nhìn lớp là phần chi tiết hóa của Module View, tập trung vào class, interface, enum và các quan hệ tĩnh trong miền lõi hoặc tại những điểm mở rộng kỹ thuật có bằng chứng trong code. Vì vậy, các sơ đồ ở mục này không dùng để mô tả broker, container, consumer runtime hay luồng publish/subscribe; các nội dung đó đã được đặt ở góc nhìn thành phần và kết nối.
-
-Code backend hiện tại dùng Spring Boot với JDBC repository và schema migration thay vì các lớp \textsf{@Entity}. Vì vậy, các sơ đồ lớp trong phần này được đọc như mô hình lớp nghiệp vụ hiện trạng: phần lớn lớp tương ứng với bảng/record trong migration, còn các interface và policy được giữ khi có class/interface thật trong code. Các thao tác nghiệp vụ như xác nhận, thanh toán, cập nhật trạng thái hoặc phát sự kiện được hiện thực chủ yếu trong application service, domain policy và adapter, nên diagram không trình bày chúng như method của entity.
+Góc nhìn lớp mô tả cấu trúc thiết kế của backend IRMS ở mức lớp, interface và adapter. Backend được tổ chức quanh controller, application service, domain policy, port, phạm vi triển khaisitory adapter, bộ xử lý sự kiện và các record dùng cho lệnh hoặc mô hình đọc. Vì vậy, phần này không xem bảng dữ liệu như lớp miền nghiệp vụ, mà tập trung vào các lớp giữ trách nhiệm xử lý và các điểm mở rộng.
 
 \subsubsection{Phạm vi bao phủ của sơ đồ lớp}
-Sơ đồ lớp được tổ chức theo năm hướng chính nhằm bao phủ đầy đủ miền nghiệp vụ của IRMS:
-\begin{enumerate}
-  \item \textbf{Ngữ cảnh khách hàng và chi nhánh}: sơ đồ thể hiện \textsf{CustomerProfile} và \textsf{Branch} để việc đặt bàn, lập hóa đơn, quản lý tồn kho và phân công nhân sự luôn được xác định rõ theo khách hàng và theo địa điểm vận hành.
-  \item \textbf{Bao phủ đầy đủ hơn phần tùy biến món}: sơ đồ thể hiện \textsf{ModifierOption} và \textsf{OrderItemModifier} để lưu được lựa chọn chi tiết ở mức tùy chọn, thay vì chỉ dừng ở mức nhóm modifier.
-  \item \textbf{Bao phủ khuyến mãi và giảm giá}: sơ đồ thể hiện \textsf{PromotionCampaign} và \textsf{AppliedDiscount} để hóa đơn phản ánh đúng các chương trình ưu đãi được áp dụng trong từng giao dịch.
-  \item \textbf{Bao phủ quản trị nhân sự theo ca}: sơ đồ thể hiện \textsf{ShiftAssignment} vì IRMS có nêu rõ nhu cầu quản trị và sắp lịch nhân viên.
-  \item \textbf{Làm rõ các giao diện mở rộng}: các giao diện cho thanh toán, thông báo và phân quyền được thể hiện riêng để chỉ ra rõ các điểm mở rộng và các chính sách nhạy cảm của hệ thống.
-\end{enumerate}
-
-Sơ đồ lớp trong báo cáo này không được hiểu như một ERD thuần dữ liệu.
-Thay vào đó, nó được dùng để biểu diễn \textbf{trạng thái nghiệp vụ, ranh giới record/aggregate và các điểm mở rộng có bằng chứng trong code}. Cách mô hình hóa này giúp làm rõ hệ thống lưu giữ và liên kết các khái niệm nghiệp vụ nào, đồng thời tránh mô tả nhầm các thao tác của service thành method nằm trên entity; phần biện minh cho góc nhìn lớp, mức chi tiết của từng cụm lớp và mối liên hệ của chúng với kiến trúc tổng thể được dẫn ngay tới Bảng~\ref{tab:appendix-traceability}, Bảng~\ref{tab:appendix-view-rationale} và Bảng~\ref{tab:appendix-component-rationale}.
-
+Các sơ đồ lớp được đọc theo thứ tự từ tổng quan đến chi tiết. Hình tổng quan cho thấy các application service chính và các interface dùng chung. Các hình chi tiết sau đó tách theo các module như \texttt{reservation}, \texttt{ordering}, \texttt{kitchen}, \texttt{billing}, \texttt{inventory}, \texttt{notification}, \texttt{identity} và \texttt{phạm vi triển khairting}. Cách chia này giữ nhất quán với Module View và Component-and-Connector View: tên module, class và hướng phụ thuộc phản ánh đúng ranh giới trách nhiệm đã mô tả ở chương kiến trúc.
 
 \begin{figure}[H]
 \centering
@@ -29,30 +16,11 @@ Thay vào đó, nó được dùng để biểu diễn \textbf{trạng thái ngh
     \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{18\_uml\_class\_diagram\_core\_domain\_overview.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp miền lõi tổng thể của IRMS}
+\caption{Sơ đồ lớp tổng quan mô tả các service ứng dụng và các điểm mở rộng chính của backend IRMS}
 \label{fig:irms-class-core}
 \end{figure}
 
-
-Hình~\ref{fig:irms-class-core} là sơ đồ lớp ở mức nhìn toàn hệ thống, có nhiệm vụ thể hiện các cụm nghiệp vụ quan trọng và các liên kết chính giữa chúng. Thay vì chỉ tập trung vào một số lớp giao dịch quen thuộc như \textsf{Order} hay \textsf{Bill}, sơ đồ này giữ lại các điểm neo chính của đặt bàn, phiên bàn, gọi món, bếp, thanh toán, tồn kho, quản trị, kiểm toán và báo cáo. Các lớp chi tiết hơn như \textsf{WaitlistEntry}, \textsf{DiningTable}, \textsf{ModifierGroup}, \textsf{BillSplit} hoặc \textsf{ShiftAssignment} được trình bày ở các sơ đồ cụm phía sau. Nhờ đó, người đọc có thể nắm được \textbf{bức tranh miền nghiệp vụ tổng thể} trước khi đi sâu vào từng cụm lớp chi tiết hơn.
-
-\paragraph{Các nhóm lớp chính thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{Đặt bàn và phục vụ tại bàn}: \textsf{Reservation} và \textsf{TableSession} biểu diễn điểm nối giữa lịch đặt bàn với phiên phục vụ tại bàn.
-  \item \textbf{Thực đơn, gọi món và bếp}: \textsf{MenuItem}, \textsf{Order} và \textsf{KitchenTicket} thể hiện đường đi chính từ món trong thực đơn tới đơn gọi món và phiếu bếp.
-  \item \textbf{Quyết toán và thanh toán}: \textsf{Bill} và \textsf{Payment} mô tả liên kết giữa hóa đơn và các lần thu tiền.
-  \item \textbf{Tồn kho}: \textsf{InventoryItem} là điểm neo để các luồng chế biến làm phát sinh biến động tồn kho.
-  \item \textbf{Quản trị, kiểm toán và báo cáo}: \textsf{User}, \textsf{AuditLog} và \textsf{ReportSnapshot} đảm nhiệm phần truy vết hành động và tổng hợp dữ liệu vận hành.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Sơ đồ tổng thể được đặt ở mức đủ rộng để người đọc nhận ra ranh giới giữa các miền nghiệp vụ, nhưng chưa đi quá sâu vào chi tiết cài đặt bên trong từng service.
-  \item Các quan hệ được lựa chọn theo tiêu chí nghiệp vụ, nghĩa là chỉ thể hiện những liên kết có ý nghĩa vận hành rõ ràng như đặt bàn gắn với bàn ăn, phiên bàn sinh đơn gọi món, đơn gọi món sinh phiếu bếp, và hóa đơn quyết toán phiên bàn.
-  \item Các điểm mở rộng như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{AuthorizationPolicy} được đưa vào ngay trong sơ đồ tổng thể để nhấn mạnh rằng mô hình lớp không chỉ mô tả dữ liệu, mà còn chỉ ra \textbf{ranh giới mở rộng và kiểm soát}.
-\end{itemize}
-
-Điểm mạnh của sơ đồ tổng thể là hỗ trợ kiểm tra nhanh các liên kết miền lõi của IRMS trước khi đi vào từng sơ đồ chi tiết. Nếu cần kiểm tra phạm vi đầy đủ của một cụm nghiệp vụ, người đọc tiếp tục đối chiếu các hình cụm phía sau vì những hình đó mới trình bày đầy đủ các lớp chi tiết trong từng miền.
+Hình~\ref{fig:irms-class-core} đặt các class entrypoint và service chính cạnh các interface dùng chung, gồm \textsf{DomainEventPublisher}, \textsf{PaymentGateway}, \textsf{BillSplitStrategy}, \textsf{ReorderRecommendationStrategy} và \textsf{NotificationChannelAdapter}. Sơ đồ này không cố liệt kê mọi method của từng module, mà làm rõ bức tranh class-level trước khi đi vào các sơ đồ chi tiết.
 
 \begin{figure}[H]
 \centering
@@ -65,29 +33,11 @@ Hình~\ref{fig:irms-class-core} là sơ đồ lớp ở mức nhìn toàn hệ t
     \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{19\_uml\_class\_diagram\_ordering\_and\_kitchen\_cluster.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp miền lõi của cụm gọi món, thực đơn và bếp}
+\caption{Sơ đồ lớp mô tả quan hệ giữa cụm \textsf{ordering} và \textsf{kitchen}}
 \label{fig:irms-class-ordering-kitchen}
 \end{figure}
 
-Hình~\ref{fig:irms-class-ordering-kitchen} đi vào cụm lớp có mật độ tương tác cao nhất trong vận hành hằng ngày của nhà hàng. Đây là nơi luồng nghiệp vụ bắt đầu từ dữ liệu thực đơn, đi qua quá trình chọn món và tùy biến, sau đó chuyển thành các đơn vị điều phối ở bếp. Vì vậy, sơ đồ này có vai trò quan trọng trong việc chứng minh rằng mô hình gọi món của IRMS không bị giản lược thành một bảng dữ liệu phẳng.
-
-\paragraph{Các lớp trọng tâm thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{\textsf{MenuCategory} và \textsf{MenuItem}}: biểu diễn cấu trúc thực đơn và là nguồn gốc của giá cơ bản, trạng thái còn bán và thông tin điều phối.
-  \item \textbf{\textsf{ModifierGroup} và \textsf{ModifierOption}}: chịu trách nhiệm ràng buộc việc tùy biến món, ví dụ giới hạn số lựa chọn tối thiểu và tối đa hoặc thay đổi giá do tùy chọn bổ sung.
-  \item \textbf{\textsf{Order} và \textsf{OrderItem}}: là lõi của giao dịch gọi món; \textsf{Order} giữ trạng thái đơn tổng thể, còn \textsf{OrderItem} là đơn vị bán hàng cụ thể.
-  \item \textbf{\textsf{OrderItemModifier}}: lưu ảnh chụp của tùy biến đã chọn tại thời điểm gọi món, giúp hệ thống không bị lệ thuộc ngược vào cấu hình thực đơn hiện tại.
-  \item \textbf{\textsf{KitchenStation}, \textsf{KitchenTicket} và \textsf{KitchenTicketItem}}: chuyển dữ liệu từ miền bán hàng sang miền chế biến, đồng thời giữ được trạng thái của từng trạm bếp thay vì dồn toàn bộ tiến độ vào \textsf{Order}.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Tách \textsf{OrderItem} khỏi \textsf{KitchenTicketItem} để phân biệt rõ \textbf{đơn vị bán hàng} với \textbf{đơn vị điều phối chế biến}; đây là quyết định cần thiết nếu một món phải được định tuyến sang trạm bếp cụ thể.
-  \item Dùng cơ chế ảnh chụp ở \textsf{OrderItem} và \textsf{OrderItemModifier} để bảo vệ tính đúng đắn của hóa đơn và phiếu bếp ngay cả khi thực đơn thay đổi sau thời điểm gọi món.
-  \item Giữ \textsf{KitchenStation} như một lớp riêng để quy tắc định tuyến, mức ưu tiên và trạng thái bếp không làm phình to aggregate \textsf{Order}.
-\end{itemize}
-
-Ưu điểm của cụm lớp này là phản ánh được đồng thời \textbf{cấu hình thực đơn}, \textbf{dữ liệu giao dịch} và \textbf{trạng thái chế biến}. Nếu thiếu một trong ba lớp nghĩa đó, hệ thống rất dễ rơi vào tình trạng hoặc khó mở rộng nghiệp vụ, hoặc không theo dõi được đường đi thực sự của món từ màn hình gọi món xuống bếp.
+Hình~\ref{fig:irms-class-ordering-kitchen} mô tả quan hệ giữa \textsf{OrdersController}, \textsf{OrdersService}, các service con của module \texttt{ordering}, cổng \textsf{KitchenCoordinationPort}, adapter \textsf{RemoteKitchenOrderRoutingClient} và phía nhận ở module \texttt{kitchen}. Quan hệ này khớp với C\&C View: module gọi món không truy cập thẳng persistence của bếp mà đi qua client tích hợp và controller nội bộ.
 
 \begin{figure}[H]
 \centering
@@ -100,34 +50,13 @@ Hình~\ref{fig:irms-class-ordering-kitchen} đi vào cụm lớp có mật độ
     \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{20\_uml\_class\_diagram\_billing\_inventory\_and\_governance\_cluster.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp miền lõi của cụm thanh toán, tồn kho và quản trị}
+\caption{Sơ đồ lớp mô tả các điểm mở rộng của cụm \textsf{billing}, \textsf{inventory} và governance}
 \label{fig:irms-class-billing-inventory}
 \end{figure}
 
-Hình~\ref{fig:irms-class-billing-inventory} tập trung vào vùng nhạy cảm nhất của kiến trúc, nơi các quyết định của hệ thống tác động trực tiếp đến tiền, tồn kho và quyền thao tác của người dùng. Vì đây là khu vực dễ phát sinh sai sót có hậu quả vận hành lớn, sơ đồ được trình bày chi tiết hơn để người đọc thấy rõ lớp nào chịu trách nhiệm giao dịch, lớp nào chịu trách nhiệm truy vết, và lớp nào đóng vai trò cổng mở rộng.
-
-\paragraph{Các lớp trọng tâm thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{Cụm quyết toán}: \textsf{Bill}, \textsf{BillSplit}, \textsf{AppliedDiscount} và \textsf{PromotionCampaign} cùng nhau biểu diễn logic tổng hợp tiền, tách hóa đơn và áp dụng khuyến mãi.
-  \item \textbf{Cụm thanh toán}: \textsf{Payment}, \textsf{Refund}, \textsf{Receipt} và \textsf{PaymentGateway} mô tả việc thu tiền, hoàn tiền, phát hành biên lai và giao tiếp qua adapter biên trừu tượng.
-  \item \textbf{Cụm tồn kho}: \textsf{InventoryItem}, \textsf{RecipeLine}, \textsf{StockTransaction}, \textsf{LowStockRule} và \textsf{NotificationChannelAdapter} mô tả đường suy diễn từ món bán ra tới biến động tồn kho và cảnh báo mức tồn thấp.
-  \item \textbf{Cụm quản trị và kiểm soát}: \textsf{User}, \textsf{Role}, \textsf{Permission}, \textsf{AuditLog}, \textsf{AuthorizationPolicy}, \textsf{ShiftAssignment} và \textsf{ReportSnapshot} tạo nền cho phân quyền, kiểm toán, lịch ca và báo cáo.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Đặt \textsf{PaymentGateway} và \textsf{NotificationChannelAdapter} dưới dạng giao diện để miền nghiệp vụ không phụ thuộc trực tiếp vào một lớp hiện thực cụ thể.
-  \item Tách \textsf{Refund} ra khỏi \textsf{Payment} để phản ánh đúng việc hoàn tiền là một hành động nghiệp vụ riêng, có lý do, ngưỡng phê duyệt và trạng thái theo dõi riêng.
-  \item Đưa \textsf{AuditLog} và \textsf{AuthorizationPolicy} vào cùng sơ đồ với giao dịch để nhấn mạnh rằng kiểm soát quyền và truy vết không phải phần phụ, mà là một phần của thiết kế lõi.
-  \item Giữ \textsf{ReportSnapshot} ở cụm này để thể hiện rõ dữ liệu báo cáo được suy diễn từ dữ liệu vận hành, thay vì can thiệp trực tiếp vào tuyến giao dịch nóng.
-\end{itemize}
-
-Ưu điểm lớn nhất của sơ đồ này là cho thấy kiến trúc lớp của IRMS không chỉ giải quyết việc \enquote{thực hiện đúng chức năng}, mà còn giải quyết việc \enquote{kiểm soát được hậu quả vận hành} khi xảy ra hoàn tiền, điều chỉnh kho, ghi đè giá hay tranh chấp thanh toán. Đây là điểm làm cho phần thiết kế chặt chẽ hơn dưới góc nhìn kiến trúc phần mềm trong môi trường vận hành thực tế.
+Hình~\ref{fig:irms-class-billing-inventory} gom các điểm mở rộng nhạy cảm của hệ thống. Phần billing có \textsf{PaymentGateway} và các adapter thanh toán. Phần inventory có \textsf{LowStockSeverityPolicy} và \textsf{UsageBasedReorderRecommendationStrategy}. Vùng kiểm soát có \textsf{AuthService}, \textsf{AuditService}, \textsf{AuditEventMaterializer} và \textsf{IdentityRepository}.
 
 \subsection{Giải thích theo từng cụm lớp}\label{sec:detailed-design-clusters}
-
-Phần này được trình bày theo trình tự \emph{quan sát sơ đồ} $\rightarrow$ \emph{xác định cụm trách nhiệm} $\rightarrow$ \emph{làm rõ lý do mô hình hóa}. Cách trình bày này giúp phần sơ đồ lớp không dừng lại ở mức liệt kê lớp, mà làm rõ vai trò trong miền, ranh giới trách nhiệm và quyết định thiết kế của từng service.
-
 
 \begin{figure}[H]
 \centering
@@ -140,35 +69,11 @@ Phần này được trình bày theo trình tự \emph{quan sát sơ đồ} $\r
     \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{26\_uml\_class\_diagram\_reservation\_and\_seating\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp miền lõi chi tiết cho \textsf{Reservation \& Seating Service}}
+\caption{Sơ đồ lớp chi tiết cho module \textsf{reservation}}
 \label{fig:irms-class-reservation-module}
 \end{figure}
 
-
-Hình~\ref{fig:irms-class-reservation-module} đi vào \textsf{Reservation \& Seating Service} ở mức chi tiết và đúng tinh thần mô hình miền. Trọng tâm của service này không chỉ là \enquote{quản lý danh sách bàn}, mà là quản lý \textbf{năng lực phục vụ theo thời gian}: ai đến trước, ai có cam kết trước, bàn nào phù hợp, khi nào được mở phiên, và trên cơ sở nào quyết định gán bàn được đưa ra. Vì vậy, sơ đồ được tổ chức quanh ba trục: \textbf{nguồn nhu cầu} (\textsf{Reservation}, \textsf{WaitlistEntry}), \textbf{tài nguyên phục vụ} (\textsf{DiningTable}, \textsf{TableSession}) và \textbf{quy tắc điều phối} (\textsf{TableAssignment}, \textsf{SeatingPolicy}, \textsf{SeatingPreference}).
-
-\paragraph{Các cụm lớp và trách nhiệm thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{Nguồn nhu cầu trước khi phục vụ}: \textsf{Reservation} giữ thông tin đặt trước, trạng thái và các hành vi như xác nhận, check-in, no-show và hủy; \textsf{ReservationContact} tách riêng thông tin liên hệ để tránh dồn dữ liệu truyền thông vào thực thể đặt bàn.
-  \item \textbf{Nguồn nhu cầu chưa được đáp ứng ngay}: \textsf{WaitlistEntry} mô hình hóa khách vãng lai hoặc trường hợp chưa có bàn phù hợp tại thời điểm hiện tại; điều này quan trọng vì waitlist không nên bị ép vào cùng vòng đời với reservation.
-  \item \textbf{Tài nguyên vật lý và phiên vận hành}: \textsf{DiningTable} biểu diễn bàn vật lý với sức chứa và vùng; \textsf{TableSession} biểu diễn phiên phục vụ thực tế, độc lập với việc bàn đó có được đặt trước hay không.
-  \item \textbf{Lớp điều phối}: \textsf{TableAssignment} lưu quyết định gán bàn cụ thể, còn \textsf{SeatingPolicy} và \textsf{SeatingPreference} làm rõ phần \enquote{cơ sở chọn bàn} thay vì để quy tắc nằm rải rác trong service.
-\end{itemize}
-
-\paragraph{Giải thích chi tiết theo từng cụm lớp.}
-\begin{itemize}
-  \item \textbf{Reservation không đồng nhất với TableSession.} Một reservation có thể bị hủy, no-show hoặc dời giờ mà không sinh phiên phục vụ. Ngược lại, một table session có thể được mở cho khách walk-in mà không có reservation. Việc tách hai lớp này là quyết định mô hình hóa quan trọng nhất của \textsf{Reservation \& Seating Service}.
-  \item \textbf{WaitlistEntry là đối tượng hạng nhất của miền.} Nếu chỉ xem waitlist là một trạng thái phụ của reservation, hệ thống sẽ khó diễn tả đúng khách vãng lai, khách chưa chắc ngồi, khách đổi ý hoặc khách chấp nhận vùng bàn khác sau một khoảng chờ.
-  \item \textbf{TableAssignment giữ lịch sử quyết định gán bàn.} Điều này hữu ích cho giải thích vận hành, tái gán bàn, và về sau có thể nối với audit hoặc analytics để đo hiệu quả xếp bàn theo giờ cao điểm.
-  \item \textbf{SeatingPolicy là nơi đặt rule thay vì hard-code trong controller.} Các rule như thời gian giữ chỗ, ưu tiên walk-in hay reservation, giới hạn mở session và năng lực gộp bàn nên được gom vào chính sách có tên gọi rõ ràng.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Tách \textsf{ReservationContact} và \textsf{SeatingPreference} giúp thực thể \textsf{Reservation} gọn hơn, chỉ giữ phần nhận diện và trạng thái lõi.
-  \item Dùng \textsf{TableAssignment} như đối tượng trung gian để lưu lý do và điểm chấm bàn, nhờ đó quyết định xếp bàn có thể giải thích được.
-  \item Giữ \textsf{TableSession} như bản ghi riêng nhằm bảo vệ toàn bộ tuyến gọi món, hóa đơn và thanh toán khỏi việc phụ thuộc trực tiếp vào đặt bàn.
-\end{itemize}
+Hình~\ref{fig:irms-class-reservation-module} thể hiện các controller \textsf{ReservationController}, \textsf{TableController}, \textsf{WaitlistController}; service \textsf{ReservationService}, \textsf{ReservationCheckInService}, \textsf{ReservationWaitlistService}; workflow \textsf{ReservationSeatingMediator}; và các port/adapter JDBC cho vòng đời đặt bàn và bàn ăn. Các method trong hình được lấy từ class thật, ví dụ \textsf{load}, \textsf{recommend}, \textsf{createReservation} và \textsf{checkIn}.
 
 \begin{figure}[H]
 \centering
@@ -181,34 +86,11 @@ Hình~\ref{fig:irms-class-reservation-module} đi vào \textsf{Reservation \& Se
     \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{27\_uml\_class\_diagram\_ordering\_and\_menu\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp miền lõi chi tiết cho \textsf{Ordering \& Menu Service}}
+\caption{Sơ đồ lớp chi tiết cho module \textsf{ordering} và phần \textsf{menu}}
 \label{fig:irms-class-ordering-module}
 \end{figure}
 
-Hình~\ref{fig:irms-class-ordering-module} mô tả \textsf{Ordering \& Menu Service}, service có cường độ vận hành cao nhất của toàn hệ thống. Về mặt miền, service này phải giải quyết mâu thuẫn giữa \textbf{thực đơn biến đổi liên tục} và \textbf{giao dịch cần được cố định}. Thực đơn có thể thay đổi thường xuyên: ẩn món, đổi giá, thêm tùy chọn món hoặc đổi giờ phục vụ. Trong khi đó, đơn gọi món đã xác nhận phải giữ nguyên đúng tên món, giá, tùy chọn và điều kiện áp dụng tại thời điểm xác nhận. Vì vậy, sơ đồ tách rõ hai nhóm đối tượng: \textsf{Menu*} là phần cấu hình có thể thay đổi, còn \textsf{Order*} là phần giao dịch đã được chốt.
-
-\paragraph{Các cụm lớp và trách nhiệm thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{Cấu hình thực đơn}: \textsf{MenuCategory}, \textsf{MenuItem}, \textsf{ModifierGroup} và \textsf{ModifierOption} tạo nên cấu trúc menu mà quản lý có thể thay đổi.
-  \item \textbf{Quy tắc khả dụng và định giá}: \textsf{AvailabilityRule} và \textsf{PricingPolicy} gom logic giờ bán, trạng thái hết hàng, giá cơ sở và các quy tắc điều chỉnh giá.
-  \item \textbf{Giao dịch đơn gọi món}: \textsf{Order}, \textsf{OrderItem} và \textsf{OrderItemModifier} lưu lại món đã chọn, tùy chọn đã chọn, số lượng, ghi chú và trạng thái của từng dòng món.
-  \item \textbf{Ảnh chụp giao dịch}: \textsf{OrderSnapshot} cho thấy tại thời điểm xác nhận, hệ thống có điểm neo để lần vết lại phiên bản menu và cách tính giá đã được áp dụng.
-\end{itemize}
-
-\paragraph{Giải thích chi tiết theo từng cụm lớp.}
-\begin{itemize}
-  \item \textbf{MenuItem không nên được dùng trực tiếp như OrderItem.} Nếu dùng trực tiếp, chỉ cần đổi tên hoặc giá món sau đó là lịch sử giao dịch và hóa đơn sẽ bị biến dạng.
-  \item \textbf{ModifierGroup và ModifierOption là cấu trúc mang quy tắc.} Chúng không chỉ là dữ liệu hiển thị; chúng còn quyết định số lựa chọn bắt buộc, số lượng tối đa và phần cộng giá thêm.
-  \item \textbf{PricingPolicy nên tách khỏi MenuItem.} Giá của một món không chỉ là \textsf{basePrice}; nó còn phụ thuộc khung giờ, phí phục vụ, chương trình áp dụng hoặc logic định giá theo bối cảnh. Tách chính sách này giúp \textsf{Ordering \& Menu Service} tuân thủ trách nhiệm đơn nhất và dễ mở rộng hơn.
-  \item \textbf{OrderSnapshot khóa ngữ nghĩa tại thời điểm xác nhận.} Đây là điểm rất quan trọng khi cần kiểm toán, đối soát hóa đơn hoặc tái hiện đơn hàng trong trường hợp tranh chấp.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Việc tách rule và data giúp \textsf{Ordering \& Menu Service} vừa linh hoạt cho quản trị thực đơn, vừa chắc chắn cho tuyến giao dịch.
-  \item Đặt \textsf{AvailabilityRule} và \textsf{PricingPolicy} trong cùng sơ đồ để nhấn mạnh rằng validate và price phải là một phần của domain model, chứ không chỉ là service logic.
-  \item Duy trì \textsf{OrderItemModifier} như thực thể riêng để ghi nhận modifier thực tế đã chọn thay vì chỉ giữ quan hệ tham chiếu tới modifier cấu hình.
-\end{itemize}
+Hình~\ref{fig:irms-class-ordering-module} làm rõ vai trò của \textsf{MenuItemController}, \textsf{OrdersController}, \textsf{MenuService}, \textsf{OrdersService}, \textsf{OrderCreationService}, \textsf{OrderMenuSelectionService}, các policy đơn hàng và hai phạm vi triển khaisitory port \textsf{OrderRepository}, \textsf{OrderQueryRepository}. Các adapter \textsf{JdbcOrderRepository} và \textsf{JdbcOrderQueryRepository} được đặt ở phía hiện thực port, đúng với nguyên tắc tách application service khỏi truy cập JDBC.
 
 \begin{figure}[H]
 \centering
@@ -221,35 +103,11 @@ Hình~\ref{fig:irms-class-ordering-module} mô tả \textsf{Ordering \& Menu Ser
     \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{28\_uml\_class\_diagram\_kitchen\_coordination\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp miền lõi chi tiết cho \textsf{Kitchen Coordination Service}}
+\caption{Sơ đồ lớp chi tiết cho module \textsf{kitchen}}
 \label{fig:irms-class-kitchen-module}
 \end{figure}
 
-Hình~\ref{fig:irms-class-kitchen-module} làm rõ rằng \textsf{Kitchen Coordination Service} là một service nghiệp vụ riêng, chứ không chỉ là một trạng thái phụ của đơn gọi món. Khi đơn gọi món đã được xác nhận, hệ thống bắt đầu giải quyết một bài toán khác: chia việc theo trạm, xếp hàng đợi, điều chỉnh mức ưu tiên, theo dõi tiến độ và bàn giao món đã hoàn tất cho tuyến phục vụ. Nếu dồn toàn bộ logic này vào \textsf{Order} hoặc \textsf{OrderItem}, mô hình sẽ nhanh chóng lẫn lộn giữa góc nhìn bán hàng và góc nhìn chế biến.
-
-\paragraph{Các cụm lớp và trách nhiệm thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{Tài nguyên bếp}: \textsf{KitchenStation} biểu diễn từng trạm với năng lực xử lý, loại trạm và hàng chờ tương ứng.
-  \item \textbf{Đơn vị điều phối}: \textsf{KitchenTicket} là phiếu công việc ở mức phiếu bếp; \textsf{KitchenTicketItem} là đơn vị thực thi cụ thể theo món hoặc nhóm món.
-  \item \textbf{Chính sách điều phối}: \textsf{PreparationPolicy}, \textsf{RoutePlan} và \textsf{ExpediteRule} gom logic tách phiếu, nhóm món, định tuyến và tăng ưu tiên.
-  \item \textbf{Bàn giao trạng thái}: \textsf{ServeHandoff} và \textsf{DishStatusEvent} neo đường truyền trạng thái món ra khỏi bếp.
-\end{itemize}
-
-\paragraph{Giải thích chi tiết theo từng cụm lớp.}
-\begin{itemize}
-  \item \textbf{KitchenTicket là aggregate riêng.} Nó có vòng đời chờ, đang làm, sẵn sàng và đã bàn giao; vòng đời này không nên bị gộp vào trạng thái đơn gọi món.
-  \item \textbf{KitchenTicketItem cho phép xử lý ở mức hạt mịn.} Trong thực tế, không phải toàn bộ phiếu bếp luôn đi cùng một tốc độ; từng dòng có thể bị giữ, sẵn sàng hay bị chậm riêng.
-  \item \textbf{PreparationPolicy và ExpediteRule là nơi đặt thuật toán điều phối.} Nhờ đó, logic ưu tiên khách VIP, món bị trễ hoặc gom nhóm theo trạm bếp có vị trí rõ ràng trong mô hình.
-  \item \textbf{ServeHandoff tạo điểm chốt giữa bếp và phục vụ.} Một món ở trạng thái ready chưa đồng nghĩa với trạng thái served; thêm lớp bàn giao giúp phân biệt rõ hai giai đoạn này.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Tách miền bếp thành \textsf{Kitchen Coordination Service} giúp hệ thống mở rộng thuận lợi hơn khi cần nhiều station hoặc nhiều màn hình bếp khác nhau.
-  \item Dùng lớp sự kiện \textsf{DishStatusEvent} để cho phép mô hình đọc, thông báo hoặc phân tích tiến độ mà không chạm trực tiếp vào aggregate bếp.
-  \item Mô hình này cũng làm rõ vì sao góc nhìn thành phần cần \textsf{KitchenTicketFactory} và \textsf{KitchenApplicationService} riêng.
-\end{itemize}
-
+Hình~\ref{fig:irms-class-kitchen-module} mô tả các lớp điều phối bếp thật như \textsf{KitchenService}, \textsf{KitchenOrderRoutingService}, \textsf{KitchenTicketItemWorkflowService}, \textsf{KitchenWorkflowMediator}, các policy trạng thái/ưu tiên và các port \textsf{KitchenOrderRoutingRepository}, \textsf{KitchenTicketItemCommandPort}, \textsf{OrderingStatusSyncPort}. Adapter \textsf{RemoteOrderStateUpdateClient} thể hiện phụ thuộc quay về trạng thái gọi món thông qua interface thay vì truy cập trực tiếp.
 
 \begin{figure}[H]
 \centering
@@ -262,35 +120,11 @@ Hình~\ref{fig:irms-class-kitchen-module} làm rõ rằng \textsf{Kitchen Coordi
     \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{29\_uml\_class\_diagram\_billing\_and\_settlement\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp miền lõi chi tiết cho \textsf{Billing \& Settlement Service}}
+\caption{Sơ đồ lớp chi tiết cho module \textsf{billing}}
 \label{fig:irms-class-billing-module}
 \end{figure}
 
-
-Hình~\ref{fig:irms-class-billing-module} trình bày vùng quyết toán với độ sâu phù hợp cho báo cáo. Ở IRMS, bài toán quyết toán không chỉ dừng ở việc \enquote{tính tổng tiền}: hệ thống còn phải biểu diễn dòng hóa đơn, tách hóa đơn, phân bổ dòng vào từng phần thanh toán, áp khuyến mãi, tính thuế và phí, thu tiền theo một hay nhiều giao dịch thanh toán, phát hành biên lai và theo dõi hoàn tiền. Mỗi quyết định trong vùng này đều có hậu quả tài chính, vì vậy mô hình lớp phải được phân tách đủ rõ để tránh một lớp \textsf{Bill} quá lớn ôm toàn bộ trách nhiệm.
-
-\paragraph{Các cụm lớp và trách nhiệm thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{Hóa đơn và dòng hóa đơn}: \textsf{Bill} và \textsf{BillLine} là trung tâm quyết toán, nơi dữ liệu đơn gọi món đã xác nhận được gom lại thành đối tượng tài chính.
-  \item \textbf{Tách hóa đơn}: \textsf{BillSplit} và \textsf{SplitAllocation} biểu diễn đúng nghiệp vụ chia hóa đơn, thay vì coi split chỉ là một vài cờ trạng thái hoặc danh sách tạm.
-  \item \textbf{Thanh toán và hoàn tiền}: \textsf{Payment}, \textsf{Refund} và \textsf{Receipt} tạo thành vòng đời thu tiền, hoàn tiền và chứng từ.
-  \item \textbf{Quy tắc quyết toán}: \textsf{AppliedDiscount}, \textsf{TaxPolicy} và giao diện \textsf{PaymentGateway} gom logic giảm giá, làm tròn, thuế và adapter thanh toán.
-\end{itemize}
-
-\paragraph{Giải thích chi tiết theo từng cụm lớp.}
-\begin{itemize}
-  \item \textbf{BillSplit là đối tượng hạng nhất.} Trong nhà hàng, việc tách hóa đơn không phải thao tác hiếm; nó có nhãn, phạm vi, tổng phân bổ và trạng thái riêng. Mô hình hóa tường minh giúp hỗ trợ chia theo người, theo dòng món hoặc theo tỷ lệ.
-  \item \textbf{Payment tách khỏi Bill.} Một hóa đơn có thể có nhiều giao dịch thanh toán; một giao dịch có thể thất bại, cần thử lại, hoặc bị hoàn tiền một phần. Dồn logic này vào hóa đơn sẽ làm \textsf{Bill} có quá nhiều lý do thay đổi.
-  \item \textbf{Refund là thực thể riêng, không chỉ là số âm của payment.} Nó cần lý do, người yêu cầu, trạng thái và về sau có thể cần cơ chế phê duyệt.
-  \item \textbf{PaymentGateway phải là lớp trừu tượng.} Lõi quyết toán cần thực hiện các thao tác nghiệp vụ như ủy quyền, ghi nhận giao dịch và hoàn tiền, nhưng không nên phụ thuộc vào SDK hoặc giao thức đặc thù của từng nhà cung cấp.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Mô hình này bám sát tuyến giao dịch nhưng vẫn chừa đúng điểm mở cho bộ kết nối.
-  \item Việc tách \textsf{TaxPolicy} và \textsf{AppliedDiscount} làm rõ đâu là dữ liệu nghiệp vụ, đâu là quy tắc tính toán.
-  \item Sơ đồ cũng chuẩn bị tốt cho kiểm toán: hoàn tiền, tách hóa đơn và giao dịch thanh toán đều đã có chỗ neo riêng để nối với nhật ký kiểm toán hoặc luồng phê duyệt.
-\end{itemize}
+Hình~\ref{fig:irms-class-billing-module} thể hiện \textsf{BillingService} như facade ứng dụng. Các service con phụ trách lập hóa đơn, tách hóa đơn, thanh toán, biên nhận và hoàn tiền. Các điểm mở rộng chính là \textsf{BillSplitStrategy}, \textsf{PaymentGateway} và \textsf{ReceiptDeliveryAdapter}. Các strategy \textsf{EqualSplitStrategy}, \textsf{AmountSplitStrategy} và \textsf{SeatSplitStrategy} được biểu diễn bằng quan hệ hiện thực interface được dùng trong thiết kế.
 
 \begin{figure}[H]
 \centering
@@ -303,75 +137,28 @@ Hình~\ref{fig:irms-class-billing-module} trình bày vùng quyết toán với 
     \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{30\_uml\_class\_diagram\_inventory\_and\_notification\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp kỹ thuật cho \textsf{Inventory Monitoring Service} và \textsf{Notification Service}}
+\caption{Sơ đồ lớp chi tiết cho module \textsf{inventory} và \textsf{notification}}
 \label{fig:irms-class-inventory-module}
 \end{figure}
 
-Hình~\ref{fig:irms-class-inventory-module} mở rộng phần tồn kho theo hướng \textbf{truy vết được nguồn gốc biến động} và \textbf{phân biệt rõ dữ liệu kho với kênh cảnh báo}. Hình này được gọi là sơ đồ lớp kỹ thuật vì ngoài các record nghiệp vụ trong migration, nó còn giữ \textsf{NotificationChannelAdapter} như một interface mở rộng thật trong code. Một hệ thống nhà hàng thực tế không thể chỉ có trường \textsf{onHand}; nó phải biết món nào dùng nguyên liệu nào, thời điểm nào thì giữ tạm nguyên liệu, khi nào thì trừ thật, và khi nào cần phát ra cảnh báo mức tồn thấp. Vì vậy, sơ đồ bổ sung các lớp \textsf{Recipe}, \textsf{RecipeLine}, \textsf{InventoryReservation}, \textsf{ReorderRule}, \textsf{LowStockAlert} và \textsf{NotificationMessage}.
-
-\paragraph{Các cụm lớp và trách nhiệm thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{Số dư và giao dịch kho}: \textsf{InventoryItem} và \textsf{StockTransaction} giữ trạng thái kho hiện tại và lịch sử biến động.
-  \item \textbf{Suy diễn mức tiêu hao}: \textsf{Recipe} và \textsf{RecipeLine} nối món bán ra với nguyên liệu cần dùng.
-  \item \textbf{Giữ chỗ và chốt trừ}: \textsf{InventoryReservation} cho phép mô tả giai đoạn giữ tạm nguyên liệu trước khi thanh toán hoàn tất hoặc đơn gọi món được chốt.
-  \item \textbf{Cảnh báo và kênh gửi}: \textsf{ReorderRule}, \textsf{LowStockAlert}, \textsf{NotificationMessage} và giao diện \textsf{NotificationChannelAdapter} tách rõ điều kiện phát cảnh báo khỏi hạ tầng chuyển thông báo.
-\end{itemize}
-
-\paragraph{Giải thích chi tiết theo từng cụm lớp.}
-\begin{itemize}
-  \item \textbf{Recipe là cầu nối giữa thực đơn và kho.} Nếu thiếu lớp này, phần tiêu hao nguyên liệu sẽ bị mã hóa cứng trong logic gọi món hoặc quyết toán.
-  \item \textbf{InventoryReservation giúp mô hình linh hoạt hơn.} Một số phương án triển khai muốn trừ kho ngay khi xác nhận đơn gọi món, số khác chỉ chốt hẳn khi thanh toán hoàn tất; có lớp giữ chỗ giúp mở được cả hai chiến lược.
-  \item \textbf{StockTransaction là bằng chứng, không chỉ là lịch sử phụ.} Nó cho phép giải thích vì sao tồn kho thay đổi, hỗ trợ reconciliation và audit sau ca.
-  \item \textbf{Notification cần đi qua lớp trừu tượng.} Cảnh báo tồn thấp là nghiệp vụ; xử lý kênh email, sms, in-app hay print lại là bài toán của \textsf{NotificationChannelAdapter}.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Mô hình tách được tồn kho khỏi kênh thông báo nhưng vẫn giữ liên hệ chặt thông qua \textsf{LowStockAlert}.
-  \item Nó hỗ trợ tốt cho sơ đồ thành phần bất đồng bộ, nơi bộ xử lý nền có thể gửi cảnh báo sau khi service tồn kho phát hiện vượt ngưỡng.
-  \item Nó cũng tạo điểm nối dữ liệu sạch hơn cho phần báo cáo doanh thu--tồn kho ở giai đoạn sau.
-\end{itemize}
+Hình~\ref{fig:irms-class-inventory-module} nối \textsf{InventoryService}, \textsf{InventoryIngredientService}, \textsf{InventoryStockService} với workflow cảnh báo tồn kho và nhóm thông báo. \textsf{NotificationRequestedConsumer}, \textsf{NotificationRequestMaterializer} và các adapter kênh gửi được giữ vì chúng là class chính trong thiết kế và cũng xuất hiện ở C\&C View xử lý nền.
 
 \begin{figure}[H]
 \centering
-\IfFileExists{31_uml_class_diagram_identity_audit_and_reporting_module.pdf}{
-  \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{31_uml_class_diagram_identity_audit_and_reporting_module.pdf}
+\IfFileExists{31_uml_class_diagram_identity_audit_and_phạm vi triển khairting_module.pdf}{
+  \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{31_uml_class_diagram_identity_audit_and_phạm vi triển khairting_module.pdf}
 }{
-  \IfFileExists{31_uml_class_diagram_identity_audit_and_reporting_module.png}{
-    \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{31_uml_class_diagram_identity_audit_and_reporting_module.png}
+  \IfFileExists{31_uml_class_diagram_identity_audit_and_phạm vi triển khairting_module.png}{
+    \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{31_uml_class_diagram_identity_audit_and_phạm vi triển khairting_module.png}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{31\_uml\_class\_diagram\_identity\_audit\_and\_reporting\_module.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{31\_uml\_class\_diagram\_identity\_audit\_and\_phạm vi triển khairting\_module.(pdf/png)}.}}
   }
 }
-\caption{Sơ đồ lớp kỹ thuật cho \textsf{IAM \& Audit Service} và \textsf{Reporting Service}}
+\caption{Sơ đồ lớp chi tiết cho module \textsf{identity}, kiểm toán và \textsf{phạm vi triển khairting}}
 \label{fig:irms-class-governance-module}
 \end{figure}
 
-Hình~\ref{fig:irms-class-governance-module} trình bày phần governance ở mức phù hợp với kiến trúc của một hệ thống vận hành thực tế. Hình này được gọi là sơ đồ lớp kỹ thuật vì nó kết hợp các record lưu trữ, policy và lớp truy vấn báo cáo để làm rõ cơ chế kiểm soát thay vì chỉ mô tả thực thể nghiệp vụ thuần. Trong IRMS, user, role và permission mới chỉ là phần đầu. Hệ thống còn cần mô tả phiên đăng nhập (\textsf{UserSession}), chính sách kiểm tra quyền theo bối cảnh (\textsf{AuthorizationPolicy}), nhật ký kiểm toán đa thuộc tính (\textsf{AuditLog}, \textsf{AuditDetail}), phân công ca (\textsf{ShiftAssignment}) và ảnh chụp báo cáo cùng truy vấn báo cáo (\textsf{ReportSnapshot}, \textsf{ReportQuery}). Chỉ khi các lớp này được biểu diễn tường minh, phần \enquote{quản trị, kiểm toán, báo cáo} mới vượt khỏi mức mô tả khái quát.
-
-\paragraph{Các cụm lớp và trách nhiệm thể hiện trong hình.}
-\begin{itemize}
-  \item \textbf{Danh tính và quyền}: \textsf{User}, \textsf{Role}, \textsf{Permission} và \textsf{UserSession} giữ nền tảng xác thực--phân quyền.
-  \item \textbf{Chính sách truy cập}: \textsf{AuthorizationPolicy} gom logic bối cảnh như giới hạn hoàn tiền, yêu cầu nêu lý do ghi đè hoặc yêu cầu phê duyệt.
-  \item \textbf{Dấu vết thay đổi}: \textsf{AuditLog} và \textsf{AuditDetail} lưu hành động, thực thể bị tác động và giá trị trước--sau.
-  \item \textbf{Nhân sự và phân tích}: \textsf{ShiftAssignment}, \textsf{ReportSnapshot} và \textsf{ReportQuery} nối dữ liệu vận hành với góc nhìn quản trị.
-\end{itemize}
-
-\paragraph{Giải thích chi tiết theo từng cụm lớp.}
-\begin{itemize}
-  \item \textbf{AuthorizationPolicy cần là lớp riêng.} Nếu mọi quy tắc quyền đều nằm ở bộ điều khiển hoặc chú giải, hệ thống sẽ khó diễn tả các quyết định phụ thuộc ngữ cảnh nghiệp vụ như số tiền hoàn tiền hay lý do ghi đè.
-  \item \textbf{AuditDetail giúp nhật ký kiểm toán có giá trị thực tế.} Chỉ lưu \enquote{ai làm gì} là chưa đủ; với thao tác nhạy cảm, cần biết trường nào đã đổi từ gì sang gì.
-  \item \textbf{UserSession là đối tượng đáng được mô hình hóa.} Nó hỗ trợ khóa phiên, truy vết thiết bị và quản lý timeout, vốn là nhu cầu thực tế trong nhà hàng khi đổi ca hoặc bàn giao máy.
-  \item \textbf{ReportSnapshot tách khỏi ReportQuery.} Snapshot là dữ liệu tổng hợp bền vững cho một kỳ; query là cách người dùng truy cập và lọc dữ liệu đó.
-\end{itemize}
-
-\paragraph{Lý do thiết kế của sơ đồ này.}
-\begin{itemize}
-  \item Vùng governance được biểu diễn chi tiết giúp phần bảo mật, kiểm toán và báo cáo giữ đúng vai trò kiến trúc, thay vì bị xem như lớp chức năng phụ.
-  \item Nó tạo điểm nối rõ ràng giữa sơ đồ lớp với góc nhìn thành phần hỗ trợ và quản trị đã trình bày ở phần trước.
-  \item Nó cũng hỗ trợ tốt cho phần biện minh nguyên lý SOLID, đặc biệt là SRP, OCP và DIP ở vùng policy, audit và reporting.
-\end{itemize}
-
+Hình~\ref{fig:irms-class-governance-module} mô tả vùng kiểm soát bằng các controller, service, phạm vi triển khaisitory và bộ xử lý sự kiện: \textsf{AuthController}, \textsf{AuditController}, \textsf{ReportingController}, \textsf{DashboardController}, \textsf{AuthService}, \textsf{AuditService}, \textsf{AuditEventMaterializer}, \textsf{AuditRecordingRequestedConsumer}, \textsf{ReportingQueryService} và \textsf{ReportingProjectionConsumer}. Quan hệ giữa kiểm toán/báo cáo với bộ xử lý sự kiện nhất quán với Component-and-Connector View: dữ liệu quản trị được cập nhật qua xử lý nền và phạm vi triển khaisitory/query service riêng.
 \FloatBarrier
 \subsection{Thiết kế hành vi}
 Phần này mở rộng trực tiếp từ các ca sử dụng đã đặc tả ở trên. Phần đặc tả ca sử dụng xác định tác nhân, mục tiêu, điều kiện và kết quả nghiệp vụ; còn sơ đồ hoạt động diễn đạt thứ tự xử lý, điểm rẽ nhánh và nơi phát sinh ngoại lệ trong từng luồng vận hành. Vì vậy, các sơ đồ dưới đây được xây dựng theo đúng ranh giới vận hành hiện tại của IRMS: lễ tân, phục vụ, bếp, thu ngân, quản lý và hệ thống IRMS.
@@ -484,7 +271,7 @@ Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \e
 
 Điểm quan trọng của sơ đồ là không mô tả việc dự báo như một thuật toán mơ hồ, mà làm rõ chuỗi dữ liệu đầu vào: tiêu hao lịch sử, low-stock alert, hao hụt, lead time và mức tồn an toàn. Điều này có giá trị trong báo cáo kiến trúc vì nó cho thấy đề xuất nhập hàng là kết quả của mô hình dữ liệu và luồng xử lý đã có, không phải một chức năng được bổ sung rời rạc ở phần quản trị mà không có nền dữ liệu đủ tin cậy.
 
-\activitydiagramfigure{uc-rep-01-view-revenue-and-operations-report}{Sơ đồ hoạt động cho UC-REP-01 -- Xem báo cáo doanh thu và vận hành}{fig:activity-uc-rep-01-view-revenue-and-operations-report}
+\activitydiagramfigure{uc-rep-01-view-revenue-and-operations-phạm vi triển khairt}{Sơ đồ hoạt động cho UC-REP-01 -- Xem báo cáo doanh thu và vận hành}{fig:activity-uc-rep-01-view-revenue-and-operations-phạm vi triển khairt}
 
 \activitygroup{Nhóm quản trị cấu hình và vận hành}
 
@@ -504,7 +291,7 @@ Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \e
         \item Nếu danh mục không tồn tại hoặc công thức nguyên liệu sai định dạng, hệ thống yêu cầu điều chỉnh trước khi lưu.
     \end{itemize}
     
-    \item Khi dữ liệu hợp lệ, hệ thống lưu thay đổi thực đơn, công thức liên quan và ghi nhận audit trail; nếu trạng thái bán thay đổi, hệ thống phát event cập nhật khả dụng.
+    \item Khi dữ liệu hợp lệ, hệ thống lưu thay đổi thực đơn, công thức liên quan và ghi nhận dấu vết kiểm toán; nếu trạng thái bán thay đổi, hệ thống phát event cập nhật khả dụng.
     
     \item Các đơn hàng đang mở vẫn giữ nguyên giá đã ghi nhận trước đó để đảm bảo tính nhất quán.
 \end{itemize}
@@ -532,7 +319,7 @@ Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \e
     
     \item Hệ thống yêu cầu người dùng đăng nhập lại để áp dụng quyền mới.
     
-    \item Cuối cùng, hệ thống ghi nhận toàn bộ thay đổi vào audit log nhằm phục vụ truy vết và kiểm soát.
+    \item Cuối cùng, hệ thống ghi nhận toàn bộ thay đổi vào nhật ký kiểm toán nhằm phục vụ truy vết và kiểm soát.
 \end{itemize}
 \activitydiagramfigure{uc-adm-03-review-audit-log}{Sơ đồ hoạt động cho UC-ADM-03 -- Xem nhật ký kiểm toán và truy vết thao tác nhạy cảm}{fig:log}
 \begin{itemize}
@@ -546,7 +333,7 @@ Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \e
     
     \item Người dùng nhập bộ lọc tìm kiếm (thời gian, người thao tác, loại hành động, mã liên kết).
     
-    \item Hệ thống truy vấn và hiển thị danh sách audit log:
+    \item Hệ thống truy vấn và hiển thị danh sách nhật ký kiểm toán:
     \begin{itemize}
         \item Nếu không có dữ liệu phù hợp, hệ thống thông báo và yêu cầu điều chỉnh bộ lọc.
         \item Nếu người dùng không đủ quyền, hệ thống làm mờ hoặc ẩn thông tin nhạy cảm.
@@ -556,7 +343,7 @@ Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \e
     
     \item Người dùng có thể xuất báo cáo hoặc đánh dấu bản ghi cần theo dõi.
     
-    \item Hệ thống ghi nhận hành vi truy cập và thao tác trên audit log nhằm phục vụ kiểm soát và truy vết sau này.
+    \item Hệ thống ghi nhận hành vi truy cập và thao tác trên nhật ký kiểm toán nhằm phục vụ kiểm soát và truy vết sau này.
 \end{itemize}
 \activitydiagramfigure{uc-ops-01-manage-staff-shifts}{Sơ đồ hoạt động cho UC-OPS-01 -- Quản lý ca làm nhân viên}{fig:calamviec}
 \begin{itemize}
@@ -575,27 +362,26 @@ Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \e
     \item Hệ thống kiểm tra các ràng buộc lập lịch:
     \begin{itemize}
         \item Nếu phát hiện trùng ca, hệ thống chặn lưu và yêu cầu điều chỉnh.
-        \item Nếu dữ liệu hợp lệ, hệ thống lưu \textsf{ShiftAssignment}, ghi audit log và xếp hàng thông báo nội bộ cho nhân viên.
+        \item Nếu dữ liệu hợp lệ, hệ thống lưu \textsf{ShiftAssignment}, ghi nhật ký kiểm toán và đưa thông báo nội bộ vào hàng chờ cho nhân viên.
     \end{itemize}
     
     \item Khi dữ liệu hợp lệ, quản lý lưu lịch làm việc.
     
-    \item Hệ thống cập nhật \textsf{ShiftAssignment}, ghi audit log và xếp hàng thông báo nội bộ cho nhân viên liên quan.
+    \item Hệ thống cập nhật \textsf{ShiftAssignment}, ghi nhật ký kiểm toán và đưa thông báo nội bộ vào hàng chờ cho nhân viên liên quan.
 \end{itemize}
-\subsection{Phản tư về toàn bộ báo cáo và định hướng hiện thực}
-Điểm mạnh lớn nhất của báo cáo nằm ở việc duy trì một mạch lập luận nhất quán xuyên suốt từ bối cảnh nghiệp vụ tới yêu cầu phi chức năng, ca sử dụng, quyết định kiến trúc và thiết kế chi tiết. Các sơ đồ không xuất hiện như các minh họa rời rạc. Mỗi góc nhìn được sử dụng để làm rõ một quyết định cụ thể của hệ thống. Nhờ đó, người đọc có thể theo dõi một logic liên tục: áp lực vận hành của nhà hàng dẫn tới việc tách miền nghiệp vụ, từ đó hình thành cách tổ chức service, dữ liệu và luồng xử lý.
 
-Một điểm mạnh quan trọng khác là việc đặt ranh giới năng lực nghiệp vụ làm trung tâm. Các miền như Reservation \& Seating, Ordering, Kitchen Coordination, Billing \& Settlement được xác định rõ trách nhiệm. Các ranh giới này được giữ nhất quán khi ánh xạ sang các service và luồng xử lý. Mỗi service sở hữu dữ liệu và logic riêng. Tương tác giữa các service đi qua giao diện công khai, không truy cập chéo vào chi tiết nội bộ. Cách tổ chức này giúp giảm phụ thuộc, đồng thời cho phép thay đổi từng phần mà không ảnh hưởng toàn hệ thống.
+\subsection{Phản tư về thiết kế và định hướng hiện thực}
+Thiết kế của IRMS được xây dựng quanh luồng vận hành lõi của nhà hàng: tiếp nhận khách, mở phiên bàn, gọi món, điều phối bếp, lập hóa đơn, thanh toán và giải phóng bàn. Điểm quan trọng nhất là các trạng thái nghiệp vụ không được xem như dữ liệu rời rạc. Mỗi trạng thái đều gắn với một trách nhiệm rõ ràng: \textsf{Reservation \& Seating} bảo vệ vòng đời bàn và \textsf{TableSession}; \textsf{Ordering \& Menu} giữ ảnh chụp đơn gọi món; \textsf{Kitchen Coordination} điều phối phiếu bếp; \textsf{Billing \& Settlement} kiểm soát nghĩa vụ thanh toán; còn \textsf{Inventory}, \textsf{Reporting}, \textsf{IAM \& Audit} và \textsf{Notification} xử lý các hệ quả hỗ trợ. Cách phân rã này giúp các sơ đồ lớp, sơ đồ hoạt động và các view kiến trúc đọc cùng một ranh giới nghiệp vụ thay vì mô tả những lát cắt rời nhau.
 
-Bên cạnh đó, việc tách biệt luồng giao dịch chính và luồng xử lý bất đồng bộ là một quyết định mang tính nền tảng. Các thao tác tuyến đầu như gọi món, điều phối bếp, thanh toán được giữ trong chuỗi đồng bộ ngắn nhằm đảm bảo phản hồi nhanh và trạng thái nhất quán. Các hệ quả sau giao dịch như thông báo, cập nhật báo cáo, ghi nhận audit được chuyển sang xử lý qua cơ chế sự kiện và xử lý nền. Cách tiếp cận này phản ánh trực tiếp yêu cầu vận hành: tuyến phục vụ cần ổn định, các tác vụ phụ cần linh hoạt.
+Một kết quả tích cực của thiết kế là tuyến giao dịch nóng được giữ ngắn và dễ giải thích. Các thao tác cần phản hồi trực tiếp như xác nhận đơn gọi món, cập nhật tiến độ bếp, lập hóa đơn, ghi nhận thanh toán và hoàn tiền được đặt trong các luồng đồng bộ có điểm bắt đầu và kết thúc rõ ràng. Những hệ quả không cần chặn người dùng, chẳng hạn thông báo, cập nhật mô hình đọc báo cáo, ghi nhận kiểm toán hoặc cảnh báo tồn kho, được chuyển sang xử lý bằng sự kiện. Sự tách biệt này phù hợp với yêu cầu phi chức năng ở Chương~1: nhà hàng cần phản hồi nhanh ở màn hình phục vụ, bếp và thu ngân, nhưng vẫn cần duy trì truy vết và dữ liệu quản trị đủ đầy ở phía sau.
 
-Các nguyên lý SOLID được thể hiện thông qua cấu trúc hệ thống thay vì tách thành phần lý thuyết. Trách nhiệm được phân tách rõ giữa lớp tiếp nhận yêu cầu, lớp điều phối và mô hình nghiệp vụ. Các tích hợp bên ngoài như thanh toán, thông báo được đặt sau các giao diện trừu tượng. Chiều phụ thuộc được kiểm soát để tránh ràng buộc trực tiếp vào công nghệ cụ thể. Nhờ đó, lõi nghiệp vụ giữ được tính ổn định trong khi các thành phần bên ngoài vẫn có thể thay đổi.
+Thiết kế cũng cho thấy lợi ích của việc đặt các điểm tích hợp ở biên. \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter} không được xem là logic nghiệp vụ lõi, mà là các hợp đồng giúp lõi thanh toán, thông báo và phát hành biên lai không phụ thuộc vào một kênh cụ thể. Nhờ đó, việc thay đổi phương thức thanh toán, kênh gửi thông báo hoặc định dạng biên lai có thể được khu trú ở lớp adapter. Điều này trực tiếp hỗ trợ khả năng bảo trì và mở rộng mà không làm thay đổi các quy tắc như tính tiền, xác nhận thanh toán, hoàn tiền hoặc ghi nhận kiểm toán.
 
-Tuy nhiên, kiến trúc hiện tại phản ánh một bối cảnh vận hành tương đối tập trung. Khi mở rộng theo hướng nhiều chi nhánh hoặc nhiều tích hợp, các vấn đề về triển khai, quan sát hệ thống và quản lý dữ liệu giữa các service sẽ trở nên rõ rệt hơn. Một số năng lực như dự báo tồn kho, tối ưu điều phối bếp, xử lý lỗi tích hợp mới dừng ở mức kiến trúc, chưa đi sâu vào chiến lược vận hành chi tiết.
+Ở tầng dữ liệu, việc dùng một PostgreSQL vật lý duy nhất giúp giảm độ phức tạp vận hành trong phạm vi hiện tại, đồng thời vẫn cho phép phân tách các nhóm bảng theo trách nhiệm logic. Dữ liệu giao dịch phục vụ gọi món, bếp và thanh toán cần nhất quán mạnh; các bảng outbox/inbox giúp điều phối sự kiện có kiểm soát; mô hình đọc báo cáo chấp nhận độ trễ có kiểm soát để giảm áp lực lên tuyến giao dịch nóng; dữ liệu định danh và kiểm toán phục vụ kiểm soát truy cập và truy vết. Cách đọc này giữ sự nhất quán với kiến trúc tổng quan: chỉ có một cơ sở dữ liệu vật lý, còn các nhóm dữ liệu bên trong mang các vai trò kiến trúc khác nhau.
 
-Về mặt kinh nghiệm, giá trị quan trọng nhất của báo cáo nằm ở cách chuyển trọng tâm từ việc liệt kê chức năng sang việc làm rõ cách hệ thống vận hành. Khi lập luận xoay quanh giao dịch cốt lõi, ranh giới service, luồng đồng bộ và bất đồng bộ, tài liệu phản ánh đúng bản chất của thiết kế kiến trúc. Từ đó có thể rút ra một nguyên tắc: giá trị của báo cáo không nằm ở số lượng sơ đồ, mà nằm ở khả năng mỗi sơ đồ làm rõ một quyết định thiết kế cụ thể.
+Điểm cần thận trọng là độ phức tạp của xử lý bất đồng bộ. Khi thông báo, kiểm toán, báo cáo và cảnh báo tồn kho được tách ra khỏi tuyến chính, hệ thống phải kiểm soát tốt việc phát lại sự kiện, chống xử lý lặp, ghi mã liên kết và theo dõi trạng thái xử lý nền. Nếu các cơ chế này thiếu nhất quán, lợi ích về hiệu năng có thể đổi thành khó khăn khi điều tra lỗi. Vì vậy, các use case và activity diagram nên tiếp tục nhấn mạnh những điểm có nguy cơ trùng lặp hoặc mất dấu như xác nhận đơn, ghi nhận thanh toán, hoàn tiền, cập nhật tồn kho và làm mới báo cáo.
 
-Trong giai đoạn hiện thực, các quyết định kiến trúc có thể được sử dụng trực tiếp làm khung triển khai. Các service được hiện thực theo đúng ranh giới nghiệp vụ. Lớp API và cổng vào đảm nhiệm kiểm soát truy cập và điều phối yêu cầu. Cơ chế Outbox và xử lý nền được sử dụng để xử lý các sự kiện bất đồng bộ. Dữ liệu được tách giữa giao dịch và mô hình đọc nhằm cân bằng tính nhất quán và hiệu năng.
+Một giới hạn khác nằm ở phạm vi triển khai hiện tại. IRMS được mô tả cho một nhà hàng đơn lẻ với runtime Docker local, một PostgreSQL và một RabbitMQ. Cấu trúc này phù hợp với phạm vi học phần và quy mô vận hành đã nêu, nhưng chưa tương đương với mô hình nhiều chi nhánh hoặc hạ tầng sẵn sàng cao. Khi mở rộng, các vấn đề như quản lý cấu hình theo chi nhánh, phân vùng dữ liệu, đồng bộ báo cáo nhiều cơ sở, giám sát hàng đợi và quy trình khôi phục sau lỗi sẽ cần được thiết kế chi tiết hơn. Những điểm này nên được đặt ở phần định hướng mở rộng, không nên trộn vào mô hình triển khai hiện tại.
 
-Nếu các ranh giới service và nguyên tắc tách luồng xử lý được giữ vững, kiến trúc có thể đóng vai trò như một tiêu chuẩn kiểm soát chất lượng mã nguồn. Khi đó, báo cáo không chỉ là tài liệu mô tả, mà trở thành cơ sở dẫn hướng cho quá trình phát triển hệ thống.
+Định hướng hiện thực tiếp theo nên ưu tiên ba nhóm công việc. Thứ nhất, giữ vững ranh giới service đã xác định trong Module View để tránh đưa logic bếp, thanh toán hoặc tồn kho vào sai miền. Thứ hai, chuẩn hóa hợp đồng giao tiếp ở Component-and-Connector View: yêu cầu đồng bộ đi qua cổng rõ ràng, còn sự kiện nền có mã liên kết, chống lặp và trạng thái xử lý. Thứ ba, kiểm tra tính khớp giữa sơ đồ lớp và activity diagram để bảo đảm mỗi luồng nghiệp vụ quan trọng đều có class chịu trách nhiệm rõ ràng. Nếu ba điểm này được duy trì, thiết kế hiện tại có thể chuyển sang hiện thực mà vẫn giữ được tính nhất quán giữa yêu cầu, kiến trúc và thiết kế chi tiết.
 \pagebreak

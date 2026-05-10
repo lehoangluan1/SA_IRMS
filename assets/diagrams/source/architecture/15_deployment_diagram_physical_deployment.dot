@@ -85,11 +85,13 @@ Projection Refresh Handler"];
     dbhost [shape=box3d, fillcolor="#ECFEFF", label="<<device>>
 Relational Database Server"];
     pg [shape=box3d, fillcolor="#F8FAFC", label="<<executionEnvironment>>
-PostgreSQL"];
+PostgreSQL
+single physical database"];
     schema1 [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
-Operational Schema"];
+Operational transaction tables"];
     schema2 [shape=note, fillcolor="#FFFFFF", label="<<artifact>>
-Reporting Views"];
+Reporting projection tables
+outbox / audit / identity tables"];
     dbhost -> pg [arrowhead=none, color="#94A3B8"];
     pg -> schema1 [arrowhead=none, color="#94A3B8"];
     pg -> schema2 [arrowhead=none, color="#94A3B8"];

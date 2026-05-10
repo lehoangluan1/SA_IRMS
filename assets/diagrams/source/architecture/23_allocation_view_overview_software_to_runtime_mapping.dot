@@ -26,14 +26,12 @@ digraph G {
   service_nodes [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nSpring Boot service containers\n\n<<artifact>> ordering-service\n<<artifact>> kitchen-service\n<<artifact>> billing-service\n<<artifact>> reservation-service\n<<artifact>> inventory-service\n<<artifact>> notification-service\n<<artifact>> reporting-service\n<<artifact>> identity-audit-service"];
   migration_node [shape=box3d, fillcolor="#EFF6FF", label="<<node>>\nirms-migration container\n\n<<artifact>> MigrationApplication"];
 
-  operational_db [shape=cylinder, fillcolor="#F8FBFF", label="<<database>>\nPostgreSQL container\nshared operational schema"];
+  postgres [shape=cylinder, fillcolor="#F8FBFF", label="<<database>>\nPostgreSQL container\nsingle physical database\n\nlogical table groups:\ntransaction tables\noutbox_events / processed_events\nreporting projections\nidentity and audit tables"];
   rabbitmq [shape=box3d, fillcolor="#F8FBFF", label="<<node>>\nRabbitMQ container\nbroker queues"];
-  read_model [shape=cylinder, fillcolor="#F8FBFF", label="<<artifact>>\nReporting tables and views"];
-  outbox [shape=cylinder, fillcolor="#F8FBFF", label="<<artifact>>\noutbox_events and processed_events"];
 
   { rank=same; host; server; kitchen_display; cashier; manager; }
   { rank=same; frontend_node; gateway_node; service_nodes; migration_node; }
-  { rank=same; operational_db; rabbitmq; outbox; read_model; }
+  { rank=same; postgres; rabbitmq; }
 
   host -> frontend_node [label="HTTP"];
   server -> frontend_node [label="HTTP"];
@@ -44,9 +42,7 @@ digraph G {
   frontend_node -> gateway_node [label="/api proxy"];
   gateway_node -> service_nodes [label="REST routing"];
 
-  service_nodes -> operational_db [label="JDBC"];
-  service_nodes -> outbox [label="write / claim events"];
+  service_nodes -> postgres [label="JDBC"];
   service_nodes -> rabbitmq [label="publish / consume"];
-  service_nodes -> read_model [label="refresh and query"];
-  migration_node -> operational_db [label="Flyway migrations"];
+  migration_node -> postgres [label="Flyway migrations"];
 }

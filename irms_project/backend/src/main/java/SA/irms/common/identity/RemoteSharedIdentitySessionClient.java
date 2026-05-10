@@ -13,9 +13,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import SA.irms.common.remote.ServiceEndpointProperties;
-import SA.irms.common.identity.SessionPrincipal;
-import SA.irms.common.identity.SharedIdentitySessionPort;
-import SA.irms.common.identity.TouchSessionRequest;
+
 
 @Component
 @Profile("!identity-audit-service")

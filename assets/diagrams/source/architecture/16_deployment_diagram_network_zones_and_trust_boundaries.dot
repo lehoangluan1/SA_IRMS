@@ -52,10 +52,10 @@ digraph G {
     color="#FCA5A5";
     style="rounded,filled";
     fillcolor="#FEF2F2";
-    postgres [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nPostgreSQL container"];
+    postgres [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nPostgreSQL container\nsingle physical database"];
     rabbitmq [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nRabbitMQ container"];
-    txschema [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\nTransactional Schema"];
-    readm [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\nReporting tables and views"];
+    txschema [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\ntransaction tables"];
+    readm [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\nreporting projection tables"];
     outbox [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\noutbox_events\nprocessed_events"];
     postgres -> txschema [arrowhead=none];
     postgres -> readm [arrowhead=none];

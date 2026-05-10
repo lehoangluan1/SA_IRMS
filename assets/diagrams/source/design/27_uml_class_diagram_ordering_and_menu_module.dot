@@ -1,88 +1,139 @@
-
 digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.35, nodesep=0.65, ranksep=0.9, splines=polyline, fontname="Arial", labelloc="t", label="UML Class Diagram - Ordering and Menu Module Structure"];
+  node [shape=plain, fontname="Arial", fontsize=9];
+  edge [color="#64748B", fontname="Arial", fontsize=8.5, arrowsize=0.7];
 
-graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.55", ranksep="0.9", splines=ortho, fontname="Helvetica"];
-node [fontname="Helvetica", shape=plaintext];
-edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+  MenuItemController [label=<
 
-labelloc="t";
-label="UML Class Diagram - Ordering & Menu Service";
-rankdir=TB;
-MenuCategory [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>MenuCategory</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+categoryId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+displayOrder: int</TD></TR>
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
 
-</TABLE>
->];
-MenuItem [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>MenuItem</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+menuItemId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+basePrice: Money<BR ALIGN='LEFT'/>+station: String<BR ALIGN='LEFT'/>+availability: ItemAvailability</TD></TR>
-</TABLE>
->];
-ModifierGroup [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>ModifierGroup</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+groupId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+minSelect: int<BR ALIGN='LEFT'/>+maxSelect: int<BR ALIGN='LEFT'/>+required: bool</TD></TR>
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>MenuItemController</B></TD></TR>
 
-</TABLE>
->];
-ModifierOption [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>ModifierOption</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+optionId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+extraPrice: Money<BR ALIGN='LEFT'/>+active: bool</TD></TR>
+      <TR><TD ALIGN="LEFT">- menuService: MenuService</TD></TR>
 
-</TABLE>
->];
-AvailabilityRule [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>AvailabilityRule</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+ruleId: UUID<BR ALIGN='LEFT'/>+effectiveFrom: DateTime<BR ALIGN='LEFT'/>+effectiveTo: DateTime<BR ALIGN='LEFT'/>+outOfStockHidesItem: bool</TD></TR>
-</TABLE>
->];
-PricingPolicy [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>PricingPolicy</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+policyId: UUID<BR ALIGN='LEFT'/>+serviceChargeRate: Decimal<BR ALIGN='LEFT'/>+supportsHappyHour: bool</TD></TR>
-</TABLE>
->];
-Order [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Order</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+orderId: UUID<BR ALIGN='LEFT'/>+channel: OrderChannel<BR ALIGN='LEFT'/>+status: OrderStatus<BR ALIGN='LEFT'/>+createdAt: DateTime<BR ALIGN='LEFT'/>+confirmedAt: DateTime</TD></TR>
-</TABLE>
->];
-OrderItem [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>OrderItem</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+orderItemId: UUID<BR ALIGN='LEFT'/>+quantity: int<BR ALIGN='LEFT'/>+unitPrice: Money<BR ALIGN='LEFT'/>+specialInstruction: String<BR ALIGN='LEFT'/>+lineStatus: OrderItemStatus</TD></TR>
-</TABLE>
->];
-OrderItemModifier [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>OrderItemModifier</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+selectionId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+extraPrice: Money<BR ALIGN='LEFT'/>+qtyMultiplier: int</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ items(request)<BR ALIGN="LEFT"/>+ createItem(body, request)<BR ALIGN="LEFT"/>+ updateItem(menuItemId, body, request)<BR ALIGN="LEFT"/>+ toggleAvailability(menuItemId, request)</TD></TR>
 
-</TABLE>
->];
-OrderSnapshot [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>OrderSnapshot</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+snapshotId: UUID<BR ALIGN='LEFT'/>+menuVersion: String<BR ALIGN='LEFT'/>+pricedAt: DateTime<BR ALIGN='LEFT'/>+currency: String</TD></TR>
+    </TABLE>
 
-</TABLE>
->];
+  >];
+  OrdersController [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>OrdersController</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- ordersService: OrdersService</TD></TR>
+      <TR><TD ALIGN="LEFT">+ overview(sessionId, request)<BR ALIGN="LEFT"/>+ createOrder(body, request)<BR ALIGN="LEFT"/>+ confirmDraftOrder(orderId, request)</TD></TR>
+    </TABLE>
+  >];
+  MenuService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>MenuService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ load()<BR ALIGN="LEFT"/>+ createItem(request, actorUserId, correlationId, metadata)<BR ALIGN="LEFT"/>+ updateItem(menuItemId, request, actorUserId, correlationId, metadata)<BR ALIGN="LEFT"/>+ toggleAvailability(menuItemId, actorUserId, correlationId, metadata)<BR ALIGN="LEFT"/>+ applyPromotion(billId, code)</TD></TR>
+    </TABLE>
+  >];
+  OrdersService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>OrdersService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ load(sessionId)<BR ALIGN="LEFT"/>+ createOrder(request, actor, correlationId, metadata)<BR ALIGN="LEFT"/>+ confirmDraftOrder(orderId, actor, correlationId, metadata)</TD></TR>
+    </TABLE>
+  >];
+  OrderCreationService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>OrderCreationService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createOrder(request, actor, correlationId, metadata)</TD></TR>
+    </TABLE>
+  >];
+  OrderMenuSelectionService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>OrderMenuSelectionService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ requireAvailableMenuItem(menuItemId, draftConfirmation)<BR ALIGN="LEFT"/>+ resolveModifierSelection(menuItemId, requestedOptionIds)<BR ALIGN="LEFT"/>+ insertModifierSelections(orderItemId, selectedOptions)<BR ALIGN="LEFT"/>+ loadModifierGroups(menuItemId)</TD></TR>
+    </TABLE>
+  >];
+  ComboPricingPolicy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;policy&gt;&gt;</I><BR/><B>ComboPricingPolicy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ componentUnitPrice(comboBasePrice, optionExtraPrice, totalSelectedUnits)</TD></TR>
+    </TABLE>
+  >];
+  OrderStatusPolicy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;policy&gt;&gt;</I><BR/><B>OrderStatusPolicy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ deriveOrderStatus(itemStatuses)</TD></TR>
+    </TABLE>
+  >];
+  OrderItemStatusPolicy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;policy&gt;&gt;</I><BR/><B>OrderItemStatusPolicy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ ensureDelayedItemCanBeSent(orderStatus, itemStatus)<BR ALIGN="LEFT"/>+ ensureItemCanBeCancelled(itemStatus, actor)</TD></TR>
+    </TABLE>
+  >];
+  OrderRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>OrderRepository</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createOrder(...)<BR ALIGN="LEFT"/>+ createOrderItem(...)<BR ALIGN="LEFT"/>+ confirmDraftOrder(...)</TD></TR>
+    </TABLE>
+  >];
+  OrderQueryRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>OrderQueryRepository</B></TD></TR>
+      <TR><TD ALIGN="LEFT">ResolvedMenuItemRow<BR ALIGN="LEFT"/>ResolvedModifierOptionRow<BR ALIGN="LEFT"/>DraftOrderRow<BR ALIGN="LEFT"/>OrderStateRow</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+  JdbcOrderRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;repository adapter&gt;&gt;</I><BR/><B>JdbcOrderRepository</B></TD></TR>
+      <TR><TD ALIGN="LEFT">implements OrderRepository</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+  JdbcOrderQueryRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;repository adapter&gt;&gt;</I><BR/><B>JdbcOrderQueryRepository</B></TD></TR>
+      <TR><TD ALIGN="LEFT">implements OrderQueryRepository</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+  OrderCommands [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;command records&gt;&gt;</I><BR/><B>OrderCommands</B></TD></TR>
+      <TR><TD ALIGN="LEFT">CreateOrderRequest<BR ALIGN="LEFT"/>OrderItemRequest<BR ALIGN="LEFT"/>ComboSelectionRequest</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+  OrderViews [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;view records&gt;&gt;</I><BR/><B>OrderViews</B></TD></TR>
+      <TR><TD ALIGN="LEFT">OrdersOverview<BR ALIGN="LEFT"/>MenuItemView<BR ALIGN="LEFT"/>OrderedItemView</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+  MenuViews [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;view records&gt;&gt;</I><BR/><B>MenuViews</B></TD></TR>
+      <TR><TD ALIGN="LEFT">MenuOverview<BR ALIGN="LEFT"/>CategoryView<BR ALIGN="LEFT"/>ComboView<BR ALIGN="LEFT"/>PromotionView</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
 
-MenuCategory -> MenuItem [label="1 to many"];
-MenuItem -> ModifierGroup [label="0..* groups"];
-ModifierGroup -> ModifierOption [label="1 to many"];
-AvailabilityRule -> MenuItem [style=dashed, label="controls visibility"];
-PricingPolicy -> MenuItem [style=dashed, label="base / promo price"];
-Order -> OrderItem [label="1 to many"];
-OrderItem -> OrderItemModifier [label="0..* chosen"];
-OrderItem -> MenuItem [style=dashed, label="copied from menu"];
-Order -> OrderSnapshot [label="1 to 1 confirmed snapshot"];
-PricingPolicy -> OrderItem [style=dashed, label="materializes price"];
-AvailabilityRule -> Order [style=dashed, label="validate before confirm"];
+  MenuItemController -> MenuService [arrowhead=none];
+  OrdersController -> OrdersService [arrowhead=none];
+  OrdersService -> OrderCreationService [arrowhead=none];
+  OrderCreationService -> OrderMenuSelectionService [arrowhead=none];
+  OrderMenuSelectionService -> OrderQueryRepository [style=dashed, arrowhead=open];
+  OrderCreationService -> OrderRepository [style=dashed, arrowhead=open];
+  OrderMenuSelectionService -> ComboPricingPolicy [style=dashed, arrowhead=open];
+  OrdersService -> OrderStatusPolicy [style=dashed, arrowhead=open];
+  OrdersService -> OrderItemStatusPolicy [style=dashed, arrowhead=open];
+  JdbcOrderRepository -> OrderRepository [style=dashed, arrowhead=empty];
+  JdbcOrderQueryRepository -> OrderQueryRepository [style=dashed, arrowhead=empty];
+  OrdersController -> OrderCommands [style=dashed, arrowhead=open];
+  OrdersService -> OrderViews [style=dashed, arrowhead=open];
+  MenuService -> MenuViews [style=dashed, arrowhead=open];
 }

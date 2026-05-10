@@ -1,91 +1,90 @@
 digraph G {
   graph [
     rankdir=LR,
-    newrank=true,
     compound=true,
     bgcolor="white",
-    pad=0.34,
-    nodesep=0.52,
-    ranksep=0.92,
+    pad=0.35,
+    nodesep=0.55,
+    ranksep=0.9,
     splines=ortho,
-    fontname="DejaVu Sans",
+    fontname="Arial",
     labelloc="t",
-    label="Component Diagram - IRMS Runtime Dependency Overview"
+    label="Module View - Backend Package Responsibility Boundaries"
   ];
 
-  node [shape=component, style="rounded,filled", fillcolor="#FFFFFF", color="#64748B", penwidth=1.0, fontname="DejaVu Sans", fontsize=8.8, margin="0.10,0.06"];
-  edge [style=dashed, arrowhead=vee, color="#64748B", penwidth=0.9, fontname="DejaVu Sans", fontsize=7.8];
+  node [
+    shape=folder,
+    style="filled",
+    fillcolor="#FFFFFF",
+    color="#64748B",
+    penwidth=1.1,
+    fontname="Arial",
+    fontsize=10,
+    margin="0.12,0.07"
+  ];
+  edge [
+    color="#64748B",
+    fontname="Arial",
+    fontsize=9,
+    arrowsize=0.7
+  ];
 
-  subgraph cluster_frontend {
-    label="Frontend";
+  gateway [label="SA.irms.gateway\nAPI gateway package"];
+  common [label="SA.irms.common\nshared platform package"];
+
+  subgraph cluster_domain_packages {
+    label="Business service packages";
     color="#BFDBFE";
     style="rounded,filled";
     fillcolor="#F8FBFF";
-    ApiClient [label="apiFetch"];
-    Endpoints [label="ENDPOINTS"];
-    PermissionRules [label="permissions.ts"];
+
+    reservation [label="SA.irms.reservation\napi / application / infrastructure"];
+    ordering [label="SA.irms.ordering\napi / application / domain / infrastructure"];
+    kitchen [label="SA.irms.kitchen\napi / application / domain / infrastructure"];
+    billing [label="SA.irms.billing\napi / application / domain / infrastructure"];
+    inventory [label="SA.irms.inventory\napi / application / domain / infrastructure"];
+    notification [label="SA.irms.notification\napi / application / infrastructure"];
+    reporting [label="SA.irms.reporting\napi / application / infrastructure"];
+    identity [label="SA.irms.identity\napi / application / persistence / audit"];
   }
 
-  subgraph cluster_gateway {
-    label="Gateway";
-    color="#BFDBFE";
+  subgraph cluster_runtime {
+    label="Runtime entrypoint packages";
+    color="#CBD5E1";
     style="rounded,filled";
-    fillcolor="#F8FBFF";
-    GatewayProxyController [label="GatewayProxyController"];
-    GatewayRouteLocator [label="GatewayRouteLocator"];
+    fillcolor="#F8FAFC";
+
+    runtime [label="SA.irms.runtime\nservice SpringBootApplication classes"];
+    adapters [label="SA.irms.adapters.pdf\nReceiptPdfRenderer"];
   }
 
-  subgraph cluster_core {
-    label="Core Application Services";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    ReservationService [label="ReservationService"];
-    OrderingService [label="OrderingService"];
-    KitchenService [label="KitchenService"];
-    BillingService [label="BillingService"];
-    InventoryService [label="InventoryService"];
-  }
+  gateway -> common [headlabel="uses", labeldistance=1.4, labelangle=20];
+  gateway -> reservation;
+  gateway -> ordering;
+  gateway -> kitchen;
+  gateway -> billing;
+  gateway -> inventory;
+  gateway -> notification;
+  gateway -> reporting;
+  gateway -> identity;
 
-  subgraph cluster_support {
-    label="Supporting Services";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    ReportingQueryService [label="ReportingQueryService"];
-    NotificationService [label="NotificationService"];
-    AuthService [label="AuthService"];
-    AuditReadService [label="AuditReadService"];
-  }
+  reservation -> common;
+  ordering -> common;
+  kitchen -> common;
+  billing -> common;
+  inventory -> common;
+  notification -> common;
+  reporting -> common;
+  identity -> common;
 
-  subgraph cluster_async {
-    label="Shared Event Infrastructure";
-    color="#BFDBFE";
-    style="rounded,filled";
-    fillcolor="#F8FBFF";
-    RabbitMqEventPublisher [label="RabbitMqEventPublisher"];
-    OutboxRelayScheduler [label="OutboxRelayScheduler"];
-  }
-
-  ApiClient -> Endpoints;
-  ApiClient -> GatewayProxyController;
-  PermissionRules -> ApiClient;
-  GatewayProxyController -> GatewayRouteLocator;
-
-  GatewayProxyController -> ReservationService;
-  GatewayProxyController -> OrderingService;
-  GatewayProxyController -> KitchenService;
-  GatewayProxyController -> BillingService;
-  GatewayProxyController -> InventoryService;
-  GatewayProxyController -> ReportingQueryService;
-  GatewayProxyController -> NotificationService;
-  GatewayProxyController -> AuthService;
-  GatewayProxyController -> AuditReadService;
-
-  ReservationService -> RabbitMqEventPublisher;
-  OrderingService -> RabbitMqEventPublisher;
-  KitchenService -> RabbitMqEventPublisher;
-  BillingService -> RabbitMqEventPublisher;
-  InventoryService -> RabbitMqEventPublisher;
-  OutboxRelayScheduler -> RabbitMqEventPublisher;
+  billing -> adapters [headlabel="receipt PDF", labeldistance=1.4, labelangle=20];
+  runtime -> gateway [headlabel="api-gateway", labeldistance=1.4, labelangle=20];
+  runtime -> reservation;
+  runtime -> ordering;
+  runtime -> kitchen;
+  runtime -> billing;
+  runtime -> inventory;
+  runtime -> notification;
+  runtime -> reporting;
+  runtime -> identity;
 }

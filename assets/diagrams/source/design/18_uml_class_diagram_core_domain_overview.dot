@@ -1,111 +1,152 @@
-
 digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.35, nodesep=0.7, ranksep=1.0, splines=polyline, fontname="Arial", labelloc="t", label="UML Class Diagram - Backend Services and Extension Points"];
+  node [shape=plain, fontname="Arial", fontsize=9];
+  edge [color="#64748B", fontname="Arial", fontsize=8.5, arrowsize=0.7];
 
-graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.55", ranksep="0.9", splines=ortho, fontname="Helvetica"];
-node [fontname="Helvetica", shape=plaintext];
-edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+  subgraph cluster_entry {
+    label="Runtime entrypoints"; color="#BFDBFE"; style="rounded";
+    ApiGatewayApplication [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;SpringBootApplication&gt;&gt;</I><BR/><B>ApiGatewayApplication</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ main(args)</TD></TR>
+      </TABLE>
+    >];
+    OrderingServiceApplication [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;SpringBootApplication&gt;&gt;</I><BR/><B>OrderingServiceApplication</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ main(args)</TD></TR>
+      </TABLE>
+    >];
+    KitchenServiceApplication [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;SpringBootApplication&gt;&gt;</I><BR/><B>KitchenServiceApplication</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ main(args)</TD></TR>
+      </TABLE>
+    >];
+    BillingServiceApplication [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;SpringBootApplication&gt;&gt;</I><BR/><B>BillingServiceApplication</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ main(args)</TD></TR>
+      </TABLE>
+    >];
+  }
 
-labelloc="t";
-label="UML Class Diagram - Core Domain Overview";
-rankdir=LR;
+  subgraph cluster_services {
+    label="Application services"; color="#BFDBFE"; style="rounded";
+    OrdersService [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>OrdersService</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ load(sessionId)<BR ALIGN="LEFT"/>+ createOrder(request, actor, correlationId, metadata)<BR ALIGN="LEFT"/>+ confirmDraftOrder(orderId, actor, correlationId, metadata)<BR ALIGN="LEFT"/>+ cancelOrder(orderId, reason, actor, correlationId, metadata)</TD></TR>
+      </TABLE>
+    >];
+    KitchenService [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>KitchenService</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ load(stationFilter)<BR ALIGN="LEFT"/>+ updateTicketStatus(ticketId, targetStatus, actor, correlationId)<BR ALIGN="LEFT"/>+ updateItemStatus(ticketItemId, targetStatus, reason, actor, correlationId, metadata)</TD></TR>
+      </TABLE>
+    >];
+    BillingService [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>BillingService</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ createBill(tableSessionId)<BR ALIGN="LEFT"/>+ processPayment(billId, request, actor)<BR ALIGN="LEFT"/>+ issueReceipt(paymentId, request)<BR ALIGN="LEFT"/>+ refundPayment(paymentId, request, actor, correlationId, metadata)</TD></TR>
+      </TABLE>
+    >];
+    ReservationService [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>ReservationService</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ load(date)<BR ALIGN="LEFT"/>+ createReservation(request, actor, correlationId, metadata)<BR ALIGN="LEFT"/>+ checkIn(reservationId, request, actor, correlationId, metadata)</TD></TR>
+      </TABLE>
+    >];
+    InventoryService [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>InventoryService</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ load()<BR ALIGN="LEFT"/>+ createIngredient(request)<BR ALIGN="LEFT"/>+ updateIngredient(inventoryItemId, request, actorUserId, metadata)<BR ALIGN="LEFT"/>+ consumeForKitchenStart(orderItemId, actorUserId, correlationId)</TD></TR>
+      </TABLE>
+    >];
+  }
 
-subgraph cluster_res {
- label="Reservation & Seating"; color="#9BB5FF"; style="rounded";
- Reservation [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Reservation</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+reservationId: UUID<BR ALIGN='LEFT'/>+channel: ReservationChannel<BR ALIGN='LEFT'/>+status: ReservationStatus<BR ALIGN='LEFT'/>+arrivalTime: DateTime</TD></TR>
-</TABLE>
->];
- TableSession [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>TableSession</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+sessionId: UUID<BR ALIGN='LEFT'/>+guestCount: int<BR ALIGN='LEFT'/>+status: TableSessionStatus</TD></TR>
-</TABLE>
->];
-}
+  subgraph cluster_shared {
+    label="Shared platform"; color="#CBD5E1"; style="rounded";
+    DomainEventPublisher [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>DomainEventPublisher</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ publish(event)</TD></TR>
+      </TABLE>
+    >];
+    TransactionalOutboxPublisher [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>TransactionalOutboxPublisher</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ publish(event)</TD></TR>
+      </TABLE>
+    >];
+    RabbitMqOutboxRelay [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>RabbitMqOutboxRelay</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ relayPendingEvents()</TD></TR>
+      </TABLE>
+    >];
+    ManualAckConsumerSupport [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>ManualAckConsumerSupport</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ handle(message, channel, consumerName, handler)</TD></TR>
+      </TABLE>
+    >];
+  }
 
-subgraph cluster_order {
- label="Ordering & Kitchen"; color="#9BB5FF"; style="rounded";
- Order [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Order</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+orderId: UUID<BR ALIGN='LEFT'/>+status: OrderStatus<BR ALIGN='LEFT'/>+confirmedAt: DateTime</TD></TR>
-</TABLE>
->];
- KitchenTicket [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>KitchenTicket</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+ticketId: UUID<BR ALIGN='LEFT'/>+station: String<BR ALIGN='LEFT'/>+status: KitchenTicketStatus</TD></TR>
-</TABLE>
->];
-}
+  subgraph cluster_ports {
+    label="Ports and adapters"; color="#CBD5E1"; style="rounded";
+    PaymentGateway [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>PaymentGateway</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ supports(method)<BR ALIGN="LEFT"/>+ authorize(method, amount, amountReceived, paymentId)<BR ALIGN="LEFT"/>+ refund(payment, amount, refundId)</TD></TR>
+      </TABLE>
+    >];
+    BillSplitStrategy [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>BillSplitStrategy</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ method()<BR ALIGN="LEFT"/>+ split(context, request)</TD></TR>
+      </TABLE>
+    >];
+    ReorderRecommendationStrategy [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>ReorderRecommendationStrategy</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ compute(stockLevel)</TD></TR>
+      </TABLE>
+    >];
+    NotificationChannelAdapter [label=<
+      <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+        <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>NotificationChannelAdapter</B></TD></TR>
+        <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+        <TR><TD ALIGN="LEFT">+ channel()<BR ALIGN="LEFT"/>+ validate(command)</TD></TR>
+      </TABLE>
+    >];
+  }
 
-subgraph cluster_bill {
- label="Billing & Settlement"; color="#9BB5FF"; style="rounded";
- Bill [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Bill</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+billId: UUID<BR ALIGN='LEFT'/>+status: BillStatus<BR ALIGN='LEFT'/>+grandTotal: Money</TD></TR>
-</TABLE>
->];
- Payment [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Payment</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+paymentId: UUID<BR ALIGN='LEFT'/>+amount: Money<BR ALIGN='LEFT'/>+status: PaymentStatus</TD></TR>
-</TABLE>
->];
-}
+  OrdersService -> DomainEventPublisher [style=dashed, arrowhead=open];
+  KitchenService -> DomainEventPublisher [style=dashed, arrowhead=open];
+  BillingService -> DomainEventPublisher [style=dashed, arrowhead=open];
+  ReservationService -> DomainEventPublisher [style=dashed, arrowhead=open];
+  InventoryService -> DomainEventPublisher [style=dashed, arrowhead=open];
 
-subgraph cluster_inv {
- label="Inventory & Menu"; color="#9BB5FF"; style="rounded";
- MenuItem [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>MenuItem</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+menuItemId: UUID<BR ALIGN='LEFT'/>+name: String<BR ALIGN='LEFT'/>+basePrice: Money</TD></TR>
-</TABLE>
->];
- InventoryItem [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>InventoryItem</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+inventoryItemId: UUID<BR ALIGN='LEFT'/>+onHand: Decimal<BR ALIGN='LEFT'/>+threshold: Decimal</TD></TR>
-</TABLE>
->];
-}
-
-subgraph cluster_gov {
- label="Identity, Audit & Reporting"; color="#9BB5FF"; style="rounded";
- User [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>User</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+userId: UUID<BR ALIGN='LEFT'/>+username: String<BR ALIGN='LEFT'/>+status: UserStatus</TD></TR>
-</TABLE>
->];
- AuditLog [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>AuditLog</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+auditLogId: UUID<BR ALIGN='LEFT'/>+action: String<BR ALIGN='LEFT'/>+recordedAt: DateTime</TD></TR>
-</TABLE>
->];
- ReportSnapshot [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>ReportSnapshot</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+snapshotId: UUID<BR ALIGN='LEFT'/>+type: String<BR ALIGN='LEFT'/>+generatedAt: DateTime</TD></TR>
-</TABLE>
->];
-}
-
-Reservation -> TableSession [label="1 to 0..1"];
-TableSession -> Order [label="1 to many"];
-Order -> KitchenTicket [label="1 to many"];
-Order -> Bill [label="1 to 1"];
-Bill -> Payment [label="1 to 0..*"];
-Order -> MenuItem [style=dashed, label="references priced items"];
-KitchenTicket -> InventoryItem [style=dashed, label="kitchen start triggers stock consumption"];
-User -> AuditLog [label="records"];
-Bill -> AuditLog [style=dashed, label="payment / refund trace"];
-Order -> AuditLog [style=dashed, label="cancel / override trace"];
-InventoryItem -> ReportSnapshot [style=dashed, label="inventory metrics"];
-Bill -> ReportSnapshot [style=dashed, label="sales metrics"];
-User -> ReportSnapshot [style=dashed, label="operator metrics"];
+  TransactionalOutboxPublisher -> DomainEventPublisher [style=dashed, arrowhead=empty];
+  RabbitMqOutboxRelay -> DomainEventPublisher [style=dashed, arrowhead=open];
+  BillingService -> PaymentGateway [style=dashed, arrowhead=open];
+  BillingService -> BillSplitStrategy [style=dashed, arrowhead=open];
+  InventoryService -> ReorderRecommendationStrategy [style=dashed, arrowhead=open];
 }

@@ -1,87 +1,148 @@
-
 digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.35, nodesep=0.65, ranksep=0.9, splines=polyline, fontname="Arial", labelloc="t", label="UML Class Diagram - Billing and Settlement Module Structure"];
+  node [shape=plain, fontname="Arial", fontsize=9];
+  edge [color="#64748B", fontname="Arial", fontsize=8.5, arrowsize=0.7];
 
-graph [bgcolor="#F3F4F6", pad="0.25", nodesep="0.55", ranksep="0.9", splines=ortho, fontname="Helvetica"];
-node [fontname="Helvetica", shape=plaintext];
-edge [fontname="Helvetica", color="#5B6B8C", penwidth=1.0, arrowsize=0.7];
+  BillsController [label=<
 
-labelloc="t";
-label="UML Class Diagram - Billing & Settlement Service";
-rankdir=LR;
-Bill [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Bill</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+billId: UUID<BR ALIGN='LEFT'/>+status: BillStatus<BR ALIGN='LEFT'/>+subTotal: Money<BR ALIGN='LEFT'/>+taxAmount: Money<BR ALIGN='LEFT'/>+serviceFee: Money<BR ALIGN='LEFT'/>+tipAmount: Money<BR ALIGN='LEFT'/>+grandTotal: Money</TD></TR>
-</TABLE>
->];
-BillLine [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>BillLine</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+billLineId: UUID<BR ALIGN='LEFT'/>+sourceOrderItemId: UUID<BR ALIGN='LEFT'/>+label: String<BR ALIGN='LEFT'/>+quantity: int<BR ALIGN='LEFT'/>+lineTotal: Money</TD></TR>
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
 
-</TABLE>
->];
-BillSplit [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>BillSplit</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+splitId: UUID<BR ALIGN='LEFT'/>+label: String<BR ALIGN='LEFT'/>+status: SplitStatus<BR ALIGN='LEFT'/>+allocatedTotal: Money</TD></TR>
-</TABLE>
->];
-SplitAllocation [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>SplitAllocation</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+allocationId: UUID<BR ALIGN='LEFT'/>+billLineId: UUID<BR ALIGN='LEFT'/>+amount: Money<BR ALIGN='LEFT'/>+ratio: Decimal</TD></TR>
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>BillsController</B></TD></TR>
 
-</TABLE>
->];
-Payment [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Payment</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+paymentId: UUID<BR ALIGN='LEFT'/>+method: PaymentMethod<BR ALIGN='LEFT'/>+amount: Money<BR ALIGN='LEFT'/>+status: PaymentStatus<BR ALIGN='LEFT'/>+gatewayRef: String<BR ALIGN='LEFT'/>+paidAt: DateTime</TD></TR>
-</TABLE>
->];
-Refund [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Refund</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+refundId: UUID<BR ALIGN='LEFT'/>+amount: Money<BR ALIGN='LEFT'/>+reason: String<BR ALIGN='LEFT'/>+status: RefundStatus<BR ALIGN='LEFT'/>+requestedBy: UUID</TD></TR>
-</TABLE>
->];
-Receipt [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>Receipt</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+receiptId: UUID<BR ALIGN='LEFT'/>+issuedAt: DateTime<BR ALIGN='LEFT'/>+deliveryChannel: ReceiptChannel<BR ALIGN='LEFT'/>+documentNo: String</TD></TR>
-</TABLE>
->];
-AppliedDiscount [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>AppliedDiscount</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+discountId: UUID<BR ALIGN='LEFT'/>+type: DiscountType<BR ALIGN='LEFT'/>+value: Decimal<BR ALIGN='LEFT'/>+reason: String</TD></TR>
+      <TR><TD ALIGN="LEFT">- billingService: BillingService</TD></TR>
 
-</TABLE>
->];
-TaxPolicy [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#DDE5F0"><B>TaxPolicy</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+taxRate: Decimal<BR ALIGN='LEFT'/>+serviceFeeRate: Decimal<BR ALIGN='LEFT'/>+tipEditable: bool</TD></TR>
-</TABLE>
->];
-PaymentGateway [label=<
-<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#5B6B8C" BGCOLOR="#F7FAFF">
-<TR><TD BGCOLOR="#E7EEF9"><B>&lt;&lt;interface&gt;&gt; PaymentGateway</B></TD></TR>
-<TR><TD ALIGN="LEFT" BALIGN="LEFT">+supports(method)<BR ALIGN='LEFT'/>+authorize(method, amount, amountReceived, paymentId)<BR ALIGN='LEFT'/>+refund(payment, amount, refundId)</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createBill(body, request)<BR ALIGN="LEFT"/>+ updateBill(billId, body, request)<BR ALIGN="LEFT"/>+ splitBill(billId, body, request)<BR ALIGN="LEFT"/>+ pay(billId, body, request)</TD></TR>
 
-</TABLE>
->];
+    </TABLE>
 
-Bill -> BillLine [label="1 to many"];
-Bill -> BillSplit [label="0..* splits"];
-BillSplit -> SplitAllocation [label="1 to many"];
-Bill -> AppliedDiscount [label="0..*"];
-Bill -> Payment [label="0..*"];
-Payment -> Refund [label="0..*"];
-Payment -> Receipt [label="0..1"];
-TaxPolicy -> Bill [style=dashed, label="calculate tax/service fee"];
-AppliedDiscount -> BillLine [style=dashed, label="line or bill level"];
-Payment -> PaymentGateway [style=dashed, label="uses"];
-BillSplit -> Payment [style=dashed, label="settled by"];
+  >];
+  PaymentsController [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;controller&gt;&gt;</I><BR/><B>PaymentsController</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- billingService: BillingService</TD></TR>
+      <TR><TD ALIGN="LEFT">+ receipt(paymentId, body, request)<BR ALIGN="LEFT"/>+ receiptDocument(paymentId)<BR ALIGN="LEFT"/>+ refund(paymentId, body, request)</TD></TR>
+    </TABLE>
+  >];
+  BillingService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>BillingService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ createBill(tableSessionId)<BR ALIGN="LEFT"/>+ updateBill(billId, tipAmount, discountAmount)<BR ALIGN="LEFT"/>+ splitBill(billId, request)<BR ALIGN="LEFT"/>+ processPayment(billId, request, actor)<BR ALIGN="LEFT"/>+ issueReceipt(paymentId, request)</TD></TR>
+    </TABLE>
+  >];
+  BillingBillCreationService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>BillingBillCreationService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createBill(tableSessionId)</TD></TR>
+    </TABLE>
+  >];
+  BillingSplitService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>BillingSplitService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ splitBill(billId, request)</TD></TR>
+    </TABLE>
+  >];
+  BillingPaymentService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>BillingPaymentService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ processPayment(billId, request, actor)</TD></TR>
+    </TABLE>
+  >];
+  BillingReceiptService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>BillingReceiptService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ issueReceipt(paymentId, request)<BR ALIGN="LEFT"/>+ buildReceiptDocument(paymentId)</TD></TR>
+    </TABLE>
+  >];
+  BillingRefundRequestService [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;service&gt;&gt;</I><BR/><B>BillingRefundRequestService</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ refundPayment(paymentId, request, actor, correlationId, metadata)</TD></TR>
+    </TABLE>
+  >];
+  BillSplitStrategy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>BillSplitStrategy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ method()<BR ALIGN="LEFT"/>+ split(context, request)</TD></TR>
+    </TABLE>
+  >];
+  EqualSplitStrategy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;strategy&gt;&gt;</I><BR/><B>EqualSplitStrategy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ method()<BR ALIGN="LEFT"/>+ split(context, request)</TD></TR>
+    </TABLE>
+  >];
+  AmountSplitStrategy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;strategy&gt;&gt;</I><BR/><B>AmountSplitStrategy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ method()<BR ALIGN="LEFT"/>+ split(context, request)</TD></TR>
+    </TABLE>
+  >];
+  SeatSplitStrategy [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;strategy&gt;&gt;</I><BR/><B>SeatSplitStrategy</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ method()<BR ALIGN="LEFT"/>+ split(context, request)</TD></TR>
+    </TABLE>
+  >];
+  PaymentGateway [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>PaymentGateway</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ supports(method)<BR ALIGN="LEFT"/>+ authorize(method, amount, amountReceived, paymentId)<BR ALIGN="LEFT"/>+ refund(payment, amount, refundId)</TD></TR>
+    </TABLE>
+  >];
+  ReceiptDeliveryAdapter [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>ReceiptDeliveryAdapter</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ supports(channel)<BR ALIGN="LEFT"/>+ validate(recipientAddress)<BR ALIGN="LEFT"/>+ deliver(request)</TD></TR>
+    </TABLE>
+  >];
+  BillIssueRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>BillIssueRepository</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createBill(...)<BR ALIGN="LEFT"/>+ loadBillLines(tableSessionId)</TD></TR>
+    </TABLE>
+  >];
+  BillPaymentRepository [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;interface&gt;&gt;</I><BR/><B>BillPaymentRepository</B></TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+      <TR><TD ALIGN="LEFT">+ createPayment(...)<BR ALIGN="LEFT"/>+ markSplitPaid(...)</TD></TR>
+    </TABLE>
+  >];
+  BillingViews [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5" COLOR="#475569">
+      <TR><TD BGCOLOR="#F1F5F9"><I>&lt;&lt;view records&gt;&gt;</I><BR/><B>BillingViews</B></TD></TR>
+      <TR><TD ALIGN="LEFT">BillView<BR ALIGN="LEFT"/>LineView<BR ALIGN="LEFT"/>SplitView<BR ALIGN="LEFT"/>PaymentView<BR ALIGN="LEFT"/>ReceiptView<BR ALIGN="LEFT"/>RefundView</TD></TR>
+      <TR><TD ALIGN="LEFT">&nbsp;</TD></TR>
+    </TABLE>
+  >];
+
+  BillsController -> BillingService [arrowhead=none];
+  PaymentsController -> BillingService [arrowhead=none];
+  BillingService -> BillingBillCreationService [arrowhead=none];
+  BillingService -> BillingSplitService [arrowhead=none];
+  BillingService -> BillingPaymentService [arrowhead=none];
+  BillingService -> BillingReceiptService [arrowhead=none];
+  BillingService -> BillingRefundRequestService [arrowhead=none];
+  BillingBillCreationService -> BillIssueRepository [style=dashed, arrowhead=open];
+  BillingPaymentService -> BillPaymentRepository [style=dashed, arrowhead=open];
+  BillingPaymentService -> PaymentGateway [style=dashed, arrowhead=open];
+  BillingReceiptService -> ReceiptDeliveryAdapter [style=dashed, arrowhead=open];
+  BillingSplitService -> BillSplitStrategy [style=dashed, arrowhead=open];
+  EqualSplitStrategy -> BillSplitStrategy [style=dashed, arrowhead=empty];
+  AmountSplitStrategy -> BillSplitStrategy [style=dashed, arrowhead=empty];
+  SeatSplitStrategy -> BillSplitStrategy [style=dashed, arrowhead=empty];
+  BillingService -> BillingViews [style=dashed, arrowhead=open];
 }

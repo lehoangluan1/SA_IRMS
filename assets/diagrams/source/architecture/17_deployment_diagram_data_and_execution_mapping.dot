@@ -35,9 +35,9 @@ digraph G {
     color="#FCA5A5";
     style="rounded,filled";
     fillcolor="#FEF2F2";
-    pg [shape=box3d, fillcolor="#F8FAFC", label="<<node>>\nPostgreSQL"];
-    txdata [shape=note, label="<<artifact>>\nTransactional Data"];
-    readm [shape=note, label="<<artifact>>\nReporting tables and views"];
+    pg [shape=box3d, fillcolor="#F8FAFC", label="<<node>>\nPostgreSQL\nsingle physical database"];
+    txdata [shape=note, label="<<artifact>>\ntransaction tables"];
+    readm [shape=note, label="<<artifact>>\nreporting projection tables"];
     outbox [shape=component, fillcolor="#FFF7ED", label="<<artifact>>\noutbox_events\nprocessed_events"];
     pg -> txdata;
     pg -> readm;

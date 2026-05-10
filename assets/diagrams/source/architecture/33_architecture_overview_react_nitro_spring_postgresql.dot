@@ -90,7 +90,7 @@ digraph G {
 
   // === DATA TIER ===
   subgraph cluster_data {
-    label="Persistent Data Layer - PostgreSQL";
+    label="Persistent Data Layer";
     labelloc=t;
     fontsize=12;
     fontcolor="#336791";
@@ -100,12 +100,9 @@ digraph G {
     fillcolor="#f0f0f0";
     margin="15,15";
 
-    operationalDb [label="Database",
-                   shape=cylinder, fillcolor="#F0F5FB", color="#336791", fontcolor="#1a1a1a",
-                   image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/postgresql-elephant.png", imagescale=width, width=0.4, height=0.4, labelloc=b, penwidth=2.5];
-    reportingDb [label="Reporting Read Model",
-                 shape=cylinder, fillcolor="#F0F5FB", color="#336791", fontcolor="#1a1a1a",
-                 image="C:/Users/LUAN/Downloads/SA_BTL/assets/logos/postgresql-elephant.png", imagescale=width, width=0.4, height=0.4, labelloc=b, penwidth=2.5];
+    postgres [label="PostgreSQL\nsingle physical database\n\nLogical table groups:\n- operational transaction tables\n- outbox_events\n- processed_events\n- reporting projection tables\n- identity/session/policy tables\n- audit_logs and audit_details",
+              shape=cylinder, fillcolor="#F0F5FB", color="#336791", fontcolor="#1a1a1a",
+              width=3.0, height=1.65, penwidth=2.5];
   }
 
   // === EXTERNAL SERVICES ===
@@ -128,7 +125,7 @@ digraph G {
   // === RANKING ===
   { rank=same; ordering; reservation; kitchen; }
   { rank=same; billing; inventory; governance; }
-  { rank=same; operationalDb; reportingDb; }
+  { rank=same; postgres; }
   { rank=same; payment; notification; receipt_adapter; }
 
   // === DATA FLOW - CLIENT TIER ===
@@ -147,12 +144,12 @@ digraph G {
   appLayer -> reporting [color="#16A085"];
 
   // === MODULES TO DATABASE ===
-  ordering -> operationalDb [color="#336791"];
-  reservation -> operationalDb [color="#336791"];
-  kitchen -> operationalDb [color="#336791"];
-  billing -> operationalDb [color="#336791"];
-  inventory -> operationalDb [color="#336791"];
-  governance -> operationalDb [color="#336791"];
+  ordering -> postgres [color="#336791"];
+  reservation -> postgres [color="#336791"];
+  kitchen -> postgres [color="#336791"];
+  billing -> postgres [color="#336791"];
+  inventory -> postgres [color="#336791"];
+  governance -> postgres [color="#336791"];
 
   // === INTER-MODULE COMMUNICATION ===
   ordering -> kitchen [label="OrderConfirmed", style="solid", color="#27AE60"];
@@ -167,11 +164,11 @@ digraph G {
   rabbitmq -> worker [label="deliver events", style="dashed", color="#E67E22"];
 
   // === WORKER OUTPUTS ===
-  worker -> reportingDb [label="refresh projections", color="#336791"];
+  worker -> postgres [label="relay, deduplicate\nand refresh projections", color="#336791"];
   billing -> payment [label="capture / refund API", style="solid", color="#8E44AD"];
   worker -> notification [label="send notifications", style="dashed", color="#8E44AD"];
   worker -> receipt_adapter [label="deliver receipt", style="dashed", color="#8E44AD"];
 
   // === REPORTING ===
-  reporting -> reportingDb [label="query", color="#336791"];
+  reporting -> postgres [label="query read model", color="#336791"];
 }

@@ -65,10 +65,10 @@ digraph G {
     style="rounded,filled";
     fillcolor="#FEF2F2";
 
-    queue [shape=component, fillcolor="#FEF3C7", color="#F59E0B", label="<<artifact>>\noutbox_events and processed_events"];
-    dbPrimary [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nPostgreSQL container"];
+    queue [shape=component, fillcolor="#FEF3C7", color="#F59E0B", label="<<artifact>>\nlogical tables:\noutbox_events and processed_events"];
+    dbPrimary [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nPostgreSQL container\nsingle physical database"];
     broker [shape=box3d, fillcolor="#ECFEFF", label="<<node>>\nRabbitMQ container"];
-    views [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\nReporting tables and views"];
+    views [shape=note, fillcolor="#FFFFFF", label="<<artifact>>\nreporting projection tables"];
   }
 
   legend [shape=plaintext, label=<
