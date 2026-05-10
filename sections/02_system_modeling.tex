@@ -11,7 +11,7 @@ Phần mô hình hóa này đóng vai trò cầu nối giữa Chương 1 và ch�
 \end{figure}
 
 
-Hình~\ref{fig:irms-context-overview} khóa rõ biên hệ thống theo đúng tinh thần \emph{context/process diagram}: IRMS được đặt ở trung tâm như một hệ thống điều phối vận hành, còn các vai trò con người và hệ thống đối tác đều nằm ngoài ranh giới này. Giá trị của hình không nằm ở việc liệt kê actor, mà ở việc chỉ rõ các hợp đồng trao đổi dữ liệu giữa IRMS với thế giới bên ngoài trước khi bàn đến cấu trúc bên trong. Từ ranh giới này, phần bên trong mới có thể được phân rã thành các dịch vụ cốt lõi:
+Hình~\ref{fig:irms-context-overview} khóa rõ biên hệ thống theo đúng tinh thần \emph{context/process diagram}: IRMS được đặt ở trung tâm như một hệ thống điều phối vận hành, còn các vai trò con người nằm ngoài ranh giới này. Giá trị của hình không nằm ở việc liệt kê actor, mà ở việc chỉ rõ các hợp đồng trao đổi dữ liệu giữa IRMS với người dùng bên ngoài trước khi bàn đến cấu trúc bên trong. Từ ranh giới này, phần bên trong mới có thể được phân rã thành các dịch vụ cốt lõi:
 \begin{itemize}
   \item \textsf{Reservation \& Seating Service}
   \item \textsf{Ordering \& Menu Service}
@@ -22,14 +22,14 @@ Hình~\ref{fig:irms-context-overview} khóa rõ biên hệ thống theo đúng t
   \item \textsf{IAM \& Audit Service}
   \item \textsf{Notification Service}
 \end{itemize}
-cùng các adapter tích hợp ngoài.
+cùng các adapter biên đã hiện thực trong code như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter}.
 
 \paragraph{Các điểm cần đọc từ sơ đồ ngữ cảnh.}
 \begin{itemize}
   \item \textbf{Các vai trò vận hành trực tiếp} gồm \textsf{Customer}, \textsf{Host / Reception}, \textsf{Server / Floor Staff}, \textsf{Kitchen Operations}, \textsf{Cashier}, \textsf{Manager} và \textsf{System Administrator}. Đây là những điểm chạm sinh ra tải tương tác và quyết định yêu cầu phản hồi của hệ thống.
-  \item \textbf{Các phụ thuộc ngoài hệ thống} gồm \textsf{Payment Gateway}, \textsf{Notification Service} và \textsf{Receipt Printer}. Việc đặt chúng ngoài biên hệ thống nhấn mạnh rằng thanh toán, thông báo và in biên lai phải được mô hình hóa như các hợp đồng tích hợp cần cách ly và kiểm soát lỗi.
-  \item \textbf{Các luồng đều có tên gọi nghiệp vụ rõ ràng} như \enquote{reservation request}, \enquote{kitchen ticket}, \enquote{transaction result} hay \enquote{audit trail}. Điều này giúp khóa trách nhiệm của IRMS ở mức trao đổi dữ liệu, không chỉ ở mức vai trò sử dụng.
-  \item \textbf{Ranh giới trách nhiệm được làm rõ từ sớm}: IRMS chịu trách nhiệm điều phối đặt bàn, gọi món, bếp, hóa đơn, tồn kho và quản trị; còn các hệ ngoài chỉ chịu trách nhiệm trên phần dịch vụ chuyên biệt của chúng.
+  \item \textbf{Các vai trò không phải hệ thống ngoài}: repo hiện tại chưa có bằng chứng cấu hình cho cổng thanh toán, nhà cung cấp thông báo hay máy in biên lai bên ngoài, nên sơ đồ chỉ thể hiện các actor con người và giữ các adapter đó ở bên trong IRMS.
+  \item \textbf{Các luồng đều có tên gọi nghiệp vụ rõ ràng} như \enquote{reservation request}, \enquote{kitchen ticket}, \enquote{transaction state} hay \enquote{audit trail}. Điều này giúp khóa trách nhiệm của IRMS ở mức trao đổi dữ liệu, không chỉ ở mức vai trò sử dụng.
+  \item \textbf{Ranh giới trách nhiệm được làm rõ từ sớm}: IRMS chịu trách nhiệm điều phối đặt bàn, gọi món, bếp, hóa đơn, tồn kho và quản trị; các chi tiết như thanh toán, thông báo và biên lai được xử lý qua service hoặc adapter nội bộ đã có trong code.
 \end{itemize}
 
 Vì vậy, sơ đồ ngữ cảnh là nền cho mọi quyết định kiến trúc phía sau: chỉ khi biên hệ thống được khóa rõ thì việc phân rã thành dịch vụ, thành phần hay kênh tích hợp ở Mục~\ref{sec:architecture-overview} mới có cơ sở vững chắc.
@@ -119,7 +119,7 @@ Góc nhìn sử dụng được dùng như bộ kịch bản kiểm chứng ki�
 \begin{enumerate}
   \item Thu ngân hoặc phục vụ gom các đơn gọi món của bàn thành hóa đơn.
   \item \textsf{Billing \& Settlement Service} áp dụng khuyến mãi, tiền boa và tách hóa đơn nếu cần.
-  \item Thanh toán được thực hiện qua tiền mặt hoặc cổng thanh toán điện tử.
+  \item Thanh toán được thực hiện qua tiền mặt hoặc qua \textsf{PaymentGateway} đã hiện thực trong code.
   \item Khi thanh toán đủ, hệ thống ghi nhận \textsf{PaymentCompleted}, phát hành biên lai và chuyển \textsf{TableSession} sang chuẩn bị đóng.
 \end{enumerate}
 
@@ -133,7 +133,7 @@ Góc nhìn sử dụng được dùng như bộ kịch bản kiểm chứng ki�
 
 \begin{infobox}
 \textbf{Giải thích chi tiết cho góc nhìn sử dụng.}
-Mỗi kịch bản trong phần này được chọn để ép kiến trúc phải trả lời một câu hỏi cụ thể: trạng thái nào cần đồng bộ mạnh, nơi nào cần idempotency, nơi nào phải chặn lỗi từ hệ ngoài, và nơi nào có thể chấp nhận nhất quán trễ để bảo vệ tuyến giao dịch nóng.
+Mỗi kịch bản trong phần này được chọn để ép kiến trúc phải trả lời một câu hỏi cụ thể: trạng thái nào cần đồng bộ mạnh, nơi nào cần idempotency, nơi nào phải chặn lỗi từ adapter biên, và nơi nào có thể chấp nhận nhất quán trễ để bảo vệ tuyến giao dịch nóng.
 \end{infobox}
 
 
@@ -225,20 +225,20 @@ Hình~\ref{fig:irms-usage-order-kitchen} là kịch bản quan trọng nhất đ
 
 
 
-Hình~\ref{fig:irms-usage-payment} là kịch bản mà kiến trúc phải ưu tiên \textbf{độ tin cậy và tính toàn vẹn giao dịch}. Ở đây, \textsf{Billing \& Settlement Service} không chỉ tính tổng cuối cùng mà còn điều phối khuyến mãi, tách hóa đơn, chọn phương thức thanh toán, gọi cổng thanh toán, phát hành biên lai và đóng phiên bàn. Sai sót ở luồng này kéo theo các hậu quả: ghi nhận thanh toán trùng, đóng sai hóa đơn hoặc thay đổi trạng thái bàn khi giao dịch chưa hoàn tất.
+Hình~\ref{fig:irms-usage-payment} là kịch bản mà kiến trúc phải ưu tiên \textbf{độ tin cậy và tính toàn vẹn giao dịch}. Ở đây, \textsf{Billing \& Settlement Service} không chỉ tính tổng cuối cùng mà còn điều phối khuyến mãi, tách hóa đơn, chọn phương thức thanh toán, gọi \textsf{PaymentGateway}, phát hành biên lai và đóng phiên bàn. Sai sót ở luồng này kéo theo các hậu quả: ghi nhận thanh toán trùng, đóng sai hóa đơn hoặc thay đổi trạng thái bàn khi giao dịch chưa hoàn tất.
 
-Vì vậy, thanh toán cần được giữ trong một tuyến đồng bộ đủ ngắn để hệ thống có thể trả lời rõ ràng giao dịch đã thành công hay chưa. Đánh đổi là luồng này trở nên nhạy cảm với độ trễ và lỗi của hệ ngoài; do đó, nó cần timeout rõ ràng, chống xử lý lặp, ghi vết kiểm toán và tách riêng adapter tích hợp để cô lập rủi ro.
+Vì vậy, thanh toán cần được giữ trong một tuyến đồng bộ đủ ngắn để hệ thống có thể trả lời rõ ràng giao dịch đã thành công hay chưa. Đánh đổi là luồng này trở nên nhạy cảm với độ trễ và lỗi của adapter biên; do đó, nó cần timeout rõ ràng, chống xử lý lặp, ghi vết kiểm toán và tách riêng adapter tích hợp để cô lập rủi ro.
 
 \paragraph{Các điểm kiến trúc đọc được từ sơ đồ.}
 \begin{itemize}
   \item \textbf{\textsf{Billing \& Settlement Service}} giữ vai trò bộ điều phối của tuyến quyết toán và là nơi phải đảm bảo idempotency cho các thao tác nhạy cảm.
-  \item \textbf{\textsf{Payment Gateway Adapter}} đại diện cho phụ thuộc ngoài hệ thống cần được cô lập khỏi logic quyết toán lõi.
-  \item \textbf{\textsf{Receipt Printer Adapter}, \textsf{Notification Service} và \textsf{TableSession}} chỉ được kích hoạt sau khi kết quả thanh toán đã rõ ràng.
+  \item \textbf{\textsf{PaymentGateway}} đại diện cho port thanh toán cần được cô lập khỏi logic quyết toán lõi.
+  \item \textbf{\textsf{ReceiptDeliveryAdapter}, \textsf{Notification Service} và \textsf{TableSession}} chỉ được kích hoạt sau khi kết quả thanh toán đã rõ ràng.
 \end{itemize}
 
 \paragraph{Hàm ý đối với kiến trúc.}
 \begin{itemize}
-  \item Cổng thanh toán không nên được phép chi phối trực tiếp trạng thái hóa đơn mà không đi qua lớp điều phối của hệ thống.
+  \item \textsf{PaymentGateway} không nên được phép chi phối trực tiếp trạng thái hóa đơn mà không đi qua lớp điều phối của hệ thống.
   \item Việc đóng \textsf{TableSession}, phát hành biên lai và gửi e-receipt phải phụ thuộc vào cùng một kết quả quyết toán đã được xác nhận.
 \end{itemize}
 
@@ -594,7 +594,7 @@ Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và p
 \begin{itemize}[leftmargin=*, noitemsep]
   \item Có thông tin liên hệ hợp lệ.
   \item Mẫu thông báo và kênh gửi đã được cấu hình.
-  \item Hệ thống kết nối được dịch vụ gửi thông báo.
+  \item Hệ thống có kênh thông báo nội bộ qua \textsf{NotificationChannelAdapter}.
 \end{itemize} \\ \hline
 
 \textbf{Postconditions} &
@@ -1021,7 +1021,7 @@ Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và p
 
 \textbf{Description} & Điều chỉnh mức ưu tiên của ticket hoặc món để xử lý các trường hợp gấp và giảm trễ hạn. \\ \hline
 
-\textbf{Trigger} & Ticket gần vượt SLA, khách VIP hoặc yêu cầu can thiệp từ quản lý. \\ \hline
+\textbf{Trigger} & Ticket gần vượt SLA, ticket đã trễ quá ngưỡng, khách VIP hoặc yêu cầu can thiệp từ quản lý. \\ \hline
 
 \textbf{Preconditions} &
 \begin{itemize}[leftmargin=*, noitemsep]
@@ -1053,7 +1053,8 @@ Hình~\ref{fig:irms-usage-stock} cho thấy vì sao cập nhật tồn kho và p
 \begin{minipage}[t]{\linewidth}
 
 \textbf{A1. Tự động ưu tiên (từ bước 2)} \\
-2.1 Hệ thống tự động tăng ưu tiên nếu ticket gần vượt SLA.
+2.1 Nếu ticket gần vượt SLA, hệ thống tự động nâng từ \textsf{normal} lên \textsf{rush}.\\
+2.2 Nếu ticket đã trễ vượt ngưỡng \textsf{late threshold}, hệ thống mới nâng lên \textsf{expedite}.
 
 \vspace{0.5em}
 \textbf{A2. Ưu tiên theo món (từ bước 3)} \\
@@ -1523,7 +1524,7 @@ Thanh toán của hóa đơn hoặc split bill được xác nhận thành công
 \vspace{0.3mm}
 \begin{itemize}
 \item Thanh toán đã được ghi nhận hợp lệ trong hệ thống.
-\item Hệ thống đã cấu hình kênh phát hành biên lai (in giấy, email hoặc SMS).
+\item Hệ thống đã cấu hình kênh phát hành biên lai qua \textsf{ReceiptDeliveryAdapter} (print, email hoặc sms ở mức adapter nội bộ).
 \end{itemize}
 \vspace{0.3mm}
 \end{minipage}
@@ -1535,7 +1536,7 @@ Thanh toán của hóa đơn hoặc split bill được xác nhận thành công
 \begin{itemize}
 \item Biên lai (Receipt) được tạo và lưu trong hệ thống.
 \item Biên lai được liên kết với hóa đơn và giao dịch thanh toán.
-\item Khách hàng nhận được biên lai theo kênh đã chọn.
+\item Yêu cầu phát hành biên lai được ghi nhận theo kênh đã chọn.
 \end{itemize}
 \vspace{0.3mm}
 \end{minipage}
@@ -1546,10 +1547,10 @@ Thanh toán của hóa đơn hoặc split bill được xác nhận thành công
 \vspace{0.3mm}
 \begin{enumerate}
 \item Hệ thống tạo nội dung biên lai gồm danh sách món, giảm giá, phí, phương thức thanh toán và thời gian.
-\item Thu ngân chọn phương thức phát hành biên lai (in giấy hoặc gửi điện tử).
-\item Hệ thống phát hành biên lai theo lựa chọn.
-\item Hệ thống lưu biên lai và đánh dấu trạng thái phát hành thành công.
-\item Nếu có thông tin khách hàng, hệ thống gửi bản sao biên lai qua email hoặc SMS.
+\item Thu ngân chọn phương thức phát hành biên lai qua print adapter hoặc kênh điện tử.
+\item Hệ thống ghi nhận yêu cầu phát hành biên lai theo lựa chọn.
+\item Hệ thống lưu biên lai và đánh dấu trạng thái yêu cầu phát hành.
+\item Nếu có thông tin khách hàng, hệ thống tạo yêu cầu phát hành bản sao biên lai qua email hoặc sms ở mức adapter nội bộ.
 \end{enumerate}
 \vspace{0.3mm}
 \end{minipage}
@@ -1581,17 +1582,17 @@ Thanh toán của hóa đơn hoặc split bill được xác nhận thành công
 \begin{minipage}[t]{\linewidth}
 \vspace{0.3mm}
 
-\textbf{E1. Máy in lỗi hoặc hết giấy}
+\textbf{E1. Kênh phát hành biên lai không hợp lệ}
 \begin{itemize}
-\item 3a. Hệ thống không thể in biên lai.
-\item 3b. Hệ thống hiển thị thông báo lỗi và gợi ý gửi điện tử hoặc in lại.
+\item 3a. Hệ thống không tìm thấy \textsf{ReceiptDeliveryAdapter} phù hợp hoặc thiếu địa chỉ nhận đối với kênh điện tử.
+\item 3b. Hệ thống hiển thị thông báo lỗi và cho phép thu ngân chọn lại kênh phát hành.
 \end{itemize}
 
 \vspace{0.3mm}
 
-\textbf{E2. Email/SMS không gửi được}
+\textbf{E2. Không tạo được yêu cầu gửi biên lai điện tử}
 \begin{itemize}
-\item 5a. Hệ thống gửi biên lai điện tử thất bại.
+\item 5a. Hệ thống không tạo được yêu cầu gửi biên lai điện tử qua \textsf{NotificationChannelAdapter}.
 \item 5b. Hệ thống vẫn lưu biên lai và đánh dấu “chưa gửi”.
 \item 5c. Thu ngân có thể gửi lại thủ công sau.
 \end{itemize}
@@ -1659,7 +1660,7 @@ Khách yêu cầu hoàn tiền do hủy món, khiếu nại hoặc điều chỉ
 \item Hệ thống hiển thị số tiền đã thanh toán và số tiền còn có thể hoàn.
 \item Thu ngân nhập số tiền hoàn và lý do hoàn tiền.
 \item Nếu vượt ngưỡng cho phép, hệ thống yêu cầu quản lý xác nhận.
-\item Hệ thống xử lý hoàn tiền qua cổng thanh toán hoặc ghi nhận hoàn tiền mặt.
+\item Hệ thống xử lý hoàn tiền qua \textsf{PaymentGateway} hoặc ghi nhận hoàn tiền mặt.
 \item Hệ thống cập nhật trạng thái hoàn tiền và số dư hóa đơn.
 \end{enumerate}
 \vspace{0.3mm}
@@ -1693,7 +1694,7 @@ Khách yêu cầu hoàn tiền do hủy món, khiếu nại hoặc điều chỉ
 \begin{minipage}[t]{\linewidth}
 \vspace{0.3mm}
 
-\textbf{E1. Cổng thanh toán từ chối hoàn tiền}
+\textbf{E1. \textsf{PaymentGateway} từ chối hoàn tiền}
 \begin{itemize}
 \item 5a. Hệ thống gửi yêu cầu hoàn tiền thất bại.
 \item 5b. Hệ thống ghi nhận trạng thái “Pending Review”.
@@ -2531,7 +2532,7 @@ Quản lý chọn chức năng tạo món mới trong màn hình quản lý menu
 \begin{itemize}
 \item Món mới được tạo và lưu trong hệ thống menu.
 \item Công thức nguyên liệu (recipe) được liên kết với món.
-\item Món có thể được sử dụng trong gọi món và trừ kho tự động.
+\item Món có thể được sử dụng trong gọi món; tồn kho được trừ theo công thức khi món bắt đầu được chế biến.
 \end{itemize}
 \vspace{0.3mm}
 \end{minipage}
@@ -2639,11 +2640,11 @@ Quản lý mở lịch làm việc và tạo hoặc cập nhật ca làm.
 \vspace{0.3mm}
 \begin{enumerate}
 \item Quản lý chọn ngày, khu vực và loại ca.
-\item Hệ thống hiển thị danh sách nhân viên khả dụng theo vai trò và kỹ năng.
+\item Hệ thống hiển thị danh sách nhân viên và các ca đã có.
 \item Quản lý gán nhân viên vào ca và khu vực.
-\item Hệ thống kiểm tra trùng ca, thiếu nhân sự và giới hạn giờ làm.
+\item Hệ thống kiểm tra thời điểm kết thúc và trùng ca làm việc.
 \item Quản lý lưu lịch làm việc.
-\item Hệ thống gửi thông báo cho nhân viên liên quan.
+\item Hệ thống ghi nhận thông báo nội bộ cho lịch ca vừa thay đổi.
 \end{enumerate}
 \vspace{0.3mm}
 \end{minipage}
@@ -2653,16 +2654,16 @@ Quản lý mở lịch làm việc và tạo hoặc cập nhật ca làm.
 \begin{minipage}[t]{\linewidth}
 \vspace{0.3mm}
 
-\textbf{A1. Sao chép lịch tuần trước}
+\textbf{A1. Cập nhật ca đã có}
 \begin{itemize}
-\item 1a. Quản lý chọn sao chép lịch từ tuần trước.
-\item 1b. Hệ thống tạo lịch mới và cho phép chỉnh sửa.
+\item 1a. Quản lý chọn một ca làm việc đã tồn tại.
+\item 1b. Hệ thống hiển thị thông tin ca để quản lý chỉnh sửa.
 \end{itemize}
 
-\textbf{A2. Ca thiếu nhân sự}
+\textbf{A2. Ca bị trùng thời gian}
 \begin{itemize}
-\item 3a. Hệ thống đánh dấu ca chưa đủ người.
-\item 3b. Ca được đưa vào trạng thái chờ xác nhận hoặc tuyển bổ sung.
+\item 4a. Hệ thống phát hiện nhân viên đã có ca trùng khoảng thời gian.
+\item 4b. Hệ thống chặn lưu và yêu cầu điều chỉnh ca làm.
 \end{itemize}
 
 \vspace{0.3mm}
@@ -2673,16 +2674,16 @@ Quản lý mở lịch làm việc và tạo hoặc cập nhật ca làm.
 \begin{minipage}[t]{\linewidth}
 \vspace{0.3mm}
 
-\textbf{E1. Trùng ca hoặc vượt giờ làm}
+\textbf{E1. Trùng ca hoặc thời gian không hợp lệ}
 \begin{itemize}
 \item 4a. Hệ thống phát hiện xung đột lịch làm.
 \item 4b. Chặn lưu và yêu cầu điều chỉnh.
 \end{itemize}
 
-\textbf{E2. Sai phạm vi phân công}
+\textbf{E2. Không tìm thấy nhân viên hoặc ca cần cập nhật}
 \begin{itemize}
-\item 3a. Nhân viên không thuộc phạm vi khu vực được chọn.
-\item 3b. Hệ thống yêu cầu thay đổi phân công.
+\item 3a. Hệ thống không tìm thấy nhân viên hoặc ca làm việc cần cập nhật.
+\item 3b. Hệ thống thông báo lỗi và không lưu thay đổi.
 \end{itemize}
 
 \vspace{0.3mm}
