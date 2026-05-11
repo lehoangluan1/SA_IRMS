@@ -21,8 +21,7 @@ public class InventoryLowStockAlertService {
     public InventoryLowStockAlertService(
             InventoryLowStockAlertRepository repository,
             NotificationCommandPublisher notificationOutboxPublisher,
-            LowStockSeverityPolicy lowStockSeverityPolicy
-    ) {
+            LowStockSeverityPolicy lowStockSeverityPolicy) {
         this.repository = repository;
         this.notificationOutboxPublisher = notificationOutboxPublisher;
         this.lowStockSeverityPolicy = lowStockSeverityPolicy;
@@ -33,16 +32,29 @@ public class InventoryLowStockAlertService {
         repository.acknowledgeAlert(alertId, actorUserId);
     }
 
+    @Transactional
     public void evaluateLowStock(UUID inventoryItemId, String correlationId) {
         InventoryLowStockAlertRepository.LowStockSnapshot item = repository.findSnapshot(inventoryItemId).orElse(null);
-        if (item == null || item.current().compareTo(item.minimum()) > 0 || repository.hasOpenAlert(inventoryItemId)) {
+        if (item == null)
             return;
+
+        boolean isCurrentlyLow = item.current().compareTo(item.minimum()) <= 0;
+        boolean hasOpenAlert = repository.hasOpenAlert(inventoryItemId);
+
+        if (isCurrentlyLow && !hasOpenAlert) {
+            // TRƯỜNG HỢP 1: Stock thấp mà chưa có alert -> Tạo mới
+            UUID alertId = repository.createOpenAlert(
+                    inventoryItemId,
+                    lowStockSeverityPolicy.alertSeverity(item.current(), item.minimum()));
+            queueLowStockNotifications(alertId, item, correlationId);
+        } else if (!isCurrentlyLow && hasOpenAlert) {
+            // TRƯỜNG HỢP 2: Stock đã OK nhưng vẫn còn alert open -> Tự động đóng (Resolve)
+            repository.resolveOpenAlerts(inventoryItemId);
         }
-        UUID alertId = repository.createOpenAlert(inventoryItemId, lowStockSeverityPolicy.alertSeverity(item.current(), item.minimum()));
-        queueLowStockNotifications(alertId, item, correlationId);
     }
 
-    private void queueLowStockNotifications(UUID alertId, InventoryLowStockAlertRepository.LowStockSnapshot item, String correlationId) {
+    private void queueLowStockNotifications(UUID alertId, InventoryLowStockAlertRepository.LowStockSnapshot item,
+            String correlationId) {
         String priority = lowStockSeverityPolicy.notificationPriority(item.current(), item.minimum());
         String body = item.name() + " is below the configured threshold. Review affected dishes and reorder guidance.";
         for (String recipientRole : List.of("manager", "chef")) {
@@ -60,8 +72,7 @@ public class InventoryLowStockAlertService {
                     recipientRole,
                     null,
                     null,
-                    priority
-            ), "LowStockAlert", alertId.toString(), correlationId);
+                    priority), "LowStockAlert", alertId.toString(), correlationId);
         }
     }
 }

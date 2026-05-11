@@ -1,5 +1,5 @@
 
-\subsection{Tổng quan kiến trúc}
+\subsection{Tổng quan kiến trúc}\label{sec:architecture-overview}
 \begin{figure}[H]
 \centering
 \IfFileExists{33_architecture_overview_react_nitro_spring_postgresql.pdf}{
@@ -1150,6 +1150,7 @@ Deployment View ở trên trả lời các container và node runtime được �
     \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{37\_install\_view\_docker\_local\_artifacts.(pdf/png)}.}}
   }
 }
+
 \caption{UML Deployment Diagram cho Install View của gói Docker local}
 \label{fig:irms-install-view-docker-local}
 \end{figure}
@@ -1229,8 +1230,6 @@ DIP & \texttt{BillingPaymentService} phụ thuộc \texttt{BillPaymentRepository
 \bottomrule
 \end{tabularx}
 \end{table}
-
-\subsubsection{Các ví dụ áp dụng rõ nhất trong thiết kế}
 
 \paragraph{Thanh toán và biên nhận.}
 \textsf{BillingPaymentService} không biết chi tiết xử lý từng phương thức thanh toán, mà làm việc qua \textsf{PaymentGateway}. Các hiện thực như \textsf{CashPaymentGateway} và \textsf{ExternalReferencePaymentGateway} được xem là adapter thanh toán ở biên. Tương tự, \textsf{BillingReceiptService} phát hành biên nhận qua \textsf{ReceiptDeliveryAdapter} với \textsf{DigitalReceiptDeliveryAdapter} và \textsf{PrintReceiptDeliveryAdapter}. Đây là ví dụ mạnh cho OCP, ISP và DIP: service lõi giữ luồng thanh toán, còn biến thể phương thức/kênh nằm ở lớp hiện thực.

@@ -40,6 +40,7 @@
 % --------------------------------------------------
 \usepackage{xcolor}
 \usepackage{graphicx}
+\DeclareGraphicsExtensions{.png,.pdf}
 \usepackage{caption}
 \usepackage{pdflscape}
 \usepackage{float}
@@ -207,13 +208,14 @@
 \newcommand{\activitydiagramfigure}[3]{%
   \Needspace{0.86\textheight}%
   \begin{center}
-    \IfFileExists{#1.pdf}{%
-      \includegraphics[width=\linewidth,height=0.76\textheight,keepaspectratio]{#1.pdf}%
+    \IfFileExists{#1.png}{%
+      \includegraphics[width=\linewidth,height=0.76\textheight,keepaspectratio]{#1.png}%
     }{%
-      \IfFileExists{#1.png}{%
-        \includegraphics[width=\linewidth,height=0.76\textheight,keepaspectratio]{#1.png}%
+      \IfFileExists{#1.pdf}{%
+        \includegraphics[width=\linewidth,height=0.76\textheight,keepaspectratio]{#1.pdf}%
       }{%
-        \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{#1.(pdf/png)}.}}%
+        \typeout{DIAGRAM-MISSING request=#1 searched=assets/diagrams/rendered/modeling,assets/diagrams/rendered/architecture,assets/diagrams/rendered/design,assets/diagrams/rendered/activity extensions=.png,.pdf}%
+        \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{#1.(png/pdf)}.}}%
       }%
     }%
     \captionof{figure}{#2}%

@@ -2,7 +2,6 @@
 \label{sec:detailed-design-class-view}
 Góc nhìn lớp mô tả cấu trúc thiết kế của backend IRMS ở mức lớp, interface và adapter. Backend được tổ chức quanh controller, application service, domain policy, port, phạm vi triển khaisitory adapter, bộ xử lý sự kiện và các record dùng cho lệnh hoặc mô hình đọc. Vì vậy, phần này không xem bảng dữ liệu như lớp miền nghiệp vụ, mà tập trung vào các lớp giữ trách nhiệm xử lý và các điểm mở rộng.
 
-\subsubsection{Phạm vi bao phủ của sơ đồ lớp}
 Các sơ đồ lớp được đọc theo thứ tự từ tổng quan đến chi tiết. Hình tổng quan cho thấy các application service chính và các interface dùng chung. Các hình chi tiết sau đó tách theo các module như \texttt{reservation}, \texttt{ordering}, \texttt{kitchen}, \texttt{billing}, \texttt{inventory}, \texttt{notification}, \texttt{identity} và \texttt{phạm vi triển khairting}. Cách chia này giữ nhất quán với Module View và Component-and-Connector View: tên module, class và hướng phụ thuộc phản ánh đúng ranh giới trách nhiệm đã mô tả ở chương kiến trúc.
 
 \begin{figure}[H]
@@ -145,16 +144,16 @@ Hình~\ref{fig:irms-class-inventory-module} nối \textsf{InventoryService}, \te
 
 \begin{figure}[H]
 \centering
-\IfFileExists{31_uml_class_diagram_identity_audit_and_phạm vi triển khairting_module.pdf}{
-  \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{31_uml_class_diagram_identity_audit_and_phạm vi triển khairting_module.pdf}
+\IfFileExists{31_uml_class_diagram_identity_audit_and_reporting_module.png}{
+  \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{31_uml_class_diagram_identity_audit_and_reporting_module.png}
 }{
-  \IfFileExists{31_uml_class_diagram_identity_audit_and_phạm vi triển khairting_module.png}{
-    \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{31_uml_class_diagram_identity_audit_and_phạm vi triển khairting_module.png}
+  \IfFileExists{31_uml_class_diagram_identity_audit_and_reporting_module.pdf}{
+    \includegraphics[width=0.97\linewidth,height=0.84\textheight,keepaspectratio]{31_uml_class_diagram_identity_audit_and_reporting_module.pdf}
   }{
-    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{31\_uml\_class\_diagram\_identity\_audit\_and\_phạm vi triển khairting\_module.(pdf/png)}.}}
+    \fbox{\parbox{0.82\linewidth}{Thiếu file \textsf{31\_uml\_class\_diagram\_identity\_audit\_and\_reporting\_module.(png/pdf)}.}}
   }
 }
-\caption{Sơ đồ lớp chi tiết cho module \textsf{identity}, kiểm toán và \textsf{phạm vi triển khairting}}
+\caption{Sơ đồ lớp chi tiết cho module \textsf{identity}, kiểm toán và \textsf{reporting}}
 \label{fig:irms-class-governance-module}
 \end{figure}
 
@@ -271,7 +270,7 @@ Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \e
 
 Điểm quan trọng của sơ đồ là không mô tả việc dự báo như một thuật toán mơ hồ, mà làm rõ chuỗi dữ liệu đầu vào: tiêu hao lịch sử, low-stock alert, hao hụt, lead time và mức tồn an toàn. Điều này có giá trị trong báo cáo kiến trúc vì nó cho thấy đề xuất nhập hàng là kết quả của mô hình dữ liệu và luồng xử lý đã có, không phải một chức năng được bổ sung rời rạc ở phần quản trị mà không có nền dữ liệu đủ tin cậy.
 
-\activitydiagramfigure{uc-rep-01-view-revenue-and-operations-phạm vi triển khairt}{Sơ đồ hoạt động cho UC-REP-01 -- Xem báo cáo doanh thu và vận hành}{fig:activity-uc-rep-01-view-revenue-and-operations-phạm vi triển khairt}
+\activitydiagramfigure{uc-rep-01-view-revenue-and-operations-report}{Sơ đồ hoạt động cho UC-REP-01 -- Xem báo cáo doanh thu và vận hành}{fig:activity-uc-rep-01-view-revenue-and-operations-report}
 
 \activitygroup{Nhóm quản trị cấu hình và vận hành}
 

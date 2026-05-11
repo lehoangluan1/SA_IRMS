@@ -18,24 +18,41 @@ public class InventoryStockTransactionService {
     private final InventoryStockTransactionRepository repository;
     private final Clock clock;
     private final DomainEventPublisher outboxEventPublisher;
-
-    public InventoryStockTransactionService(InventoryStockTransactionRepository repository, Clock clock, DomainEventPublisher outboxEventPublisher) {
+    private final InventoryLowStockAlertService lowStockAlertService;
+    public InventoryStockTransactionService(InventoryStockTransactionRepository repository, Clock clock,
+            DomainEventPublisher outboxEventPublisher,InventoryLowStockAlertService lowStockAlertService) {
         this.repository = repository;
         this.clock = clock;
         this.outboxEventPublisher = outboxEventPublisher;
+        this.lowStockAlertService = lowStockAlertService;
     }
 
-    public boolean recordTransaction(UUID inventoryItemId, BigDecimal delta, String reason, UUID actorUserId, String correlationId, UUID sourceRef, String sourceType) {
+   
+    public boolean recordTransaction(UUID inventoryItemId, BigDecimal delta, String reason,
+            UUID actorUserId, String correlationId, UUID sourceRef, String sourceType) {
+
         BigDecimal previousOnHand = repository.lockCurrentOnHand(inventoryItemId);
+
         if (repository.hasRecordedSource(inventoryItemId, reason, sourceRef, sourceType)) {
             return false;
         }
+
         BigDecimal newOnHand = previousOnHand.add(delta);
         UUID transactionId = UUID.randomUUID();
+
+    
         repository.updateOnHand(inventoryItemId, newOnHand);
+
+
         repository.insertTransaction(transactionId, inventoryItemId, delta, reason, sourceRef, sourceType,
                 previousOnHand, newOnHand, actorUserId, correlationId, Instant.now(clock));
-        publishStockChanged(transactionId, inventoryItemId, delta, reason, sourceRef, sourceType, previousOnHand, newOnHand, correlationId);
+
+     
+        lowStockAlertService.evaluateLowStock(inventoryItemId, correlationId);
+
+        publishStockChanged(transactionId, inventoryItemId, delta, reason, sourceRef, sourceType,
+                previousOnHand, newOnHand, correlationId);
+
         return true;
     }
 
@@ -54,6 +71,7 @@ public class InventoryStockTransactionService {
         if (sourceType != null) {
             payload.put("sourceType", sourceType);
         }
-        outboxEventPublisher.publish(new InventoryStockChangedEvent(inventoryItemId.toString(), payload), correlationId, null);
+        outboxEventPublisher.publish(new InventoryStockChangedEvent(inventoryItemId.toString(), payload), correlationId,
+                null);
     }
 }

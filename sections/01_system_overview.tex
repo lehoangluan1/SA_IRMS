@@ -68,13 +68,21 @@ Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ
 \end{itemize}
 
 \subsection{Các bên liên quan}
-\begin{table}[H]
-\centering
-\caption{Các bên liên quan chính của IRMS}
-\begin{tabularx}{\textwidth}{>{\bfseries}p{2.4cm} >{\bfseries}p{2.8cm} X}
+\begin{longtable}{>{\bfseries\raggedright\arraybackslash}p{2.4cm} >{\bfseries\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{9.4cm}}
+\caption{Các bên liên quan chính của IRMS}\\
 \toprule
 Bên liên quan & Vai trò & Mối quan tâm chính \\
 \midrule
+\endfirsthead
+\toprule
+Bên liên quan & Vai trò & Mối quan tâm chính \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize Tiếp tục ở trang sau}\\
+\endfoot
+\bottomrule
+\endlastfoot
 Khách hàng & Người dùng/đơn vị vận hành & \begin{itemize}
   \item Đặt bàn trước
   \item Nhận thông báo xác nhận và nhắc nhở
@@ -120,12 +128,9 @@ Quản trị viên & Người dùng/đơn vị vận hành & \begin{itemize}
   \item Hỗ trợ nhánh tiền mặt và nhánh tham chiếu giao dịch trong phạm vi xử lý thanh toán của hệ thống
   \item Trả về kết quả giao dịch cho hệ thống bán hàng tại quầy
 \end{itemize} \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\end{longtable}
 
 
-\subsubsection{Cơ sở đo tải và ràng buộc dự án}
 Đây là giả định thiết kế cho một nhà hàng tầm trung, được dùng thống nhất ở toàn bộ báo cáo khi nói về hiệu năng, độ tin cậy và khả năng mở rộng.
 
 \begin{table}[H]
@@ -253,4 +258,3 @@ Thanh toán, thông báo và biên lai là các điểm dễ thay đổi theo ch
 Các phương án khác không phù hợp bằng trong phạm vi IRMS hiện tại. Kiến trúc phân lớp tập trung thuần dễ khởi tạo nhưng có nguy cơ gom các nghiệp vụ khác bản chất vào cùng một cấu trúc kỹ thuật, làm mờ ranh giới giữa gọi món, bếp, thanh toán, tồn kho và báo cáo. Microservices đầy đủ đem lại mức cô lập triển khai mạnh hơn, nhưng kéo theo chi phí vận hành, quan sát, giao dịch phân tán và quản lý hợp đồng dịch vụ vượt quá nhu cầu của một hệ thống nhà hàng đơn lẻ trong giai đoạn hiện tại. Event-driven thuần cũng không phù hợp vì các thao tác như tạo đơn gọi món, lập hóa đơn và thanh toán cần phản hồi tức thời, có trạng thái lỗi rõ ràng và có cơ chế kiểm soát trùng lặp chặt chẽ.
 
 Vì vậy, kiến trúc được chọn là một cấu trúc lai có trọng tâm rõ ràng: \textbf{service-based là nền tảng phân rã và tổ chức hệ thống}, còn \textbf{event-driven là cơ chế phối hợp cho các hệ quả bất đồng bộ}. Quyết định này liên kết trực tiếp với sơ đồ tổng quan kiến trúc ở Mục~3.1, nơi các service nghiệp vụ nằm ở lõi hệ thống, PostgreSQL đóng vai trò cơ sở dữ liệu vật lý duy nhất với nhiều nhóm bảng logic, RabbitMQ/outbox hỗ trợ phát sự kiện, còn các adapter biên cô lập thanh toán, thông báo và phát hành biên lai khỏi logic nghiệp vụ chính.
-
