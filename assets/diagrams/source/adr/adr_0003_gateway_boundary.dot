@@ -1,0 +1,20 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="transparent", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#2563eb", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  ui [label="Staff UI\\nrequired REST"];
+  nitro [label="Frontend Node Server\\n/api proxy"];
+  port [shape=circle, fixedsize=true, width=0.18, label="", fillcolor="#dbeafe"];
+  gateway [label="<<component>>\\nAPI Gateway"];
+  route [label="GatewayProxyController\\nroute mapping"];
+  orders [label="OrdersController\\nprovided /api/orders"];
+  billing [label="BillsController\\nprovided /api/bills"];
+
+  ui -> nitro [label="/api"];
+  nitro -> port;
+  port -> gateway;
+  gateway -> route;
+  route -> orders;
+  route -> billing;
+}

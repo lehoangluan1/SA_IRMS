@@ -12,8 +12,9 @@ Các quyết định kiến trúc của IRMS được đặt trên ba cơ sở: 
 {\small
 \setlength{\LTleft}{0pt}
 \setlength{\LTright}{0pt}
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.15}
-\begin{longtable}{>{\raggedright\arraybackslash}p{3.1cm} >{\raggedright\arraybackslash}p{4.5cm} >{\raggedright\arraybackslash}p{6.4cm}}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.85cm} >{\raggedright\arraybackslash}p{4.15cm} >{\raggedright\arraybackslash}p{5.85cm}@{}}
 \caption{So sánh các kiểu kiến trúc ứng viên cho IRMS}\label{tab:appendix-architecture-candidates}\\
 \toprule
 \textbf{Kiểu kiến trúc} & \textbf{Điểm phù hợp} & \textbf{Giới hạn trong bối cảnh IRMS} \\
@@ -41,63 +42,7 @@ Từ các phương án trên, service-based architecture là cấu trúc chính 
 
 \subsubsection{Hồ sơ quyết định kiến trúc}
 
-\begin{adrbox}[title={ADR-0001: Kiến trúc chủ đạo}]
-\begin{description}[leftmargin=3.0cm,style=nextline]
-  \item[Quyết định] Chọn \textbf{service-based architecture theo miền nghiệp vụ} làm kiến trúc chính; dùng \textbf{event-driven processing} cho các tác vụ nền và hệ quả phụ.
-  \item[Cơ sở lựa chọn] Gọi món, điều phối bếp và thanh toán cần phản hồi nhanh, trong khi báo cáo, thông báo, kiểm toán và cảnh báo tồn kho có thể xử lý sau giao dịch chính.
-  \item[Hệ quả] Kiến trúc phải phân biệt rõ luồng đồng bộ và bất đồng bộ; các luồng nền cần chống xử lý lặp, hỗ trợ thử lại và có mã liên kết để truy vết.
-  \item[Không chọn] Kiến trúc phân lớp tập trung làm mờ ranh giới nghiệp vụ; microservices đầy đủ vượt quá mức cần thiết; event-driven thuần không phù hợp với thao tác cần phản hồi tức thời.
-\end{description}
-\end{adrbox}
-
-\begin{adrbox}[title={ADR-0002: Điểm vào thống nhất}]
-\begin{description}[leftmargin=3.0cm,style=nextline]
-  \item[Quyết định] Dùng \textsf{Frontend Node Server} để phục vụ giao diện React và chuyển tiếp \textsf{/api}; backend dùng \textsf{API Gateway} làm điểm vào chung cho các service.
-  \item[Cơ sở lựa chọn] IRMS có nhiều màn hình vận hành như gọi món, bếp, thu ngân và quản lý. Các giao diện này cần một điểm vào ổn định thay vì phụ thuộc vào vị trí của từng service nội bộ.
-  \item[Hệ quả] Giao tiếp ở biên hệ thống được chuẩn hóa; thay đổi bên trong backend ít ảnh hưởng đến giao diện người dùng.
-\end{description}
-\end{adrbox}
-
-\begin{adrbox}[title={ADR-0003: REST, RabbitMQ và Outbox}]
-\begin{description}[leftmargin=3.0cm,style=nextline]
-  \item[Quyết định] Dùng \textsf{REST} đồng bộ cho thao tác tuyến đầu; dùng \textsf{RabbitMQ}, \textsf{outbox\_events}, \textsf{processed\_events} và bộ xử lý nền cho các tác vụ sau giao dịch.
-  \item[Cơ sở lựa chọn] Tạo đơn, lập hóa đơn và thanh toán cần phản hồi tức thời. Gửi thông báo, cập nhật báo cáo, ghi kiểm toán và xử lý lại khi lỗi không nên làm dài tuyến giao dịch chính.
-  \item[Hệ quả] Cần kiểm soát thời điểm phát sự kiện sau giao dịch, tránh xử lý lặp và quan sát được trạng thái của hàng đợi.
-  \item[Ví dụ] Tuyến đồng bộ gồm tạo đơn, lập hóa đơn và thanh toán. Tuyến bất đồng bộ gồm \textsf{OrderConfirmed}, \textsf{LowStockDetected} và yêu cầu làm mới báo cáo.
-\end{description}
-\end{adrbox}
-
-\begin{adrbox}[title={ADR-0004: PostgreSQL và mô hình đọc}]
-\begin{description}[leftmargin=3.0cm,style=nextline]
-  \item[Quyết định] Dùng một \textsf{PostgreSQL} vật lý duy nhất trong runtime hiện tại; bên trong phân tách theo nhóm bảng logic cho dữ liệu giao dịch, outbox/inbox, định danh, kiểm toán và mô hình đọc báo cáo.
-  \item[Cơ sở lựa chọn] Các giao dịch nghiệp vụ cần nhất quán mạnh, trong khi báo cáo cần tối ưu truy vấn đọc và có thể chấp nhận độ trễ có kiểm soát.
-  \item[Hệ quả] Không vẽ hoặc mô tả nhiều database vật lý. Mô hình đọc là nhóm bảng logic trong cùng \textsf{PostgreSQL}, được cập nhật qua sự kiện hoặc tiến trình nền.
-\end{description}
-\end{adrbox}
-
-\begin{adrbox}[title={ADR-0005: Adapter biên nội bộ}]
-\begin{description}[leftmargin=3.0cm,style=nextline]
-  \item[Quyết định] Cô lập thanh toán, thông báo và phát hành biên lai sau các adapter nội bộ như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter}.
-  \item[Cơ sở lựa chọn] Các kênh thanh toán, thông báo và biên lai dễ thay đổi theo chính sách vận hành. Lõi nghiệp vụ cần giữ ổn định khi thay đổi kênh hoặc thiết bị biên.
-  \item[Hệ quả] Thanh toán, thông báo và phát hành biên lai được đặt sau hợp đồng trừu tượng; tài liệu phân biệt rõ adapter nội bộ với hệ thống ngoài độc lập.
-\end{description}
-\end{adrbox}
-
-\begin{adrbox}[title={ADR-0006: Runtime Docker Compose}]
-\begin{description}[leftmargin=3.0cm,style=nextline]
-  \item[Quyết định] Dùng \textsf{Docker Compose} làm mô hình triển khai hiện trạng cho frontend, api-gateway, các service \textsf{Spring Boot}, \textsf{PostgreSQL}, \textsf{RabbitMQ} và migration container.
-  \item[Cơ sở lựa chọn] Phạm vi hiện tại cần một runtime cục bộ, rõ thành phần và đủ để thể hiện cách hệ thống vận hành theo service. Các hạ tầng sẵn sàng cao được xem là hướng mở rộng, không phải phần triển khai hiện trạng.
-  \item[Hệ quả] Góc nhìn triển khai bám vào các container hiện có; không mô tả Kubernetes, cân bằng tải hoặc dự phòng nóng như năng lực đã triển khai.
-\end{description}
-\end{adrbox}
-
-\begin{adrbox}[title={ADR-0007: Phân quyền và kiểm toán}]
-\begin{description}[leftmargin=3.0cm,style=nextline]
-  \item[Quyết định] Áp dụng phân quyền theo vai trò tại lớp định danh và lớp biên; kết hợp \textsf{AuthorizationPolicy} trong miền nghiệp vụ; ghi \textsf{AuditLog} cho hành động nhạy cảm.
-  \item[Cơ sở lựa chọn] Hoàn tiền, thay đổi giá, điều chỉnh tồn kho, truy cập nhật ký kiểm toán và phân quyền người dùng cần kiểm soát chặt chẽ.
-  \item[Hệ quả] Kiểm soát truy cập không chỉ nằm ở lớp kỹ thuật biên mà còn xuất hiện trong quy tắc nghiệp vụ; nhật ký kiểm toán cần bảo đảm khả năng truy vết.
-\end{description}
-\end{adrbox}
+\input{sections/05_adr_appendix}
 
 \subsection{Liên kết giữa phụ lục và các phần chính}\label{appendix:traceability}
 
@@ -160,8 +105,9 @@ Các thành phần dưới đây nối yêu cầu vận hành ở Chương~1 v�
 {\small
 \setlength{\LTleft}{0pt}
 \setlength{\LTright}{0pt}
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.16}
-\begin{longtable}{>{\raggedright\arraybackslash}p{3.25cm} >{\raggedright\arraybackslash}p{5.4cm} >{\raggedright\arraybackslash}p{5.2cm}}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}p{5.0cm} >{\raggedright\arraybackslash}p{4.85cm}@{}}
 \caption{Lý do chọn các thành phần kiến trúc nền của IRMS}\label{tab:appendix-component-rationale-core}\\
 \toprule
 \textbf{Thành phần / loại hình} & \textbf{Lý do dùng trong IRMS} & \textbf{Liên hệ trong kiến trúc} \\
@@ -194,8 +140,9 @@ Mô hình đọc cho báo cáo & Tách luồng đọc báo cáo khỏi dữ li�
 {\small
 \setlength{\LTleft}{0pt}
 \setlength{\LTright}{0pt}
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.16}
-\begin{longtable}{>{\raggedright\arraybackslash}p{3.25cm} >{\raggedright\arraybackslash}p{5.4cm} >{\raggedright\arraybackslash}p{5.2cm}}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}p{5.0cm} >{\raggedright\arraybackslash}p{4.85cm}@{}}
 \caption{Lý do chọn các adapter biên và cơ chế kiểm soát của IRMS}\label{tab:appendix-component-rationale-adapters}\\
 \toprule
 \textbf{Thành phần / loại hình} & \textbf{Lý do dùng trong IRMS} & \textbf{Liên hệ trong kiến trúc} \\
@@ -226,8 +173,9 @@ Bảng này thống nhất cách hiểu các ký hiệu viết tắt xuất hi�
 {\small
 \setlength{\LTleft}{0pt}
 \setlength{\LTright}{0pt}
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.12}
-\begin{longtable}{>{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{4.2cm} >{\raggedright\arraybackslash}p{6.8cm}}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.55cm} >{\raggedright\arraybackslash}p{3.95cm} >{\raggedright\arraybackslash}p{6.35cm}@{}}
 \caption{Thuật ngữ và ký hiệu viết tắt dùng trong tài liệu}\label{tab:appendix-abbreviations}\\
 \toprule
 \textbf{Ký hiệu} & \textbf{Tên đầy đủ} & \textbf{Cách hiểu trong IRMS} \\
@@ -255,6 +203,85 @@ UC & Use Case & Ca sử dụng được đặc tả trong Chương~2. \\
 \normalsize
 }
 
+\subsection{Hướng dẫn chạy project}\label{appendix:run-guide}
+
+Phần hướng dẫn chạy cục bộ gồm các bước khởi động hệ thống trong phạm vi triển khai hiện tại. Các lệnh dưới đây bám theo cấu trúc \texttt{irms\_project}, cấu hình \texttt{docker-compose.yml}, Maven wrapper của backend và script frontend trong \texttt{package.json}.
+
+\subsubsection*{Môi trường chạy cục bộ}
+
+Môi trường chạy cục bộ của IRMS sử dụng Java 17 cho backend \textsf{Spring Boot}, Node.js/npm cho frontend React/TanStack Start, \textsf{Docker Compose} cho runtime container, \textsf{PostgreSQL} cho lưu trữ và \textsf{RabbitMQ} cho xử lý bất đồng bộ. Môi trường chạy cục bộ bằng Docker Compose được ghi nhận trong \adrref{ADR-0014}{adr:0014-docker-compose}. Khi chạy không qua Docker Compose, PostgreSQL cần sẵn sàng ở cấu hình local và RabbitMQ chỉ cần thiết khi bật broker-backed runtime thay vì chế độ local mặc định.
+
+\subsubsection*{Cấu trúc thư mục liên quan}
+
+\begin{itemize}
+  \item \texttt{irms\_project/backend}: mã nguồn backend \textsf{Spring Boot}, Maven wrapper, Dockerfile, cấu hình \texttt{application*.properties} và migration Flyway.
+  \item \texttt{irms\_project/frontend}: mã nguồn giao diện React/TanStack Start, cấu hình Vite/Nitro và Dockerfile frontend.
+  \item \texttt{irms\_project/docker-compose.yml}: runtime container gồm PostgreSQL, RabbitMQ, migration, gateway, các service nghiệp vụ và frontend.
+  \item \texttt{irms\_project/scripts}: script hỗ trợ chạy local trên Windows và Linux/macOS.
+\end{itemize}
+
+\subsubsection*{Khởi động bằng Docker Compose}
+
+Cách chạy bằng Docker Compose phù hợp cho kiểm thử tích hợp và trình bày chức năng trong phạm vi học phần. Các thành phần chính có thể được khởi động từ thư mục \texttt{irms\_project} bằng các lệnh sau:
+
+\begin{verbatim}
+cd irms_project
+docker compose config
+docker compose build
+docker compose up -d
+\end{verbatim}
+
+Compose khởi động \textsf{postgres}, \textsf{rabbitmq}, \textsf{irms-migration}, \textsf{api-gateway}, các service nghiệp vụ từ cổng 8081 đến 8088 và \textsf{frontend}. Theo cấu hình mặc định, giao diện nằm tại \texttt{http://localhost:5173}, gateway tại \texttt{http://localhost:8080}, RabbitMQ AMQP tại \texttt{localhost:5672} và giao diện quản trị RabbitMQ tại \texttt{http://localhost:15672}.
+
+\subsubsection*{Chạy bằng script local}
+
+Nếu chạy không qua Compose đầy đủ, project cung cấp script local để kiểm tra môi trường, biên dịch backend, chạy migration và khởi động các runtime cần thiết. Trên Windows có thể dùng:
+
+\begin{verbatim}
+cd irms_project
+.\scripts\run-local.ps1
+\end{verbatim}
+
+Trên Linux/macOS có thể dùng:
+
+\begin{verbatim}
+cd irms_project
+chmod +x scripts/run-local.sh
+./scripts/run-local.sh
+\end{verbatim}
+
+Script local sử dụng \texttt{VITE\_API\_BASE\_URL=http://localhost:8080}, ghi log vào thư mục \texttt{.logs/local} và dùng PostgreSQL local với database \texttt{irms} khi cấu hình mặc định được giữ nguyên.
+
+\subsubsection*{Chạy backend và frontend riêng}
+
+Backend có thể chạy bằng Maven wrapper trong thư mục \texttt{irms\_project/backend}. Migration được chạy bằng profile \texttt{local,migration}; từng runtime service được chọn bằng profile \texttt{local,<service-name>}.
+
+\begin{verbatim}
+cd irms_project/backend
+.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local,migration
+.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local,api-gateway
+\end{verbatim}
+
+Các profile service tương ứng gồm \texttt{ordering-service}, \texttt{kitchen-service}, \texttt{billing-service}, \texttt{reservation-service}, \texttt{inventory-service}, \texttt{notification-service}, \texttt{reporting-service} và \texttt{identity-audit-service}. Trên Linux/macOS dùng \texttt{./mvnw} thay cho \texttt{.\textbackslash mvnw.cmd}.
+
+Frontend chạy trong thư mục \texttt{irms\_project/frontend} bằng npm:
+
+\begin{verbatim}
+cd irms_project/frontend
+npm install
+$env:VITE_API_BASE_URL="http://localhost:8080"
+npm run dev
+\end{verbatim}
+
+Trên Linux/macOS, biến môi trường có thể đặt cùng lệnh: \texttt{VITE\_API\_BASE\_URL=http://localhost:8080 npm run dev}. Cổng dev mặc định của Vite là \texttt{5173}.
+
+\subsubsection*{Kiểm tra sau khi chạy}
+
+Sau khi hệ thống khởi động, có thể kiểm tra giao diện tại \texttt{http://localhost:5173} và gateway tại \texttt{http://localhost:8080}. Endpoint health chuyên dụng được cấu hình ở \texttt{http://localhost:8080/api/health}; các service nội bộ trong Compose cũng dùng endpoint \texttt{/api/health} cho healthcheck của container.
+
+\subsubsection*{Dữ liệu và migration}
+
+Migration dùng Flyway trong backend và được bật ở profile/container migration trước khi các service nghiệp vụ chạy. Toàn bộ runtime hiện tại dùng một \textsf{PostgreSQL} vật lý duy nhất; các nhóm bảng giao dịch, \textsf{outbox\_events}, \textsf{processed\_events}, kiểm toán, định danh và read model báo cáo là các nhóm logic trong cùng PostgreSQL, không phải nhiều database vật lý riêng.
 \subsection{Phân công công việc}
 Phần phân công dưới đây trình bày phạm vi đóng góp chính của từng thành viên. Các nội dung vẫn cần được rà soát chéo để bảo đảm mạch liên kết giữa yêu cầu, kiến trúc, thiết kế chi tiết và phần phụ lục.
 

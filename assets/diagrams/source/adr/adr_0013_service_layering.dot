@@ -1,0 +1,16 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="transparent", splines=ortho, nodesep=0.35, ranksep=0.45, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#2563eb", fontname="Arial", fontsize=11, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  api [label="api\\ncontrollers / DTO"];
+  app [label="application\\nuse cases / ports"];
+  domain [label="domain\\npolicy / rules"];
+  port [label="port/interface\\nrepository / integration"];
+  infra [label="infrastructure\\nJDBC / RabbitMQ / clients"];
+
+  api -> app;
+  app -> domain;
+  app -> port;
+  infra -> port [dir=back, label="implements"];
+}

@@ -1,0 +1,24 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="transparent", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#2563eb", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  compose [label="Docker Compose"];
+  frontend [label="frontend"];
+  gateway [label="api-gateway"];
+  services [label="Spring Boot\\nservice containers"];
+  migration [label="irms-migration"];
+  postgres [shape=cylinder, label="PostgreSQL", fillcolor="#eef2ff", color="#4f46e5"];
+  rabbit [label="RabbitMQ", fillcolor="#fff7ed", color="#ea580c"];
+
+  compose -> postgres;
+  compose -> rabbit;
+  compose -> migration;
+  compose -> services;
+  compose -> gateway;
+  compose -> frontend;
+  migration -> postgres;
+  gateway -> services;
+  services -> postgres;
+  services -> rabbit;
+}

@@ -1,0 +1,18 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="transparent", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#7c3aed", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  request [label="Sensitive command\\nrefund / cancel / price"];
+  auth [label="IAM / RBAC\\npermission check"];
+  policy [label="AuthorizationPolicy"];
+  service [label="Protected\\napplication service"];
+  audit [label="AuditService /\\nAuditLog"];
+  pg [shape=cylinder, label="PostgreSQL\\nsingle physical DB", fillcolor="#eef2ff", color="#4f46e5"];
+
+  request -> auth;
+  auth -> policy;
+  policy -> service;
+  service -> audit [label="record"];
+  audit -> pg;
+}

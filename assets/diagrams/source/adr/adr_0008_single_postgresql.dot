@@ -1,0 +1,20 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="transparent", splines=ortho, nodesep=0.35, ranksep=0.45, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#4f46e5", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.7];
+
+  pg [shape=cylinder, label="PostgreSQL\\nsingle physical database", fillcolor="#eef2ff"];
+  tx [label="business transaction\\ntables"];
+  outbox [label="outbox_events"];
+  processed [label="processed_events"];
+  reporting [label="reporting projection\\ntables"];
+  audit [label="audit tables"];
+  identity [label="identity / session /\\npolicy tables"];
+
+  pg -> tx;
+  pg -> outbox;
+  pg -> processed;
+  pg -> reporting;
+  pg -> audit;
+  pg -> identity;
+}

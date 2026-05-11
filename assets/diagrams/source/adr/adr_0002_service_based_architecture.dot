@@ -1,0 +1,27 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="transparent", splines=ortho, nodesep=0.4, ranksep=0.8, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#0f766e", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  ui [label="React / Nitro\\nfrontend"];
+  gateway [label="API Gateway\\nREST entry"];
+  ordering [label="Ordering\\nservice"];
+  kitchen [label="Kitchen\\nservice"];
+  billing [label="Billing\\nservice"];
+  reporting [label="Reporting\\nservice"];
+  postgres [shape=cylinder, label="PostgreSQL\\nsingle physical DB", fillcolor="#eef2ff", color="#4f46e5"];
+  rabbit [label="RabbitMQ\\nasync support", fillcolor="#fff7ed", color="#ea580c"];
+
+  ui -> gateway [label="/api"];
+  gateway -> ordering;
+  gateway -> kitchen;
+  gateway -> billing;
+  gateway -> reporting;
+  ordering -> postgres;
+  kitchen -> postgres;
+  billing -> postgres;
+  reporting -> postgres;
+  ordering -> rabbit [style=dashed, label="events"];
+  billing -> rabbit [style=dashed, label="events"];
+  rabbit -> reporting [style=dashed];
+}

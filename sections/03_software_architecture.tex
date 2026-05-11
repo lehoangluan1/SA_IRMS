@@ -15,21 +15,21 @@
 \label{fig:irms-architecture-overview}
 \end{figure}
 
-IRMS được thiết kế theo hướng service-based architecture kết hợp event-driven processing. Kiến trúc này tổ chức hệ thống thành ba lớp chính: lớp giao diện người dùng, lớp dịch vụ nghiệp vụ và lớp dữ liệu cùng các luồng xử lý nền. Cách tổ chức này cho phép hệ thống phân tách rõ ràng các năng lực nghiệp vụ của nhà hàng, đồng thời sử dụng cơ chế sự kiện để xử lý các hoạt động phụ mà không làm ảnh hưởng đến tuyến giao dịch chính.
+IRMS được thiết kế theo hướng service-based architecture kết hợp event-driven processing. Kiến trúc này tổ chức hệ thống thành ba lớp chính: lớp giao diện người dùng, lớp dịch vụ nghiệp vụ và lớp dữ liệu cùng các luồng xử lý nền. Cách tổ chức này cho phép hệ thống phân tách rõ ràng các năng lực nghiệp vụ của nhà hàng, đồng thời sử dụng cơ chế sự kiện để xử lý các hoạt động phụ mà không làm ảnh hưởng đến tuyến giao dịch chính. Cách tổ chức này phù hợp với \adrref{ADR-0002}{adr:0002-service-based}, trong đó service-based architecture được chọn làm kiến trúc chủ đạo và event-driven processing đóng vai trò cơ chế bổ trợ cho các hệ quả bất đồng bộ.
 
 Ở lớp ngoài cùng, ReactJS đóng vai trò là giao diện người dùng thống nhất cho các vai trò vận hành trong nhà hàng như lễ tân, phục vụ, bếp, thu ngân và quản lý. Việc sử dụng một nền giao diện chung giúp các vai trò khác nhau vẫn chia sẻ cùng cơ chế xác thực, điều hướng và đồng bộ trạng thái hệ thống. Những trạng thái quan trọng như tình trạng bàn, đơn gọi món, phiếu bếp hay hóa đơn cần được cập nhật nhất quán giữa các bộ phận để đảm bảo quá trình phục vụ diễn ra liên tục.
 
-Phía sau lớp giao diện là \textsf{Frontend Node Server} của TanStack Start/Nitro, đóng vai trò phục vụ giao diện React và chuyển tiếp các yêu cầu \textsf{/api} đến \textsf{ApiGatewayApplication}. Thành phần cổng vào thật trong backend là \textsf{GatewayProxyController}, nơi định tuyến yêu cầu đến các service Spring Boot theo cấu hình trong \textsf{docker-compose.yml}. Nhờ có lớp cổng vào này, frontend không cần biết chi tiết cách backend được tổ chức, từ đó giúp hệ thống có thể thay đổi cấu trúc bên trong mà không ảnh hưởng đến ứng dụng phía người dùng.
+Phía sau lớp giao diện là \textsf{Frontend Node Server} của TanStack Start/Nitro, đóng vai trò phục vụ giao diện React và chuyển tiếp các yêu cầu \textsf{/api} đến \textsf{ApiGatewayApplication}. Thành phần cổng vào thật trong backend là \textsf{GatewayProxyController}, nơi định tuyến yêu cầu đến các service Spring Boot theo cấu hình trong \textsf{docker-compose.yml}. Nhờ có lớp cổng vào này, frontend không cần biết chi tiết cách backend được tổ chức, từ đó giúp hệ thống có thể thay đổi cấu trúc bên trong mà không ảnh hưởng đến ứng dụng phía người dùng. Việc đặt gateway làm điểm vào thống nhất phù hợp với \adrref{ADR-0003}{adr:0003-gateway-boundary}, trong khi phân tách REST đồng bộ và event bất đồng bộ được ghi nhận trong \adrref{ADR-0004}{adr:0004-rest-sync} và \adrref{ADR-0005}{adr:0005-event-driven}.
 
 Lớp backend được xây dựng bằng Spring Boot và được tổ chức thành các service theo miền nghiệp vụ. Mỗi service chịu trách nhiệm cho một phần rõ ràng trong quy trình vận hành của nhà hàng. Ví dụ, Reservation \& Seating Service quản lý đặt bàn và trạng thái bàn; Ordering Service xử lý đơn gọi món; Kitchen Coordination Service điều phối việc chuẩn bị món tại bếp; Billing \& Settlement Service chịu trách nhiệm lập hóa đơn và thanh toán; Inventory Monitoring Service theo dõi tồn kho; trong khi Reporting Service phục vụ các truy vấn đọc cho mục đích quản lý. Bên cạnh đó, IAM / Audit Service đảm nhiệm việc kiểm soát truy cập và ghi nhận các hành động quan trọng trong hệ thống.
 
 Việc phân chia các service theo miền nghiệp vụ giúp kiến trúc phản ánh cách nhà hàng vận hành trong thực tế. Khi ranh giới trách nhiệm được xác định rõ, các thay đổi ở một miền nghiệp vụ sẽ ít ảnh hưởng đến các phần còn lại của hệ thống.
 
-Lớp dữ liệu của IRMS sử dụng một PostgreSQL runtime vật lý duy nhất theo \texttt{docker-compose.yml}, nhưng bên trong được phân tách theo các trách nhiệm lưu trữ logic: dữ liệu giao dịch nghiệp vụ, bảng outbox/inbox phục vụ xử lý sự kiện, dữ liệu định danh/kiểm toán và các bảng mô hình đọc cho báo cáo. Cách mô tả này tránh nhầm lẫn giữa số lượng container cơ sở dữ liệu vật lý và các nhóm bảng có vai trò kiến trúc khác nhau. Bên cạnh dữ liệu giao dịch, hệ thống cũng duy trì một mô hình đọc phục vụ báo cáo, được cập nhật thông qua các luồng xử lý nền thay vì truy vấn trực tiếp lên dữ liệu giao dịch nóng.
+Lớp dữ liệu của IRMS sử dụng một PostgreSQL runtime vật lý duy nhất theo \texttt{docker-compose.yml}, nhưng bên trong được phân tách theo các trách nhiệm lưu trữ logic: dữ liệu giao dịch nghiệp vụ, bảng outbox/inbox phục vụ xử lý sự kiện, dữ liệu định danh/kiểm toán và các bảng mô hình đọc cho báo cáo. Cách mô tả này tránh nhầm lẫn giữa số lượng container cơ sở dữ liệu vật lý và các nhóm bảng có vai trò kiến trúc khác nhau. Bên cạnh dữ liệu giao dịch, hệ thống cũng duy trì một mô hình đọc phục vụ báo cáo, được cập nhật thông qua các luồng xử lý nền thay vì truy vấn trực tiếp lên dữ liệu giao dịch nóng. Toàn bộ các nhóm dữ liệu của IRMS nằm trong một PostgreSQL vật lý duy nhất theo \adrref{ADR-0008}{adr:0008-single-postgresql}; read model phục vụ báo cáo được xem là nhóm bảng logic theo \adrref{ADR-0009}{adr:0009-read-model}.
 
-Ngoài tuyến xử lý chính, kiến trúc còn sử dụng \textsf{outbox\_events}, \textsf{processed\_events}, \textsf{RabbitMQ} và các bộ xử lý sự kiện nền để xử lý các tác vụ phụ như gửi thông báo, phát hành biên lai hoặc cập nhật mô hình đọc. Các sự kiện phát sinh từ các service nghiệp vụ được ghi nhận và xử lý bất đồng bộ, giúp giảm tải cho các thao tác trực tiếp như gọi món hoặc thanh toán.
+Ngoài tuyến xử lý chính, kiến trúc còn sử dụng \textsf{outbox\_events}, \textsf{processed\_events}, \textsf{RabbitMQ} và các bộ xử lý sự kiện nền để xử lý các tác vụ phụ như gửi thông báo, phát hành biên lai hoặc cập nhật mô hình đọc. Các sự kiện phát sinh từ các service nghiệp vụ được ghi nhận và xử lý bất đồng bộ, giúp giảm tải cho các thao tác trực tiếp như gọi món hoặc thanh toán. Luồng outbox và RabbitMQ trong góc nhìn thành phần và kết nối cụ thể hóa \adrref{ADR-0006}{adr:0006-outbox} và \adrref{ADR-0007}{adr:0007-rabbitmq}; cơ chế chống xử lý lặp của consumer được ghi nhận trong \adrref{ADR-0010}{adr:0010-idempotency}.
 
-Cuối cùng, các điểm tích hợp được đặt ở rìa kiến trúc thông qua các interface và adapter như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter}. Các điểm tích hợp này được mô tả như adapter biên nội bộ, giúp cô lập lõi nghiệp vụ khỏi biến động của kênh thanh toán, thông báo và phát hành biên lai.
+Cuối cùng, các điểm tích hợp được đặt ở rìa kiến trúc thông qua các interface và adapter như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter}. Các điểm tích hợp này được mô tả như adapter biên nội bộ, giúp cô lập lõi nghiệp vụ khỏi biến động của kênh thanh toán, thông báo và phát hành biên lai. Quyết định dùng boundary adapters cho các điểm mở rộng này được ghi nhận trong \adrref{ADR-0011}{adr:0011-boundary-adapters}.
 
 Nhìn tổng thể, kiến trúc IRMS hướng đến một cấu trúc rõ ràng và thực dụng: giao diện thống nhất ở tuyến đầu, các service nghiệp vụ giữ ranh giới trách nhiệm rõ ràng ở lõi hệ thống, và các luồng sự kiện được sử dụng để xử lý các hoạt động phụ một cách linh hoạt. Cách tổ chức này giúp hệ thống vừa đảm bảo tính nhất quán cho các giao dịch quan trọng, vừa duy trì khả năng mở rộng và thích nghi khi hệ thống phát triển.
 
@@ -432,10 +432,10 @@ Trong kiến trúc tổng thể, các miền năng lực logic này được án
 Bên cạnh đó, bản đồ năng lực cũng là cơ sở để tổ chức tương tác giữa các miền nghiệp vụ theo hướng event-driven. Các năng lực nằm ngoài tuyến giao dịch chính như Reporting \& Analytics, Notification Integration và Audit \& Compliance được xử lý bất đồng bộ thông qua domain events. Cách tiếp cận này giúp giảm phụ thuộc trực tiếp giữa các miền nghiệp vụ, đồng thời hạn chế tải lên luồng xử lý đồng bộ trong các tác vụ quan trọng như gọi món hoặc thanh toán.
 
 Như vậy, bản đồ năng lực không chỉ đóng vai trò mô tả trung gian, mà còn là nền tảng hỗ trợ định hình cấu trúc service, thiết kế luồng dữ liệu và xác định ranh giới xử lý trong toàn bộ kiến trúc IRMS.
-\subsection{Góc nhìn phân rã}
+\subsection{Góc nhìn phân rã}\label{sec:module-view}
 Ở góc nhìn phân rã, hệ thống được chia thành hai lớp lớn:
 \textbf{các ứng dụng phía người dùng} và \textbf{các service nghiệp vụ phía sau}.
-Việc phân rã bám theo các miền nghiệp vụ của nhà hàng.
+Việc phân rã bám theo các miền nghiệp vụ của nhà hàng. Cách phân rã này kế thừa định hướng phân rã ban đầu trong \adrref{ADR-0001}{adr:0001-modular-initial}, đồng thời cụ thể hóa service-based architecture trong \adrref{ADR-0002}{adr:0002-service-based} và cấu trúc phân lớp nội bộ service trong \adrref{ADR-0013}{adr:0013-service-layering}.
 
 \subsubsection{Các ứng dụng phía người dùng}
 \begin{itemize}
@@ -615,7 +615,9 @@ Ngoài ra, sơ đồ còn cho thấy vai trò của các controller và gateway 
 \end{itemize}
 
 
-\subsection{Góc nhìn thành phần và kết nối}
+\subsection{Góc nhìn thành phần và kết nối}\label{sec:component-connector-view}
+
+Góc nhìn này cụ thể hóa các quyết định về gateway boundary, REST đồng bộ, event-driven processing, outbox, RabbitMQ và idempotency trong \adrref{ADR-0003}{adr:0003-gateway-boundary}, \adrref{ADR-0004}{adr:0004-rest-sync}, \adrref{ADR-0005}{adr:0005-event-driven}, \adrref{ADR-0006}{adr:0006-outbox}, \adrref{ADR-0007}{adr:0007-rabbitmq} và \adrref{ADR-0010}{adr:0010-idempotency}.
 Ở góc nhìn thành phần và kết nối, hệ thống được mô tả bằng các thành phần thực thi chính và các kiểu liên kết giữa chúng. Góc nhìn này đặc biệt quan trọng vì nó cho biết một yêu cầu đi qua những khối nào, khối nào giữ quyết định nghiệp vụ và khối nào chỉ đóng vai trò tích hợp hoặc hỗ trợ kỹ thuật.
 
 \subsubsection{Các thành phần chính}\label{sec:main-components}
@@ -851,10 +853,10 @@ Cấu trúc phối hợp giữa các thành phần hỗ trợ được tổ ch�
   \item \textbf{Khả năng quan sát (Observability):} Việc tách biệt các consumer hỗ trợ giúp đội ngũ vận hành dễ theo dõi độ trễ của từng tác vụ nền như cập nhật projection, ghi kiểm toán hoặc xử lý thông báo thông qua log và trạng thái xử lý trong \textsf{outbox\_events}, \textsf{processed\_events}.
 \end{itemize}
 
-\subsection{Góc nhìn triển khai}
+\subsection{Góc nhìn triển khai}\label{sec:deployment-view}
 \subsubsection{Tổng quan phân bổ hệ thống}
 
-Ở góc nhìn triển khai, hệ thống được ánh xạ lên hạ tầng vật lý và hạ tầng thực thi nhằm làm rõ cách các thành phần phần mềm được phân bổ trên các nút triển khai (deployment nodes), cách các nút này giao tiếp với nhau và cách hệ thống đáp ứng các yêu cầu phi chức năng như độ trễ, khả năng mở rộng và độ tin cậy.
+Ở góc nhìn triển khai, hệ thống được ánh xạ lên hạ tầng vật lý và hạ tầng thực thi nhằm làm rõ cách các thành phần phần mềm được phân bổ trên các nút triển khai (deployment nodes), cách các nút này giao tiếp với nhau và cách hệ thống đáp ứng các yêu cầu phi chức năng như độ trễ, khả năng mở rộng và độ tin cậy. Mô hình này nhất quán với \adrref{ADR-0008}{adr:0008-single-postgresql} về một PostgreSQL vật lý duy nhất và \adrref{ADR-0014}{adr:0014-docker-compose} về Docker Compose cho runtime cục bộ.
 
 Hệ thống được tổ chức thành bốn tầng chính như sau:
 
@@ -1208,9 +1210,9 @@ Kiến trúc của IRMS bám theo các nguyên tắc thiết kế sau:
 
 Các nguyên tắc này là tiêu chí xuyên suốt: giúp xác định ranh giới nghiệp vụ rõ ràng, tách biệt các thành phần, phân luồng xử lý hợp lý và ưu tiên mô hình hóa theo nghiệp vụ thay vì chỉ theo dữ liệu.
 
-\subsection{Áp dụng nguyên lý SOLID vào thiết kế}
+\subsection{Áp dụng nguyên lý SOLID vào thiết kế}\label{sec:solid-design}
 
-Thay vì trình bày SOLID như một danh sách lý thuyết, phần này đối chiếu trực tiếp các nguyên tắc với những điểm thiết kế đang tồn tại trong hiện thực. Các ví dụ dưới đây dùng những class và interface tiêu biểu để làm rõ nơi IRMS áp dụng SOLID rõ nhất, không khẳng định mọi class đều tuân thủ hoàn hảo.
+Thay vì trình bày SOLID như một danh sách lý thuyết, phần này đối chiếu trực tiếp các nguyên tắc với những điểm thiết kế đang tồn tại trong hiện thực. Các ví dụ dưới đây dùng những class và interface tiêu biểu để làm rõ nơi IRMS áp dụng SOLID rõ nhất, không khẳng định mọi class đều tuân thủ hoàn hảo. Các interface như \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter} cụ thể hóa quyết định dùng boundary adapters trong \adrref{ADR-0011}{adr:0011-boundary-adapters}; cách tách lớp \texttt{api}, \texttt{application}, \texttt{domain} và \texttt{infrastructure} liên kết với \adrref{ADR-0013}{adr:0013-service-layering}.
 
 \begin{table}[H]
 \centering

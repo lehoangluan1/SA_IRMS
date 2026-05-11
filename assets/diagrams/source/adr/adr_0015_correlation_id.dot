@@ -1,0 +1,19 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="transparent", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#7c3aed", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  request [label="Request\\ncorrelation id"];
+  gateway [label="Gateway"];
+  service [label="Application service"];
+  event [label="Domain event\\nmetadata"];
+  consumer [label="Consumer"];
+  audit [label="Log / audit trail"];
+
+  request -> gateway [label="X-Correlation-Id"];
+  gateway -> service;
+  service -> event;
+  event -> consumer;
+  service -> audit [style=dashed];
+  consumer -> audit [style=dashed];
+}

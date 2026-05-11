@@ -80,7 +80,8 @@ public class KitchenPriorityService implements SA.irms.kitchen.application.port.
         PolicySnapshot policies = identityPolicyPort.getPolicySnapshot();
         Instant now = Instant.now(clock);
         Instant rushCutoff = now.plusSeconds((long) policies.preparationPolicy().rushThresholdMin() * 60L);
-        Instant expediteCutoff = now.plusSeconds((long) policies.expediteRule().lateThresholdMin() * 60L);
+        // Expedite is reserved for tickets that are already overdue beyond the late threshold.
+        Instant expediteCutoff = now.minusSeconds((long) policies.expediteRule().lateThresholdMin() * 60L);
         UUID auditActorUserId = resolveAutomaticPriorityActorUserId();
         for (KitchenTicketPriorityCommandPort.AutoPriorityCandidate candidate : priorityCommandPort.loadAutoPriorityCandidates()) {
             String nextPriority = kitchenPriorityPolicy.automaticEscalation(candidate.priorityLabel(), candidate.targetServiceAt(), rushCutoff, expediteCutoff);

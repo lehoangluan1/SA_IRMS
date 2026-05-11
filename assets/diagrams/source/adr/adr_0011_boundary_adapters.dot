@@ -1,0 +1,20 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="transparent", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#2563eb", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  billing [label="BillingPaymentService"];
+  receipt [label="BillingReceiptService"];
+  notification [label="NotificationService"];
+  payport [label="PaymentGateway\\nport/interface", fillcolor="#eef2ff"];
+  receiptport [label="ReceiptDeliveryAdapter\\nport/interface", fillcolor="#eef2ff"];
+  notifyport [label="NotificationChannelAdapter\\nport/interface", fillcolor="#eef2ff"];
+  internal [label="internal adapters\\n(no provider claim)"];
+
+  billing -> payport;
+  receipt -> receiptport;
+  notification -> notifyport;
+  payport -> internal;
+  receiptport -> internal;
+  notifyport -> internal;
+}

@@ -1,0 +1,21 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="transparent", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#0f766e", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  service [label="Transactional service"];
+  subgraph cluster_pg {
+    label="PostgreSQL: single physical database";
+    color="#4f46e5";
+    style="rounded,dashed";
+    business [label="business tables", fillcolor="#eef2ff", color="#4f46e5"];
+    outbox [label="outbox_events", fillcolor="#eef2ff", color="#4f46e5"];
+  }
+  relay [label="RabbitMqOutboxRelay"];
+  rabbit [label="RabbitMQ"];
+
+  service -> business [label="same transaction"];
+  service -> outbox [label="same transaction"];
+  outbox -> relay [label="poll"];
+  relay -> rabbit [label="publish"];
+}

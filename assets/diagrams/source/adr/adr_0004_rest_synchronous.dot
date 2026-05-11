@@ -1,0 +1,20 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="transparent", splines=ortho, nodesep=0.45, ranksep=0.7, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#2563eb", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  ui [label="POS / Kitchen / Cashier UI"];
+  gateway [label="API Gateway\\nREST"];
+  controller [label="REST Controller"];
+  app [label="Application Service"];
+  domain [label="Domain policy"];
+  response [label="Clear success / error\\nresponse"];
+
+  ui -> gateway [label="command"];
+  gateway -> controller;
+  controller -> app;
+  app -> domain;
+  domain -> app;
+  app -> response;
+  response -> ui;
+}

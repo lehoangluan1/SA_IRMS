@@ -1,0 +1,19 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="transparent", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#0f766e", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  rabbit [label="RabbitMQ event"];
+  check [label="Check\\nprocessed_events"];
+  skip [label="Skip duplicate"];
+  handle [label="Handle side effect"];
+  record [label="Record processed\\nevent id"];
+  pg [shape=cylinder, label="PostgreSQL\\nsingle physical DB", fillcolor="#eef2ff", color="#4f46e5"];
+
+  rabbit -> check;
+  check -> skip [label="seen"];
+  check -> handle [label="new"];
+  handle -> record;
+  record -> pg;
+  check -> pg [style=dashed];
+}

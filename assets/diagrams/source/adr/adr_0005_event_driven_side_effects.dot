@@ -1,0 +1,18 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="transparent", splines=ortho, nodesep=0.45, ranksep=0.75, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#f8fafc", color="#0f766e", fontname="Arial", fontsize=10, margin="0.10,0.08"];
+  edge [color="#334155", arrowsize=0.8, fontname="Arial", fontsize=9];
+
+  service [label="Business service\\ntransaction committed"];
+  outbox [label="outbox_events"];
+  rabbit [label="RabbitMQ"];
+  notification [label="Notification\\nconsumer"];
+  reporting [label="Reporting\\nprojection"];
+  audit [label="Audit\\nconsumer"];
+
+  service -> outbox [label="after core state"];
+  outbox -> rabbit [label="relay"];
+  rabbit -> notification;
+  rabbit -> reporting;
+  rabbit -> audit;
+}
