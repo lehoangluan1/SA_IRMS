@@ -1,0 +1,5 @@
+# Created at 2026-05-10T20:01:13.121
+Boot Manifest-JAR contains absolute paths in classpath 'D:\KTPM\BAOCAO\SA_IRMS\irms_project\backend\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

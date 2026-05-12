@@ -1,0 +1,12 @@
+SA\irms\architecture\InternalServiceBoundaryContractTest$ExpectedFragment.class
+SA\irms\ordering\api\OrderingApiContractTest.class
+SA\irms\reservation\api\ReservationApiContractTest.class
+SA\irms\common\support\TableCodeParserTest.class
+SA\irms\operations\api\BillingInventoryKitchenApiContractTest.class
+SA\irms\support\TestFixtures.class
+SA\irms\IrmsApplicationTests.class
+SA\irms\reporting\api\ReportingAndSystemApiContractTest.class
+SA\irms\architecture\InternalServiceBoundaryContractTest.class
+SA\irms\identity\api\IdentityApiContractTest.class
+SA\irms\nonfunctional\Section1NonFunctionalContractTest.class
+SA\irms\support\ApiContractTestSupport.class

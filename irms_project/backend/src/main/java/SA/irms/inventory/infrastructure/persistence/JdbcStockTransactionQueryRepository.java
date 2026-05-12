@@ -31,7 +31,7 @@ class JdbcStockTransactionQueryRepository {
                         from stock_transactions t
                         join inventory_items i on i.inventory_item_id = t.inventory_item_id
                         order by t.occurred_at desc
-                        limit 10
+                       
                         """)
                 .query((rs, rowNum) -> new TransactionRow(
                         rs.getObject("transaction_id", UUID.class),
