@@ -8,7 +8,7 @@ digraph G {
     fontname="DejaVu Sans",
     labelloc="t",
     label="UML Use-Case Diagram - IRMS Overview",
-    imagepath="C:/Users/LUAN/Downloads/SA_BTL/assets/images/misc"
+    imagepath=""D:\HK_252\Kiến trúc phần mềm\BTL3\SA_IRMS\assets\images\misc\actor_stickman.png""
   ];
 
   node [fontname="DejaVu Sans", fontsize=9.0, color="#475569", penwidth=1.0, pin=true];

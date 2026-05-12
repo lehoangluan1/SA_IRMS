@@ -16,13 +16,13 @@ Hệ thống \textit{Intelligent Restaurant Management System (IRMS)} được x
 Hệ thống sử dụng thực đơn số hóa và giao diện nhập liệu có cấu trúc để giúp nhân viên phục vụ tạo đơn nhanh chóng và chính xác. Các tùy chọn như ghi chú món ăn, yêu cầu đặc biệt hoặc cảnh báo dị ứng giúp hạn chế nhầm lẫn trong quá trình phục vụ và chế biến.
 
 \item \textbf{Tăng hiệu quả phối hợp giữa bộ phận phục vụ và bếp} \\
-Khi đơn hàng được xác nhận, hệ thống sẽ tự động chuyển thông tin đến màn hình hiển thị bếp (\textit{Kitchen Display System -- KDS}). Điều này giúp đầu bếp nắm bắt yêu cầu món ăn kịp thời, giảm thời gian chờ và hạn chế việc truyền đạt thông tin thủ công.
+Khi đơn hàng được xác nhận, hệ thống sẽ tự động chuyển thông tin đến màn hình hiển thị bếp (\textit{Kitchen Display System -- KDS}). 
 
 \item \textbf{Đảm bảo cập nhật và đồng bộ trạng thái hoạt động theo thời gian gần thực} \\
-Các thông tin quan trọng như trạng thái bàn, tiến độ chế biến món ăn, trạng thái đơn hàng và thanh toán cần được cập nhật liên tục trên các giao diện liên quan. Điều này giúp các bộ phận trong nhà hàng có cùng nguồn dữ liệu và phối hợp làm việc hiệu quả hơn.
+Các thông tin quan trọng như trạng thái bàn, tiến độ chế biến món ăn, trạng thái đơn hàng và thanh toán cần được cập nhật liên tục trên các giao diện liên quan. 
 
 \item \textbf{Hỗ trợ quản lý bàn và tối ưu hóa quy trình phục vụ khách hàng} \\
-Hệ thống giúp nhân viên theo dõi tình trạng bàn, quản lý đặt bàn và ước lượng thời gian chờ của khách. Nhờ đó, nhà hàng có thể sắp xếp khách hợp lý và nâng cao chất lượng dịch vụ.
+Hệ thống giúp nhân viên theo dõi tình trạng bàn, quản lý đặt bàn và ước lượng thời gian chờ của khách. 
 
 \item \textbf{Tăng hiệu quả quản lý tài chính và thanh toán} \\
 IRMS hỗ trợ tạo hóa đơn tự động, tính toán tổng chi phí bao gồm món ăn, dịch vụ và khuyến mãi. Hệ thống cho phép nhiều phương thức thanh toán khác nhau, đồng thời hỗ trợ tách hóa đơn khi cần thiết.
@@ -30,33 +30,30 @@ IRMS hỗ trợ tạo hóa đơn tự động, tính toán tổng chi phí bao g
 \item \textbf{Hỗ trợ theo dõi tồn kho và cung cấp dữ liệu phân tích cho quản lý} \\
 Hệ thống ghi nhận việc sử dụng nguyên liệu và cung cấp cảnh báo khi tồn kho xuống thấp. Ngoài ra, các báo cáo bán hàng và phân tích hoạt động giúp nhà quản lý đánh giá hiệu suất kinh doanh và đưa ra quyết định phù hợp.
 
-\item \textbf{Tạo nền tảng hệ thống linh hoạt và có khả năng mở rộng} \\
-Kiến trúc của IRMS được thiết kế theo hướng dịch vụ kết hợp điều phối bằng sự kiện. Các năng lực nghiệp vụ được đặt trong những service có trách nhiệm rõ ràng, giao tiếp đồng bộ qua API khi thao tác cần phản hồi trực tiếp và phát sinh event cho các hệ quả nghiệp vụ có thể xử lý bất đồng bộ. Cách tổ chức này cho phép mở rộng từng vùng chức năng, cô lập các adapter biên và giảm phụ thuộc chéo giữa đặt bàn, gọi món, bếp, thanh toán, tồn kho, báo cáo và kiểm toán.
-
 \end{enumerate}
 
 \subsection{Phạm vi hệ thống (IRMS)}
-Hệ thống được thiết kế để số hóa và tối ưu hóa toàn bộ quy trình vận hành của một nhà hàng, từ khâu tiếp đón khách hàng, chế biến tại bếp đến quản lý kho và phân tích kinh doanh. Xét theo kiến trúc hướng dịch vụ, các nhóm chức năng này là cơ sở để phân rã IRMS thành các service theo năng lực nghiệp vụ như \textsf{Reservation \& Seating Service}, \textsf{Ordering \& Menu Service}, \textsf{Kitchen Coordination Service}, \textsf{Billing \& Settlement Service}, \textsf{Inventory Monitoring Service}, \textsf{Reporting Service}, \textsf{IAM \& Audit Service}, \textsf{Notification Service} và các adapter biên nội bộ. Cụ thể, hệ thống bao gồm các nhóm năng lực chính sau:
+Hệ thống được thiết kế nhằm số hóa và tối ưu quy trình vận hành nhà hàng, từ phục vụ khách hàng đến quản lý bếp, kho và kinh doanh. Xét theo kiến trúc hướng dịch vụ, nhóm quyết định phân rã thành các service theo năng lực nghiệp vụ như \textsf{Reservation \& Seating Service}, \textsf{Ordering \& Menu Service}, \textsf{Kitchen Coordination Service}, \textsf{Billing \& Settlement Service}, \textsf{Inventory Monitoring Service}, \textsf{Reporting Service}, \textsf{IAM \& Audit Service}, \textsf{Notification Service} và các adapter biên nội bộ. Cụ thể, hệ thống bao gồm các nhóm năng lực chính sau:
 
 \begin{itemize}
     \item \textbf{Phân hệ Phục vụ và Gọi món (Front-of-House)}
     \begin{itemize}
-        \item \textbf{Quản lý gọi món}: Hỗ trợ nhân viên thực hiện gọi món nhanh chóng trên máy tính bảng/terminal. Hệ thống xử lý các yêu cầu phức tạp như tùy chỉnh món, ghi chú dị ứng, các gói combo và thay đổi nguyên liệu.
-        \item \textbf{Cập nhật thực đơn thực tế}: Hiển thị danh mục món ăn và trạng thái còn/hết hàng theo thời gian thực để nhân viên tư vấn chính xác cho khách.
-        \item \textbf{Quản lý bàn và đặt chỗ}: Cung cấp sơ đồ bàn trực tiếp, quản lý trạng thái bàn (trống/đang dùng), danh sách chờ và lịch hẹn đặt trước cho bộ phận Host.
+        \item \textbf{Quản lý gọi món}: Hỗ trợ nhân viên thực hiện gọi món nhanh chóng trên máy tính bảng/terminal. Xử lý các yêu cầu như tùy chỉnh món, ghi chú dị ứng, các gói combo và thay đổi nguyên liệu.
+        \item \textbf{Cập nhật thực đơn thực tế}: Hiển thị danh mục món ăn và trạng thái còn/hết hàng theo thời gian thực.
+        \item \textbf{Quản lý bàn và đặt chỗ}: Cung cấp sơ đồ bàn, quản lý trạng thái bàn (trống/đang dùng), danh sách chờ và lịch hẹn đặt trước cho bộ phận Host.
     \end{itemize}
 
     \item \textbf{Phân hệ Điều hành Bếp (Kitchen Display System -- KDS)}
     \begin{itemize}
-        \item \textbf{Điều phối tự động}: Tự động chuyển đơn hàng từ bàn đến các trạm bếp tương ứng.
-        \item \textbf{Tối ưu hóa quy trình}: Sắp xếp và ưu tiên đơn hàng dựa trên vị trí trạm, loại món và thời gian chế biến để đảm bảo tốc độ phục vụ.
+        \item \textbf{Điều phối tự động}: Tự động chuyển đơn hàng từ bàn đến các khu vực bếp tương ứng.
+        \item \textbf{Tối ưu hóa quy trình}: Sắp xếp và ưu tiên đơn hàng dựa trên vị trí khu vực bếp, loại món và thời gian chế biến để đảm bảo tốc độ phục vụ.
         \item \textbf{Tương tác thời gian thực}: Cho phép đầu bếp cập nhật tiến độ món ăn để nhân viên phục vụ có thể theo dõi và trả món kịp thời.
     \end{itemize}
 
     \item \textbf{Phân hệ Thanh toán và Tài chính}
     \begin{itemize}
         \item \textbf{Xử lý hóa đơn linh hoạt}: Hỗ trợ tính phí dịch vụ, áp dụng chương trình khuyến mãi, tách hóa đơn và quản lý tiền tip.
-        \item \textbf{Đa dạng phương thức thanh toán}: Hỗ trợ tiền mặt, thẻ và ví điện tử thông qua \textsf{PaymentGateway}, đồng thời phát hành biên lai qua \textsf{ReceiptDeliveryAdapter}.
+        \item \textbf{Đa dạng phương thức thanh toán}: Hỗ trợ tiền mặt, thẻ và ví điện tử thông qua \textsf{PaymentGateway}, đồng thời xuất biên lai qua \textsf{ReceiptDeliveryAdapter}.
     \end{itemize}
 
     \item \textbf{Phân hệ Quản trị và Kho vận}
@@ -130,8 +127,44 @@ Quản trị viên & Người dùng/đơn vị vận hành & \begin{itemize}
 \end{itemize} \\
 \end{longtable}
 
+\subsection{Yêu cầu chức năng}
+IRMS phân rã thành các service theo năng lực nghiệp vụ. Mỗi service giữ một ranh giới trách nhiệm riêng, có dữ liệu và luật nghiệp vụ thuộc phạm vi của mình, đồng thời phối hợp với service khác bằng API đồng bộ hoặc event bất đồng bộ tùy theo tính chất của thao tác.
 
-Đây là giả định thiết kế cho một nhà hàng tầm trung, được dùng thống nhất ở toàn bộ báo cáo khi nói về hiệu năng, độ tin cậy và khả năng mở rộng.
+\subsubsection*{1. \textsf{Reservation \& Seating Service}}
+Service này hỗ trợ tiếp đón khách và quản lý bàn trong nhà hàng, bao gồm đặt bàn, danh sách chờ, ghép/chuyển bàn và giải phóng bàn. Các thao tác cần phản hồi tức thời như nhận khách, gán bàn hay mở \textsf{TableSession} được xử lý đồng bộ qua API để đảm bảo lễ tân và nhân viên phục vụ cập nhật trạng thái nhanh chóng.
+
+\textbf{Quản lý trạng thái bàn} cho phép nhân viên theo dõi sơ đồ nhà hàng theo thời gian thực, cập nhật trạng thái và điều phối khách phù hợp với sức chứa. Khi mở một phiên bàn, service phát event \textsf{TableSessionOpened} để các service khác như gọi món, báo cáo hay kiểm toán nhận biết ngữ cảnh phục vụ mới mà không cần gọi trực tiếp đến service đặt bàn.
+
+\subsubsection*{2. \textsf{Ordering \& Menu Service}}
+Service này quản lý thực đơn số, tùy chọn món, trạng thái còn/hết món và đơn gọi món. Để đảm bảo tính nhất quán, hệ thống lưu ảnh chụp giao dịch tại thời điểm xác nhận nhằm tránh ảnh hưởng khi thực đơn thay đổi. Các thao tác tạo và xác nhận đơn được xử lý qua API đồng bộ để phản hồi tức thời cho nhân viên phục vụ và bếp.
+
+\textbf{Duyệt thực đơn và gọi món} cung cấp thông tin món ăn, giá, trạng thái khả dụng, ghi chú dị ứng và các tùy chọn đi kèm. Khi đơn được xác nhận, service phát event \textsf{OrderConfirmed} để các service như \textsf{Kitchen Coordination Service}, \textsf{Inventory Monitoring Service}, \textsf{Reporting Service}, \textsf{IAM \& Audit Service} và \textsf{Notification Service} xử lý các tác vụ liên quan theo cơ chế bất đồng bộ, giúp giảm thời gian xác nhận đơn.
+
+\subsubsection*{3. \textsf{Kitchen Coordination Service}}
+Service này chịu trách nhiệm chuyển đơn gọi món đã xác nhận thành các tác vụ chế biến tại bếp. Thành phần quản lý phiếu bếp, trạm bếp, hàng đợi, mức ưu tiên, tiến độ chế biến và bàn giao món cho phục vụ, giúp tách biệt logic vận hành bếp khỏi \textsf{Order} và \textsf{OrderItem}
+
+\textbf{Tiếp nhận và hiển thị phiếu bếp} được kích hoạt từ các event như \textsf{OrderConfirmed} hoặc \textsf{KitchenTicketCreated}. Khi đầu bếp cập nhật tiến độ món, service phát các event như \textsf{OrderItemPrepared} để giao diện phục vụ, báo cáo và thông báo cùng sử dụng. Các cập nhật cần phản hồi nhanh được xử lý qua API đồng bộ, còn thông báo và tổng hợp dữ liệu vận hành được thực hiện bất đồng bộ qua event.
+
+\subsubsection*{4. \textsf{Billing \& Settlement Service}}
+Service này chịu trách nhiệm toàn bộ vùng thanh toán, bao gồm lập hóa đơn, tách hóa đơn, tính thuế, phí phục vụ, tiền boa, áp mã khuyến mãi, ghi nhận thanh toán, phát hành biên lai và xử lý hoàn tiền. Các thao tác như lập hóa đơn, ghi nhận thanh toán hoặc hoàn tiền cần phản hồi rõ ràng nên được xử lý qua API đồng bộ.
+
+\textbf{Lập hóa đơn và thanh toán} sử dụng dữ liệu từ các món đã gọi và phục vụ để tạo hóa đơn. Sau khi phát hành hóa đơn hoặc ghi nhận thanh toán, service phát các event như \textsf{BillIssued}, \textsf{PaymentCaptured} và \textsf{RefundRequested} nhằm hỗ trợ in biên lai, ghi kiểm toán, cập nhật báo cáo và đồng bộ trạng thái bàn theo cơ chế bất đồng bộ.
+
+\subsubsection*{5. \textsf{Inventory Monitoring Service}}
+Service này quản lý tồn kho, công thức nguyên liệu, giao dịch kho và các quy tắc cảnh báo mức tồn thấp. Thành phần chủ yếu tiêu thụ các event nghiệp vụ để cập nhật biến động kho theo cơ chế bất đồng bộ, thay vì tham gia trực tiếp vào tuyến xử lý gọi món hay thanh toán.
+
+\textbf{Cập nhật tồn kho và cảnh báo} được kích hoạt từ các event như \textsf{OrderConfirmed}, \textsf{OrderItemPrepared} hoặc \textsf{PaymentCaptured}. Khi tồn kho giảm dưới ngưỡng an toàn, service phát event \textsf{InventoryLow} để các service như \textsf{Notification Service}, \textsf{Reporting Service} hoặc giao diện quản lý tiếp tục xử lý. Cách tiếp cận này giúp phản ánh tiêu hao thực tế mà không làm chậm quá trình gọi món.
+
+
+\subsubsection*{6. \textsf{Reporting Service}, \textsf{IAM \& Audit Service} và \textsf{Notification Service}}
+\textsf{Reporting Service} tổng hợp dữ liệu vận hành để xây dựng các báo cáo như doanh thu, món bán chạy, giờ cao điểm, hiệu suất bếp, tỷ lệ hoàn tiền và hiệu quả nhân viên. Dữ liệu được cập nhật qua event và \textsf{bộ xử lý nền}, giúp các truy vấn quản trị không ảnh hưởng trực tiếp đến dữ liệu giao dịch đang hoạt động.
+
+\textsf{IAM \& Audit Service} quản lý định danh người dùng, phân quyền theo vai trò, phiên làm việc và nhật ký kiểm toán. Mọi thao tác nhạy cảm như hoàn tiền, hủy món, thay đổi giá, mở lại hóa đơn, cập nhật quyền truy cập hoặc điều chỉnh tồn kho đều được ghi nhận đầy đủ thông tin người thực hiện, thời điểm, giá trị trước/sau và lý do thay đổi.
+
+\textsf{Notification Service} xử lý các thông báo như xác nhận đặt bàn, cảnh báo tồn kho, món sẵn sàng và thanh toán. Service tiêu thụ event bất đồng bộ để tránh ảnh hưởng đến giao dịch chính khi kênh thông báo gặp sự cố.
+
+\subsection{Yêu cầu phi chức năng ở góc nhìn toàn dự án}\label{sec:nfr}
+Giả định thiết kế cho một nhà hàng tầm trung, được sử dụng xuyên suốt báo cáo để đánh giá hiệu năng, độ tin cậy và khả năng mở rộng của hệ thống.
 
 \begin{table}[H]
 \centering
@@ -141,59 +174,20 @@ Quản trị viên & Người dùng/đơn vị vận hành & \begin{itemize}
 \toprule
 Điều kiện & Tải giả định & Ý nghĩa với kiến trúc \\
 \midrule
-Điều kiện 1 --- Ca thông thường & 20--25 bàn hoạt động, 8--12 nhân viên đăng nhập đồng thời, tối đa 35 đơn gọi món mỗi giờ, khoảng 120 dòng món mỗi giờ. & Hệ thống phải phản hồi mượt cho các tác vụ tạo đơn gọi món, cập nhật màn hình bếp, đổi trạng thái bàn và chốt hóa đơn mà chưa cần mở rộng hay hy sinh trải nghiệm thao tác. \\
-Điều kiện 2 --- Giờ cao điểm & 35--40 bàn hoạt động, 15--18 nhân viên đăng nhập đồng thời, tối đa 60 đơn gọi món mỗi giờ, khoảng 220 dòng món mỗi giờ và 20 hóa đơn mỗi giờ. & Kiến trúc phải giữ ổn định tuyến giao dịch nóng; các luồng nền như báo cáo, cảnh báo mức tồn thấp và đồng bộ thông báo không được làm nghẽn gọi món, điều phối bếp hay thanh toán. \\
+Điều kiện 1 --- Ca thông thường & 20--25 bàn hoạt động, 8--12 nhân viên đăng nhập đồng thời, tối đa 35 đơn gọi món mỗi giờ & Hệ thống phải phản hồi mượt cho các tác vụ tạo đơn gọi món, cập nhật màn hình bếp, đổi trạng thái bàn và chốt hóa đơn mà chưa cần mở rộng hay hy sinh trải nghiệm thao tác. \\
+Điều kiện 2 --- Giờ cao điểm & 35--40 bàn hoạt động, 15--18 nhân viên đăng nhập đồng thời, tối đa 60 đơn gọi món mỗi giờ & Kiến trúc phải giữ ổn định tuyến giao dịch nóng; các luồng nền như báo cáo, cảnh báo mức tồn thấp và đồng bộ thông báo không được làm nghẽn gọi món, điều phối bếp hay thanh toán. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-Trong hai điều kiện trên, dự án chịu các ràng buộc thực tế sau:
+Trong hai điều kiện trên, hệ thống chịu các ràng buộc sau:
 \begin{itemize}
-    \item \textbf{Ràng buộc phạm vi}: phiên bản hiện tại phục vụ một nhà hàng đơn lẻ, chưa tối ưu cho vận hành nhiều chi nhánh ở quy mô đầy đủ, nhưng kiến trúc vẫn chừa điểm mở cho mở rộng về sau.
-    \item \textbf{Ràng buộc thiết bị}: nhân viên thao tác qua máy tính bảng gọi món, màn hình bếp, thiết bị thu ngân hoặc giao diện web nội bộ; trải nghiệm phải ưu tiên thao tác nhanh, ít bước và dễ học theo ca.
-    \item \textbf{Ràng buộc mạng}: mạng nội bộ có thể chập chờn ngắn hạn trong phạm vi dưới 60 giây; hệ thống được phép thử lại nhưng không được làm mất đơn gọi món đã xác nhận hoặc tạo phiếu trùng.
-    \item \textbf{Ràng buộc thanh toán}: thanh toán điện tử luôn đi qua cổng đối tác ngoài; IRMS không lưu dữ liệu thẻ thô mà chỉ lưu kết quả giao dịch và mã tham chiếu.
-    \item \textbf{Ràng buộc kiểm soát}: dữ liệu nghiệp vụ phải được lưu tập trung và có nhật ký kiểm toán cho hoàn tiền, hủy bỏ, ghi đè hoặc thay đổi nhạy cảm.
-    \item \textbf{Ràng buộc học phần}: phạm vi hiện thực có thể tập trung vào một phần phân hệ lõi, nhưng kiến trúc vẫn phải phản ánh đầy đủ bức tranh hệ thống để làm rõ tư duy thiết kế tổng thể.
+    \item \textbf{Ràng buộc phạm vi}: Hệ thống hiện phục vụ một nhà hàng đơn lẻ nhưng có khả năng mở rộng trong tương lai.
+    \item \textbf{Ràng buộc thiết bị}: Nhân viên thao tác qua tablet, màn hình bếp và web nội bộ với giao diện ưu tiên nhanh, đơn giản.
+    \item \textbf{Ràng buộc mạng}: Hệ thống chịu được gián đoạn mạng ngắn hạn mà không mất hoặc trùng đơn.
+    \item \textbf{Ràng buộc thanh toán}: Thanh toán điện tử qua cổng bên ngoài, không lưu dữ liệu thẻ thô.
+    \item \textbf{Ràng buộc kiểm soát}: Dữ liệu được lưu tập trung và hỗ trợ nhật ký kiểm toán cho các thao tác nhạy cảm.
 \end{itemize}
-
-\subsection{Yêu cầu chức năng}
-Để đáp ứng các mục tiêu vận hành và giải quyết các bài toán trong bối cảnh nghiệp vụ, IRMS được phân rã thành các service theo năng lực nghiệp vụ. Mỗi service giữ một ranh giới trách nhiệm riêng, có dữ liệu và luật nghiệp vụ thuộc phạm vi của mình, đồng thời phối hợp với service khác bằng API đồng bộ hoặc event bất đồng bộ tùy theo tính chất của thao tác.
-
-\subsubsection*{1. \textsf{Reservation \& Seating Service}}
-Service này hỗ trợ trực tiếp hoạt động tiếp đón khách, quản lý không gian nhà hàng và mở phiên phục vụ tại bàn. Thành phần này chịu trách nhiệm quản lý trạng thái bàn, đặt bàn trước, danh sách chờ, ghép bàn, chuyển bàn và giải phóng bàn sau khi khách rời đi. Những thao tác cần kết quả tức thời như xác nhận đặt bàn, nhận khách, gán bàn hoặc mở \textsf{TableSession} được xử lý qua API đồng bộ để giao diện lễ tân và phục vụ nhận được phản hồi rõ ràng.
-
-\textbf{Quản lý trạng thái bàn} cho phép nhân viên xem sơ đồ nhà hàng theo thời gian thực, cập nhật trạng thái từng bàn và điều phối khách theo sức chứa thực tế. Khi một phiên bàn được mở, service có thể phát event \textsf{TableSessionOpened} để các service khác như gọi món, báo cáo hoặc kiểm toán nhận biết ngữ cảnh phục vụ mới mà không cần gọi trực tiếp vào service đặt bàn cho mọi hệ quả phụ.
-
-\subsubsection*{2. \textsf{Ordering \& Menu Service}}
-Service này chịu trách nhiệm quản lý thực đơn số, tùy chọn món, trạng thái còn hoặc tạm hết, đơn gọi món và ảnh chụp giao dịch tại thời điểm xác nhận. Thành phần này giải quyết mâu thuẫn giữa thực đơn có thể thay đổi liên tục và đơn gọi món đã xác nhận cần ổn định để phục vụ bếp, hóa đơn và kiểm toán. Thao tác tạo hoặc xác nhận đơn gọi món cần phản hồi ngay nên được thực hiện qua API đồng bộ.
-
-\textbf{Duyệt thực đơn và gọi món} cung cấp thông tin món, giá, tình trạng khả dụng, ghi chú đặc biệt, dị ứng thực phẩm và tùy chọn từng món. Khi đơn gọi món được xác nhận, service phát event \textsf{OrderConfirmed}. Event này là nguồn dữ kiện cho \textsf{Kitchen Coordination Service}, \textsf{Inventory Monitoring Service}, \textsf{Reporting Service}, \textsf{IAM \& Audit Service} và \textsf{Notification Service}. Nhờ đó, các hệ quả sau giao dịch chính được xử lý bất đồng bộ thay vì làm dài tuyến xác nhận đơn.
-
-\subsubsection*{3. \textsf{Kitchen Coordination Service}}
-Service này chịu trách nhiệm biến đơn gọi món đã xác nhận thành công việc chế biến có thể điều phối tại bếp. Thành phần này quản lý phiếu bếp, trạm bếp, hàng đợi, mức ưu tiên, tiến độ món và bàn giao món đã hoàn tất cho tuyến phục vụ. Ranh giới này giúp logic chế biến không bị trộn vào \textsf{Order} hoặc \textsf{OrderItem}.
-
-\textbf{Tiếp nhận và hiển thị phiếu bếp} được kích hoạt từ event \textsf{OrderConfirmed} hoặc \textsf{KitchenTicketCreated}. Khi đầu bếp cập nhật tiến độ món, các event như \textsf{OrderItemPrepared} được phát ra để giao diện phục vụ, báo cáo và thông báo cùng tiêu thụ. Các cập nhật trạng thái cần hiển thị nhanh cho nhân viên có thể đi qua API đồng bộ, trong khi thông báo và tổng hợp dữ liệu vận hành đi qua event bất đồng bộ.
-
-\subsubsection*{4. \textsf{Billing \& Settlement Service}}
-Service này chịu trách nhiệm toàn bộ vùng quyết toán, bao gồm lập hóa đơn, tách hóa đơn, tính thuế, phí phục vụ, tiền boa, áp mã khuyến mãi, ghi nhận thanh toán, phát hành biên lai và xử lý hoàn tiền. Các thao tác như lập hóa đơn, ghi nhận thanh toán hoặc hoàn tiền cần phản hồi rõ ràng nên được xử lý qua API đồng bộ.
-
-\textbf{Lập hóa đơn và thanh toán} sử dụng ảnh chụp đáng tin cậy của các món đã gọi và đã phục vụ để tạo nghĩa vụ tài chính. Sau khi hóa đơn được phát hành hoặc thanh toán được ghi nhận, service phát event \textsf{BillIssued}, \textsf{PaymentCaptured} hoặc \textsf{RefundRequested}. Các event này phục vụ in biên lai, ghi kiểm toán, cập nhật báo cáo và đồng bộ trạng thái bàn mà không buộc service quyết toán phải gọi trực tiếp mọi service phụ trợ.
-
-\subsubsection*{5. \textsf{Inventory Monitoring Service}}
-Service này chịu trách nhiệm theo dõi tồn kho, công thức nguyên liệu, giao dịch kho, quy tắc cảnh báo và trạng thái mức tồn thấp. Thành phần này không nằm trên tuyến phản hồi trực tiếp của thao tác gọi món hoặc thanh toán, mà chủ yếu tiêu thụ event nghiệp vụ để cập nhật biến động kho theo nhịp bất đồng bộ có kiểm soát.
-
-\textbf{Cập nhật tồn kho và cảnh báo} được kích hoạt từ các event như \textsf{OrderConfirmed}, \textsf{OrderItemPrepared} hoặc \textsf{PaymentCaptured}. Khi mức tồn giảm dưới ngưỡng an toàn, service phát \textsf{InventoryLow} để \textsf{Notification Service}, \textsf{Reporting Service} hoặc giao diện quản lý xử lý tiếp. Cách tổ chức này giúp tồn kho phản ánh tiêu hao thực tế nhưng không làm nghẽn thao tác gọi món ở tuyến đầu.
-
-\subsubsection*{6. \textsf{Reporting Service}, \textsf{IAM \& Audit Service} và \textsf{Notification Service}}
-\textsf{Reporting Service} tổng hợp dữ liệu vận hành thành mô hình đọc phục vụ báo cáo doanh thu, món bán chạy, khung giờ cao điểm, điểm nghẽn bếp, tỷ lệ hoàn tiền và hiệu suất nhân viên. Dữ liệu báo cáo được làm mới thông qua event và \textsf{bộ xử lý nền}, nhờ đó truy vấn quản trị không gây áp lực trực tiếp lên dữ liệu giao dịch nóng.
-
-\textsf{IAM \& Audit Service} quản lý định danh người dùng, phân quyền theo vai trò, phiên làm việc và nhật ký kiểm toán bất biến. Mọi thao tác nhạy cảm như hoàn tiền, hủy món đã gửi bếp, ghi đè giá, mở lại hóa đơn, thay đổi quyền truy cập hoặc điều chỉnh tồn kho thủ công đều cần được ghi nhận đầy đủ người thực hiện, thời điểm, giá trị trước, giá trị sau và lý do.
-
-\textsf{Notification Service} xử lý việc ghi nhận và điều phối xác nhận đặt bàn, nhắc lịch, cảnh báo tồn kho, thông báo món sẵn sàng và thông báo thanh toán. Service này tiêu thụ event thay vì được gọi trực tiếp bởi mọi service nghiệp vụ, nhờ đó adapter kênh thông báo có thể thay đổi hoặc lỗi tạm thời mà không làm hỏng giao dịch chính.
-
-\subsection{Yêu cầu phi chức năng ở góc nhìn toàn dự án}\label{sec:nfr}
-Khác với ca sử dụng vốn mô tả hành vi theo từng kịch bản, yêu cầu phi chức năng của IRMS phải được nhìn ở mức \textbf{toàn dự án}. Chúng quyết định kiến trúc hướng dịch vụ được tổ chức ra sao, service nào cần ranh giới trách nhiệm riêng, dữ liệu nào cần đồng bộ mạnh và hệ quả nào có thể xử lý bất đồng bộ qua event. Vì vậy, mỗi yêu cầu dưới đây đều được gắn với \textbf{số liệu mục tiêu}, \textbf{điều kiện áp dụng} và \textbf{cách đáp ứng trong kiến trúc}.
 
 \setlength{\LTleft}{0pt}
 \setlength{\LTright}{0pt}
@@ -204,7 +198,7 @@ Khác với ca sử dụng vốn mô tả hành vi theo từng kịch bản, yê
   >{\raggedright\arraybackslash}p{3.0cm}
   >{\raggedright\arraybackslash}p{4.2cm}
 }
-\caption{Yêu cầu phi chức năng của IRMS ở góc nhìn toàn dự án}\\
+\caption{Yêu cầu phi chức năng}\\
 \toprule
 Thuộc tính & Mục tiêu đo được & Điều kiện áp dụng & Cách đáp ứng trong kiến trúc \\
 \midrule
@@ -225,9 +219,8 @@ Khả năng bảo trì \& mở rộng & Khi thêm một phương thức thanh to
 
 \subsection{Lựa chọn kiến trúc chủ đạo}\label{sec:system-architecture-choice}
 
-Từ bối cảnh vận hành ở các giờ cao điểm, yêu cầu chức năng theo từng miền nghiệp vụ và các yêu cầu phi chức năng ở mức toàn dự án, kiến trúc chủ đạo của IRMS được xác định là \textbf{service-based architecture theo miền nghiệp vụ}, kết hợp \textbf{event-driven processing} cho các hệ quả nền. Trong lựa chọn này, service-based là kiểu kiến trúc chính: hệ thống được chia theo các năng lực nghiệp vụ ổn định như \textsf{Reservation \& Seating}, \textsf{Ordering \& Menu}, \textsf{Kitchen Coordination}, \textsf{Billing \& Settlement}, \textsf{Inventory Monitoring}, \textsf{Reporting}, \textsf{IAM \& Audit} và \textsf{Notification}. Event-driven không thay thế cấu trúc service-based, mà đóng vai trò bổ trợ để tách các tác vụ không cần phản hồi tức thời khỏi tuyến giao dịch nóng.
+Từ bối cảnh vận hành ở các giờ cao điểm, yêu cầu chức năng và các yêu cầu phi chức năng, kiến trúc của IRMS được xác định là \textbf{service-based architecture theo miền nghiệp vụ}, kết hợp \textbf{event-driven processing} cho các hệ quả nền. Trong đó, service-based là kiến trúc chính: hệ thống được chia theo các servicenhư \textsf{Reservation \& Seating}, \textsf{Ordering \& Menu}, \textsf{Kitchen Coordination}, \textsf{Billing \& Settlement}, \textsf{Inventory Monitoring}, \textsf{Reporting}, \textsf{IAM \& Audit} và \textsf{Notification}. Event-driven đóng vai trò bổ trợ để tách các tác vụ không cần phản hồi tức thời khỏi tuyến giao dịch nóng.
 
-Cách tổ chức này phù hợp với bản chất nghiệp vụ của nhà hàng. Các thao tác như nhận khách, mở \textsf{TableSession}, xác nhận đơn gọi món, cập nhật trạng thái món, lập hóa đơn, ghi nhận thanh toán và hoàn tiền đều cần phản hồi rõ ràng cho người dùng vận hành. Những thao tác này được xử lý bằng giao tiếp đồng bộ qua API để trạng thái nghiệp vụ không bị nhập nhằng. Ngược lại, các hệ quả phụ như phát thông báo, cập nhật mô hình đọc báo cáo, ghi nhận kiểm toán, xử lý cảnh báo tồn kho hoặc đồng bộ trạng thái phụ trợ có thể được xử lý bất đồng bộ qua sự kiện, miễn là không làm sai lệch trạng thái phục vụ trước mặt khách hàng.
 
 \begin{table}[H]
 \centering
@@ -237,13 +230,13 @@ Cách tổ chức này phù hợp với bản chất nghiệp vụ của nhà h�
 \renewcommand{\arraystretch}{1.15}
 \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}p{5.1cm} X}
 \toprule
-\textbf{Cơ sở từ yêu cầu} & \textbf{Hàm ý kiến trúc} & \textbf{Lựa chọn tương ứng} \\
+\textbf{Yêu cầu} & \textbf{Ý nghĩa} & \textbf{Lựa chọn} \\
 \midrule
 Luồng gọi món, bếp và thanh toán cần phản hồi nhanh, đặc biệt trong giờ cao điểm. & Tuyến giao dịch chính phải ngắn, rõ trạng thái thành công/thất bại và không bị kéo dài bởi các tác vụ phụ. & Dùng API đồng bộ cho các use case tuyến đầu; giữ logic nghiệp vụ trong service theo miền. \\
 \addlinespace
 Các miền đặt bàn, gọi món, bếp, thanh toán, tồn kho, báo cáo và kiểm toán có trách nhiệm khác nhau. & Cần ranh giới trách nhiệm rõ để tránh một service hoặc một lớp kỹ thuật ôm quá nhiều nghiệp vụ. & Chọn service-based architecture theo miền nghiệp vụ làm kiểu kiến trúc chính. \\
 \addlinespace
-Thông báo, báo cáo, cảnh báo tồn kho và kiểm toán không luôn cần phản hồi ngay cho thao tác chính. & Các hệ quả phụ nên được tách khỏi tuyến giao dịch nóng để giảm độ trễ và giảm phụ thuộc chéo giữa các miền. & Dùng event-driven processing, 	extsf{RabbitMQ}, outbox và bộ xử lý sự kiện nền cho các luồng bất đồng bộ. \\
+Thông báo, báo cáo, cảnh báo tồn kho và kiểm toán không luôn cần phản hồi ngay cho thao tác chính. & Các hệ quả phụ nên được tách khỏi tuyến giao dịch nóng để giảm độ trễ và giảm phụ thuộc chéo giữa các miền. & Dùng event-driven processing, 	\textsf{RabbitMQ}, outbox và bộ xử lý sự kiện nền cho các luồng bất đồng bộ. \\
 \addlinespace
 Hệ thống cần toàn vẹn dữ liệu cho đơn gọi món, hóa đơn, thanh toán, hoàn tiền và kiểm toán. & Không nên dùng event-driven thuần cho mọi thao tác vì nhiều bước cần xác nhận đồng bộ và kiểm soát lỗi trực tiếp. & Duy trì giao dịch cục bộ trong từng service; phát event sau khi trạng thái chính đã được ghi nhận. \\
 \addlinespace
@@ -255,8 +248,13 @@ Thanh toán, thông báo và biên lai là các điểm dễ thay đổi theo ch
 \normalsize
 \end{table}
 
-Các phương án khác không phù hợp bằng trong phạm vi IRMS hiện tại. Kiến trúc phân lớp tập trung thuần dễ khởi tạo nhưng có nguy cơ gom các nghiệp vụ khác bản chất vào cùng một cấu trúc kỹ thuật, làm mờ ranh giới giữa gọi món, bếp, thanh toán, tồn kho và báo cáo. Microservices đầy đủ đem lại mức cô lập triển khai mạnh hơn, nhưng kéo theo chi phí vận hành, quan sát, giao dịch phân tán và quản lý hợp đồng dịch vụ vượt quá nhu cầu của một hệ thống nhà hàng đơn lẻ trong giai đoạn hiện tại. Event-driven thuần cũng không phù hợp vì các thao tác như tạo đơn gọi món, lập hóa đơn và thanh toán cần phản hồi tức thời, có trạng thái lỗi rõ ràng và có cơ chế kiểm soát trùng lặp chặt chẽ.
+\textbf{So sánh với các kiến trúc khác}
+\begin{itemize}
+\item \textbf{Kiến trúc phân lớp tập trung}: dễ khởi tạo nhưng dễ làm mờ ranh giới giữa các nghiệp vụ như gọi món, bếp, thanh toán, tồn kho và báo cáo.
+\item \textbf{Microservices đầy đủ}: có khả năng cô lập triển khai tốt nhưng phát sinh chi phí vận hành, giám sát và quản lý giao dịch phân tán lớn hơn nhu cầu hiện tại.
 
-Các yêu cầu phi chức năng trên là cơ sở cho các quyết định kiến trúc được ghi nhận ở phụ lục ADR. Mỗi ADR chỉ chốt một quyết định quan trọng, còn phần phân tích chi tiết vẫn nằm ở các góc nhìn kiến trúc tương ứng.
+\item \textbf{Event-driven thuần}: không phù hợp với các thao tác cần phản hồi tức thời, trạng thái lỗi rõ ràng và kiểm soát trùng lặp chặt chẽ như gọi món hay thanh toán.
+\end{itemize}
 
-Vì vậy, kiến trúc được chọn là một cấu trúc lai có trọng tâm rõ ràng: \textbf{service-based là nền tảng phân rã và tổ chức hệ thống}, còn \textbf{event-driven là cơ chế phối hợp cho các hệ quả bất đồng bộ}. Quyết định chuyển từ định hướng modular ban đầu sang service-based architecture được ghi nhận trong \adrref{ADR-0001}{adr:0001-modular-initial} và \adrref{ADR-0002}{adr:0002-service-based}. Nhờ đó, Module View vẫn giữ vai trò mô tả cấu trúc hiện thực, còn Component-and-Connector View mô tả cách các service runtime phối hợp qua REST và event. Cơ chế REST đồng bộ, event-driven, outbox/RabbitMQ, một PostgreSQL vật lý duy nhất và các adapter biên lần lượt được chốt ở \adrref{ADR-0004}{adr:0004-rest-sync}, \adrref{ADR-0005}{adr:0005-event-driven}, \adrref{ADR-0006}{adr:0006-outbox}, \adrref{ADR-0007}{adr:0007-rabbitmq}, \adrref{ADR-0008}{adr:0008-single-postgresql} và \adrref{ADR-0011}{adr:0011-boundary-adapters}. Các quyết định này liên kết trực tiếp với sơ đồ tổng quan kiến trúc ở Mục~\ref{sec:architecture-overview}, nơi các service nghiệp vụ nằm ở lõi hệ thống, PostgreSQL đóng vai trò cơ sở dữ liệu vật lý duy nhất với nhiều nhóm bảng logic, RabbitMQ/outbox hỗ trợ phát sự kiện, còn các adapter biên cô lập thanh toán, thông báo và phát hành biên lai khỏi logic nghiệp vụ chính.
+
+Vì vậy, kiến trúc được chọn là một cấu trúc lai: \textbf{service-based là nền tảng phân rã và tổ chức hệ thống}, còn \textbf{event-driven là cơ chế phối hợp cho các hệ quả bất đồng bộ}. Quyết định chuyển từ định hướng modular ban đầu sang service-based architecture được ghi chú trong \adrref{ADR-0001}{adr:0001-modular-initial} và \adrref{ADR-0002}{adr:0002-service-based}. Cơ chế REST đồng bộ, event-driven, outbox/RabbitMQ, PostgreSQL vật lý duy nhất và các adapter biên lần lượt được ghi chú ở \adrref{ADR-0004}{adr:0004-rest-sync}, \adrref{ADR-0005}{adr:0005-event-driven}, \adrref{ADR-0006}{adr:0006-outbox}, \adrref{ADR-0007}{adr:0007-rabbitmq}, \adrref{ADR-0008}{adr:0008-single-postgresql} và \adrref{ADR-0011}{adr:0011-boundary-adapters}.
