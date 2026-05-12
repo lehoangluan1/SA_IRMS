@@ -296,8 +296,8 @@ Những \emph{đặc trưng kiến trúc} quan trọng là:
 
 \begin{figure}[H]
 \centering
-\IfFileExists{04_initial_logical_components_cua_irms.pdf}{
-  \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{04_initial_logical_components_cua_irms.pdf}
+\IfFileExists{04_initial_logical_components_cua_irms.png}{
+  \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{04_initial_logical_components_cua_irms.png}
 }{
   \IfFileExists{04_initial_logical_components_cua_irms.png}{
     \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{04_initial_logical_components_cua_irms.png}
@@ -320,8 +320,8 @@ Sơ đồ này được xem là bước khởi tạo trong quá trình phân tí
 
 \begin{figure}[H]
 \centering
-\IfFileExists{05_refined_logical_components_cua_irms.pdf}{
-  \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{05_refined_logical_components_cua_irms.pdf}
+\IfFileExists{05_refined_logical_components_cua_irms.png}{
+  \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{05_refined_logical_components_cua_irms.png}
 }{
   \IfFileExists{05_refined_logical_components_cua_irms.png}{
     \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{05_refined_logical_components_cua_irms.png}
@@ -1083,7 +1083,13 @@ Thứ tự khởi động Docker & \texttt{depends\_on} và healthcheck trong \t
 \end{table}
 
 Bảng thể hiện thứ tự cài đặt/khởi động của phạm vi triển khai hiện tại: \textsf{postgres} và \textsf{rabbitmq} phải healthy trước, \textsf{irms-migration} chạy thành công để tạo/cập nhật schema, sau đó các service Spring Boot và cuối cùng là \textsf{frontend} phụ thuộc vào \textsf{api-gateway}. Đây là Install View của runtime Docker local hiện có, không phải mô tả triển khai cloud hay cụm sẵn sàng cao.
-
+\subsubsection{Assignment view}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth,height=0.82\textheight,keepaspectratio]{assets/images/installview.jpg}
+\label{fig:irms-dashboard}
+\caption{Góc nhìn lịch trình và phân công công việc}
+\end{figure}
 \subsection{Nguyên tắc thiết kế}\label{sec:architecture-principles}
 Kiến trúc của IRMS bám theo các nguyên tắc thiết kế sau:
 \begin{itemize}
