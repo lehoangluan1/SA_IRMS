@@ -1,9 +1,5 @@
 \subsection{Góc nhìn lớp}
 \label{sec:detailed-design-class-view}
-Góc nhìn lớp mô tả cấu trúc thiết kế của backend IRMS ở mức lớp, interface và adapter. Backend được tổ chức quanh controller, application service, domain policy, port, phạm vi triển khaisitory adapter, bộ xử lý sự kiện và các record dùng cho lệnh hoặc mô hình đọc. Vì vậy, phần này không xem bảng dữ liệu như lớp miền nghiệp vụ, mà tập trung vào các lớp giữ trách nhiệm xử lý và các điểm mở rộng.
-
-Các sơ đồ lớp được đọc theo thứ tự từ tổng quan đến chi tiết. Hình tổng quan cho thấy các application service chính và các interface dùng chung. Các hình chi tiết sau đó tách theo các module như \texttt{reservation}, \texttt{ordering}, \texttt{kitchen}, \texttt{billing}, \texttt{inventory}, \texttt{notification}, \texttt{identity} và \texttt{phạm vi triển khairting}. Cách chia này giữ nhất quán với Module View và Component-and-Connector View: tên module, class và hướng phụ thuộc phản ánh đúng ranh giới trách nhiệm đã mô tả ở chương kiến trúc.
-
 \begin{figure}[H]
 \centering
 \IfFileExists{18_uml_class_diagram_core_domain_overview.pdf}{
@@ -19,7 +15,7 @@ Các sơ đồ lớp được đọc theo thứ tự từ tổng quan đến chi
 \label{fig:irms-class-core}
 \end{figure}
 
-Hình~\ref{fig:irms-class-core} đặt các class entrypoint và service chính cạnh các interface dùng chung, gồm \textsf{DomainEventPublisher}, \textsf{PaymentGateway}, \textsf{BillSplitStrategy}, \textsf{ReorderRecommendationStrategy} và \textsf{NotificationChannelAdapter}. Sơ đồ này không cố liệt kê mọi method của từng module, mà làm rõ bức tranh class-level trước khi đi vào các sơ đồ chi tiết.
+Hình~\ref{fig:irms-class-core} đặt các class entrypoint và service chính cạnh các interface dùng chung, gồm \textsf{DomainEventPublisher}, \textsf{PaymentGateway}, \textsf{BillSplitStrategy}, \textsf{ReorderRecommendationStrategy} và \textsf{NotificationChannelAdapter}. 
 
 \begin{figure}[H]
 \centering
@@ -160,9 +156,6 @@ Hình~\ref{fig:irms-class-inventory-module} nối \textsf{InventoryService}, \te
 Hình~\ref{fig:irms-class-governance-module} mô tả vùng kiểm soát bằng các controller, service, phạm vi triển khaisitory và bộ xử lý sự kiện: \textsf{AuthController}, \textsf{AuditController}, \textsf{ReportingController}, \textsf{DashboardController}, \textsf{AuthService}, \textsf{AuditService}, \textsf{AuditEventMaterializer}, \textsf{AuditRecordingRequestedConsumer}, \textsf{ReportingQueryService} và \textsf{ReportingProjectionConsumer}. Quan hệ giữa kiểm toán/báo cáo với bộ xử lý sự kiện nhất quán với Component-and-Connector View: dữ liệu quản trị được cập nhật qua xử lý nền và phạm vi triển khaisitory/query service riêng.
 \FloatBarrier
 \subsection{Thiết kế hành vi}
-Phần này mở rộng trực tiếp từ các ca sử dụng đã đặc tả ở trên. Phần đặc tả ca sử dụng xác định tác nhân, mục tiêu, điều kiện và kết quả nghiệp vụ; còn sơ đồ hoạt động diễn đạt thứ tự xử lý, điểm rẽ nhánh và nơi phát sinh ngoại lệ trong từng luồng vận hành. Vì vậy, các sơ đồ dưới đây được xây dựng theo đúng ranh giới vận hành hiện tại của IRMS: lễ tân, phục vụ, bếp, thu ngân, quản lý và hệ thống IRMS.
-
-Một điểm quan trọng của nhóm sơ đồ này là mức độ chi tiết không hoàn toàn giống nhau. Những ca sử dụng nằm trên tuyến nghiệp vụ nóng như nhận khách, gọi món, gửi bếp, cập nhật chế biến, tạo hóa đơn, thanh toán, hoàn tiền và cập nhật tồn kho được mở rộng sâu hơn vì đây là các vị trí quyết định trực tiếp đến độ trễ phản hồi, độ tin cậy giao dịch và khả năng truy vết của toàn hệ thống.
 
 \activitygroup{Nhóm đặt bàn và bàn ăn}
 
@@ -171,58 +164,76 @@ Một điểm quan trọng của nhóm sơ đồ này là mức độ chi tiết
 \activitydiagramfigure{uc-res-02-checkin-and-seat}{Sơ đồ hoạt động cho UC-RES-02 -- Nhận khách và sắp bàn}{fig:activity-uc-res-02-checkin-and-seat}
 
 \paragraph{Phân tích sơ đồ UC-RES-02.}
+
 Luồng hoạt động trong trường hợp này bám sát thực tế tại quầy lễ tân: tìm đặt bàn, kiểm tra hiệu lực, đối chiếu số khách thực tế, xác định có cần đổi bàn hoặc ghép bàn hay không, sau đó mới mở \textsf{TableSession}. Điểm mấu chốt là việc \textbf{mở phiên phục vụ bàn} luôn diễn ra sau bước kiểm tra bàn khả dụng, nhờ đó báo cáo giữ được bất biến quan trọng rằng một bàn không có hai phiên phục vụ hoạt động cùng lúc.
 
-Ngoài ra, sơ đồ cũng làm rõ nhánh ngoại lệ khi đặt bàn đã quá giờ giữ chỗ. Trong tình huống này, hệ thống không tự động bỏ qua mà chuyển sang bước phê duyệt của quản lý. Cách mô tả này bám sát phần đặc tả ca sử dụng phía trên và phản ánh đúng yêu cầu kiểm soát nghiệp vụ của IRMS.
-
+Ngoài ra, sơ đồ cũng làm rõ nhánh ngoại lệ khi đặt bàn đã quá giờ giữ chỗ. Trong tình huống này, hệ thống không tự động bỏ qua mà chuyển sang bước phê duyệt của quản lý. 
 \activitydiagramfigure{uc-res-03-manage-waitlist}{Sơ đồ hoạt động cho UC-RES-03 -- Quản lý danh sách chờ}{fig:activity-uc-res-03-manage-waitlist}
 
 \activitydiagramfigure{uc-res-04-update-table-status-and-release}{Sơ đồ hoạt động cho UC-RES-04 -- Cập nhật trạng thái bàn và giải phóng bàn}{fig:activity-uc-res-04-update-table-status-and-release}
 
 \paragraph{Phân tích sơ đồ UC-RES-04.}
-Luồng này làm rõ phần nằm giữa \textbf{kết thúc phục vụ} và \textbf{bắt đầu vòng quay bàn mới}. Trong vận hành thực tế, việc một bàn trở thành \textsf{Available} không thể chỉ là hệ quả ngầm sau thanh toán. Nó phải đi qua chuỗi kiểm tra rõ ràng: còn phiên phục vụ nào đang mở không, còn split hoặc công nợ nào chưa tất toán không, bàn đã chuyển sang \textsf{Cleaning} chưa, và nhân viên đã xác nhận dọn xong chưa. Nhờ đó, trạng thái bàn trên sơ đồ vận hành phản ánh đúng thực tế thay vì chỉ là ước đoán theo cảm tính của từng bộ phận.
-
-Giá trị nổi bật của sơ đồ là khả năng nối được ba miền vốn thường bị mô tả rời nhau: \textsf{TableSession}, \textsf{Billing} và \textsf{Waitlist}. Khi bàn được giải phóng thành công, hệ thống không chỉ đổi một nhãn trạng thái; nó còn cập nhật nền cho việc gọi khách tiếp theo, tính vòng quay bàn và tránh lỗi gán trùng trong giờ cao điểm. Đây là lý do ca sử dụng này cần được tách riêng thay vì ẩn trong một mô tả chung về \enquote{đóng bàn}.
-
+\begin{itemize}
+\item \textbf{Ràng buộc trạng thái \textsf{Available}:} Trạng thái bàn không cập nhật tự động sau thanh toán mà yêu cầu validation: đóng toàn bộ phiên phục vụ (\textsf{session}), tất toán công nợ (\textsf{billing}) và xác nhận hoàn tất vệ sinh (\textsf{cleaning}).
+\item \textbf{Phối hợp liên module:} Đồng bộ hóa dữ liệu giữa ba miền nghiệp vụ: \textsf{TableSession}, \textsf{Billing} và \textsf{Waitlist}.
+\item \textbf{Hiệu quả vận hành:} Đảm bảo tính nhất quán giữa hệ thống và thực tế, tránh lỗi gán trùng bàn (double-booking) và cung cấp dữ liệu chính xác để tính toán hiệu suất vòng quay bàn.
+\end{itemize}
 \activitydiagramfigure{uc-res-05-notify-customer}{Sơ đồ hoạt động cho UC-RES-05 -- Gửi thông báo cho khách hàng}{fig:activity-uc-res-05-notify-customer}
 
 \paragraph{Phân tích sơ đồ UC-RES-05.}
-Sơ đồ thông báo khách hàng cho thấy đây không phải một thao tác phụ có thể bỏ qua, mà là một luồng nghiệp vụ có đầu vào, điều kiện và trạng thái riêng. Trong IRMS, việc thông báo đặt bàn thành công, nhắc giờ đến, gọi khách từ danh sách chờ hay xác nhận thay đổi không nên được mô tả như vài dòng tích hợp kỹ thuật ở rìa hệ thống. Trái lại, nó cần được hiểu là \textbf{hệ quả được kiểm soát của sự kiện nghiệp vụ}. Cách mô tả này giúp tách rõ phần nào thuộc trách nhiệm của lõi nghiệp vụ, phần nào thuộc bộ kết nối gửi thông báo và phần nào cần cơ chế retry hoặc fallback.
-
+\begin{itemize}
+\item \textbf{Controlled Side-effect}: Thông báo là hệ quả có kiểm soát phát sinh từ các sự kiện nghiệp vụ (xác nhận đặt bàn, nhắc giờ, gọi khách từ waitlist).
+\item \textbf{Quản lý luồng}: Mỗi thông báo có đầu vào, điều kiện kích hoạt và trạng thái xử lý riêng biệt.
+\item \textbf{Phân tách trách nhiệm}: Cô lập logic nghiệp vụ (\textsf{Core Domain}) khỏi các chi tiết hạ tầng (\textsf{Notification Adapter}) và các cơ chế vận hành kỹ thuật (\textsf{Retry}, \textsf{Fallback}).
+\end{itemize}
 \activitygroup{Nhóm gọi món và điều phối bếp}
 
 \activitydiagramfigure{uc-ord-01-create-table-order}{Sơ đồ hoạt động cho UC-ORD-01 -- Tạo đơn gọi món tại bàn}{fig:activity-uc-ord-01-create-table-order}
 
 \paragraph{Phân tích sơ đồ UC-ORD-01.}
-Phần hoạt động này làm rõ các bước tải thực đơn, kiểm tra quyền thao tác trên phiên bàn, chọn món, kiểm tra trạng thái còn bán, quay lại vòng chọn món nếu món vừa hết hàng, tính tạm tính và tách rõ hai nhánh \enquote{lưu nháp} và \enquote{xác nhận đơn}. Điều này quan trọng vì ca sử dụng gọi món không chỉ là thao tác nhập dữ liệu; nó còn là điểm chụp trạng thái giá và tính hợp lệ của món tại thời điểm nhân viên phục vụ thao tác.
+Luồng hoạt động gọi món bao gồm các bước: tải thực đơn, kiểm tra quyền thao tác trên phiên bàn, chọn món, kiểm tra trạng thái còn bán (quay lại chọn lại nếu hết hàng), tính tạm tính và rẽ nhánh \enquote{lưu nháp} hoặc \enquote{xác nhận đơn}. Thao tác này đóng vai trò chốt trạng thái (snapshot) về giá và tính hợp lệ của món ngay tại thời điểm xử lý.
 
-Sơ đồ cũng giữ đúng ranh giới với ca sử dụng gửi bếp. Ở đây, đơn gọi món chỉ được tạo và xác nhận ở mức nghiệp vụ gọi món; việc tạo phiếu bếp và điều phối sang trạm bếp được tách sang sơ đồ riêng, nhờ đó ranh giới trách nhiệm giữa \textsf{Ordering} và \textsf{Kitchen Coordination} rõ ràng hơn.
-
+Sơ đồ cũng vạch rõ ranh giới trách nhiệm giữa hai module:
+\begin{itemize}
+    \item \textbf{\textsf{Ordering}:} Giới hạn ở việc tạo và xác nhận đơn gọi món.
+    \item \textbf{\textsf{Kitchen Coordination}:} Tách biệt hoàn toàn việc tạo phiếu bếp và điều phối sang trạm bếp (thuộc một sơ đồ riêng).
+\end{itemize}
 \activitydiagramfigure{uc-ord-02-customize-item-and-allergy-note}{Sơ đồ hoạt động cho UC-ORD-02 -- Tùy biến món và ghi chú dị ứng}{fig:activity-uc-ord-02-customize-item-and-allergy-note}
 
 \activitydiagramfigure{uc-ord-03-send-order-to-kitchen}{Sơ đồ hoạt động cho UC-ORD-03 -- Gửi đơn gọi món sang bếp}{fig:activity-uc-ord-03-send-order-to-kitchen}
 
 \paragraph{Phân tích sơ đồ UC-ORD-03.}
-Đây là một trong những sơ đồ hoạt động quan trọng nhất của báo cáo vì nó nằm đúng trên ranh giới giữa tuyến gọi món của phục vụ và tuyến điều phối của bếp. Luồng hoạt động này làm rõ các bước kiểm tra điều kiện gửi, tách riêng các dòng món gửi ngay và các dòng món phục vụ sau, kiểm tra quy tắc định tuyến theo trạm, tạo \textsf{KitchenTicket}, xếp hàng theo độ ưu tiên và cập nhật trạng thái đơn gọi món sau khi tạo phiếu.
+Sơ đồ mô tả ranh giới giao tiếp giữa hai module \textsf{Ordering} (gọi món) và \textsf{Kitchen Coordination} (điều phối bếp), bao gồm:
 
-Các nhánh ngoại lệ cũng được mô tả rõ ràng: nếu không xác định được trạm bếp hoặc màn hình bếp không khả dụng, hệ thống không được phép làm mất dữ liệu đã xác nhận mà phải chuyển sang hàng chờ gửi lại và phát cảnh báo cho phục vụ. Cách mô tả này phù hợp với yêu cầu phi chức năng về độ tin cậy và bảo toàn đơn đã xác nhận.
-
+\begin{itemize}
+    \item \textbf{Luồng xử lý chính:} Kiểm tra điều kiện $\rightarrow$ Phân loại món (làm ngay/làm sau) $\rightarrow$ Định tuyến theo trạm bếp (Station Routing) $\rightarrow$ Khởi tạo \textsf{KitchenTicket} $\rightarrow$ Đưa vào hàng đợi ưu tiên (Priority Queuing) $\rightarrow$ Cập nhật trạng thái đơn (\textsf{Order}).
+    \item \textbf{Xử lý ngoại lệ (Exception Handling):} Nếu lỗi định tuyến trạm hoặc hệ thống màn hình bếp (KDS) offline, hệ thống đẩy request vào hàng đợi gửi lại (retry queue) và phát cảnh báo (alert) cho nhân viên. 
+    \item \textbf{Đáp ứng NFR:} Cơ chế xử lý lỗi này đảm bảo yêu cầu phi chức năng về độ tin cậy (Reliability) và toàn vẹn dữ liệu (Data Integrity), tuyệt đối không làm mất các \textsf{KitchenTicket} đã được xác nhận.
+\end{itemize}
 \activitydiagramfigure{uc-kit-01-update-cooking-progress}{Sơ đồ hoạt động cho UC-KIT-01 -- Cập nhật tiến độ chế biến}{fig:activity-uc-kit-01-update-cooking-progress}
 
 \paragraph{Phân tích sơ đồ UC-KIT-01.}
-Luồng hoạt động ở đây bám đúng nhịp vận hành của bếp: nhận phiếu, kiểm tra trạm chịu trách nhiệm, đánh dấu bắt đầu, chuyển sang chế biến, ghi dấu thời gian cho từng lần đổi trạng thái, đánh giá nguy cơ chậm hạn và cuối cùng xác nhận món sẵn sàng. Mức chi tiết này giúp phần báo cáo không chỉ dừng ở mô tả \enquote{bếp cập nhật trạng thái}, mà còn cho thấy trạng thái nào cần được ghi nhận để phục vụ phân tích vận hành về sau.
+Luồng hoạt động bám sát quy trình xử lý thực tế tại trạm bếp:
 
-Phần nhánh \enquote{thiếu nguyên liệu hoặc bị chặn} cũng rất quan trọng. Trong trường hợp đó, hệ thống không được kết thúc im lặng mà phải đánh dấu chặn, phát cảnh báo và trả thông tin ngược về phía phục vụ. Điều này giữ cho luồng giao tiếp giữa bếp và khu vực phục vụ thống nhất với phần kiến trúc đã mô tả ở các góc nhìn trước.
-
+\begin{itemize}
+    \item \textbf{Luồng xử lý chính:} Nhận phiếu (\textsf{KitchenTicket}) $\rightarrow$ Kiểm tra trạm đích $\rightarrow$ Bắt đầu chế biến $\rightarrow$ Ghi nhận thời gian (timestamp) qua mỗi lần chuyển trạng thái $\rightarrow$ Đánh giá nguy cơ trễ hạn (delay risk) $\rightarrow$ Xác nhận hoàn tất (\textsf{Ready}). Việc lưu vết timestamp chi tiết là cơ sở dữ liệu bắt buộc để phục vụ module phân tích hiệu suất vận hành (operational analytics) sau này.
+    
+    \item \textbf{Xử lý ngoại lệ (Thiếu nguyên liệu/Sự cố):} Hệ thống không được phép kết thúc ngầm (fail silently). Request bắt buộc chuyển sang trạng thái chặn (\textsf{Blocked}), đồng thời phát cảnh báo (alert) và phản hồi trạng thái (feedback) về khu vực phục vụ. Cơ chế này đảm bảo luồng giao tiếp hai chiều giữa bếp và phục vụ luôn đồng bộ và nhất quán với kiến trúc tổng thể.
+\end{itemize}
 \activitydiagramfigure{uc-kit-02-serve-dishes}{Sơ đồ hoạt động cho UC-KIT-02 -- Ra món cho bàn}{fig:activity-uc-kit-02-serve-dishes}
 
 \activitydiagramfigure{uc-kit-03-prioritize-kitchen-queue}{Sơ đồ hoạt động cho UC-KIT-03 -- Ưu tiên hàng chờ bếp và xử lý món gấp}{fig:activity-uc-kit-03-prioritize-kitchen-queue}
 
 \paragraph{Phân tích sơ đồ UC-KIT-03.}
-Luồng này làm rõ một điểm thường được nhắc đến trong tài liệu nhà hàng nhưng ít được mô hình hóa đầy đủ: \textbf{bếp không chỉ nhận phiếu bếp, mà còn phải điều phối thứ tự thực thi}. Trong giờ cao điểm, nếu mọi ticket đều bị xử lý đúng theo thứ tự đến mà không xét SLA, cấu trúc course, khách VIP hay món sắp trễ hạn, hệ thống KDS sẽ chỉ là một bảng hiển thị thụ động. Vì vậy, ca sử dụng ưu tiên hàng chờ bếp được trình bày như một luồng độc lập để phản ánh đúng yêu cầu \enquote{prioritize queues} của đề bài.
+Luồng hoạt động định hình lại vai trò của hệ thống KDS: không chỉ hiển thị thụ động mà phải trực tiếp \textbf{điều phối thứ tự thực thi (queue prioritization)}.
 
-Về mặt kiến trúc, sơ đồ cũng cho thấy quyết định ưu tiên phải đi qua chính sách có kiểm soát, có ghi lý do và có giới hạn quyền, chứ không phải bất kỳ nhân viên nào cũng có thể tùy ý đổi thứ tự chế biến. Điều này giúp IRMS vừa hỗ trợ vận hành linh hoạt, vừa giữ được khả năng truy vết khi có khiếu nại về món ra chậm hoặc món bị đẩy lùi không hợp lý.
-
+\begin{itemize}
+    \item \textbf{Tiêu chí phân luồng:} Trong giờ cao điểm, các \textsf{KitchenTicket} được sắp xếp tự động dựa trên: cam kết thời gian (SLA), cấu trúc món (course), phân hạng khách (VIP) và nguy cơ trễ hạn. Ca sử dụng này được tách độc lập để đáp ứng đúng yêu cầu \enquote{prioritize queues}.
+    
+    \item \textbf{Kiểm soát chính sách (Policy-driven):} Các can thiệp thay đổi thứ tự chế biến bắt buộc phải tuân thủ chính sách: yêu cầu phân quyền hợp lệ và ghi nhận lý do thay đổi (reason log), không cho phép tùy chỉnh tự do.
+    
+    \item \textbf{Khả năng truy vết (Traceability):} Cơ chế kiểm soát chặt chẽ giúp vận hành linh hoạt nhưng vẫn đảm bảo lưu vết (audit) đầy đủ để đối soát khi xảy ra khiếu nại về việc lên món sai thứ tự hoặc trễ SLA.
+\end{itemize}
 \activitydiagramfigure{uc-ord-04-edit-or-cancel-item}{Sơ đồ hoạt động cho UC-ORD-04 -- Sửa hoặc hủy dòng món}{fig:activity-uc-ord-04-edit-or-cancel-item}
 
 \activitygroup{Nhóm hóa đơn, thanh toán và biên lai}
@@ -230,47 +241,80 @@ Về mặt kiến trúc, sơ đồ cũng cho thấy quyết định ưu tiên ph
 \activitydiagramfigure{uc-bil-01-create-bill}{Sơ đồ hoạt động cho UC-BIL-01 -- Tạo hóa đơn cho bàn}{fig:activity-uc-bil-01-create-bill}
 
 \paragraph{Phân tích sơ đồ UC-BIL-01.}
-Sơ đồ tạo hóa đơn phản ánh đúng thứ tự xử lý của phần quyết toán: gom các đơn gọi món chưa quyết toán, kiểm tra điều kiện xuất hóa đơn, tính tiền hàng, thuế, phí và khuyến mãi, sau đó mới cho phép phục vụ hoặc thu ngân xem trước và xác nhận phát hành. Việc đặt bước \enquote{xem trước hóa đơn} trước \enquote{phát hành} là cần thiết vì đây là điểm cuối cùng để phát hiện sai lệch nếu một dòng món vừa bị hủy hoặc vừa có thay đổi cấu hình giá.
-
-Sơ đồ cũng thể hiện rõ nhánh chặn phát hành khi dữ liệu chưa hợp lệ. Điều này phù hợp với đặc tả ca sử dụng ở trên và làm nổi bật rằng \textsf{Bill} không chỉ là phép cộng cuối cùng, mà là một thực thể nghiệp vụ có điều kiện phát hành chặt chẽ.
-
+\begin{itemize}
+\item \textbf{Cơ chế Preview:} Bước \enquote{xem trước hóa đơn} đóng vai trò chốt chặn cuối cùng để kiểm tra tính nhất quán dữ liệu, phòng ngừa sai sót do các thay đổi tức thời (hủy món hoặc cập nhật giá).
+\item \textbf{Ràng buộc nghiệp vụ:} Hệ thống thiết lập nhánh chặn phát hành khi dữ liệu không hợp lệ. Điều này khẳng định \textsf{Bill} là một thực thể nghiệp vụ (business entity) có các điều kiện phát hành và chuyển đổi trạng thái chặt chẽ, không đơn thuần là phép cộng tổng dữ liệu.
+\end{itemize}
 \activitydiagramfigure{uc-bil-02-split-bill-and-tip}{Sơ đồ hoạt động cho UC-BIL-02 -- Tách hóa đơn và thêm tiền boa}{fig:activity-uc-bil-02-split-bill-and-tip}
 
 \activitydiagramfigure{uc-pay-01-process-payment}{Sơ đồ hoạt động cho UC-PAY-01 -- Xử lý thanh toán}{fig:activity-uc-pay-01-process-payment}
 
 \paragraph{Phân tích sơ đồ UC-PAY-01.}
-Đây là sơ đồ hoạt động có ý nghĩa kiểm soát cao nhất trong toàn bộ phần hành vi. Luồng này làm rõ hai tuyến thanh toán khác nhau: thanh toán qua \textsf{PaymentGateway} và thanh toán tiền mặt tại quầy. Với nhánh \textsf{PaymentGateway}, hệ thống phải tạo yêu cầu giao dịch, nhận kết quả, lưu mã tham chiếu và xử lý riêng các trạng thái thành công, thất bại hoặc chờ rà soát. Với thanh toán tiền mặt, hệ thống tính số tiền thối rồi mới cập nhật số dư còn lại.
-
-Sau bước ghi nhận thanh toán, hệ thống còn phải đánh giá hóa đơn đã được thanh toán đủ hay chưa. Nếu chưa đủ, hóa đơn vẫn mở; nếu đủ, hóa đơn được đóng và luồng phát hành biên lai mới được mở ra. Cách mô tả này bám đúng kiến trúc hiện tại của IRMS và tránh nhập nhằng giữa \enquote{đã có một giao dịch thanh toán} và \enquote{đã tất toán hóa đơn}.
-
+\begin{itemize}
+    \item \textbf{Phân luồng thanh toán:}
+    \begin{itemize}
+        \item \textsf{PaymentGateway}: Tạo yêu cầu giao dịch $\rightarrow$ Nhận kết quả $\rightarrow$ Lưu mã tham chiếu $\rightarrow$ Xử lý các trạng thái: thành công, thất bại, hoặc chờ rà soát.
+        \item \textbf{Tiền mặt}: Tính tiền thối và cập nhật số dư còn lại của hóa đơn.
+    \end{itemize}
+    \item \textbf{Logic tất toán:} Sau khi ghi nhận, hệ thống kiểm tra số tiền đã thanh toán:
+    \begin{itemize}
+        \item \textbf{Chưa đủ}: Hóa đơn giữ trạng thái mở (\textsf{OPEN}).
+        \item \textbf{Đã đủ}: Đóng hóa đơn (\textsf{CLOSED}) và kích hoạt luồng phát hành biên lai.
+    \end{itemize}
+\end{itemize}
 \activitydiagramfigure{uc-pay-02-issue-receipt}{Sơ đồ hoạt động cho UC-PAY-02 -- Phát hành biên lai}{fig:activity-uc-pay-02-issue-receipt}
 
 \activitydiagramfigure{uc-pay-03-refund}{Sơ đồ hoạt động cho UC-PAY-03 -- Hoàn tiền}{fig:activity-uc-pay-03-refund}
 
 \paragraph{Phân tích sơ đồ UC-PAY-03.}
-Sơ đồ hoàn tiền hiện đã thể hiện đầy đủ hơn các điểm kiểm soát bắt buộc: chọn giao dịch gốc, kiểm tra số tiền còn được hoàn, nhập lý do, so ngưỡng phê duyệt, xin xác nhận của quản lý nếu cần, xử lý hoàn tiền qua \textsf{PaymentGateway} hoặc ghi nhận hoàn tiền thủ công, rồi mới cập nhật sổ kiểm toán. Điều này rất quan trọng vì hoàn tiền là thao tác nhạy cảm nhất trong vùng thanh toán.
+Sơ đồ hoàn tiền hiện đã thể hiện đầy đủ các điểm kiểm soát bắt buộc:
+
+\begin{itemize}
+    \item Chọn giao dịch gốc
+    \item Kiểm tra số tiền còn được hoàn
+    \item Nhập lý do hoàn tiền
+    \item So sánh với ngưỡng phê duyệt
+    \item Xin xác nhận của quản lý nếu cần
+    \item Xử lý hoàn tiền qua \textsf{PaymentGateway} hoặc ghi nhận hoàn tiền thủ công
+    \item Cập nhật sổ kiểm toán
+\end{itemize}
+
+Điều này rất quan trọng vì hoàn tiền là thao tác nhạy cảm nhất trong vùng thanh toán.
 
 Một chi tiết đáng chú ý là sơ đồ đã tách rõ nhánh \enquote{chờ rà soát} khi \textsf{PaymentGateway} không chấp nhận hoặc phản hồi không rõ ràng. Nhờ đó báo cáo có thể giải thích trạng thái nghiệp vụ chặt chẽ hơn, thay vì gom mọi trường hợp không thành công vào một nhãn lỗi duy nhất.
-
 \activitygroup{Nhóm tồn kho, cảnh báo và phân tích}
 
 \activitydiagramfigure{uc-inv-01-update-stock-consumption}{Sơ đồ hoạt động cho UC-INV-01 -- Cập nhật tiêu hao tồn kho sau phục vụ}{fig:activity-uc-inv-01-update-stock-consumption}
 
 \paragraph{Phân tích sơ đồ UC-INV-01.}
-Sơ đồ cập nhật tiêu hao tồn kho phản ánh đúng bản chất suy diễn của vùng tồn kho: nhận sự kiện từ món đã phục vụ hoặc điều chỉnh thủ công, tra công thức nguyên liệu, tính lượng tiêu hao theo số lượng món, sinh \textsf{StockTransaction} theo từng nguyên liệu, cập nhật số lượng tồn hiện có, rồi tiếp tục đánh giá các điều kiện bất thường. Đây là mô tả phù hợp với kiến trúc của IRMS, nơi vùng tồn kho không tự suy đoán món bán ra từ giao diện mà dựa vào tín hiệu nghiệp vụ từ tuyến phục vụ.
+Sơ đồ cập nhật tiêu hao tồn kho phản ánh đúng bản chất suy diễn của vùng tồn kho. Các bước xử lý bao gồm:
 
-Sơ đồ cũng làm rõ hai nhánh ngoại lệ quan trọng: thiếu ánh xạ công thức và âm kho bất thường. Nhờ đó phần thiết kế hành vi bám sát hơn với ca sử dụng đã đặc tả, đồng thời nối được với sơ đồ cảnh báo sắp hết hàng ngay bên dưới.
+\begin{itemize}
+    \item Nhận sự kiện từ món đã phục vụ hoặc điều chỉnh thủ công
+    \item Tra công thức nguyên liệu
+    \item Tính lượng tiêu hao theo số lượng món
+    \item Sinh \textsf{StockTransaction} theo từng nguyên liệu
+    \item Cập nhật số lượng tồn hiện có
+    \item Đánh giá các điều kiện bất thường
+\end{itemize}
 
+Sơ đồ cũng làm rõ hai nhánh ngoại lệ quan trọng:
+
+\begin{itemize}
+    \item Thiếu ánh xạ công thức
+    \item Âm kho bất thường
+\end{itemize}
+
+Nhờ đó phần thiết kế hành vi bám sát hơn với ca sử dụng đã đặc tả, đồng thời nối được với sơ đồ cảnh báo sắp hết hàng ngay bên dưới.
 \activitydiagramfigure{uc-inv-02-low-stock-alert}{Sơ đồ hoạt động cho UC-INV-02 -- Nhận cảnh báo sắp hết hàng}{fig:activity-uc-inv-02-low-stock-alert}
 
 \activitydiagramfigure{uc-inv-03-reorder-recommendation}{Sơ đồ hoạt động cho UC-INV-03 -- Phân tích tiêu hao và đề xuất nhập hàng}{fig:activity-uc-inv-03-reorder-recommendation}
 
 \paragraph{Phân tích sơ đồ UC-INV-03.}
-Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \enquote{historical usage helps predict reorder quantities and manage waste}. Nếu chỉ dừng ở cập nhật tiêu hao và cảnh báo sắp hết hàng, IRMS mới hỗ trợ tốt cho phản ứng vận hành ngắn hạn; nó chưa hỗ trợ đầy đủ cho quyết định chuẩn bị hàng hóa ở chu kỳ ngày, tuần hoặc mùa cao điểm. Vì vậy, sơ đồ chuyển trọng tâm của vùng tồn kho từ \textbf{theo dõi hiện trạng} sang \textbf{hỗ trợ ra quyết định}.
 
-Điểm quan trọng của sơ đồ là không mô tả việc dự báo như một thuật toán mơ hồ, mà làm rõ chuỗi dữ liệu đầu vào: tiêu hao lịch sử, low-stock alert, hao hụt, lead time và mức tồn an toàn. Điều này có giá trị trong báo cáo kiến trúc vì nó cho thấy đề xuất nhập hàng là kết quả của mô hình dữ liệu và luồng xử lý đã có, không phải một chức năng được bổ sung rời rạc ở phần quản trị mà không có nền dữ liệu đủ tin cậy.
+Use case này giúp phần tồn kho bám sát hơn với yêu cầu \enquote{historical usage helps predict reorder quantities and manage waste}. Nếu chỉ dừng ở cập nhật tiêu hao và cảnh báo sắp hết hàng, IRMS mới chỉ hỗ trợ phản ứng vận hành ngắn hạn, chưa đủ để ra quyết định chuẩn bị hàng hóa theo chu kỳ ngày, tuần hoặc mùa cao điểm. Do đó, sơ đồ này chuyển trọng tâm của vùng tồn kho từ \textbf{theo dõi hiện trạng} sang \textbf{hỗ trợ ra quyết định}.
 
-\activitydiagramfigure{uc-rep-01-view-revenue-and-operations-report}{Sơ đồ hoạt động cho UC-REP-01 -- Xem báo cáo doanh thu và vận hành}{fig:activity-uc-rep-01-view-revenue-and-operations-report}
+Điểm đáng chú ý là sơ đồ không mô tả dự báo như một thuật toán mơ hồ mà chỉ rõ các dữ liệu đầu vào gồm tiêu hao lịch sử, cảnh báo sắp hết hàng, hao hụt, lead time và mức tồn an toàn. Nhờ đó, đề xuất nhập hàng được thể hiện là kết quả của mô hình dữ liệu và luồng xử lý đã có sẵn, không phải một chức năng bổ sung rời rạc thiếu nền dữ liệu đủ tin cậy.\activitydiagramfigure{uc-rep-01-view-revenue-and-operations-report}{Sơ đồ hoạt động cho UC-REP-01 -- Xem báo cáo doanh thu và vận hành}{fig:activity-uc-rep-01-view-revenue-and-operations-report}
 
 \activitygroup{Nhóm quản trị cấu hình và vận hành}
 
@@ -368,19 +412,4 @@ Ca sử dụng này làm cho phần tồn kho bám sát hơn với yêu cầu \e
     
     \item Hệ thống cập nhật \textsf{ShiftAssignment}, ghi nhật ký kiểm toán và đưa thông báo nội bộ vào hàng chờ cho nhân viên liên quan.
 \end{itemize}
-
-\subsection{Phản tư về thiết kế và định hướng hiện thực}
-Thiết kế của IRMS được xây dựng quanh luồng vận hành lõi của nhà hàng: tiếp nhận khách, mở phiên bàn, gọi món, điều phối bếp, lập hóa đơn, thanh toán và giải phóng bàn. Điểm quan trọng nhất là các trạng thái nghiệp vụ không được xem như dữ liệu rời rạc. Mỗi trạng thái đều gắn với một trách nhiệm rõ ràng: \textsf{Reservation \& Seating} bảo vệ vòng đời bàn và \textsf{TableSession}; \textsf{Ordering \& Menu} giữ ảnh chụp đơn gọi món; \textsf{Kitchen Coordination} điều phối phiếu bếp; \textsf{Billing \& Settlement} kiểm soát nghĩa vụ thanh toán; còn \textsf{Inventory}, \textsf{Reporting}, \textsf{IAM \& Audit} và \textsf{Notification} xử lý các hệ quả hỗ trợ. Cách phân rã này giúp các sơ đồ lớp, sơ đồ hoạt động và các view kiến trúc đọc cùng một ranh giới nghiệp vụ thay vì mô tả những lát cắt rời nhau.
-
-Một kết quả tích cực của thiết kế là tuyến giao dịch nóng được giữ ngắn và dễ giải thích. Các thao tác cần phản hồi trực tiếp như xác nhận đơn gọi món, cập nhật tiến độ bếp, lập hóa đơn, ghi nhận thanh toán và hoàn tiền được đặt trong các luồng đồng bộ có điểm bắt đầu và kết thúc rõ ràng. Những hệ quả không cần chặn người dùng, chẳng hạn thông báo, cập nhật mô hình đọc báo cáo, ghi nhận kiểm toán hoặc cảnh báo tồn kho, được chuyển sang xử lý bằng sự kiện. Sự tách biệt này phù hợp với yêu cầu phi chức năng ở Chương~1: nhà hàng cần phản hồi nhanh ở màn hình phục vụ, bếp và thu ngân, nhưng vẫn cần duy trì truy vết và dữ liệu quản trị đủ đầy ở phía sau.
-
-Thiết kế cũng cho thấy lợi ích của việc đặt các điểm tích hợp ở biên. \textsf{PaymentGateway}, \textsf{NotificationChannelAdapter} và \textsf{ReceiptDeliveryAdapter} không được xem là logic nghiệp vụ lõi, mà là các hợp đồng giúp lõi thanh toán, thông báo và phát hành biên lai không phụ thuộc vào một kênh cụ thể. Nhờ đó, việc thay đổi phương thức thanh toán, kênh gửi thông báo hoặc định dạng biên lai có thể được khu trú ở lớp adapter. Điều này trực tiếp hỗ trợ khả năng bảo trì và mở rộng mà không làm thay đổi các quy tắc như tính tiền, xác nhận thanh toán, hoàn tiền hoặc ghi nhận kiểm toán.
-
-Ở tầng dữ liệu, việc dùng một PostgreSQL vật lý duy nhất giúp giảm độ phức tạp vận hành trong phạm vi hiện tại, đồng thời vẫn cho phép phân tách các nhóm bảng theo trách nhiệm logic. Dữ liệu giao dịch phục vụ gọi món, bếp và thanh toán cần nhất quán mạnh; các bảng outbox/inbox giúp điều phối sự kiện có kiểm soát; mô hình đọc báo cáo chấp nhận độ trễ có kiểm soát để giảm áp lực lên tuyến giao dịch nóng; dữ liệu định danh và kiểm toán phục vụ kiểm soát truy cập và truy vết. Cách đọc này giữ sự nhất quán với kiến trúc tổng quan: chỉ có một cơ sở dữ liệu vật lý, còn các nhóm dữ liệu bên trong mang các vai trò kiến trúc khác nhau.
-
-Điểm cần thận trọng là độ phức tạp của xử lý bất đồng bộ. Khi thông báo, kiểm toán, báo cáo và cảnh báo tồn kho được tách ra khỏi tuyến chính, hệ thống phải kiểm soát tốt việc phát lại sự kiện, chống xử lý lặp, ghi mã liên kết và theo dõi trạng thái xử lý nền. Nếu các cơ chế này thiếu nhất quán, lợi ích về hiệu năng có thể đổi thành khó khăn khi điều tra lỗi. Vì vậy, các use case và activity diagram nên tiếp tục nhấn mạnh những điểm có nguy cơ trùng lặp hoặc mất dấu như xác nhận đơn, ghi nhận thanh toán, hoàn tiền, cập nhật tồn kho và làm mới báo cáo.
-
-Một giới hạn khác nằm ở phạm vi triển khai hiện tại. IRMS được mô tả cho một nhà hàng đơn lẻ với runtime Docker local, một PostgreSQL và một RabbitMQ. Cấu trúc này phù hợp với phạm vi học phần và quy mô vận hành đã nêu, nhưng chưa tương đương với mô hình nhiều chi nhánh hoặc hạ tầng sẵn sàng cao. Khi mở rộng, các vấn đề như quản lý cấu hình theo chi nhánh, phân vùng dữ liệu, đồng bộ báo cáo nhiều cơ sở, giám sát hàng đợi và quy trình khôi phục sau lỗi sẽ cần được thiết kế chi tiết hơn. Những điểm này nên được đặt ở phần định hướng mở rộng, không nên trộn vào mô hình triển khai hiện tại.
-
-Định hướng hiện thực tiếp theo nên ưu tiên ba nhóm công việc. Thứ nhất, giữ vững ranh giới service đã xác định trong Module View để tránh đưa logic bếp, thanh toán hoặc tồn kho vào sai miền. Thứ hai, chuẩn hóa hợp đồng giao tiếp ở Component-and-Connector View: yêu cầu đồng bộ đi qua cổng rõ ràng, còn sự kiện nền có mã liên kết, chống lặp và trạng thái xử lý. Thứ ba, kiểm tra tính khớp giữa sơ đồ lớp và activity diagram để bảo đảm mỗi luồng nghiệp vụ quan trọng đều có class chịu trách nhiệm rõ ràng. Nếu ba điểm này được duy trì, thiết kế hiện tại có thể chuyển sang hiện thực mà vẫn giữ được tính nhất quán giữa yêu cầu, kiến trúc và thiết kế chi tiết.
 \pagebreak
