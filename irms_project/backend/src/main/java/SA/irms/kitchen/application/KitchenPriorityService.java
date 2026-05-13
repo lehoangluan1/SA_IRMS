@@ -79,7 +79,7 @@ public class KitchenPriorityService implements SA.irms.kitchen.application.port.
     public void applyAutomaticPriorityEscalation() {
         PolicySnapshot policies = identityPolicyPort.getPolicySnapshot();
         Instant now = Instant.now(clock);
-        Instant rushCutoff = now.plusSeconds((long) policies.preparationPolicy().rushThresholdMin() * 60L);
+        Instant rushCutoff = now.minusSeconds((long) policies.preparationPolicy().rushThresholdMin() * 60L);
         // Expedite is reserved for tickets that are already overdue beyond the late threshold.
         Instant expediteCutoff = now.minusSeconds((long) policies.expediteRule().lateThresholdMin() * 60L);
         UUID auditActorUserId = resolveAutomaticPriorityActorUserId();
