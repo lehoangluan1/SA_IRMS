@@ -52,12 +52,15 @@ const priorityStyles: Record<KitchenPriority, string> = {
   expedite: "ring-2 ring-red-400 animate-pulse-urgent",
 };
 
+const SERVED_TICKET_COOLDOWN_MS = 60_000;
+
 function KitchenPage() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [station, setStation] = useState<KitchenStationType | "all">("all");
   const [now, setNow] = useState(Date.now());
   const [pendingActionKey, setPendingActionKey] = useState<string | null>(null);
+  const [servedCooldownStartById, setServedCooldownStartById] = useState<Record<string, number>>({});
   const [showCancelOrder, setShowCancelOrder] = useState<string | null>(null);
   const [showCancelItem, setShowCancelItem] = useState<{ ticketId: string; itemId: string } | null>(null);
   const [showReturnOrder, setShowReturnOrder] = useState<string | null>(null);
@@ -82,41 +85,84 @@ function KitchenPage() {
   }, []);
 
   const overview = data ? mapKitchenData(data) : null;
+  useEffect(() => {
+    const tickets = overview?.tickets ?? [];
+    if (tickets.length === 0) return;
+
+    setServedCooldownStartById((prev) => {
+      let changed = false;
+      const next = { ...prev };
+
+      for (const ticket of tickets) {
+        const isServed = normalizeKitchenStatus(ticket.status) === "served";
+        if (isServed && next[ticket.id] === undefined) {
+          next[ticket.id] = Date.now();
+          changed = true;
+        }
+        if (!isServed && next[ticket.id] !== undefined) {
+          delete next[ticket.id];
+          changed = true;
+        }
+      }
+
+      return changed ? next : prev;
+    });
+  }, [overview?.tickets]);
+
   const stations = useMemo(
     () => ["all", ...((overview?.stations ?? []) as KitchenStationType[])],
     [overview?.stations],
   );
-  const orders: KitchenOrder[] = (overview?.tickets ?? []).map((ticket) => ({
-    id: ticket.id,
-    orderId: ticket.orderId,
-    table: ticket.tableNumber,
-    server: ticket.serverName,
-    priority: normalizePriority(ticket.priority),
-    status: normalizeKitchenStatus(ticket.status),
-    createdAt: Date.parse(ticket.createdAt),
-    items: ticket.items.map((item) => ({
-      id: item.id,
-      orderItemId: item.orderItemId,
-      name: item.name,
-      qty: item.quantity,
-      mods: item.modifiers ?? [],
-      allergy: item.allergyNotes ?? undefined,
-      specialInstructions: item.specialInstructions ?? undefined,
-      status: normalizeKitchenStatus(item.status),
-      station: item.station as KitchenStationType,
-      priority: normalizePriority(ticket.priority) !== "normal",
-    })),
-  }));
+  const orders: KitchenOrder[] = (overview?.tickets ?? []).map((ticket) => {
+    const backendStatus = normalizeKitchenStatus(ticket.status);
+    const status: KitchenItemStatus =
+      backendStatus === "served" || servedCooldownStartById[ticket.id] !== undefined
+        ? "served"
+        : backendStatus;
+
+    return {
+      id: ticket.id,
+      orderId: ticket.orderId,
+      table: ticket.tableNumber,
+      server: ticket.serverName,
+      priority: normalizePriority(ticket.priority),
+      status,
+      createdAt: Date.parse(ticket.createdAt),
+      items: ticket.items.map((item) => ({
+        id: item.id,
+        orderItemId: item.orderItemId,
+        name: item.name,
+        qty: item.quantity,
+        mods: item.modifiers ?? [],
+        allergy: item.allergyNotes ?? undefined,
+        specialInstructions: item.specialInstructions ?? undefined,
+        status: normalizeKitchenStatus(item.status),
+        station: item.station as KitchenStationType,
+        priority: normalizePriority(ticket.priority) !== "normal",
+      })),
+    };
+  });
+
+  const visibleOrders = useMemo(
+    () =>
+      orders.filter((order) => {
+        if (order.status !== "served") return true;
+        const servedAt = servedCooldownStartById[order.id];
+        if (servedAt === undefined) return true;
+        return now - servedAt < SERVED_TICKET_COOLDOWN_MS;
+      }),
+    [orders, servedCooldownStartById, now],
+  );
 
   const filtered = useMemo(() => {
-    if (station === "all") return orders;
-    return orders
+    if (station === "all") return visibleOrders;
+    return visibleOrders
       .map((order) => ({
         ...order,
         items: order.items.filter((item) => item.station === station),
       }))
       .filter((order) => order.items.length > 0);
-  }, [orders, station]);
+  }, [visibleOrders, station]);
 
   const sorted = useMemo(
     () =>
@@ -142,7 +188,14 @@ function KitchenPage() {
   };
 
   const actionMutation = useMutation({
-    mutationFn: async (request: { path: string; method?: "PATCH" | "POST"; body?: unknown; successMessage: string }) =>
+    mutationFn: async (request: {
+      path: string;
+      method?: "PATCH" | "POST";
+      body?: unknown;
+      successMessage: string;
+      actionType?: "serve" | "return";
+      ticketId?: string;
+    }) =>
       apiFetch(request.path, {
         method: request.method ?? "PATCH",
         body: request.body === undefined ? undefined : JSON.stringify(request.body),
@@ -151,6 +204,17 @@ function KitchenPage() {
       setPendingActionKey(createActionKey(variables.path, variables.body));
     },
     onSuccess: async (_, variables) => {
+      if (variables.ticketId && variables.actionType === "serve") {
+        setServedCooldownStartById((prev) => ({ ...prev, [variables.ticketId as string]: Date.now() }));
+      }
+      if (variables.ticketId && variables.actionType === "return") {
+        setServedCooldownStartById((prev) => {
+          if (prev[variables.ticketId as string] === undefined) return prev;
+          const next = { ...prev };
+          delete next[variables.ticketId as string];
+          return next;
+        });
+      }
       await refreshKitchen(variables.successMessage);
     },
     onError: (error: Error) => toast.error(error.message),
@@ -195,6 +259,16 @@ function KitchenPage() {
   const isActionPending = (path: string, body?: unknown) =>
     actionMutation.isPending && pendingActionKey === createActionKey(path, body);
 
+  const getServedCooldown = (ticketId: string) => {
+    const servedAt = servedCooldownStartById[ticketId];
+    if (servedAt === undefined) return null;
+    const remainingMs = Math.max(0, SERVED_TICKET_COOLDOWN_MS - (now - servedAt));
+    const remainingSeconds = Math.ceil(remainingMs / 1000);
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
+
   return (
     <div className="space-y-4">
       <SectionHeader
@@ -211,8 +285,8 @@ function KitchenPage() {
       <div className="flex gap-1 bg-muted p-1 rounded-lg overflow-x-auto">
         {stations.map((stationName) => {
           const count = stationName === "all"
-            ? orders.length
-            : orders.filter((order) => order.items.some((item) => item.station === stationName)).length;
+            ? visibleOrders.length
+            : visibleOrders.filter((order) => order.items.some((item) => item.station === stationName)).length;
           return (
             <button
               key={stationName}
@@ -356,15 +430,18 @@ function KitchenPage() {
                   </Button>
                 )}
                 {order.status === "served" && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="flex-1 h-8 text-amber-600 border-amber-300"
-                    disabled={actionMutation.isPending}
-                    onClick={() => setShowReturnOrder(order.id)}
-                  >
-                    <RotateCcw className="w-3.5 h-3.5 mr-1" /> Return
-                  </Button>
+                  <div className="flex-1 space-y-1">
+                    <p className="text-[10px] text-muted-foreground">Disappears in {getServedCooldown(order.id) ?? "1:00"}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full h-8 text-amber-600 border-amber-300"
+                      disabled={actionMutation.isPending}
+                      onClick={() => setShowReturnOrder(order.id)}
+                    >
+                      <RotateCcw className="w-3.5 h-3.5 mr-1" /> Return
+                    </Button>
+                  </div>
                 )}
                 {order.status === "ready" && (
                   <Button
@@ -376,6 +453,8 @@ function KitchenPage() {
                       void actionMutation.mutate({
                         path: ENDPOINTS.kitchen.serve(order.id),
                         method: "POST",
+                        actionType: "serve",
+                        ticketId: order.id,
                         successMessage: "Ticket served and handed off",
                       })
                     }
@@ -466,6 +545,8 @@ function KitchenPage() {
             void actionMutation.mutate({
               path: ENDPOINTS.kitchen.returnTicket(showReturnOrder),
               method: "POST",
+              actionType: "return",
+              ticketId: showReturnOrder,
               body: { reason: reason ?? "" },
               successMessage: "Ticket returned to ready state",
             });
