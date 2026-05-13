@@ -17,7 +17,7 @@ import SA.irms.kitchen.domain.KitchenStatusPolicy;
 
 @Service
 class KitchenTicketReadService {
-    private static final long RECENT_COMPLETED_TICKET_SECONDS = 600L;
+    private static final long RECENT_COMPLETED_TICKET_SECONDS = 60L;
 
     private final JdbcClient jdbcClient;
     private final KitchenStatusPolicy kitchenStatusPolicy;

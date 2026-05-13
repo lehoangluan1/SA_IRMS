@@ -19,7 +19,7 @@ import SA.irms.common.identity.SharedIdentityDirectoryPort;
 
 @Repository
 public class JdbcKitchenTicketQueryRepository implements KitchenTicketQueryRepository {
-    private static final long RECENT_COMPLETED_TICKET_SECONDS = 600L;
+    private static final long RECENT_COMPLETED_TICKET_SECONDS = 60L;
 
     private final JdbcClient jdbcClient;
     private final KitchenStatusPolicy kitchenStatusPolicy;

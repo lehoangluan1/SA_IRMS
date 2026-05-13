@@ -46,6 +46,9 @@ interface KitchenOrder {
   items: KitchenItem[];
 }
 
+const COMPLETED_TICKET_COOLDOWN_SECONDS = 60;
+const TERMINAL_TICKET_COOLDOWN_STORAGE_KEY = "kitchen-terminal-ticket-started-at";
+
 const priorityStyles: Record<KitchenPriority, string> = {
   normal: "",
   rush: "ring-2 ring-amber-300",
@@ -62,6 +65,8 @@ function KitchenPage() {
   const [showCancelItem, setShowCancelItem] = useState<{ ticketId: string; itemId: string } | null>(null);
   const [showReturnOrder, setShowReturnOrder] = useState<string | null>(null);
   const [showPriorityDialog, setShowPriorityDialog] = useState<string | null>(null);
+  const [terminalTicketStartedAt, setTerminalTicketStartedAt] = useState<Record<string, number>>({});
+  const [isCooldownHydrated, setIsCooldownHydrated] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["kitchen", station],
@@ -81,32 +86,85 @@ function KitchenPage() {
     return () => window.clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    setTerminalTicketStartedAt(loadTerminalTicketCooldownState());
+    setIsCooldownHydrated(true);
+  }, []);
+
   const overview = data ? mapKitchenData(data) : null;
   const stations = useMemo(
     () => ["all", ...((overview?.stations ?? []) as KitchenStationType[])],
     [overview?.stations],
   );
-  const orders: KitchenOrder[] = (overview?.tickets ?? []).map((ticket) => ({
-    id: ticket.id,
-    orderId: ticket.orderId,
-    table: ticket.tableNumber,
-    server: ticket.serverName,
-    priority: normalizePriority(ticket.priority),
-    status: normalizeKitchenStatus(ticket.status),
-    createdAt: Date.parse(ticket.createdAt),
-    items: ticket.items.map((item) => ({
-      id: item.id,
-      orderItemId: item.orderItemId,
-      name: item.name,
-      qty: item.quantity,
-      mods: item.modifiers ?? [],
-      allergy: item.allergyNotes ?? undefined,
-      specialInstructions: item.specialInstructions ?? undefined,
-      status: normalizeKitchenStatus(item.status),
-      station: item.station as KitchenStationType,
-      priority: normalizePriority(ticket.priority) !== "normal",
-    })),
-  }));
+  const orders: KitchenOrder[] = useMemo(
+    () =>
+      (overview?.tickets ?? []).map((ticket) => ({
+        id: ticket.id,
+        orderId: ticket.orderId,
+        table: ticket.tableNumber,
+        server: ticket.serverName,
+        priority: normalizePriority(ticket.priority),
+        status: normalizeKitchenStatus(ticket.status),
+        createdAt: Date.parse(ticket.createdAt),
+        items: ticket.items.map((item) => ({
+          id: item.id,
+          orderItemId: item.orderItemId,
+          name: item.name,
+          qty: item.quantity,
+          mods: item.modifiers ?? [],
+          allergy: item.allergyNotes ?? undefined,
+          specialInstructions: item.specialInstructions ?? undefined,
+          status: normalizeKitchenStatus(item.status),
+          station: item.station as KitchenStationType,
+          priority: normalizePriority(ticket.priority) !== "normal",
+        })),
+      })),
+    [overview?.tickets],
+  );
+
+  useEffect(() => {
+    if (!isCooldownHydrated) {
+      return;
+    }
+    if (isLoading) {
+      return;
+    }
+    setTerminalTicketStartedAt((previous: Record<string, number>) => {
+      const currentTicketIds = new Set(orders.map((order) => order.id));
+      let changed = false;
+      const next: Record<string, number> = {};
+
+      for (const [ticketId, startedAt] of Object.entries(previous)) {
+        if (currentTicketIds.has(ticketId)) {
+          next[ticketId] = startedAt;
+        } else {
+          changed = true;
+        }
+      }
+
+      const observedAt = Date.now();
+      for (const order of orders) {
+        if (order.status === "served" || order.status === "blocked") {
+          if (next[order.id] === undefined) {
+            next[order.id] = observedAt;
+            changed = true;
+          }
+        } else if (next[order.id] !== undefined) {
+          delete next[order.id];
+          changed = true;
+        }
+      }
+
+      return changed ? next : previous;
+    });
+  }, [isCooldownHydrated, isLoading, orders]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !isCooldownHydrated) {
+      return;
+    }
+    window.localStorage.setItem(TERMINAL_TICKET_COOLDOWN_STORAGE_KEY, JSON.stringify(terminalTicketStartedAt));
+  }, [isCooldownHydrated, terminalTicketStartedAt]);
 
   const filtered = useMemo(() => {
     if (station === "all") return orders;
@@ -173,6 +231,23 @@ function KitchenPage() {
     if (minutes > 20) return "text-red-600";
     if (minutes > 10) return "text-amber-600";
     return "text-emerald-600";
+  };
+
+  const getTicketCooldown = (order: KitchenOrder) => {
+    if (order.status !== "served" && order.status !== "blocked") {
+      return null;
+    }
+    const startedAt = terminalTicketStartedAt[order.id];
+    if (!startedAt) {
+      return "1:00";
+    }
+    const remainingSeconds = Math.max(
+      0,
+      COMPLETED_TICKET_COOLDOWN_SECONDS - Math.floor((now - startedAt) / 1000),
+    );
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   const statusBadgeVariant = (status: KitchenItemStatus) => {
@@ -255,6 +330,11 @@ function KitchenPage() {
               </div>
 
               <p className="text-xs text-muted-foreground mb-2">{order.server}</p>
+              {(order.status === "served" || order.status === "blocked") && (
+                <p className="text-[10px] text-muted-foreground mb-2">
+                  Ticket disappears in {getTicketCooldown(order)}
+                </p>
+              )}
               {order.status === "queued" && (
                 <p className="text-[10px] text-muted-foreground mb-2">Cooking will start shortly.</p>
               )}
@@ -528,4 +608,31 @@ function normalizePriority(priority: string): KitchenPriority {
 
 function createActionKey(path: string, body?: unknown) {
   return `${path}:${JSON.stringify(body ?? null)}`;
+}
+
+function loadTerminalTicketCooldownState(): Record<string, number> {
+  if (typeof window === "undefined") {
+    return {};
+  }
+  const raw = window.localStorage.getItem(TERMINAL_TICKET_COOLDOWN_STORAGE_KEY);
+  if (!raw) {
+    return {};
+  }
+
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") {
+      return {};
+    }
+
+    const result: Record<string, number> = {};
+    for (const [ticketId, timestamp] of Object.entries(parsed)) {
+      if (typeof timestamp === "number" && Number.isFinite(timestamp) && timestamp > 0) {
+        result[ticketId] = timestamp;
+      }
+    }
+    return result;
+  } catch {
+    return {};
+  }
 }
